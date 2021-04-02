@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  api:
+    image: uic-inventory/api
+    build:
+      context: .
+      dockerfile: ./src/api/Api.Dockerfile
+    volumes:
+      - ${HOME}/.aspnet/https:/https/
+
+  db:
+    image: uic-inventory/db
+    restart: always
+    build:
+      context: .
+      dockerfile: ./data/CloudSql.Dockerfile
+
+  cache:
+    image: "redis:5-buster"
+
+volumes:
+  pgdata:
