@@ -31,7 +31,7 @@ namespace api.Features.DistributedAuth {
           options.LogoutPath = "/";
         }).PostConfigure<IComputeMediator>((options, mediator) => {
           options.Events.OnSignedIn = context => {
-            var computation = new UserProvisioning.Computation(context.Principal.Claims);
+            var computation = new AccountProvisioning.Computation(context.Principal.Claims);
 
             return mediator.Handle(computation, default);
           };

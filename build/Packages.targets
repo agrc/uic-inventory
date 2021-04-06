@@ -12,14 +12,15 @@
 
     <!-- Database -->
     <PackageReference Update="Dapper" Version="2.0.78" />
-    <PackageReference Update="HotChocolate.Data.EntityFramework" Version="11.2.0-preview.1" />
     <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0-preview2" />
     <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="6.0.0-preview.2.21154.2" />
 
     <!-- GraphQL -->
-    <PackageReference Update="HotChocolate.AspNetCore" Version="11.2.0-preview.1" />
-    <PackageReference Update="HotChocolate.AspNetCore.Authorization" Version="11.2.0-preview.1" />
-    <PackageReference Update="HotChocolate.Data" Version="11.2.0-preview.1" />
+    <PackageReference Update="HotChocolate.Data.EntityFramework" Version="11.2.0-preview.4" />
+    <PackageReference Update="HotChocolate.AspNetCore" Version="11.2.0-preview.4" />
+    <PackageReference Update="HotChocolate.AspNetCore.Authorization" Version="11.2.0-preview.4" />
+    <PackageReference Update="HotChocolate.Data" Version="11.2.0-preview.4" />
+    <PackageReference Update="HotChocolate.Types.Scalars" Version="11.2.0-preview.4" />
 
 
   </ItemGroup>

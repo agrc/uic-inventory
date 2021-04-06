@@ -1,12 +1,23 @@
+using api.Features.Mutations;
+using api.Features.Queries;
+using HotChocolate.Execution.Configuration;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
+using Microsoft.Extensions.Hosting;
 
 namespace api.Infrastructure {
   public static class DatabaseExtensions {
-    public static IServiceCollection AddPersistantStorage(this IServiceCollection services, DatabaseOptions options) {
-      services.AddScoped<NpgsqlConnection>(_ => new NpgsqlConnection(options.ConnectionString));
+    public static IRequestExecutorBuilder AddGraphQL(this IServiceCollection services, IWebHostEnvironment env) {
+      var gqlBuilder = services.AddGraphQLServer()
+        .AddQueryType<AccountQuery>()
+        .AddMutationType<AccountMutation>()
+        .AddProjections();
 
-      return services;
+      if (!env.IsDevelopment()) {
+        gqlBuilder.AddAuthorization();
+      }
+
+      return gqlBuilder;
     }
   }
 }

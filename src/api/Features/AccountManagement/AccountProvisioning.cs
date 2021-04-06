@@ -6,10 +6,11 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace api.Features.UserRegistration {
-  public class UserProvisioning {
+  public class AccountProvisioning {
     public class Computation : IComputation<Task> {
       public NpgsqlParameter[] Parameters { get; } = new NpgsqlParameter[5];
 
@@ -39,9 +40,9 @@ namespace api.Features.UserRegistration {
     }
 
     public class Handler : IComputationHandler<Computation, Task> {
-      private readonly NpgsqlConnection _session;
+      private readonly AppDbContext _context;
 
-      private const string _upsertUser = @"
+      private const string _upsert = @"
       insert
         into
         public.accounts (utah_id,
@@ -59,26 +60,22 @@ namespace api.Features.UserRegistration {
         email = excluded.email,
         first_name = excluded.first_name;";
 
-      public Handler(NpgsqlConnection session) {
-        _session = session;
+      public Handler(AppDbContext context) {
+        _context = context;
       }
 
       public async Task<Task> Handle(Computation computation, CancellationToken cancellationToken) {
-        try {
-          _session.Open();
-        } catch (Exception) {
-          // _log.ForContext("query", computation.BuildQuery())
-          //     .Fatal("could not connect to the database");
-        }
+        using var command = _context.Database.GetDbConnection().CreateCommand();
 
-        using var command = new NpgsqlCommand(_upsertUser, _session);
+        await command.Connection.OpenAsync();
+        command.CommandText = _upsert;
         command.Parameters.AddRange(computation.Parameters);
 
         await command.PrepareAsync(cancellationToken);
 
         using var reader = await command.ExecuteReaderAsync(cancellationToken);
 
-        await _session.CloseAsync();
+        await command.Connection.CloseAsync();
 
         return Task.FromResult(Task.CompletedTask);
       }

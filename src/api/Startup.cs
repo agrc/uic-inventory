@@ -1,6 +1,5 @@
 using api.Features.DistributedAuth;
 using api.Features.OpenIdConnect;
-using api.Features.Queries;
 using api.Infrastructure;
 using Autofac;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,11 +13,14 @@ using Microsoft.Extensions.Hosting;
 
 namespace api {
   public class Startup {
-    public Startup(IConfiguration configuration) {
+
+    public Startup(IConfiguration configuration, IWebHostEnvironment env) {
       Configuration = configuration;
+      Env = env;
     }
 
     public IConfiguration Configuration { get; }
+    public IWebHostEnvironment Env;
 
     public void ConfigureServices(IServiceCollection services) {
       var redis = Configuration.GetSection("Redis").Get<RedisOptions>();
@@ -28,11 +30,13 @@ namespace api {
       services.AddUtahIdAuthentication(utahId);
 
       var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
+      // add context for graphql
       services.AddPooledDbContextFactory<AppDbContext>(
         options => options.UseNpgsql(database.ConnectionString));
 
-      // services.AddPooledDbContextFactory<SomeDbContext>(b => b /*your configuration */)
-      services.AddPersistantStorage(database);
+      // add context for computations
+      services.AddDbContext<AppDbContext>(
+        options => options.UseNpgsql(database.ConnectionString));
 
       services.AddAuthorization(options => {
         options.AddPolicy(CookieAuthenticationDefaults.AuthenticationScheme,
@@ -41,9 +45,7 @@ namespace api {
 
       services.AddControllers();
 
-      services.AddGraphQLServer()
-        .AddQueryType<AccountQuery>()
-        .AddProjections();
+      services.AddGraphQL(Env);
 
       services.Configure<ForwardedHeadersOptions>(options => {
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
