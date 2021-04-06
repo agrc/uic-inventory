@@ -3,9 +3,16 @@ CREATE TYPE access_level AS ENUM ('elevated', 'standard');
 CREATE TABLE public.accounts (
     id integer NOT NULL,
     utah_id character varying(128) UNIQUE,
-    email character varying(512),
     first_name character varying(128),
     last_name character varying(128),
+    organization character varying(512),
+    email character varying(512),
+    phone character varying(64),
+    mailing_address character varying(512),
+    city character varying(128),
+    state character varying(128),
+    zip_code character varying(64),
+    receive_notifications boolean DEFAULT FALSE,
     account_access access_level DEFAULT 'standard'
 );
 
@@ -26,4 +33,4 @@ ALTER SEQUENCE public.accounts_id_seq OWNED BY public.accounts.id;
 ALTER TABLE ONLY public.accounts ALTER COLUMN id SET DEFAULT nextval('public.accounts_id_seq'::regclass);
 
 ALTER TABLE ONLY public.accounts
-    ADD CONSTRAINT accounts_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT accounts_primary_key PRIMARY KEY (id);
