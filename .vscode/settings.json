@@ -3,6 +3,7 @@
     "npgsql",
     "oidc",
     "pkce",
+    "postgres",
     "upsert"
   ]
 }
