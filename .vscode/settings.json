@@ -1,9 +1,12 @@
 {
   "cSpell.words": [
+    "jsonb",
     "npgsql",
     "oidc",
+    "openid",
     "pkce",
     "postgres",
+    "serilog",
     "upsert"
   ]
 }
