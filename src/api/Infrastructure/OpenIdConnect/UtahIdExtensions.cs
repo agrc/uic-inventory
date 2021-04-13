@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace api.Features.OpenIdConnect {
+namespace api.Infrastructure {
   public static class UtahIdExtensions {
     public static AuthenticationBuilder AddUtahIdAuthentication(this IServiceCollection services, OAuthOptions utahId, string claims = "openid profile email") =>
     services.AddAuthentication(options => {

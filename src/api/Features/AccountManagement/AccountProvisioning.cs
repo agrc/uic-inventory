@@ -9,7 +9,7 @@ using api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
-namespace api.Features.UserRegistration {
+namespace api.Features.AccountManagement {
   public class AccountProvisioning {
     public class Computation : IComputation<Task> {
       public NpgsqlParameter[] Parameters { get; } = new NpgsqlParameter[5];
@@ -67,7 +67,12 @@ namespace api.Features.UserRegistration {
       public async Task<Task> Handle(Computation computation, CancellationToken cancellationToken) {
         using var command = _context.Database.GetDbConnection().CreateCommand();
 
-        await command.Connection.OpenAsync();
+        if (command.Connection is null) {
+          throw new Exception("could not connect to the database");
+        }
+
+        await command.Connection.OpenAsync(cancellationToken);
+
         command.CommandText = _upsert;
         command.Parameters.AddRange(computation.Parameters);
 

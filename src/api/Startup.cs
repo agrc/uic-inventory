@@ -1,5 +1,4 @@
-using api.Features.DistributedAuth;
-using api.Features.OpenIdConnect;
+using System;
 using api.Infrastructure;
 using Autofac;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace api {
   public class Startup {
-
     public Startup(IConfiguration configuration, IWebHostEnvironment env) {
       Configuration = configuration;
       Env = env;
@@ -23,6 +21,8 @@ namespace api {
     public IWebHostEnvironment Env;
 
     public void ConfigureServices(IServiceCollection services) {
+      services.AddCors();
+
       var redis = Configuration.GetSection("Redis").Get<RedisOptions>();
       services.AddDistributedAuthentication(redis);
 
@@ -32,7 +32,9 @@ namespace api {
       var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
       // add context for graphql
       services.AddPooledDbContextFactory<AppDbContext>(
-        options => options.UseNpgsql(database.ConnectionString));
+        options => options
+          .UseNpgsql(database.ConnectionString)
+          .LogTo(Console.WriteLine));
 
       // add context for computations
       services.AddDbContext<AppDbContext>(
@@ -64,6 +66,7 @@ namespace api {
       app.UseForwardedHeaders();
 
       app.UseRouting();
+      app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
       app.UseAuthentication();
       app.UseAuthorization();

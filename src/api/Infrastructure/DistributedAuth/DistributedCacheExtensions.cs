@@ -1,13 +1,13 @@
 using System;
-using api.Features.UserRegistration;
-using api.Infrastructure;
+using System.Linq;
+using api.Features.AccountManagement;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
-namespace api.Features.DistributedAuth {
+namespace api.Infrastructure {
   public static class DistributedCacheExtensions {
     public static IServiceCollection AddDistributedAuthentication(this IServiceCollection services, RedisOptions redisOptions) {
       var redis = ConnectionMultiplexer.Connect(redisOptions.Configuration);
@@ -31,7 +31,9 @@ namespace api.Features.DistributedAuth {
           options.LogoutPath = "/";
         }).PostConfigure<IComputeMediator>((options, mediator) => {
           options.Events.OnSignedIn = context => {
-            var computation = new AccountProvisioning.Computation(context.Principal.Claims);
+            var claims = context.Principal?.Claims ?? Enumerable.Empty<System.Security.Claims.Claim>();
+
+            var computation = new AccountProvisioning.Computation(claims);
 
             return mediator.Handle(computation, default);
           };

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace api.Features.DistributedAuth {
+namespace api.Infrastructure {
   public class RedisTicketStore : ITicketStore {
     private const string _keyPrefix = "authentication-ticket-";
     private readonly IDistributedCache _cache;
@@ -39,11 +39,10 @@ namespace api.Features.DistributedAuth {
     }
 
     public Task<AuthenticationTicket> RetrieveAsync(string key) {
-      AuthenticationTicket ticket;
       var bytes = _cache.Get(key);
-      ticket = DeserializeFromBytes(bytes);
+      var ticket = DeserializeFromBytes(bytes);
 
-      return Task.FromResult(ticket);
+      return Task.FromResult(ticket ?? default!);
     }
 
     public Task RemoveAsync(string key) {
@@ -54,7 +53,7 @@ namespace api.Features.DistributedAuth {
 
     private static byte[] SerializeToBytes(AuthenticationTicket source) => TicketSerializer.Default.Serialize(source);
 
-    private static AuthenticationTicket DeserializeFromBytes(byte[] source)
+    private static AuthenticationTicket? DeserializeFromBytes(byte[] source)
       => source == null ? null : TicketSerializer.Default.Deserialize(source);
   }
 }

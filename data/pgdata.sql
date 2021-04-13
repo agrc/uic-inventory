@@ -1,36 +1,60 @@
-CREATE TYPE access_level AS ENUM ('elevated', 'standard');
+CREATE TYPE public.access_level AS ENUM ('elevated', 'standard');
+
+CREATE TYPE public.notification_types AS ENUM ('new_user_account_registration', 'facility_contact_modified');
 
 CREATE TABLE public.accounts (
-    id integer NOT NULL,
-    utah_id character varying(128) UNIQUE,
-    first_name character varying(128),
-    last_name character varying(128),
-    organization character varying(512),
-    email character varying(512),
-    phone character varying(64),
-    mailing_address character varying(512),
-    city character varying(128),
-    state character varying(128),
-    zip_code character varying(64),
-    receive_notifications boolean DEFAULT FALSE,
-    account_access access_level DEFAULT 'standard'
+  id serial NOT NULL,
+  utah_id character NOT NULL varying(128) UNIQUE,
+  first_name character NOT NULL varying(128),
+  last_name character NOT NULL varying(128),
+  organization character varying(512),
+  email character varying(512),
+  phone character varying(64),
+  mailing_address character varying(512),
+  city character varying(128),
+  state character varying(128),
+  zip_code character varying(64),
+  receive_notifications boolean NOT NULL DEFAULT FALSE,
+  account_access access_level NOT NULL DEFAULT 'standard' :: access_level,
+  CONSTRAINT account_primary_key PRIMARY KEY (id),
+  CONSTRAINT account_utah_id_key UNIQUE (utah_id)
 );
 
-ALTER TABLE public.accounts OWNER TO postgres;
+DROP TABLE IF EXISTS public.notifications;
 
-CREATE SEQUENCE public.accounts_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
+CREATE TABLE public.notifications (
+  id serial NOT NULL,
+  notification_type notification_types NULL,
+  created_at TIMESTAMP NOT NULL DEFAFULT now(),
+  url character varying(512),
+  additional_data jsonb,
+  CONSTRAINT notification_primary_key PRIMARY KEY (id)
+);
 
-ALTER TABLE public.accounts_id_seq OWNER TO postgres;
+DROP TABLE IF EXISTS public.notification_receipts;
 
-ALTER SEQUENCE public.accounts_id_seq OWNED BY public.accounts.id;
+CREATE TABLE public.notification_receipts (
+  id serial NOT NULL,
+  read_at TIMESTAMP NULL,
+  deleted_at TIMESTAMP NULL,
+  recipient_id integer NULL,
+  notification_fk integer NOT NULL,
+  CONSTRAINT notification_receipt_primary_key PRIMARY KEY (id),
+  CONSTRAINT notification_receipt_fk FOREIGN KEY (notification_fk) REFERENCES public.notifications(id)
+  CONSTRAINT accounts_fk FOREIGN KEY (recipient_id) REFERENCES public.accounts(id)
+);
 
-ALTER TABLE ONLY public.accounts ALTER COLUMN id SET DEFAULT nextval('public.accounts_id_seq'::regclass);
+ALTER TABLE
+  public.accounts OWNER TO postgres;
 
-ALTER TABLE ONLY public.accounts
-    ADD CONSTRAINT accounts_primary_key PRIMARY KEY (id);
+ALTER TABLE
+  public.notifications OWNER TO postgres;
+
+ALTER TABLE
+  public.notification_receipts OWNER TO postgres;
+
+GRANT ALL ON TABLE public.accounts TO postgres;
+
+GRANT ALL ON TABLE public.notifications TO postgres;
+
+GRANT ALL ON TABLE public.notification_receipts TO postgres;
