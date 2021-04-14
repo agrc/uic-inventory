@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { GraphQLClient, ClientContext } from 'graphql-hooks';
+import memCache from 'graphql-hooks-memcache';
 import Navigation from './Navigation';
 
 const client = new GraphQLClient({
-  url: 'https://localhost:5001/graphql'
+  url: 'https://localhost:5001/graphql',
+  cache: memCache()
 })
 
 function App() {
