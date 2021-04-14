@@ -37,7 +37,7 @@ namespace api.Features.Home {
     [Authorize]
     [HttpGet("/test/notification")]
     public async Task<string> CreateNotification() {
-      var ids = _context.Accounts.Where(x => x.ReceiveNotifications).Select(x => x.Id);
+      var ids = _context.Accounts.Where(x => x.ReceiveNotifications == true).Select(x => x.Id);
       var recipients = new List<NotificationReceipt>();
 
       foreach (var id in ids) {
