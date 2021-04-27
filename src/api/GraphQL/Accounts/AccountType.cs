@@ -10,12 +10,45 @@ using Microsoft.EntityFrameworkCore;
 namespace api.GraphQL {
   public static class AccountInputExtension {
     public static Account UpdateAccount(this AccountInput input, Account account) {
-      account.Organization = input.Organization;
-      account.PhoneNumber = input.PhoneNumber;
-      account.MailingAddress = input.MailingAddress;
-      account.City = input.City;
-      account.State = input.State;
-      account.ZipCode = input.ZipCode;
+      if (input.FirstName != null) {
+        account.FirstName = input.FirstName;
+      }
+
+      if (input.LastName != null) {
+        account.LastName = input.LastName;
+      }
+
+      if (input.Email != null) {
+        account.Email = input.Email;
+      }
+
+      if (input.Organization != null) {
+        account.Organization = input.Organization;
+      }
+
+      if (input.PhoneNumber != null) {
+        account.PhoneNumber = input.PhoneNumber;
+      }
+
+      if (input.MailingAddress != null) {
+        account.MailingAddress = input.MailingAddress;
+      }
+
+      if (input.City != null) {
+        account.City = input.City;
+      }
+
+      if (input.State != null) {
+        account.State = input.State;
+      }
+
+      if (input.ZipCode != null) {
+        account.ZipCode = input.ZipCode;
+      }
+
+      if (input.ReceiveNotifications != null) {
+        account.ReceiveNotifications = input.ReceiveNotifications;
+      }
 
       return account;
     }

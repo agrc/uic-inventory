@@ -6,7 +6,7 @@ namespace api.GraphQL {
   public class AccountInput {
     public int Id { get; set; }
     public string? Organization { get; set; }
-    public string? FirsName { get; set; }
+    public string? FirstName { get; set; }
     public string? LastName { get; set; }
     [GraphQLType(typeof(EmailAddressType))] public string? Email { get; set; }
     [GraphQLType(typeof(PhoneNumberType))] public string? PhoneNumber { get; set; }

@@ -3,6 +3,9 @@ module.exports = {
   purge: ['./index.html', './src/**/*.{js,jsx}'],
   darkMode: false, // or 'media' or 'class'
   theme: {
+    minHeight: {
+      'profile': '36em'
+    },
     extend: {},
   },
   variants: {
