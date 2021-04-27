@@ -2,6 +2,7 @@ import { GraphQLClient, ClientContext } from 'graphql-hooks';
 import memCache from 'graphql-hooks-memcache';
 import Navigation from './Navigation';
 import Profile from './Profile';
+import Home from './Home';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -32,6 +33,7 @@ function App() {
             <Profile />
           </Route>
           <Route path="/">
+            <Home />
           </Route>
         </Switch>
       </Router>
