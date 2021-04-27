@@ -19,11 +19,11 @@
     <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="6.0.0-preview.2.21154.2" />
 
     <!-- GraphQL -->
-    <PackageReference Update="HotChocolate.Data.EntityFramework" Version="11.2.0-preview.4" />
-    <PackageReference Update="HotChocolate.AspNetCore" Version="11.2.0-preview.4" />
-    <PackageReference Update="HotChocolate.AspNetCore.Authorization" Version="11.2.0-preview.4" />
-    <PackageReference Update="HotChocolate.Data" Version="11.2.0-preview.4" />
-    <PackageReference Update="HotChocolate.Types.Scalars" Version="11.2.0-preview.4" />
+    <PackageReference Update="HotChocolate.Data.EntityFramework" Version="11.2.2" />
+    <PackageReference Update="HotChocolate.AspNetCore" Version="11.2.2" />
+    <PackageReference Update="HotChocolate.AspNetCore.Authorization" Version="11.2.2" />
+    <PackageReference Update="HotChocolate.Data" Version="11.2.2" />
+    <PackageReference Update="HotChocolate.Types.Scalars" Version="11.2.2" />
 
     <!-- Logging -->
     <PackageReference Update="Serilog" Version="2.10.0" />
