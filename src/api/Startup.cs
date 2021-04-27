@@ -72,7 +72,6 @@ namespace api {
       app.UseSpaStaticFiles();
 
       app.UseRouting();
-      app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
       app.UseAuthentication();
       app.UseAuthorization();

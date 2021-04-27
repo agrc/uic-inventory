@@ -4,9 +4,9 @@ import memCache from 'graphql-hooks-memcache';
 import Navigation from './Navigation';
 
 const client = new GraphQLClient({
-  url: 'https://localhost:5001/graphql',
-  cache: memCache()
-})
+  url: '/graphql',
+  cache: memCache(),
+});
 
 function App() {
   return (
