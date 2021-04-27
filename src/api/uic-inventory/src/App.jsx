@@ -3,6 +3,7 @@ import memCache from 'graphql-hooks-memcache';
 import Navigation from './Navigation';
 import Profile from './Profile';
 import Home from './Home';
+import Contact from './Contact';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -28,6 +29,7 @@ function App() {
         <Navigation />
         <Switch>
           <Route path="/contact">
+            <Contact />
           </Route>
           <Route path="/profile">
             <Profile />
