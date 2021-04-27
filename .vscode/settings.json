@@ -1,7 +1,11 @@
 {
   "cSpell.words": [
+    "aspnetcore",
     "clsx",
+    "esbuild",
+    "headlessui",
     "heroicons",
+    "hookform",
     "jsonb",
     "npgsql",
     "oidc",
@@ -9,6 +13,9 @@
     "pkce",
     "postgres",
     "serilog",
-    "upsert"
+    "toastify",
+    "upsert",
+    "vite",
+    "vitejs"
   ]
 }
