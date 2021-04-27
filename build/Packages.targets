@@ -4,9 +4,6 @@
     <!-- Dependency Injection -->
     <PackageReference Update="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
 
-    <!-- website -->
-    <PackageReference Update="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.5" />
-
     <!-- Authentication -->
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.0-preview.2.21154.6" />

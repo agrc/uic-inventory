@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,8 +45,6 @@ namespace api {
           policy => policy.RequireAuthenticatedUser());
       });
 
-      services.AddSpaStaticFiles(configuration => configuration.RootPath = "uic-inventory/build");
-
       services.AddControllers();
 
       services.AddGraphQL(Env);
@@ -69,7 +66,6 @@ namespace api {
       app.UseForwardedHeaders();
 
       app.UseStaticFiles();
-      app.UseSpaStaticFiles();
 
       app.UseRouting();
 
@@ -79,14 +75,7 @@ namespace api {
       app.UseEndpoints(endpoints => {
         endpoints.MapControllers();
         endpoints.MapGraphQL();
-      });
-
-      app.UseSpa(spa => {
-        spa.Options.SourcePath = "uic-inventory";
-
-        if (env.IsDevelopment()) {
-          spa.UseReactDevelopmentServer(npmScript: "dev");
-        }
+        endpoints.MapFallbackToFile("index.html");
       });
     }
   }
