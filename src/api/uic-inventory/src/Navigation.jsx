@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useQuery, useMutation } from 'graphql-hooks'
 import clsx from 'clsx';
 import { MailOpenIcon, MailIcon, LinkIcon, TrashIcon } from '@heroicons/react/outline';

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { GraphQLClient, ClientContext } from 'graphql-hooks';
 import memCache from 'graphql-hooks-memcache';
 import Navigation from './Navigation';
