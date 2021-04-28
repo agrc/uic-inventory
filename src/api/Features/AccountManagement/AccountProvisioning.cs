@@ -5,36 +5,31 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using api.GraphQL;
 using api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 
 namespace api.Features.AccountManagement {
   public class AccountProvisioning {
     public class Computation : IComputation<Task> {
-      public NpgsqlParameter[] Parameters { get; } = new NpgsqlParameter[5];
-
-      private readonly string[] _keys = new string[] { "nameidentifier", "givenname", "surname", "username", "emailaddress" };
-      private readonly string[] _columnNames = new string[] { "utah_id", "first_name", "last_name", "username", "email" };
+      public Account Account { get; } = new ();
 
       public Computation(IEnumerable<Claim> claims) {
-        // _claims = claims.ToDictionary<string, string>(key => key.Type, value => value.Value);
-        var i = 0;
         foreach (var claim in claims) {
-          var shortName = claim.Type.Split('/').Last();
-          var index = Array.IndexOf(_keys, shortName);
-
-          if (index < 0) {
-            continue;
+          switch (claim.Type.Split('/').Last()) {
+            case "nameidentifier":
+              Account.UtahId = claim.Value;
+              break;
+            case "givenname":
+              Account.FirstName = claim.Value;
+              break;
+            case "surname":
+              Account.LastName = claim.Value;
+              break;
+            case "emailaddress":
+              Account.Email = claim.Value;
+              break;
           }
-
-          Parameters[i] = new() {
-            ParameterName = _columnNames[index],
-            Value = claim.Value,
-            DbType = DbType.String
-          };
-
-          i++;
         }
       }
     }
@@ -42,45 +37,44 @@ namespace api.Features.AccountManagement {
     public class Handler : IComputationHandler<Computation, Task> {
       private readonly AppDbContext _context;
 
-      private const string _upsert = @"
-      insert
-        into
-        public.accounts (utah_id,
-        first_name,
-        last_name,
-        email)
-      values (@utah_id,
-      @first_name,
-      @last_name,
-      @email) on
-      conflict (utah_id) do
-      update
-      set
-        last_name = excluded.last_name,
-        email = excluded.email,
-        first_name = excluded.first_name;";
-
       public Handler(AppDbContext context) {
         _context = context;
       }
 
       public async Task<Task> Handle(Computation computation, CancellationToken cancellationToken) {
-        using var command = _context.Database.GetDbConnection().CreateCommand();
+        var account = await _context.Accounts.SingleOrDefaultAsync(x => x.UtahId == computation.Account.UtahId, cancellationToken);
 
-        if (command.Connection is null) {
-          throw new Exception("could not connect to the database");
+        if (account is not null) {
+          _context.Accounts.Update(computation.Account);
+          await _context.SaveChangesAsync(cancellationToken);
+
+          return Task.FromResult(Task.CompletedTask);
         }
 
-        await command.Connection.OpenAsync(cancellationToken);
+        await _context.Accounts.AddAsync(computation.Account, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
-        command.CommandText = _upsert;
-        command.Parameters.AddRange(computation.Parameters);
+        var ids = _context.Accounts.Where(x => x.ReceiveNotifications == true).Select(x => x.Id);
+        var recipients = new List<NotificationReceipt>();
 
-        await command.PrepareAsync(cancellationToken);
+        foreach (var id in ids) {
+          recipients.Add(new NotificationReceipt {
+            RecipientId = id
+          });
+        }
 
-        using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        var notification = new Notification {
+          CreatedAt = DateTime.Now,
+          NotificationType = NotificationTypes.new_user_account_registration,
+          AdditionalData = new Dictionary<string, object> {
+            { "name", $"{computation.Account.FirstName} {computation.Account.LastName}" }
+          },
+          Url = $"http://localhost:3000/account/{computation.Account.Id}/profile",
+          NotificationReceipt = recipients
+        };
 
-        await command.Connection.CloseAsync();
+        await _context.Notifications.AddAsync(notification, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
         return Task.FromResult(Task.CompletedTask);
       }
