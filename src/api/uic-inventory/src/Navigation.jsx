@@ -153,27 +153,27 @@ function Navigation() {
                                         {notification.event === 'NEW_USER_ACCOUNT_REGISTRATION' ? 'A new user registered!' : 'Other'}
                                       </span>
                                       <span>
-                                      <a href={notification.url}>
-                                        <LinkIcon className="inline-block w-5 h-5 ml-1 text-blue-400" />
-                                      </a>
-                                      {notification.read ? (
-                                        <span
-                                          alt={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
-                                          title={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
-                                        >
-                                          <MailOpenIcon className="inline-block w-5 h-5 ml-1 text-gray-400" />
-                                        </span>
-                                      ) : (
-                                        <span>
-                                          <MailIcon
-                                            className="inline-block w-5 h-5 ml-1 text-blue-400"
-                                            onClick={() => markAsRead(notification.id)}
-                                          />
-                                        </span>
-                                      )}
-                                      <TrashIcon
-                                        className="inline-block w-5 h-5 ml-1 text-red-300"
-                                        onClick={() => markAsDeleted(notification.id)}
+                                        <a href={notification.url}>
+                                          <LinkIcon className="inline-block w-5 h-5 ml-1 text-blue-400" />
+                                        </a>
+                                        {notification.read ? (
+                                          <span
+                                            alt={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
+                                            title={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
+                                          >
+                                            <MailOpenIcon className="inline-block w-5 h-5 ml-1 text-gray-400" />
+                                          </span>
+                                        ) : (
+                                          <span>
+                                            <MailIcon
+                                              className="inline-block w-5 h-5 ml-1 text-blue-400"
+                                              onClick={() => markAsRead(notification.id)}
+                                            />
+                                          </span>
+                                        )}
+                                        <TrashIcon
+                                          className="inline-block w-5 h-5 ml-1 text-red-300"
+                                          onClick={() => markAsDeleted(notification.id)}
                                         />
                                       </span>
                                     </div>
@@ -221,18 +221,18 @@ function Navigation() {
                               {profile.map((item) => (
                                 <Menu.Item key={item.key}>
                                   {({ active }) =>
-                                      (<Link
-                                        key={item.key}
-                                        to={item.to}
-                                        className={clsx(
-                                          active ? 'bg-gray-100' : '',
-                                          'block px-4 py-2 text-sm text-gray-700'
-                                        )}
-                                      >
-                                        {item.text}
-                                      </Link>
-                                      )
-                                    }
+                                  (<Link
+                                    key={item.key}
+                                    to={item.to}
+                                    className={clsx(
+                                      active ? 'bg-gray-100' : '',
+                                      'block px-4 py-2 text-sm text-gray-700'
+                                    )}
+                                  >
+                                    {item.text}
+                                  </Link>
+                                  )
+                                  }
                                 </Menu.Item>
                               ))}
                             </Menu.Items>
@@ -263,21 +263,20 @@ function Navigation() {
               <div className="pt-4 pb-3 border-t border-gray-700">
                 <Popover>
                   <div className="flex items-center px-5">
-                  <div className="flex-shrink-0">
-                    <p className="w-10 h-10 text-3xl font-black tracking-tighter text-gray-300 uppercase rounded-full">
-                      {`${data?.accountById.firstName[0]}${data?.accountById.lastName[0]}`}
-                    </p>
-                  </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium leading-none text-white">
-                      {`${data?.accountById.firstName} ${data?.accountById.lastName}`}
+                    <div className="flex-shrink-0">
+                      <p className="w-10 h-10 text-3xl font-black tracking-tighter text-gray-300 uppercase rounded-full">
+                        {`${data?.accountById.firstName[0]}${data?.accountById.lastName[0]}`}
+                      </p>
                     </div>
-                    <div className="text-sm font-medium leading-none text-gray-400">
-                      {data?.accountById.email}
+                    <div className="ml-3">
+                      <div className="text-base font-medium leading-none text-white">
+                        {`${data?.accountById.firstName} ${data?.accountById.lastName}`}
+                      </div>
+                      <div className="text-sm font-medium leading-none text-gray-400">
+                        {data?.accountById.email}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex-shrink-0 p-1 ml-auto text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                    <span className="sr-only">View notifications</span>
+                    <div className="flex-shrink-0 p-1 ml-auto text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                       <Popover.Button>
                         <NotificationBell items={data?.accountById.notifications} loading={loading} error={error} />
                       </Popover.Button>
@@ -337,17 +336,17 @@ function Navigation() {
                       ) : null}
                     </Popover.Panel>
                   </div>
-                <div className="px-2 mt-3 space-y-1">
-                  {profile.map((item) => (
-                    <Link
-                      key={item.key}
-                      to={item.to}
-                      className="block px-3 py-2 text-base font-medium text-gray-400 rounded-md hover:text-white hover:bg-gray-700"
-                    >
-                      {item.text}
-                    </Link>
-                  ))}
-                </div>
+                  <div className="px-2 mt-3 space-y-1">
+                    {profile.map((item) => (
+                      <Link
+                        key={item.key}
+                        to={item.to}
+                        className="block px-3 py-2 text-base font-medium text-gray-400 rounded-md hover:text-white hover:bg-gray-700"
+                      >
+                        {item.text}
+                      </Link>
+                    ))}
+                  </div>
                 </Popover>
               </div>
             </Disclosure.Panel>
