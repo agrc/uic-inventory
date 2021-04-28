@@ -2,6 +2,7 @@ import * as yup from 'yup';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from './components/FormElements/TextInput';
+import GridHeading from './components/FormElements/GridHeading';
 
 const schema = yup.object().shape({
   message: yup.string().max(512).required().label('Message'),
@@ -20,12 +21,7 @@ export function Contact() {
             <form onSubmit={handleSubmit((data) => console.log(data))}>
               <div>
                 <div className="md:grid md:grid-cols-3 md:gap-6">
-                  <div className="md:col-span-1">
-                    <div className="px-4 sm:px-0">
-                      <h3 className="text-2xl font-medium leading-6 text-gray-900">Contact the UIC Program</h3>
-                      <p className="mt-1 text-sm text-gray-600">Provide a clear and concise message for the staff.</p>
-                    </div>
-                  </div>
+                  <GridHeading text="Contact the UIC Program" subtext="Provide a clear and concise message for the staff" />
                   <div className="mt-5 md:mt-0 md:col-span-2">
                     <div className="overflow-hidden shadow sm:rounded-md">
                       <div className="px-4 py-5 bg-white sm:p-6">

@@ -3,6 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { ErrorMessage } from '@hookform/error-message'
 import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from './components/FormElements/TextInput';
+import GridHeading from './components/FormElements/GridHeading';
 import * as yup from 'yup';
 import ErrorMessageTag from './components/FormElements/ErrorMessage';
 import PhoneInput from 'react-phone-number-input/react-hook-form-input';
@@ -107,17 +108,12 @@ export function Profile() {
     <main>
       <div className="py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className={`${loading ? 'min-h-screen md:min-h-profile' : 'h-full' } p-4 border-4 border-gray-200 border-dashed rounded-lg`}>
+          <div className={`${loading ? 'min-h-screen md:min-h-profile' : 'h-full'} p-4 border-4 border-gray-200 border-dashed rounded-lg`}>
             {!loading && !error && (<>
               <form onSubmit={handleSubmit((data) => mutateAccount(formState, reset, data))}>
                 <div>
                   <div className="md:grid md:grid-cols-3 md:gap-6">
-                    <div className="md:col-span-1">
-                      <div className="px-4 sm:px-0">
-                        <h3 className="text-2xl font-medium leading-6 text-gray-900">Personal Information</h3>
-                        <p className="mt-1 text-sm text-gray-600">Use a permanent address where you can receive mail.</p>
-                      </div>
-                    </div>
+                    <GridHeading text="Personal Information" subtext="Use a permanent address where you can receive mail." />
                     <div className="mt-5 md:mt-0 md:col-span-2">
                       <div className="overflow-hidden shadow sm:rounded-md">
                         <div className="px-4 py-5 bg-white sm:p-6">
@@ -183,7 +179,7 @@ export function Profile() {
                 </div>
               </form>
               {data?.accountById.access === 'ELEVATED' ? (
-              <form onSubmit={handleNotificationSubmit((data) => mutateAccount(notificationFormState, notificationReset, data))} className="mt-10 sm:mt-0">
+                <form onSubmit={handleNotificationSubmit((data) => mutateAccount(notificationFormState, notificationReset, data))} className="mt-10 sm:mt-0">
                   <div className="hidden sm:block" aria-hidden="true">
                     <div className="py-5">
                       <div className="border-t border-gray-200" />
@@ -191,53 +187,48 @@ export function Profile() {
                   </div>
 
                   <div className="md:grid md:grid-cols-3 md:gap-6">
-                  <div className="md:col-span-1">
-                    <div className="px-4 sm:px-0">
-                      <h3 className="text-lg font-medium leading-6 text-gray-900">Notifications</h3>
-                      <p className="mt-1 text-gray-600">Decide if you'd like to receive communications.</p>
-                    </div>
-                  </div>
-                  <div className="mt-5 md:mt-0 md:col-span-2">
-                    <div className="overflow-hidden shadow sm:rounded-md">
-                      <div className="px-4 py-5 space-y-6 bg-white sm:p-6">
-                        <Switch.Group className="flex items-center" as="div">
-                          <Switch.Label className="mr-4">
+                    <GridHeading text="Contact the UIC Program" subtext="Provide a clear and concise message for the staff" />
+                    <div className="mt-5 md:mt-0 md:col-span-2">
+                      <div className="overflow-hidden shadow sm:rounded-md">
+                        <div className="px-4 py-5 space-y-6 bg-white sm:p-6">
+                          <Switch.Group className="flex items-center" as="div">
+                            <Switch.Label className="mr-4">
                               Notify me of administrative events
                             </Switch.Label>
-                          <span className="sr-only">Enable notifications</span>
-                          <Controller
-                            control={notificationControl}
-                            name="receiveNotifications"
-                            render={({
-                              field: { onChange, value, name },
-                            }) => (
-                              <Switch
-                                checked={value}
-                                id={name}
-                                onChange={onChange}
-                                className={`${value ? 'bg-indigo-600' : 'bg-gray-300'} relative inline-flex items-center flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-transparent rounded-full cursor-pointer w-11 b-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700`}
-                              >
-                                <span
-                                  className={`${value ? "translate-x-5" : "translate-x-1"
-                                    } pointer-events-none inline-block w-5 h-5 transform bg-white rounded-full shadow ease-in-out duration-300 ring-0`}
-                                />
-                              </Switch>
-                            )}
-                          />
-                        </Switch.Group>
-                      </div>
-                      <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
-                        <button
-                          type="submit"
-                          disabled={!notificationFormState.isDirty}
-                        >
+                            <span className="sr-only">Enable notifications</span>
+                            <Controller
+                              control={notificationControl}
+                              name="receiveNotifications"
+                              render={({
+                                field: { onChange, value, name },
+                              }) => (
+                                <Switch
+                                  checked={value}
+                                  id={name}
+                                  onChange={onChange}
+                                  className={`${value ? 'bg-indigo-600' : 'bg-gray-300'} relative inline-flex items-center flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-transparent rounded-full cursor-pointer w-11 b-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700`}
+                                >
+                                  <span
+                                    className={`${value ? "translate-x-5" : "translate-x-1"
+                                      } pointer-events-none inline-block w-5 h-5 transform bg-white rounded-full shadow ease-in-out duration-300 ring-0`}
+                                  />
+                                </Switch>
+                              )}
+                            />
+                          </Switch.Group>
+                        </div>
+                        <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
+                          <button
+                            type="submit"
+                            disabled={!notificationFormState.isDirty}
+                          >
                             Save
                         </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </form>
+                </form>
               ) : null}
             </>)}
             {loading && <Facebook />}
