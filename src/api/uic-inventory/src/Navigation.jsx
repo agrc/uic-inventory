@@ -136,56 +136,7 @@ function Navigation() {
                               static
                               className="absolute right-0 py-1 mt-2 overflow-scroll origin-top-right bg-white rounded-md shadow-lg w-96 ring-1 ring-black ring-opacity-5 focus:outline-none max-h-64"
                             >
-                              {
-                                !loading &&
-                                !error &&
-                                data.accountById.notifications
-                                  .filter((notification) => !notification.deleted)
-                                  .map((notification) => (
-                                    <div
-                                      key={notification.id}
-                                      className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    >
-                                      <span className="self-center text-xs text-gray-400">
-                                        {dateFormatter.format(Date.parse(notification.createdAt))}
-                                      </span>{' '}
-                                      <span>
-                                        {notification.event === 'NEW_USER_ACCOUNT_REGISTRATION' ? 'A new user registered!' : 'Other'}
-                                      </span>
-                                      <span>
-                                        <a href={notification.url}>
-                                          <LinkIcon className="inline-block w-5 h-5 ml-1 text-blue-400" />
-                                        </a>
-                                        {notification.read ? (
-                                          <span
-                                            alt={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
-                                            title={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
-                                          >
-                                            <MailOpenIcon className="inline-block w-5 h-5 ml-1 text-gray-400" />
-                                          </span>
-                                        ) : (
-                                          <span>
-                                            <MailIcon
-                                              className="inline-block w-5 h-5 ml-1 text-blue-400"
-                                              onClick={() => markAsRead(notification.id)}
-                                            />
-                                          </span>
-                                        )}
-                                        <TrashIcon
-                                          className="inline-block w-5 h-5 ml-1 text-red-300"
-                                          onClick={() => markAsDeleted(notification.id)}
-                                        />
-                                      </span>
-                                    </div>
-                                  ))}
-                              {!loading &&
-                                !error &&
-                                data.accountById.notifications.filter((notification) => !notification.deleted).length === 0 ? (
-                                <div className="flex flex-col items-center justify-center h-16 text-gray-500">
-                                  <h3 className="text-xl font-bold">All caught up!</h3>
-                                  <p className="text-sm">Take a break, go for a walk, be your best you.</p>
-                                </div>
-                              ) : null}
+                              <Notifications notifications={data?.accountById.notifications} loading={loading} error={error} />
                             </Popover.Panel>
                           </Transition>
                         </>
@@ -284,56 +235,7 @@ function Navigation() {
                   </div>
                   <div className="px-2 mt-3 space-y-1">
                     <Popover.Panel className="overflow-scroll bg-white rounded-sm max-h-36">
-                      {
-                        !loading &&
-                        !error &&
-                        data.accountById.notifications
-                          .filter((notification) => !notification.deleted)
-                          .map((notification) => (
-                            <div
-                              key={notification.id}
-                              className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            >
-                              <span className="self-center text-xs text-gray-400">
-                                {dateFormatter.format(Date.parse(notification.createdAt))}
-                              </span>{' '}
-                              <span>
-                                {notification.event === 'NEW_USER_ACCOUNT_REGISTRATION' ? 'A new user registered!' : 'Other'}
-                              </span>
-                              <span>
-                                <a href={notification.url}>
-                                  <LinkIcon className="inline-block w-5 h-5 ml-1 text-blue-400" />
-                                </a>
-                                {notification.read ? (
-                                  <span
-                                    alt={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
-                                    title={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
-                                  >
-                                    <MailOpenIcon className="inline-block w-5 h-5 ml-1 text-gray-400" />
-                                  </span>
-                                ) : (
-                                  <span>
-                                    <MailIcon
-                                      className="inline-block w-5 h-5 ml-1 text-blue-400"
-                                      onClick={() => markAsRead(notification.id)}
-                                    />
-                                  </span>
-                                )}
-                                <TrashIcon
-                                  className="inline-block w-5 h-5 ml-1 text-red-300"
-                                  onClick={() => markAsDeleted(notification.id)}
-                                />
-                              </span>
-                            </div>
-                          ))}
-                      {!loading &&
-                        !error &&
-                        data.accountById.notifications.filter((notification) => !notification.deleted).length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-16 text-gray-500">
-                          <h3 className="text-xl font-bold">All caught up!</h3>
-                          <p className="text-sm">Take a break, go for a walk, be your best you.</p>
-                        </div>
-                      ) : null}
+                      <Notifications notifications={data?.accountById.notifications} loading={loading} error={error} />
                     </Popover.Panel>
                   </div>
                   <div className="px-2 mt-3 space-y-1">
@@ -388,6 +290,63 @@ function Links({ links }) {
       </Link>
     )
   );
+}
+
+function Notifications({loading, error, notifications }) {
+  if (loading || error) {
+    return null;
+  }
+
+  if (notifications === undefined || notifications === null) {
+    return null;
+  }
+
+  const availableNotifications = notifications.filter((notification) => !notification.deleted);
+
+  if (availableNotifications.length === 0) {
+    return (<div className="flex flex-col items-center justify-center h-16 text-gray-500">
+      <h3 className="text-xl font-bold">All caught up!</h3>
+      <p className="text-sm">Take a break, go for a walk, be your best you.</p>
+    </div>)
+  }
+
+  return (availableNotifications.map((notification) => (
+    <div
+      key={notification.id}
+      className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+    >
+      <span className="self-center text-xs text-gray-400">
+        {dateFormatter.format(Date.parse(notification.createdAt))}
+      </span>{' '}
+      <span>
+        {notification.event === 'NEW_USER_ACCOUNT_REGISTRATION' ? 'A new user registered!' : 'Other'}
+      </span>
+      <span>
+        <a href={notification.url}>
+          <LinkIcon className="inline-block w-5 h-5 ml-1 text-blue-400" />
+        </a>
+        {notification.read ? (
+          <span
+            alt={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
+            title={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
+          >
+            <MailOpenIcon className="inline-block w-5 h-5 ml-1 text-gray-400" />
+          </span>
+        ) : (
+          <span>
+            <MailIcon
+              className="inline-block w-5 h-5 ml-1 text-blue-400"
+              onClick={() => markAsRead(notification.id)}
+            />
+          </span>
+        )}
+        <TrashIcon
+          className="inline-block w-5 h-5 ml-1 text-red-300"
+          onClick={() => markAsDeleted(notification.id)}
+        />
+      </span>
+    </div>
+  )));
 }
 
 export default Navigation;
