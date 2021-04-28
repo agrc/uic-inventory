@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { BellIcon, LinkIcon, MailOpenIcon, MailIcon, MenuIcon, TrashIcon, XIcon } from '@heroicons/react/outline';
 import { Disclosure, Menu, Popover, Transition } from '@headlessui/react';
 import { Link } from 'react-router-dom';
+import { Facebook } from 'react-content-loader';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'numeric',
@@ -293,8 +294,18 @@ function Links({ links }) {
 }
 
 function Notifications({loading, error, notifications }) {
-  if (loading || error) {
-    return null;
+  if (loading) {
+    return <Facebook />;
+  }
+
+  if (error) {
+    // todo: log this
+    return (
+      <div className="flex flex-col items-center justify-center h-16 text-gray-500">
+        <h3 className="text-xl font-bold">Uh oh!</h3>
+        <p className="text-sm">We're having trouble finding your notifications.</p>
+      </div>
+    )
   }
 
   if (notifications === undefined || notifications === null) {
