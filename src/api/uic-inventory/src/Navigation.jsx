@@ -110,25 +110,7 @@ function Navigation() {
                   </div>
                   <div className="hidden md:block">
                     <div className="flex items-baseline ml-10 space-x-4">
-                      {navigation.map((item, itemIdx) =>
-                        itemIdx === 0 ? (
-                          <Link
-                            key={item.key}
-                            className="px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-md"
-                            to={item.to}
-                          >
-                            {item.text}
-                          </Link>
-                        ) : (
-                          <Link
-                            key={item.key}
-                            to={item.to}
-                            className="px-3 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
-                          >
-                            {item.text}
-                          </Link>
-                        )
-                      )}
+                      <Links links={navigation} />
                     </div>
                   </div>
                 </div>
@@ -281,25 +263,7 @@ function Navigation() {
 
             <Disclosure.Panel className="md:hidden">
               <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                {navigation.map((item, itemIdx) =>
-                  itemIdx === 0 ? (
-                    <Link
-                      key={item.key}
-                      className="px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-md"
-                      to={item.to}
-                    >
-                      {item.text}
-                    </Link>
-                  ) : (
-                    <Link
-                      key={item.key}
-                      to={item.to}
-                      className="px-3 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
-                    >
-                      {item.text}
-                    </Link>
-                  )
-                )}
+                <Links links={navigation} />
               </div>
               <div className="pt-4 pb-3 border-t border-gray-700">
                 <Popover>
@@ -400,6 +364,28 @@ function Navigation() {
         )}
       </Disclosure>
     </div>
+  );
+}
+
+function Links({ links }) {
+  return links.map((item, itemIdx) =>
+    itemIdx === 0 ? (
+      <Link
+        key={item.key}
+        className="px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-md"
+        to={item.to}
+      >
+        {item.text}
+      </Link>
+    ) : (
+      <Link
+        key={item.key}
+        to={item.to}
+        className="px-3 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
+      >
+        {item.text}
+      </Link>
+    )
   );
 }
 
