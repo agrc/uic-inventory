@@ -120,12 +120,7 @@ function Navigation() {
                       {({ open }) => (
                         <>
                           <Popover.Button className="flex p-1 text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                              <span className="sr-only">View notifications</span>
-                              <BellIcon className={clsx("w-6 h-6", {
-                                'text-yellow-400': !loading && !error && data.accountById.notifications.filter((x) => !x.read).length > 0,
-                                'text-gray-300': loading,
-                                'text-red-400': error,
-                              })} aria-hidden="true" />
+                            <NotificationBell items={data?.accountById.notifications} loading={loading} error={error} />
                           </Popover.Button>
                           <Transition
                             show={open}
@@ -284,11 +279,7 @@ function Navigation() {
                   <div className="flex-shrink-0 p-1 ml-auto text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                     <span className="sr-only">View notifications</span>
                       <Popover.Button>
-                        <BellIcon className={clsx("w-6 h-6", {
-                          'text-yellow-400': !loading && !error && data.accountById.notifications.filter((x) => !x.read).length > 0,
-                          'text-gray-300': loading,
-                          'text-red-400': error,
-                        })} aria-hidden="true" />
+                        <NotificationBell items={data?.accountById.notifications} loading={loading} error={error} />
                       </Popover.Button>
                     </div>
                   </div>
@@ -365,6 +356,17 @@ function Navigation() {
       </Disclosure>
     </div>
   );
+}
+
+function NotificationBell({ loading, error, items }) {
+  return (<>
+    <span className="sr-only">View notifications</span>
+    <BellIcon className={clsx("w-6 h-6", {
+      'text-yellow-400': !loading && !error && items?.filter((x) => !x.read).length > 0,
+      'text-gray-300': loading,
+      'text-red-400': error,
+    })} aria-hidden="true" />
+  </>);
 }
 
 function Links({ links }) {
