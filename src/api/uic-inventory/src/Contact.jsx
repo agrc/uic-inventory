@@ -1,15 +1,14 @@
 import * as yup from 'yup';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
-import ErrorMessageTag from './components/FormElements/ErrorMessage';
-import { ErrorMessage } from '@hookform/error-message';
+import TextInput from './components/FormElements/TextInput';
 
 const schema = yup.object().shape({
   message: yup.string().max(512).required().label('Message'),
 });
 
 export function Contact() {
-  const { control, formState, handleSubmit, register } = useForm({
+  const { formState, handleSubmit, register } = useForm({
     resolver: yupResolver(schema)
   });
 
@@ -32,11 +31,7 @@ export function Contact() {
                       <div className="px-4 py-5 bg-white sm:p-6">
                         <div className="grid grid-cols-6 gap-6">
                           <div className="col-span-6 sm:col-span-3">
-                            <label htmlFor="message" className="block font-medium text-gray-700">
-                              Message
-                              </label>
-                            <input type="text" id="message" {...register("message")} />
-                            <ErrorMessage errors={formState.errors} name="message" as={ErrorMessageTag} />
+                            <TextInput id="message" register={register} errors={formState.errors} />
                           </div>
                         </div>
                       </div>

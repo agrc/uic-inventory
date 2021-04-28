@@ -1,9 +1,10 @@
 import { useQuery, useMutation } from 'graphql-hooks';
 import { Controller, useForm } from "react-hook-form";
-import { ErrorMessage } from '@hookform/error-message';
+import { ErrorMessage } from '@hookform/error-message'
 import { yupResolver } from '@hookform/resolvers/yup';
-import ErrorMessageTag from './components/FormElements/ErrorMessage';
+import TextInput from './components/FormElements/TextInput';
 import * as yup from 'yup';
+import ErrorMessageTag from './components/FormElements/ErrorMessage';
 import PhoneInput from 'react-phone-number-input/react-hook-form-input';
 import { Facebook } from 'react-content-loader';
 import { toast } from 'react-toastify';
@@ -122,27 +123,15 @@ export function Profile() {
                         <div className="px-4 py-5 bg-white sm:p-6">
                           <div className="grid grid-cols-6 gap-6">
                             <div className="col-span-6 sm:col-span-3">
-                              <label htmlFor="firstName" className="block font-medium text-gray-700">
-                                First name
-                              </label>
-                              <input type="text" id="firstName" {...register("firstName")} />
-                              <ErrorMessage errors={formState.errors} name="firstName" as={ErrorMessageTag} />
+                              <TextInput id="firstName" control={control} register={register} errors={formState.errors} />
                             </div>
 
                             <div className="col-span-6 sm:col-span-3">
-                              <label htmlFor="lastName" className="block font-medium text-gray-700">
-                                Last name
-                              </label>
-                              <input type="text" id="lastName" {...register("lastName")} />
-                              <ErrorMessage errors={formState.errors} name="lastName" as={ErrorMessageTag} />
+                              <TextInput id="lastName" register={register} errors={formState.errors} />
                             </div>
 
                             <div className="col-span-6 sm:col-span-3">
-                              <label htmlFor="email" className="block font-medium text-gray-700">
-                                Email address
-                              </label>
-                              <input type="email" id="email" {...register("email")} />
-                              <ErrorMessage errors={formState.errors} name="email" as={ErrorMessageTag} />
+                              <TextInput id="email" type="email" text="Email address" register={register} errors={formState.errors} />
                             </div>
 
                             <div className="col-span-6 sm:col-span-3">
@@ -160,43 +149,23 @@ export function Profile() {
                             </div>
 
                             <div className="col-span-6">
-                              <label htmlFor="organization" className="block font-medium text-gray-700">
-                                Organization
-                              </label>
-                              <input type="text" id="organization" {...register("organization")} />
-                              <ErrorMessage errors={formState.errors} name="organization" as={ErrorMessageTag} />
+                              <TextInput id="organization" register={register} errors={formState.errors} />
                             </div>
 
                             <div className="col-span-6">
-                              <label htmlFor="mailingAddress" className="block font-medium text-gray-700">
-                                Street address
-                              </label>
-                              <input type="text" id="mailingAddress" {...register("mailingAddress")} />
-                              <ErrorMessage errors={formState.errors} name="mailingAddress" as={ErrorMessageTag} />
+                              <TextInput id="mailingAddress" text="Street address" register={register} errors={formState.errors} />
                             </div>
 
                             <div className="col-span-6 sm:col-span-6 lg:col-span-2">
-                              <label htmlFor="city" className="block font-medium text-gray-700">
-                                City
-                              </label>
-                              <input type="text" id="city" {...register("city")} />
-                              <ErrorMessage errors={formState.errors} name="city" as={ErrorMessageTag} />
+                              <TextInput id="city" register={register} errors={formState.errors} />
                             </div>
 
                             <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                              <label htmlFor="state" className="block font-medium text-gray-700">
-                                State
-                              </label>
-                              <input type="text" id="state" {...register("state")} />
-                              <ErrorMessage errors={formState.errors} name="state" as={ErrorMessageTag} />
+                              <TextInput id="state" register={register} errors={formState.errors} />
                             </div>
 
                             <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                              <label htmlFor="zipCode" className="block font-medium text-gray-700">
-                                ZIP
-                              </label>
-                              <input type="text" id="zipCode" {...register("zipCode")} />
-                              <ErrorMessage errors={formState.errors} name="zipCode" as={ErrorMessageTag} />
+                              <TextInput id="zipCode" text="ZIP" register={register} errors={formState.errors} />
                             </div>
                           </div>
                         </div>
