@@ -18,7 +18,7 @@ namespace api.GraphQL {
     public bool? ReceiveNotifications { get; set; }
     public bool ProfileComplete { get; set; }
     public Access Access { get; set; }
-    [GraphQLIgnore()]
+    [GraphQLIgnore]
     public ICollection<NotificationReceipt>? NotificationReceipt { get; set; } = Array.Empty<NotificationReceipt>();
   }
 

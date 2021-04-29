@@ -6,7 +6,7 @@ using HotChocolate.Types;
 
 namespace api.GraphQL {
   public class Notification {
-    [GraphQLIgnore()]
+    [GraphQLIgnore]
     public int Id { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public string? Url { get; set; }
@@ -15,14 +15,12 @@ namespace api.GraphQL {
     public virtual ICollection<NotificationReceipt> NotificationReceipt { get; set; } = new List<NotificationReceipt>();
   }
 
-  public partial class NotificationReceipt {
+  public class NotificationReceipt {
     public int Id { get; set; }
 
-    [GraphQLType(typeof(DateTimeType))]
-    public DateTime? ReadAt { get; set; }
+    [GraphQLType(typeof(DateTimeType))] public DateTime? ReadAt { get; set; }
 
-    [GraphQLType(typeof(DateTimeType))]
-    public DateTime? DeletedAt { get; set; }
+    [GraphQLType(typeof(DateTimeType))] public DateTime? DeletedAt { get; set; }
 
     public int RecipientId { get; set; }
     public int NotificationFk { get; set; }

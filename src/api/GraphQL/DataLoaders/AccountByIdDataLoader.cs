@@ -16,8 +16,7 @@ public class AccountByIdDataLoader : BatchDataLoader<int, Account> {
         IBatchScheduler batchScheduler,
         IDbContextFactory<AppDbContext> dbContextFactory)
         : base(batchScheduler) {
-      _dbContextFactory = dbContextFactory ??
-          throw new ArgumentNullException(nameof(dbContextFactory));
+      _dbContextFactory = dbContextFactory ?? throw new ArgumentNullException(nameof(dbContextFactory));
     }
 
     protected override async Task<IReadOnlyDictionary<int, Account>> LoadBatchAsync(
