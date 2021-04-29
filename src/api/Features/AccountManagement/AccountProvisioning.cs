@@ -69,7 +69,7 @@ namespace api.Features.AccountManagement {
           AdditionalData = new Dictionary<string, object> {
             { "name", $"{computation.Account.FirstName} {computation.Account.LastName}" }
           },
-          Url = $"http://localhost:3000/account/{computation.Account.Id}/profile",
+          Url = $"/account/{computation.Account.Id}/profile",
           NotificationReceipt = recipients
         };
 

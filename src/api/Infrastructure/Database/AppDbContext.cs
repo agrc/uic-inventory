@@ -76,6 +76,10 @@ namespace api.Infrastructure {
         entity.Property(e => e.Access)
           .HasColumnName("account_access")
           .HasDefaultValue(Access.standard);
+
+        entity.Property(e => e.ProfileComplete)
+          .HasColumnName("complete_profile")
+          .HasComputedColumnSql();
       }).HasPostgresEnum<Access>("public", "access_level");
 
       modelBuilder.Entity<Notification>(entity => {

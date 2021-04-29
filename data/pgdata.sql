@@ -16,6 +16,15 @@ CREATE TABLE public.accounts (
   zip_code character varying(64),
   receive_notifications boolean NOT NULL DEFAULT FALSE,
   account_access access_level NOT NULL DEFAULT 'standard' :: access_level,
+  complete_profile boolean GENERATED ALWAYS AS (CASE WHEN
+    LENGTH(organization) > 0 AND
+    LENGTH(email) > 0 AND
+    LENGTH(phone) > 0 AND
+    LENGTH(mailing_address) > 0 AND
+    LENGTH(city) > 0 AND
+    LENGTH(state) > 0 AND
+    LENGTH(zip_code) > 0
+    THEN true ELSE false END) STORED,
   CONSTRAINT account_primary_key PRIMARY KEY (id),
   CONSTRAINT account_utah_id_key UNIQUE (utah_id)
 );
