@@ -1,0 +1,8 @@
+{
+  "SpaProxyServer": {
+    "ServerUrl": "http://localhost:3000",
+    "LaunchCommand": "npm run dev",
+    "MaxTimeoutInSeconds": 10,
+    "WorkingDirectory": "../../../uic-inventory"
+  }
+}

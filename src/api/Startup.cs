@@ -22,6 +22,7 @@ namespace api {
 
     public void ConfigureServices(IServiceCollection services) {
       services.AddCors();
+      services.AddHostedService<SpaProxyLaunchManager>();
 
       var redis = Configuration.GetSection("Redis").Get<RedisOptions>();
       services.AddDistributedAuthentication(redis);
