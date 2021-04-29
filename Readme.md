@@ -3,6 +3,18 @@
 ## Debugging
 
 ```sh
+./scripts/watch.sh
+```
+
+## Rebuilding database
+
+```sh
+./scripts/rebuild_db.sh
+```
+
+## Secrets
+
+```sh
 dotnet user-secrets init
 dotnet user-secrets set "Redis:Configuration" "localhost:6379"
 
