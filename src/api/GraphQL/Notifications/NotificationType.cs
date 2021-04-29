@@ -18,6 +18,10 @@ namespace api.GraphQL {
       Url = notification.Url ?? "#";
       AdditionalData = notification.AdditionalData ?? new Dictionary<string, object>();
       Deleted = receipt.DeletedAt.HasValue;
+
+      foreach(var key in AdditionalData.Keys) {
+        AdditionalData[key] = AdditionalData[key].ToString() ?? "null";
+      }
     }
 
     public int Id { get; set; }
