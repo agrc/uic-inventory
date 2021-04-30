@@ -24,8 +24,9 @@ namespace api {
     public IWebHostEnvironment Env;
 
     public void ConfigureServices(IServiceCollection services) {
-      services.AddCors();
-      services.AddHostedService<SpaProxyLaunchManager>();
+      services.AddCors()
+        .AddHttpContextAccessor()
+        .AddHostedService<SpaProxyLaunchManager>();
 
       var redis = Configuration.GetSection("Redis").Get<RedisOptions>();
       services.AddDistributedAuthentication(redis);
