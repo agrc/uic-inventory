@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Security.Claims;
 using api.Features.AccountManagement;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -31,7 +32,7 @@ namespace api.Infrastructure {
           options.LogoutPath = "/";
         }).PostConfigure<IComputeMediator>((options, mediator) => {
           options.Events.OnSignedIn = context => {
-            var claims = context.Principal?.Claims ?? Enumerable.Empty<System.Security.Claims.Claim>();
+            var claims = context.Principal?.Claims ?? Enumerable.Empty<Claim>();
 
             var computation = new AccountProvisioning.Computation(claims);
 
