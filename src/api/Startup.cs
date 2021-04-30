@@ -1,9 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using api.Infrastructure;
 using Autofac;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -46,8 +49,6 @@ namespace api {
           policy => policy.RequireAuthenticatedUser());
       });
 
-      services.AddControllers();
-
       services.AddGraphQL(Env);
 
       services.Configure<ForwardedHeadersOptions>(options => {
@@ -74,7 +75,16 @@ namespace api {
       app.UseAuthorization();
 
       app.UseEndpoints(endpoints => {
-        endpoints.MapControllers();
+        endpoints.MapGet("/api/logout", async context => {
+          await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+          context.Response.Redirect("http://localhost:3000/");
+        }).RequireAuthorization();
+
+        endpoints.MapGet("/api/login", context => {
+          context.Response.Redirect("http://localhost:3000/");
+          return Task.CompletedTask;
+        }).RequireAuthorization();
+
         endpoints.MapGraphQL();
         endpoints.MapFallbackToFile("index.html");
       });
