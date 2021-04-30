@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from './components/FormElements/TextInput';
 import GridHeading from './components/FormElements/GridHeading';
@@ -10,7 +10,7 @@ const schema = yup.object().shape({
 
 export function Contact() {
   const { formState, handleSubmit, register } = useForm({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
   });
 
   return (
@@ -21,7 +21,10 @@ export function Contact() {
             <form onSubmit={handleSubmit((data) => console.log(data))}>
               <div>
                 <div className="md:grid md:grid-cols-3 md:gap-6">
-                  <GridHeading text="Contact the UIC Program" subtext="Provide a clear and concise message for the staff" />
+                  <GridHeading
+                    text="Contact the UIC Program"
+                    subtext="Provide a clear and concise message for the staff"
+                  />
                   <div className="mt-5 md:mt-0 md:col-span-2">
                     <div className="overflow-hidden shadow sm:rounded-md">
                       <div className="px-4 py-5 bg-white sm:p-6">
@@ -32,10 +35,7 @@ export function Contact() {
                         </div>
                       </div>
                       <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
-                        <button
-                          type="submit"
-                          disabled={!formState.isDirty}
-                        >
+                        <button type="submit" disabled={!formState.isDirty}>
                           Send
                         </button>
                       </div>
@@ -49,6 +49,6 @@ export function Contact() {
       </div>
     </main>
   );
-};
+}
 
 export default Contact;
