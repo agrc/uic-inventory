@@ -367,12 +367,7 @@ function Notifications({ loading, error, notifications, read, remove }) {
 
   if (error) {
     // todo: log this
-    return (
-      <div className="flex flex-col items-center justify-center h-16 text-gray-500">
-        <h3 className="text-xl font-bold">Uh oh!</h3>
-        <p className="text-sm">We're having trouble finding your notifications.</p>
-      </div>
-    );
+    return <NotificationMessage title="Uh oh!" message="We're having trouble finding your notifications." />;
   }
 
   if (notifications === undefined || notifications === null) {
@@ -382,12 +377,7 @@ function Notifications({ loading, error, notifications, read, remove }) {
   const availableNotifications = notifications.filter((notification) => !notification.deleted);
 
   if (availableNotifications.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-16 text-gray-500">
-        <h3 className="text-xl font-bold">All caught up!</h3>
-        <p className="text-sm">Take a break, go for a walk, be your best you.</p>
-      </div>
-    );
+    return <NotificationMessage title="All caught up!" message="Take a break, go for a walk, be your best you." />;
   }
 
   return availableNotifications.map((notification) => (
@@ -423,6 +413,15 @@ function Notifications({ loading, error, notifications, read, remove }) {
       </span>
     </div>
   ));
+}
+
+function NotificationMessage({ title, text }) {
+  return (
+    <div className="flex flex-col items-center justify-center h-16 text-gray-500">
+      <h3 className="text-xl font-bold">{title}</h3>
+      <p className="text-sm">{text}</p>
+    </div>
+  );
 }
 
 export default Navigation;
