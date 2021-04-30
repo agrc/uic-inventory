@@ -45,9 +45,6 @@ namespace api.Features.AccountManagement {
         var account = await _context.Accounts.SingleOrDefaultAsync(x => x.UtahId == computation.Account.UtahId, cancellationToken);
 
         if (account is not null) {
-          _context.Accounts.Update(computation.Account);
-          await _context.SaveChangesAsync(cancellationToken);
-
           return Task.FromResult(Task.CompletedTask);
         }
 
