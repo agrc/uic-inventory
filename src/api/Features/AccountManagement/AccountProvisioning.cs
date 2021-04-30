@@ -54,6 +54,15 @@ namespace api.Features.AccountManagement {
         await _context.Accounts.AddAsync(computation.Account, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
 
+        var notification = CreateNotification(NotificationTypes.new_user_account_registration, computation.Account);
+
+        await _context.Notifications.AddAsync(notification, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Task.FromResult(Task.CompletedTask);
+      }
+
+      private Notification CreateNotification(NotificationTypes type, Account account) {
         var ids = _context.Accounts.Where(x => x.ReceiveNotifications == true).Select(x => x.Id);
         var recipients = new List<NotificationReceipt>();
 
@@ -63,20 +72,15 @@ namespace api.Features.AccountManagement {
           });
         }
 
-        var notification = new Notification {
+        return new Notification {
           CreatedAt = DateTime.Now,
-          NotificationType = NotificationTypes.new_user_account_registration,
+          NotificationType = type,
           AdditionalData = new Dictionary<string, object> {
-            { "name", $"{computation.Account.FirstName} {computation.Account.LastName}" }
+            { "name", $"{account.FirstName} {account.LastName}" }
           },
-          Url = $"/account/{computation.Account.Id}/profile",
+          Url = $"/account/{account.Id}/profile",
           NotificationReceipt = recipients
         };
-
-        await _context.Notifications.AddAsync(notification, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return Task.FromResult(Task.CompletedTask);
       }
     }
   }
