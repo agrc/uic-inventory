@@ -7,11 +7,44 @@ using HotChocolate.AspNetCore.Authorization;
 using HotChocolate.Data;
 using HotChocolate.Types;
 using System.Threading;
+using Serilog;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace api.GraphQL {
   [Authorize]
   [ExtendObjectType("Query")]
   public class AccountQueries {
+    private readonly IHttpContextAccessor _accessor;
+    private readonly ILogger _log;
+
+    public AccountQueries(IHttpContextAccessor accessor, ILogger log)
+    {
+      _accessor = accessor;
+      _log = log;
+    }
+
+    [UseDbContext(typeof(AppDbContext))]
+    public Account? GetMe(
+      [ScopedService] AppDbContext context) {
+      if (_accessor.HttpContext?.User.HasClaim(x => x.Type == ClaimTypes.NameIdentifier) != true) {
+        _log.ForContext("claims", _accessor.HttpContext?.User.Claims)
+           .Fatal("User is missing name identifier claim");
+
+        throw new System.Exception("user is missing required claims");
+      }
+
+      var utahIdClaim = _accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
+      if (utahIdClaim is null) {
+        _log.ForContext("claims", _accessor.HttpContext?.User.Claims)
+           .Fatal("Name identifier claim is empty");
+
+        throw new System.Exception("user is missing required claims");
+      }
+
+      return context.Accounts.SingleOrDefault(x => x.UtahId == utahIdClaim.Value);
+    }
+
     [UseDbContext(typeof(AppDbContext))]
     public IQueryable<Account> GetAccounts([ScopedService] AppDbContext context)
       => context.Accounts.OrderBy(x => x.LastName);
