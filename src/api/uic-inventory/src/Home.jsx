@@ -1,22 +1,50 @@
 import { List } from 'react-content-loader';
 import { AuthContext } from './AuthProvider';
+import { Link } from 'react-router-dom';
+import Chrome from './components/PageElements/Chrome';
+import Header from './Header';
 
 export function Home() {
-  const { isAuthenticated } = React.useContext(AuthContext);
+  const { isAuthenticated, completeProfile } = React.useContext(AuthContext);
 
-  return isAuthenticated() ? <SitesAndInventory /> : <GenericLandingPage />;
+  return isAuthenticated() ? <SitesAndInventory completeProfile={completeProfile} /> : <GenericLandingPage />;
 }
 
-function SitesAndInventory() {
+function SitesAndInventory({ completeProfile }) {
   return (
     <main>
       <div className="py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="h-full p-4 border-4 border-gray-200 border-dashed rounded-lg">
-            <h1 className="mb-3 text-2xl font-medium">Your sites and inventory</h1>
-            <List animate={false} />
+        <Header>
+          {completeProfile() ? (
+            <div className="flex justify-end">
+              <SiteCreationButton className="m-0" access={!completeProfile()} />
+            </div>
+          ) : (
+            <p>
+              You must complete your{' '}
+              <Link type="primary" to="/profile">
+                profile
+              </Link>{' '}
+              before submitting sites.
+            </p>
+          )}
+        </Header>
+        <Chrome title="Your sites and inventory">
+          <div className="self-center w-full text-center">
+            {completeProfile() ? (
+              <List animate={false} />
+            ) : (
+              <p>
+                You must complete your{' '}
+                <Link type="primary" to="/profile">
+                  profile
+                </Link>{' '}
+                before submitting sites.
+              </p>
+            )}
+            <SiteCreationButton access={!completeProfile()} />
           </div>
-        </div>
+        </Chrome>
       </div>
     </main>
   );
@@ -25,15 +53,18 @@ function SitesAndInventory() {
 function GenericLandingPage() {
   return (
     <main>
-      <div className="py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="h-full p-4 border-4 border-gray-200 border-dashed rounded-lg">
-            <h1 className="mb-3 text-2xl font-medium">About the program</h1>
-            <List animate={false} />
-          </div>
-        </div>
-      </div>
+      <Chrome title="About the program">
+        <List animate={false} />
+      </Chrome>
     </main>
+  );
+}
+
+function SiteCreationButton({ access, className = 'm-4 text-2xl' }) {
+  return (
+    <Link to="/site/create" type="button" disabled={access} className={className}>
+      Add site
+    </Link>
   );
 }
 
