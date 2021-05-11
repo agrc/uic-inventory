@@ -29,7 +29,7 @@ namespace api.GraphQL {
       [ScopedService] AppDbContext context) {
       if (_accessor.HttpContext?.User.HasClaim(x => x.Type == ClaimTypes.NameIdentifier) != true) {
         _log.ForContext("claims", _accessor.HttpContext?.User.Claims)
-           .Fatal("User is missing name identifier claim");
+           .Warning("User is missing name identifier claim");
 
         throw new System.Exception("user is missing required claims");
       }
@@ -37,7 +37,7 @@ namespace api.GraphQL {
       var utahIdClaim = _accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
       if (utahIdClaim is null) {
         _log.ForContext("claims", _accessor.HttpContext?.User.Claims)
-           .Fatal("Name identifier claim is empty");
+           .Warning("Name identifier claim is empty");
 
         throw new System.Exception("user is missing required claims");
       }
