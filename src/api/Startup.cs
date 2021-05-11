@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,8 +24,11 @@ namespace api {
 
     public void ConfigureServices(IServiceCollection services) {
       services.AddCors()
-        .AddHttpContextAccessor()
-        .AddHostedService<SpaProxyLaunchManager>();
+        .AddHttpContextAccessor();
+
+      if (Env.IsDevelopment()) {
+        services.AddHostedService<SpaProxyLaunchManager>();
+      }
 
       var redis = Configuration.GetSection("Redis").Get<RedisOptions>();
       services.AddDistributedAuthentication(redis);
@@ -62,8 +64,10 @@ namespace api {
     public void ConfigureContainer(ContainerBuilder builder) => builder.AddComputationMediator();
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+      var redirectUrl = "/";
       if (env.IsDevelopment()) {
         app.UseDeveloperExceptionPage();
+        redirectUrl = "http://localhost:3000";
       }
 
       app.UseForwardedHeaders();
@@ -78,15 +82,16 @@ namespace api {
       app.UseEndpoints(endpoints => {
         endpoints.MapGet("/api/logout", async context => {
           await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-          context.Response.Redirect("http://localhost:3000/");
+          context.Response.Redirect(redirectUrl);
         }).RequireAuthorization();
 
         endpoints.MapGet("/api/login", context => {
-          context.Response.Redirect("http://localhost:3000/");
+          context.Response.Redirect(redirectUrl);
           return Task.CompletedTask;
         }).RequireAuthorization();
 
         endpoints.MapGraphQL();
+
         endpoints.MapFallbackToFile("index.html");
       });
     }
