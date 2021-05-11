@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "build:dev": "NODE_ENV=development postcss ./src/tailwind.css -o ./dist/tailwind.css -w",
+    "build:dev": "NODE_ENV=development postcss ./src/tailwind.css -o ./src/index.css -w",
     "format": "prettier --write src --ignore-path ./.gitignore",
     "lint": "eslint --ext .jsx src"
   },
