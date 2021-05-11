@@ -13,7 +13,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   hour: 'numeric',
   minute: 'numeric',
 });
-// TODO: get account id from somewhere
+
 const NOTIFICATION_QUERY = `query GetAccount($id: Int!) {
   accountById(id: $id) {
     firstName
@@ -66,7 +66,7 @@ const getInitials = (account) => {
 };
 
 function Navigation() {
-  const { authInfo, isAuthenticated } = React.useContext(AuthContext);
+  const { authInfo, isAuthenticated, receiveNotifications } = React.useContext(AuthContext);
 
   const [fetchNotifications, { loading, error, data, refetch }] = useManualQuery(NOTIFICATION_QUERY, {
     variables: {
@@ -143,42 +143,44 @@ function Navigation() {
                   <>
                     <div className="hidden md:block">
                       <div className="flex items-center ml-4 md:ml-6">
-                        <Popover className="relative ml-3">
-                          {({ open }) => (
-                            <>
-                              <Popover.Button className="flex p-1 text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                                <NotificationBell
-                                  items={data?.accountById.notifications}
-                                  loading={loading}
-                                  error={error}
-                                />
-                              </Popover.Button>
-                              <Transition
-                                show={open}
-                                as={React.Fragment}
-                                enter="transition ease-out duration-100"
-                                enterFrom="transform opacity-0 scale-95"
-                                enterTo="transform opacity-100 scale-100"
-                                leave="transition ease-in duration-75"
-                                leaveFrom="transform opacity-100 scale-100"
-                                leaveTo="transform opacity-0 scale-95"
-                              >
-                                <Popover.Panel
-                                  static
-                                  className="absolute right-0 py-1 mt-2 overflow-scroll origin-top-right bg-white rounded-md shadow-lg w-96 ring-1 ring-black ring-opacity-5 focus:outline-none max-h-64"
-                                >
-                                  <Notifications
-                                    notifications={data?.accountById.notifications}
+                        {receiveNotifications() ? (
+                          <Popover className="relative ml-3">
+                            {({ open }) => (
+                              <>
+                                <Popover.Button className="flex p-1 text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                                  <NotificationBell
+                                    items={data?.accountById.notifications}
                                     loading={loading}
                                     error={error}
-                                    read={markAsRead}
-                                    remove={markAsDeleted}
                                   />
-                                </Popover.Panel>
-                              </Transition>
-                            </>
-                          )}
-                        </Popover>
+                                </Popover.Button>
+                                <Transition
+                                  show={open}
+                                  as={React.Fragment}
+                                  enter="transition ease-out duration-100"
+                                  enterFrom="transform opacity-0 scale-95"
+                                  enterTo="transform opacity-100 scale-100"
+                                  leave="transition ease-in duration-75"
+                                  leaveFrom="transform opacity-100 scale-100"
+                                  leaveTo="transform opacity-0 scale-95"
+                                >
+                                  <Popover.Panel
+                                    static
+                                    className="absolute right-0 py-1 mt-2 overflow-scroll origin-top-right bg-white rounded-md shadow-lg w-96 ring-1 ring-black ring-opacity-5 focus:outline-none max-h-64"
+                                  >
+                                    <Notifications
+                                      notifications={data?.accountById.notifications}
+                                      loading={loading}
+                                      error={error}
+                                      read={markAsRead}
+                                      remove={markAsDeleted}
+                                    />
+                                  </Popover.Panel>
+                                </Transition>
+                              </>
+                            )}
+                          </Popover>
+                        ) : null}
                         {/* Profile dropdown */}
                         <Menu as="div" className="relative ml-3">
                           {({ open }) => (
@@ -277,9 +279,11 @@ function Navigation() {
                         <div className="text-sm font-medium leading-none text-gray-400">{data?.accountById.email}</div>
                       </div>
                       <div className="flex-shrink-0 p-1 ml-auto text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                        <Popover.Button>
-                          <NotificationBell items={data?.accountById.notifications} loading={loading} error={error} />
-                        </Popover.Button>
+                        {receiveNotifications() ? (
+                          <Popover.Button>
+                            <NotificationBell items={data?.accountById.notifications} loading={loading} error={error} />
+                          </Popover.Button>
+                        ) : null}
                       </div>
                     </div>
                     <div className="px-2 mt-3 space-y-1">

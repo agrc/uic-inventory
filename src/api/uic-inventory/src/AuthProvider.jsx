@@ -6,6 +6,8 @@ const ME_QUERY = `query {
     firstName
     lastName
     access
+    receiveNotifications
+    profileComplete
   }
 }`;
 
@@ -20,6 +22,8 @@ export function AuthProvider({ children }) {
   });
 
   const isAuthenticated = () => authInfo.id !== null;
+  const receiveNotifications = () => authInfo.userData.receiveNotifications;
+  const completeProfile = () => authInfo.userData.profileComplete;
 
   React.useEffect(() => {
     if (loading || error) {
@@ -32,5 +36,9 @@ export function AuthProvider({ children }) {
     });
   }, [loading, error, data]);
 
-  return <Provider value={{ error, authInfo, isAuthenticated, setAuthInfo }}>{children}</Provider>;
+  return (
+    <Provider value={{ error, authInfo, isAuthenticated, receiveNotifications, setAuthInfo, completeProfile }}>
+      {children}
+    </Provider>
+  );
 }
