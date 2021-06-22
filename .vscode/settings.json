@@ -1,5 +1,7 @@
 {
   "cSpell.words": [
+    "agrc",
+    "arcgis",
     "aspnetcore",
     "clsx",
     "esbuild",
@@ -7,6 +9,7 @@
     "heroicons",
     "hookform",
     "jsonb",
+    "naics",
     "npgsql",
     "oidc",
     "openid",

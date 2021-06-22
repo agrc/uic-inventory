@@ -16,10 +16,17 @@ namespace api.Infrastructure {
         .AddDataLoader<AccountByIdDataLoader>()
         .AddType<NotificationQueries>()
         .AddDataLoader<NotificationByIdDataLoader>()
+        .AddType<SiteQueries>()
+        .AddDataLoader<SiteByIdDataLoader>()
+        .AddType<ContactQueries>()
         .AddMutationType(x => x.Name("Mutation"))
         .AddType<AccountMutations>()
         .AddType<AccountType>()
         .AddType<NotificationMutations>()
+        .AddType<SiteMutations>()
+        .AddType<SiteType>()
+        .AddType<ContactMutations>()
+        .AddType<ContactTypes>()
         .AddProjections();
 
       if (!env.IsDevelopment()) {

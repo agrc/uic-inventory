@@ -10,7 +10,7 @@ namespace api.GraphQL {
   [ExtendObjectType("Mutation")]
   public class AccountMutations {
     [UseApplicationDbContext]
-    public async Task<AccountPayload> UpdateAccountAsync([ScopedService]AppDbContext context, AccountInput input) {
+    public async Task<AccountPayload> UpdateAccountAsync([ScopedService] AppDbContext context, AccountInput input) {
       Account account;
       try {
         account = context.Accounts.Single(account => account.Id == input.Id);

@@ -17,8 +17,7 @@ namespace api.GraphQL {
     private readonly IHttpContextAccessor _accessor;
     private readonly ILogger _log;
 
-    public NotificationQueries(IHttpContextAccessor accessor, ILogger log)
-    {
+    public NotificationQueries(IHttpContextAccessor accessor, ILogger log) {
       _accessor = accessor;
       _log = log;
     }
@@ -45,7 +44,7 @@ namespace api.GraphQL {
 
       var user = context.Accounts.Where(x => x.UtahId == utahIdClaim.Value).Select(x => new { x.Id, x.Access }).Single();
 
-      if (user.Access == Access.standard && user.Id != id) {
+      if (user.Access == AccessLevels.standard && user.Id != id) {
         _log.ForContext("user", utahIdClaim.Value)
            .Warning("User tried to access protected data");
 

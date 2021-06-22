@@ -4,7 +4,8 @@ import { BellIcon, LinkIcon, MailOpenIcon, MailIcon, MenuIcon, TrashIcon, XIcon 
 import { Disclosure, Menu, Popover, Transition } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import { Facebook } from 'react-content-loader';
-import { AuthContext } from './AuthProvider';
+import { AuthContext } from '../../AuthProvider';
+import { Fragment, useContext, useEffect } from 'react';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'numeric',
@@ -66,7 +67,7 @@ const getInitials = (account) => {
 };
 
 function Navigation() {
-  const { authInfo, isAuthenticated, receiveNotifications } = React.useContext(AuthContext);
+  const { authInfo, isAuthenticated, receiveNotifications } = useContext(AuthContext);
 
   const [fetchNotifications, { loading, error, data, refetch }] = useManualQuery(NOTIFICATION_QUERY, {
     variables: {
@@ -74,7 +75,7 @@ function Navigation() {
     },
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (authInfo?.id) {
       return fetchNotifications();
     }
@@ -156,7 +157,7 @@ function Navigation() {
                                 </Popover.Button>
                                 <Transition
                                   show={open}
-                                  as={React.Fragment}
+                                  as={Fragment}
                                   enter="transition ease-out duration-100"
                                   enterFrom="transform opacity-0 scale-95"
                                   enterTo="transform opacity-100 scale-100"
@@ -195,7 +196,7 @@ function Navigation() {
                               </div>
                               <Transition
                                 show={open}
-                                as={React.Fragment}
+                                as={Fragment}
                                 enter="transition ease-out duration-100"
                                 enterFrom="transform opacity-0 scale-95"
                                 enterTo="transform opacity-100 scale-100"
@@ -255,7 +256,19 @@ function Navigation() {
                       </Disclosure.Button>
                     </div>
                   </>
-                ) : null}
+                ) : (
+                  <div className="flex -mr-2 md:hidden">
+                    {/* Mobile menu button */}
+                    <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-400 bg-gray-800 rounded-md hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                      <span className="sr-only">Open main menu</span>
+                      {open ? (
+                        <XIcon className="block w-6 h-6" aria-hidden="true" />
+                      ) : (
+                        <MenuIcon className="block w-6 h-6" aria-hidden="true" />
+                      )}
+                    </Disclosure.Button>
+                  </div>
+                )}
               </div>
             </div>
 

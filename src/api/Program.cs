@@ -10,7 +10,7 @@ namespace api {
     public static IHostBuilder CreateHostBuilder(string[] args)
       => Host.CreateDefaultBuilder(args)
           .UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration))
-          .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
+          .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>().UseWebRoot("uic-inventory/dist"))
           .UseServiceProviderFactory(new AutofacServiceProviderFactory());
   }
 }

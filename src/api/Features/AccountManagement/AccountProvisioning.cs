@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace api.Features.AccountManagement {
   public class AccountProvisioning {
     public class Computation : IComputation<Task> {
-      public Account Account { get; } = new ();
+      public Account Account { get; } = new();
 
       public Computation(IEnumerable<Claim> claims) {
         foreach (var claim in claims) {
@@ -76,7 +76,7 @@ namespace api.Features.AccountManagement {
             { "name", $"{account.FirstName} {account.LastName}" }
           },
           Url = $"/account/{account.Id}/profile",
-          NotificationReceipt = recipients
+          NotificationReceipts = recipients
         };
       }
     }

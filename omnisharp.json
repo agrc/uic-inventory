@@ -2,10 +2,9 @@
   "FormattingOptions": {
     "NewLine": "\r\n",
     "UseTabs": false,
-    "TabSize": 4,
-    "IndentationSize": 4,
+    "TabSize": 2,
+    "IndentationSize": 2,
     "SpacingAfterMethodDeclarationName": false,
-
     "SpaceWithinMethodDeclarationParenthesis": false,
     "SpaceBetweenEmptyMethodDeclarationParentheses": false,
     "SpaceAfterMethodCallName": false,

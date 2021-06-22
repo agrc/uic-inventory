@@ -1,11 +1,14 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using api.Features.Naics;
 using api.Infrastructure;
 using Autofac;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,10 +41,12 @@ namespace api {
 
       var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
       // add context for graphql
-      services.AddPooledDbContextFactory<AppDbContext>(
-        options => options
-          .UseNpgsql(database.ConnectionString)
-          .LogTo(Console.WriteLine));
+      services.AddPooledDbContextFactory<AppDbContext>(options => {
+        options.UseNpgsql(database.ConnectionString);
+        if (Env.IsDevelopment()) {
+          options.LogTo(Console.WriteLine);
+        }
+      });
 
       // add context for computations
       services.AddDbContext<AppDbContext>(
@@ -53,6 +58,8 @@ namespace api {
       });
 
       services.AddGraphQL(Env);
+
+      services.AddSingleton(new Lazy<NaicsProvider>(() => new NaicsProvider()));
 
       services.Configure<ForwardedHeadersOptions>(options => {
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -72,7 +79,12 @@ namespace api {
 
       app.UseForwardedHeaders();
 
-      app.UseStaticFiles();
+      app.UseStaticFiles(new StaticFileOptions {
+        OnPrepareResponse = ctx => {
+          ctx.Context.Response.Headers.Append(
+               "Cache-Control", $"public, max-age={604800}");
+        }
+      });
 
       app.UseRouting();
 
@@ -89,6 +101,20 @@ namespace api {
           context.Response.Redirect(redirectUrl);
           return Task.CompletedTask;
         }).RequireAuthorization();
+
+        endpoints.MapGet("/api/naics/{naicsCode}", async (context) => {
+          var naicsProvider = endpoints.ServiceProvider.GetService<Lazy<NaicsProvider>>();
+          var naicsCode = context.Request.RouteValues["naicsCode"]?.ToString() ?? string.Empty;
+
+          if (naicsProvider?.Value is null) {
+            await context.Response.WriteAsync("di fail");
+
+            return;
+          }
+
+          context.Response.Headers["Cache-Control"] = new("max-age=2592000");
+          await context.Response.WriteAsJsonAsync(naicsProvider.Value.GetCodesFor(naicsCode));
+        });
 
         endpoints.MapGraphQL();
 

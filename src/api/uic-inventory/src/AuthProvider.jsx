@@ -1,22 +1,12 @@
-import { useQuery } from 'graphql-hooks';
+import { useQuery, MeQuery } from './components/GraphQL';
+import { createContext, useEffect, useState } from 'react';
 
-const ME_QUERY = `query {
-  me {
-    id
-    firstName
-    lastName
-    access
-    receiveNotifications
-    profileComplete
-  }
-}`;
-
-export const AuthContext = React.createContext();
+export const AuthContext = createContext();
 const Provider = AuthContext.Provider;
 
 export function AuthProvider({ children }) {
-  const { loading, error, data } = useQuery(ME_QUERY);
-  const [authInfo, setAuthInfo] = React.useState({
+  const { loading, error, data } = useQuery(MeQuery);
+  const [authInfo, setAuthInfo] = useState({
     id: null,
     userData: {},
   });
@@ -25,7 +15,7 @@ export function AuthProvider({ children }) {
   const receiveNotifications = () => authInfo.userData.receiveNotifications;
   const completeProfile = () => authInfo.userData.profileComplete;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (loading || error) {
       return;
     }

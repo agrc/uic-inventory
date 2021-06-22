@@ -9,7 +9,7 @@ using HotChocolate.DataLoader;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.GraphQL {
-public class AccountByIdDataLoader : BatchDataLoader<int, Account> {
+  public class AccountByIdDataLoader : BatchDataLoader<int, Account> {
     private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
 
     public AccountByIdDataLoader(

@@ -1,15 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
 using HotChocolate;
 using HotChocolate.AspNetCore.Authorization;
 using HotChocolate.Data;
 using HotChocolate.Types;
-using System.Threading;
-using Serilog;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
+using Serilog;
 
 namespace api.GraphQL {
   [Authorize]
@@ -18,8 +18,7 @@ namespace api.GraphQL {
     private readonly IHttpContextAccessor _accessor;
     private readonly ILogger _log;
 
-    public AccountQueries(IHttpContextAccessor accessor, ILogger log)
-    {
+    public AccountQueries(IHttpContextAccessor accessor, ILogger log) {
       _accessor = accessor;
       _log = log;
     }
