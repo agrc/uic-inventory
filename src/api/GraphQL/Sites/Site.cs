@@ -14,7 +14,6 @@ namespace api.GraphQL {
     public string? Ownership { get; set; }
     public int? NaicsPrimary { get; set; }
     public string? NaicsTitle { get; set; }
-    public string? Activity { get; set; }
     public int AccountFk { get; set; }
     public virtual Account? Account { get; set; }
     public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
@@ -69,7 +68,6 @@ namespace api.GraphQL {
     public string? Ownership { get; set; }
     public string? Naics { get; set; }
     public string? NaicsTitle { get; set; }
-    public string? Activity { get; set; }
   }
 
   public static class SiteInputExtension {
@@ -90,10 +88,6 @@ namespace api.GraphQL {
 
       if (input.Ownership != null) {
         site.Ownership = input.Ownership;
-      }
-
-      if (input.Activity != null) {
-        site.Activity = input.Activity;
       }
 
       return site;

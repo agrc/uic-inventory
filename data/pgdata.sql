@@ -84,7 +84,6 @@ CREATE TABLE public.sites (
   ownership varchar(2) NOT NULL,
   naics_primary integer NOT NULL,
   naics_title varchar(128) NOT NULL,
-  activity varchar(512) NOT NULL,
   account_fk integer NOT NULL,
 
   CONSTRAINT site_primary_key PRIMARY KEY (id),

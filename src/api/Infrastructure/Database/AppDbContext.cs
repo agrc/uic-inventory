@@ -208,10 +208,6 @@ namespace api.Infrastructure {
           .IsRequired()
           .HasMaxLength(128);
 
-        entity.Property(e => e.Activity).HasColumnName("activity")
-          .IsRequired()
-          .HasMaxLength(512);
-
         entity.Property(e => e.AccountFk).HasColumnName("account_fk");
 
         entity.HasOne(d => d.Account)

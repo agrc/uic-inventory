@@ -37,7 +37,6 @@ export const SiteSchema = yup.object().shape({
     .required()
     .label('NAICS code'),
   naicsTitle: yup.string().max(512).required().label('NAICS title'),
-  activity: yup.string().min(10).max(512).required().label('business activity'),
 });
 
 export const ContactSchema = yup.object().shape({
