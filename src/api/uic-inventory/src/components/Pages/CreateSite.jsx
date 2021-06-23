@@ -119,6 +119,12 @@ function CreateSite() {
               />
             </ResponsiveGridColumn>
 
+            <ResponsiveGridColumn full={true}>
+              <p class="text-center italic text-gray-500">
+                Select NAICS code and title for the primary business activity at the site
+              </p>
+            </ResponsiveGridColumn>
+
             <ResponsiveGridColumn full={true} className="self-center text-center sm:col-span-2 sm:row-span-3">
               <button type="button" className="sm:items-center sm:h-24" onClick={() => setNaicsOpen(true)}>
                 NAICS Code Helper
