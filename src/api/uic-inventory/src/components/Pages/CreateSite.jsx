@@ -69,19 +69,15 @@ function CreateSite() {
   const history = useHistory();
   const [naicsOpen, setNaicsOpen] = useState(false);
 
-  const create = async (state, formData) => {
+  const create = async (formData) => {
     if (!isDirty) {
       return toast.info("We've got your most current information");
     }
 
-    const keys = Object.keys(state.dirtyFields);
     const input = {
       id: parseInt(authInfo.id),
+      ...formData,
     };
-
-    for (let key of keys) {
-      input[key] = formData[key];
-    }
 
     const { data, error } = await createSite({
       variables: {
@@ -100,7 +96,7 @@ function CreateSite() {
 
   return (
     <Chrome>
-      <form onSubmit={handleSubmit((data) => create(formState, data))}>
+      <form onSubmit={handleSubmit((data) => create(data))}>
         <PageGrid
           heading="Site Details"
           subtext="Provide some basic information about the site"
@@ -148,15 +144,6 @@ function CreateSite() {
                 errors={formState.errors}
                 readOnly={true}
                 className="bg-gray-100"
-              />
-            </ResponsiveGridColumn>
-
-            <ResponsiveGridColumn full={true}>
-              <TextInput
-                id="activity"
-                text="Describe the primary business activity conducted at the site"
-                register={register}
-                errors={formState.errors}
               />
             </ResponsiveGridColumn>
           </FormGrid>
