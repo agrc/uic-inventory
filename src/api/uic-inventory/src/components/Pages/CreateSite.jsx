@@ -126,7 +126,7 @@ function CreateSite() {
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true} className="self-center text-center sm:col-span-2 sm:row-span-3">
-              <button type="button" className="sm:items-center sm:h-24" onClick={() => setNaicsOpen(true)}>
+              <button type="button" className="w-full sm:items-center sm:h-24" onClick={() => setNaicsOpen(true)}>
                 NAICS Code Helper
               </button>
             </ResponsiveGridColumn>
