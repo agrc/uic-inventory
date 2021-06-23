@@ -59,6 +59,13 @@ function NaicsPicker({ updateWith }) {
 
   return (
     <>
+      <p className="mb-2 italic text-gray-500">
+        For a keyword search and further information about NAICS, please visit the{' '}
+        <a type="primary" href="https://census.gov/naics" target="_blank" rel="noopener">
+          US Census Bureau NAICS website
+        </a>
+        .
+      </p>
       <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
         <div className="flex items-center justify-between flex-1">
           <div>
