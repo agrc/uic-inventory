@@ -1019,6 +1019,9 @@ select {
 .ml-1 {
 	margin-left: 0.25rem;
 }
+.ml-8 {
+	margin-left: 2rem;
+}
 .mt-10 {
 	margin-top: 2.5rem;
 }
@@ -1150,6 +1153,12 @@ select {
 }
 .cursor-pointer {
 	cursor: pointer;
+}
+.list-inside {
+	list-style-position: inside;
+}
+.list-disc {
+	list-style-type: disc;
 }
 .grid-cols-6 {
 	grid-template-columns: repeat(6, minmax(0, 1fr));
