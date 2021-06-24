@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.GraphQL;
@@ -12,10 +11,9 @@ using api.Infrastructure;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210624004504_InitialCreate")]
-    partial class InitialCreate
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,6 +260,12 @@ namespace api.Migrations
                     b.Property<int>("AccountFk")
                         .HasColumnType("integer")
                         .HasColumnName("account_fk");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Geometry")
+                        .HasColumnType("jsonb");
 
                     b.Property<int?>("NaicsPrimary")
                         .HasColumnType("integer")

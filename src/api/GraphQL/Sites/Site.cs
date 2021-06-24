@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace api.GraphQL {
     public int? NaicsPrimary { get; set; }
     public string? NaicsTitle { get; set; }
     public int AccountFk { get; set; }
+    public string? Address { get; set; }
+    [Column(TypeName = "jsonb")] public string? Geometry { get; set; }
     public virtual Account? Account { get; set; }
     public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
   }
