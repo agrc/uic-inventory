@@ -6,21 +6,21 @@
 
     <!-- Authentication -->
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
-    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.4" />
-    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="5.0.4" />
+    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.7" />
+    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="5.0.7" />
     <PackageReference Update="Microsoft.Extensions.Caching.StackExchangeRedis" Version="5.0.1" />
 
     <!-- Database -->
-    <PackageReference Update="Dapper" Version="2.0.78" />
-    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.2" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="5.0.4" />
+    <PackageReference Update="Dapper" Version="2.0.90" />
+    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="5.0.7" />
 
     <!-- GraphQL -->
-    <PackageReference Update="HotChocolate.Data.EntityFramework" Version="11.2.2" />
-    <PackageReference Update="HotChocolate.AspNetCore" Version="11.2.2" />
-    <PackageReference Update="HotChocolate.AspNetCore.Authorization" Version="11.2.2" />
-    <PackageReference Update="HotChocolate.Data" Version="11.2.2" />
-    <PackageReference Update="HotChocolate.Types.Scalars" Version="11.2.2" />
+    <PackageReference Update="HotChocolate.Data.EntityFramework" Version="11.3.0" />
+    <PackageReference Update="HotChocolate.AspNetCore" Version="11.3.0" />
+    <PackageReference Update="HotChocolate.AspNetCore.Authorization" Version="11.3.0" />
+    <PackageReference Update="HotChocolate.Data" Version="11.3.0" />
+    <PackageReference Update="HotChocolate.Types.Scalars" Version="11.3.0" />
 
     <!-- Logging -->
     <PackageReference Update="Serilog" Version="2.10.0" />
