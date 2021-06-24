@@ -1,5 +1,5 @@
 import '@arcgis/core/assets/esri/themes/light/main.css';
-import { Chrome, PolygonIcon, OkNotToggle, PointIcon, SelectPolygonIcon } from '../../PageElements';
+import { Chrome, toast, useParams, PolygonIcon, OkNotToggle, PointIcon, SelectPolygonIcon } from '../../PageElements';
 import { GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -9,12 +9,17 @@ import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Viewpoint from '@arcgis/core/Viewpoint';
 import { TailwindDartboard } from '../../Dartboard/Dartboard';
-import { useRef, useState, useEffect } from 'react';
+import { useContext, useRef, useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { enablePolygonDrawing } from '../../MapElements/Drawing';
+import { AuthContext } from '../../../AuthProvider';
+import { SiteLocationMutation, useMutation } from '../../GraphQL';
 
 function AddSiteLocation() {
+  const { authInfo } = useContext(AuthContext);
+  const { siteId } = useParams();
+  const [addLocation] = useMutation(SiteLocationMutation);
   const mapDiv = useRef(null);
   const webMap = useRef(null);
   const mapView = useRef(null);
@@ -244,6 +249,29 @@ function AddSiteLocation() {
     setAddress(false);
   };
 
+  const addSiteLocation = async (formData) => {
+    const input = {
+      id: parseInt(authInfo.id),
+      siteId: parseInt(siteId),
+      ...formData,
+      geometry: JSON.stringify(formData.geometry),
+    };
+
+    const { data, error } = await addLocation({
+      variables: {
+        input: input,
+      },
+    });
+
+    if (error) {
+      return toast.error('We had some trouble adding the location');
+      // TODO: log error
+    }
+
+    toast.success('Location added successfully!');
+    history.push('/');
+  };
+
   return (
     <main>
       <Chrome>
@@ -312,7 +340,10 @@ function AddSiteLocation() {
                 <div className="grid grid-cols-6">
                   <div className="col-span-6">
                     <div className="w-full h-96" ref={mapDiv}></div>
-                    <form className="border-t-2 border-gray-50" onSubmit={handleSubmit((data) => console.log(data))}>
+                    <form
+                      className="border-t-2 border-gray-50"
+                      onSubmit={handleSubmit((data) => addSiteLocation(data))}
+                    >
                       <div className="px-4 py-3">
                         <div className="flex justify-around">
                           <div className="flex flex-col justify-items-center">

@@ -73,6 +73,13 @@ namespace api.GraphQL {
     public string? NaicsTitle { get; set; }
   }
 
+  public class SiteLocationInput {
+    public int Id { get; set; }
+    public int SiteId { get; set; }
+    public string? Address { get; set; }
+    public string? Geometry { get; set; }
+  }
+
   public static class SiteInputExtension {
     public static Site Update(this SiteInput input, Site site) {
       site.AccountFk = input.Id;
@@ -97,9 +104,13 @@ namespace api.GraphQL {
     }
   }
 
-  public class SitePayload {
+  public class SitePayload : Payload{
     public SitePayload(Site site) {
       Site = site;
+    }
+
+    public SitePayload(IReadOnlyList<UserError> errors)
+        : base(errors) {
     }
 
     public Site Site { get; }

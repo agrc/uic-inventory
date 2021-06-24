@@ -86,3 +86,11 @@ export const ContactMutation = `mutation CreateContact($input: ContactInput!) {
     }
   }
 }`;
+
+export const SiteLocationMutation = `mutation AddLocation($input: SiteLocationInput!) {
+  addLocation(input: $input) {
+    site {
+      id
+    }
+  }
+}`;
