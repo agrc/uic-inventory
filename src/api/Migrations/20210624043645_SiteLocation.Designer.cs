@@ -12,8 +12,8 @@ using api.Infrastructure;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210624004625_AddSiteLocation")]
-    partial class AddSiteLocation
+    [Migration("20210624043645_SiteLocation")]
+    partial class SiteLocation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -107,10 +107,12 @@ namespace api.Migrations
                         .HasColumnType("character varying(64)")
                         .HasColumnName("zip_code");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_accounts");
 
                     b.HasIndex(new[] { "UtahId" }, "account_utah_id_key")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("ix_accounts_utah_id");
 
                     b.ToTable("accounts");
                 });
@@ -178,9 +180,11 @@ namespace api.Migrations
                         .HasColumnType("character varying(64)")
                         .HasColumnName("zip_code");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_contacts");
 
-                    b.HasIndex("SiteFk");
+                    b.HasIndex("SiteFk")
+                        .HasDatabaseName("ix_contacts_site_fk");
 
                     b.ToTable("contacts");
                 });
@@ -212,7 +216,8 @@ namespace api.Migrations
                         .HasColumnType("character varying(512)")
                         .HasColumnName("url");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_notifications");
 
                     b.ToTable("notifications");
                 });
@@ -242,11 +247,14 @@ namespace api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("recipient_id");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_notification_receipts");
 
-                    b.HasIndex("NotificationFk");
+                    b.HasIndex("NotificationFk")
+                        .HasDatabaseName("ix_notification_receipts_notification_fk");
 
-                    b.HasIndex("RecipientId");
+                    b.HasIndex("RecipientId")
+                        .HasDatabaseName("ix_notification_receipts_recipient_id");
 
                     b.ToTable("notification_receipts");
                 });
@@ -264,10 +272,12 @@ namespace api.Migrations
                         .HasColumnName("account_fk");
 
                     b.Property<string>("Address")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("address");
 
                     b.Property<string>("Geometry")
-                        .HasColumnType("jsonb");
+                        .HasColumnType("jsonb")
+                        .HasColumnName("geometry");
 
                     b.Property<int?>("NaicsPrimary")
                         .HasColumnType("integer")
@@ -291,9 +301,11 @@ namespace api.Migrations
                         .HasColumnType("character varying(2)")
                         .HasColumnName("ownership");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_sites");
 
-                    b.HasIndex("AccountFk");
+                    b.HasIndex("AccountFk")
+                        .HasDatabaseName("ix_sites_account_fk");
 
                     b.ToTable("sites");
                 });

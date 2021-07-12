@@ -2,7 +2,7 @@
 
 namespace api.Migrations
 {
-    public partial class AddSiteLocation : Migration
+    public partial class SiteLocation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
