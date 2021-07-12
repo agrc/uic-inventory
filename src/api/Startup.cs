@@ -42,7 +42,9 @@ namespace api {
       var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
       // add context for graphql
       services.AddPooledDbContextFactory<AppDbContext>(options => {
-        options.UseNpgsql(database.ConnectionString);
+        options.UseNpgsql(database.ConnectionString)
+               .UseSnakeCaseNamingConvention();
+
         if (Env.IsDevelopment()) {
           options.LogTo(Console.WriteLine);
         }
