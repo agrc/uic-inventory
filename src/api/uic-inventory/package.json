@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "scripts": {
     "build": "vite build",
-    "css": "NODE_ENV=development postcss ./src/styles/tailwind.css -o ./src/styles/index.css -w",
     "dev": "vite",
     "format": "prettier --write src --ignore-path ./.gitignore",
     "lint": "eslint --ext .jsx src",
@@ -45,11 +44,10 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "postcss": "^8.3.5",
-    "postcss-cli": "^8.3.1",
     "prettier": "^2.3.1",
     "tailwindcss": "^2.2.4",
-    "vite": "^2.3.8",
     "vite-react-jsx": "^1.1.1"
+    "vite": "^2.4.2",
   },
   "eslintConfig": {
     "parser": "@babel/eslint-parser",
