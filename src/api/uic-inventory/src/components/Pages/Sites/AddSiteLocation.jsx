@@ -1,5 +1,14 @@
 import '@arcgis/core/assets/esri/themes/light/main.css';
-import { Chrome, toast, useParams, PolygonIcon, OkNotToggle, PointIcon, SelectPolygonIcon } from '../../PageElements';
+import {
+  Chrome,
+  toast,
+  useParams,
+  PolygonIcon,
+  OkNotToggle,
+  PointIcon,
+  SelectPolygonIcon,
+  useHistory,
+} from '../../PageElements';
 import { GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,6 +29,7 @@ function AddSiteLocation() {
   const { authInfo } = useContext(AuthContext);
   const { siteId } = useParams();
   const [addLocation] = useMutation(SiteLocationMutation);
+  const history = useHistory();
   const mapDiv = useRef(null);
   const webMap = useRef(null);
   const mapView = useRef(null);
@@ -269,7 +279,7 @@ function AddSiteLocation() {
     }
 
     toast.success('Location added successfully!');
-    history.push('/');
+    history.push(`/site/${siteId}/add-well`);
   };
 
   return (
