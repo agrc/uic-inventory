@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Dialog, Transition } from '@headlessui/react';
-import { SiteMutation, useMutation } from '../GraphQL';
-import { AuthContext } from '../../AuthProvider';
+import { SiteMutation, useMutation } from '../../GraphQL';
+import { AuthContext } from '../../../AuthProvider';
 import {
   FormGrid,
   NaicsPicker,
@@ -11,8 +11,8 @@ import {
   TextInput,
   SelectInput,
   SiteSchema as schema,
-} from '../FormElements';
-import { Chrome, toast, useHistory } from '../PageElements';
+} from '../../FormElements';
+import { Chrome, toast, useHistory } from '../../PageElements';
 import { Fragment, useContext, useState } from 'react';
 
 const ownership = [
@@ -120,7 +120,7 @@ function CreateSite() {
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true}>
-              <p class="text-center italic text-gray-500">
+              <p className="italic text-center text-gray-500">
                 Select NAICS code and title for the primary business activity at the site
               </p>
             </ResponsiveGridColumn>

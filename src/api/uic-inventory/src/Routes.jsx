@@ -1,5 +1,12 @@
 import { Navigation, Route, Router, Switch, ToastContainer } from './components/PageElements';
-import { CreateSite, ContactProgram, Profile, Sites, GenericLandingPage, SitesAndInventory } from './components/Pages';
+import {
+  CreateSite,
+  ContactProgram,
+  Profile,
+  Sites,
+  GenericLandingPage,
+  SitesAndInventory,
+} from './components/Pages';
 import { AuthContext } from './AuthProvider';
 import { useContext } from 'react';
 
