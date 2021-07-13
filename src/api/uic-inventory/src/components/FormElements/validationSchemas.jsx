@@ -89,3 +89,9 @@ export const SiteLocationSchema = yup.object().shape({
     .required('A site geometry must be selected or created')
     .label('Site location'),
 });
+
+export const WellSchema = yup.object().shape({
+  name: yup.string().max(512).required(),
+  order: yup.number().typeError('Order number is required').integer().positive().required('Order number is required'),
+  wellType: yup.string().oneOf(['general', 'storm', 'remediation', 'uic', 'veterinary']).required().label('Well Type'),
+});
