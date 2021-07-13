@@ -1,6 +1,7 @@
 import { Navigation, Route, Router, Switch, ToastContainer } from './components/PageElements';
 import {
   CreateSite,
+  CreateWell,
   ContactProgram,
   Profile,
   Sites,
@@ -59,6 +60,9 @@ function AuthenticatedRoutes({ completeProfile }) {
       </Route>
       <Route path="/site/:siteId/add-location">
         <Sites.AddSiteLocation />
+      </Route>
+      <Route path="/site/:siteId/add-well">
+        <CreateWell />
       </Route>
       <Route exact path="/">
         <SitesAndInventory completeProfile={completeProfile} />
