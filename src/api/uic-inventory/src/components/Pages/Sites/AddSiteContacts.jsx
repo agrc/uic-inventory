@@ -52,7 +52,7 @@ const contactType = [
     label: 'DEQ Dist Eng/Project Manager',
   },
   {
-    value: 'health_dep',
+    value: 'health_dept',
     label: 'Local Health Department',
   },
   {
