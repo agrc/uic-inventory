@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - dev
+env:
+  IMAGE: gcr.io/${{ secrets.PROJECT_ID }}/api
 
 jobs:
   build:
@@ -30,3 +32,11 @@ jobs:
       # Push the Docker image to Google Container Registry
       - name: Publish image
         run: docker push "gcr.io/${{ secrets.PROJECT_ID }}/api"
+
+      - name: Create cloud run revision
+        run: |-
+          gcloud run deploy "$SERVICE_NAME" \
+            --quiet \
+            --platform "managed" \
+            --region "us-central1" \
+            --image "$IMAGE:latest"
