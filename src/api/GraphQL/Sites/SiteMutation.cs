@@ -51,7 +51,7 @@ namespace api.GraphQL {
         return Problem(input.Id.ToString());
       }
 
-      return Created($"site/{site.Entity.Id}/add-contacts", Ok(new {
+      return Created($"site/{site.Entity.Id}/add-contacts", new {
         site.Entity.Id,
         site.Entity.Name,
         site.Entity.Ownership,
@@ -59,7 +59,7 @@ namespace api.GraphQL {
         site.Entity.NaicsTitle,
         site.Entity.Address,
         site.Entity.Geometry
-      }));
+      });
     }
 
     [HttpPut("/api/site")]
