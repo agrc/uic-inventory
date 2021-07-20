@@ -48,7 +48,7 @@
     "pre-commit": "^1.2.2",
     "prettier": "^2.3.2",
     "tailwindcss": "^2.2.4",
-    "vite": "^2.4.2",
+    "vite": "^2.4.3",
     "vite-react-jsx": "^1.1.2"
   },
   "pre-commit": "fix",
