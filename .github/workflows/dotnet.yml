@@ -7,6 +7,7 @@ on:
       - dev
 env:
   IMAGE: gcr.io/${{ secrets.PROJECT_ID }}/api
+  SERVICE_NAME: uic-inventory-api
 
 jobs:
   build:
