@@ -81,15 +81,15 @@ function AddSiteContacts() {
   });
   const { siteId } = useParams();
   const queryClient = useQueryClient();
-  const { status, error, data } = useQuery('contacts', () => ky.get(`/api/site/${siteId}/contacts`).json(), {
+  const { status, error, data } = useQuery(['contacts', siteId], () => ky.get(`/api/site/${siteId}/contacts`).json(), {
     enabled: siteId ?? 0 > 0 ? true : false,
   });
   const { mutate } = useMutation((input) => ky.post('/api/contact', { json: { ...input, id: siteId } }), {
     onMutate: async (contact) => {
-      await queryClient.cancelQueries('contacts');
-      const previousValue = queryClient.getQueryData('contacts');
+      await queryClient.cancelQueries(['contacts', siteId]);
+      const previousValue = queryClient.getQueryData(['contacts', siteId]);
 
-      queryClient.setQueryData('contacts', (old) => ({
+      queryClient.setQueryData(['contacts', siteId], (old) => ({
         ...old,
         contacts: [...old.contacts, { ...contact, id: 9999, contactType: valueToLabel(contact.contactType) }],
       }));
@@ -101,10 +101,10 @@ function AddSiteContacts() {
       reset({});
     },
     onSettled: () => {
-      queryClient.invalidateQueries('contacts');
+      queryClient.invalidateQueries(['contacts', siteId]);
     },
     onError: (err, variables, previousValue) => {
-      queryClient.setQueryData('contacts', previousValue);
+      queryClient.setQueryData(['contacts', siteId], previousValue);
       // TODO: log error
       console.error(error);
       return toast.error('We had some trouble creating the contact');
