@@ -65,7 +65,7 @@ function CreateSite() {
   const { mutate } = useMutation((data) => ky.post('/api/site', { json: { ...data, id: authInfo.id } }).json(), {
     onSuccess: (data) => {
       toast.success('Site created successfully!');
-      history.push(`/site/${data.site.id}/add-contacts`);
+      history.push(`/site/${data.id}/add-contacts`);
     },
     onError: (err) => {
       // TODO: log error
