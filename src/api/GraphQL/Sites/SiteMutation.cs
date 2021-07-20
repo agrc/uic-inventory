@@ -51,7 +51,15 @@ namespace api.GraphQL {
         return Problem(input.Id.ToString());
       }
 
-      return Created($"site/{site.Entity.Id}/add-contacts", new SitePayload(site.Entity));
+      return Created($"site/{site.Entity.Id}/add-contacts", Ok(new {
+        site.Entity.Id,
+        site.Entity.Name,
+        site.Entity.Ownership,
+        site.Entity.NaicsPrimary,
+        site.Entity.NaicsTitle,
+        site.Entity.Address,
+        site.Entity.Geometry
+      }));
     }
 
     [HttpPut("/api/site")]
