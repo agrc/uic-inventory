@@ -29,27 +29,27 @@ namespace api.Infrastructure {
       _logger = logger;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken) {
+    public async Task StartAsync(CancellationToken token) {
       var httpClient = new HttpClient(new HttpClientHandler() {
         // It's ok for us to do this here since this service is only plugged in during development.
         ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
       });
 
       _logger.LogInformation("Starting SPA development server");
-      var running = await ProbeSpaDevelopmentServerUrl(httpClient, cancellationToken);
+      var running = await ProbeSpaDevelopmentServerUrl(httpClient, token);
       if (running) {
         _logger.LogInformation($"Found SPA development server running at {_options.ServerUrl}");
       } else {
         _logger.LogInformation($"No SPA development server running at {_options.ServerUrl} found.");
-        await StartSpaProcessAndProbeForLiveness(httpClient, cancellationToken);
+        await StartSpaProcessAndProbeForLiveness(httpClient, token);
       }
     }
 
-    private async Task<bool> ProbeSpaDevelopmentServerUrl(HttpClient httpClient, CancellationToken cancellationToken) {
+    private async Task<bool> ProbeSpaDevelopmentServerUrl(HttpClient httpClient, CancellationToken token) {
       using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-      using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeout.Token, cancellationToken);
+      using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeout.Token, token);
       try {
-        var response = await httpClient.GetAsync(_options.ServerUrl, cancellationTokenSource.Token);
+        var response = await httpClient.GetAsync(_options.ServerUrl, tokenSource.Token);
         return response.IsSuccessStatusCode;
       } catch (Exception exception) when (exception is HttpRequestException ||
               exception is TaskCanceledException ||
@@ -59,23 +59,23 @@ namespace api.Infrastructure {
       }
     }
 
-    private async Task StartSpaProcessAndProbeForLiveness(HttpClient httpClient, CancellationToken cancellationToken) {
+    private async Task StartSpaProcessAndProbeForLiveness(HttpClient httpClient, CancellationToken token) {
       LaunchDevelopmentProxy();
       var sw = Stopwatch.StartNew();
       var livenessProbeSucceeded = false;
       var maxTimeoutReached = false;
       while (_spaProcess != null && !_spaProcess.HasExited && !maxTimeoutReached) {
-        livenessProbeSucceeded = await ProbeSpaDevelopmentServerUrl(httpClient, cancellationToken);
+        livenessProbeSucceeded = await ProbeSpaDevelopmentServerUrl(httpClient, token);
         if (livenessProbeSucceeded) {
           break;
         }
 
-        if (cancellationToken.IsCancellationRequested) {
+        if (token.IsCancellationRequested) {
           return;
         }
 
         maxTimeoutReached = sw.Elapsed >= _options.MaxTimeout;
-        await Task.Delay(1000, cancellationToken);
+        await Task.Delay(1000, token);
       }
 
       if (_spaProcess == null || _spaProcess.HasExited) {
@@ -119,7 +119,7 @@ namespace api.Infrastructure {
       }
     }
 
-    public Task StopAsync(CancellationToken cancellationToken) {
+    public Task StopAsync(CancellationToken token) {
       // We don't need to do anything here since Dispose will take care of cleaning up the process if necessary.
       return Task.CompletedTask;
     }

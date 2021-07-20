@@ -1,27 +1,53 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
-using HotChocolate;
-using HotChocolate.Data;
-using HotChocolate.Types;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace api.GraphQL {
-  [ExtendObjectType("Mutation")]
-  public class NotificationMutations {
-    [UseDbContext(typeof(AppDbContext))]
-    public async Task<NotificationMutationResponse> UpdateNotification(
-      NotificationInput input,
-      [ScopedService] AppDbContext context,
-      CancellationToken token) {
-      var receipt = await context.NotificationReceipts.FirstOrDefaultAsync(x => x.Id == input.Id, token);
+  [ApiController]
+  public class NotificationMutations : ControllerBase {
+    private readonly IHttpContextAccessor _accessor;
+    private readonly ILogger _log;
+    private readonly AppDbContext _context;
+    private readonly IHasOwnership _ownershipResolver;
 
-      if (receipt is null) {
-        return new NotificationMutationResponse(new[] {
-          new UserError("Notification not found", "MISSING_NOTIFICATION")
-        });
+    public NotificationMutations(
+      AppDbContext context,
+      IHasOwnership ownershipResolver,
+      IHttpContextAccessor accessor,
+      ILogger log) {
+      _context = context;
+      _ownershipResolver = ownershipResolver;
+      _accessor = accessor;
+      _log = log;
+    }
+
+    [HttpPut("/api/notification")]
+    [Authorize]
+    public async Task<ActionResult> UpdateNotification([FromBody] NotificationInput input, CancellationToken token) {
+      var (hasOwnership, statusCode, account, receipt, message) =
+        await _ownershipResolver.HasNotificationOwnershipAsync(_accessor, input.Id, token);
+
+      _log.ForContext("hasOwnership", hasOwnership)
+          .ForContext("input", input)
+          .ForContext("account", account)
+          .ForContext("message", message)
+          .Debug("/api/notification");
+
+      if (!hasOwnership || statusCode != HttpStatusCode.OK || account is null || receipt is null) {
+        if (statusCode == HttpStatusCode.NotFound) {
+          return NotFound(new NotificationMutationResponse(new[] {
+            new UserError(message, "MISSING_NOTIFICATION")
+          }));
+        }
+
+        return StatusCode((int)statusCode, message);
       }
 
       var now = DateTime.Now;
@@ -38,17 +64,19 @@ namespace api.GraphQL {
         }
       }
 
-      await context.SaveChangesAsync(token);
+      await _context.SaveChangesAsync(token);
 
-      return new NotificationMutationResponse(receipt.ReadAt, receipt.DeletedAt);
+      return Accepted(new NotificationMutationResponse(receipt));
     }
   }
 
   public class NotificationMutationResponse : Payload {
-    public NotificationMutationResponse(DateTime? read, DateTime? deletedAt) {
-      ReadAt = read;
-      Read = read.HasValue;
-      DeletedAt = deletedAt;
+    public NotificationMutationResponse(NotificationReceipt receipt) {
+      ReadAt = receipt.ReadAt;
+      Read = receipt.ReadAt.HasValue;
+      DeletedAt = receipt.DeletedAt;
+      Deleted = receipt.DeletedAt.HasValue;
+      Id = receipt.Id;
     }
 
     public NotificationMutationResponse(IReadOnlyList<UserError> errors)
@@ -56,6 +84,8 @@ namespace api.GraphQL {
     }
 
     public bool Read { get; set; }
+    public bool Deleted { get; set; }
+    public int Id { get; set; }
     public DateTime? ReadAt { get; set; }
     public DateTime? DeletedAt { get; set; }
   }

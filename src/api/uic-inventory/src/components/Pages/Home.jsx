@@ -1,12 +1,15 @@
 import { List } from 'react-content-loader';
 import { AuthContext } from '../../AuthProvider';
-import { useQuery, SitesQuery } from '../GraphQL';
 import { Chrome, Link, Header } from '../PageElements';
 import { useContext } from 'react';
+import ky from 'ky';
+import { useQuery } from 'react-query';
 
 export function SitesAndInventory({ completeProfile }) {
   const { authInfo } = useContext(AuthContext);
-  const siteQuery = useQuery(SitesQuery, { variables: { id: parseInt(authInfo.id) } });
+  const siteQuery = useQuery('sites', () => ky.get(`/api/sites/mine`).json(), {
+    enabled: authInfo?.id ? true : false,
+  });
 
   return (
     <main>
@@ -47,13 +50,13 @@ export function GenericLandingPage() {
           As of August 15, 2021 all Class V injection well inventory information forms must be submitted via online web
           form. To submit, you must first create a Utah ID account and provide UIC user profile information. Please
           visit{' '}
-          <a type="Primary" href="https://login.utah.gov">
+          <a type="primary" href="/api/login">
             Utah ID
           </a>{' '}
           to register with Utah ID and then return to this page to login and complete your profile. If you already have
           a Utah ID account you may login using the link above. Once you have an account you will be able to:
         </p>
-        <ul role="list" className="mt-3 ml-8 list-disc list-inside">
+        <ul className="mt-3 ml-8 list-disc list-inside">
           <li>Submit Class V UIC inventory information forms</li>
           <li>Check inventory form status</li>
           <li>Update well operating status</li>
@@ -73,12 +76,12 @@ function SiteCreationButton({ access, className = 'm-4 text-2xl' }) {
   );
 }
 
-function SiteList({ show, loading, error, data }) {
+function SiteList({ show, status, data }) {
   return show ? (
-    loading ? (
+    status === 'loading' ? (
       <List animate={false} />
     ) : (
-      <SiteTable data={data?.mySites} />
+      <SiteTable data={data} />
     )
   ) : (
     <p>

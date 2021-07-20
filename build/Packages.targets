@@ -15,18 +15,11 @@
     <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
     <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="5.0.7" />
 
-    <!-- GraphQL -->
-    <PackageReference Update="HotChocolate.Data.EntityFramework" Version="11.3.0" />
-    <PackageReference Update="HotChocolate.AspNetCore" Version="11.3.0" />
-    <PackageReference Update="HotChocolate.AspNetCore.Authorization" Version="11.3.0" />
-    <PackageReference Update="HotChocolate.Data" Version="11.3.0" />
-    <PackageReference Update="HotChocolate.Types.Scalars" Version="11.3.0" />
-
     <!-- Logging -->
     <PackageReference Update="Serilog" Version="2.10.0" />
     <PackageReference Update="Serilog.AspNetCore" Version="4.1.0" />
     <PackageReference Update="Serilog.Settings.Configuration" Version="3.1.0" />
-    <PackageReference Update="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Update="Serilog.Sinks.Console" Version="4.0.0" />
 
     <!-- Excell Reading -->
     <PackageReference Update="ExcelDataReader" Version="3.6.0" />

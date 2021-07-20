@@ -49,18 +49,18 @@ export const ContactSchema = yup.object().shape({
     .required()
     .oneOf(
       [
-        'OWNER_OPERATOR',
-        'FACILITY_OWNER',
-        'FACILITY_OPERATOR',
-        'FACILITY_MANAGER',
-        'LEGAL_REP',
-        'OFFICE_REP',
-        'CONTRACTOR',
-        'PROJECT_MANAGER',
-        'HEALTH_DEP',
-        'PERMIT_WRITER',
-        'DEVELOPER',
-        'OTHER',
+        'owner_operator',
+        'facility_owner',
+        'facility_operator',
+        'facility_manager',
+        'legal_rep',
+        'office_rep',
+        'contractor',
+        'project_manager',
+        'health_dep',
+        'permit_writer',
+        'developer',
+        'other',
       ],
       'A valid selection must be made'
     )

@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using HotChocolate;
-using HotChocolate.Types;
+using System.Text.Json.Serialization;
 
 namespace api.GraphQL {
   public class Notification {
-    [GraphQLIgnore]
     public int Id { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public string? Url { get; set; }
@@ -18,9 +16,9 @@ namespace api.GraphQL {
   public class NotificationReceipt {
     public int Id { get; set; }
 
-    [GraphQLType(typeof(DateTimeType))] public DateTime? ReadAt { get; set; }
+    public DateTime? ReadAt { get; set; }
 
-    [GraphQLType(typeof(DateTimeType))] public DateTime? DeletedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     public int RecipientId { get; set; }
     public int NotificationFk { get; set; }
@@ -41,7 +39,6 @@ namespace api.GraphQL {
   }
 
   public class NotificationPayload {
-    public NotificationPayload() { }
     public NotificationPayload(Notification notification, NotificationReceipt receipt) {
       if (receipt.ReadAt.HasValue) {
         Read = true;
@@ -61,11 +58,11 @@ namespace api.GraphQL {
     }
 
     public int Id { get; set; }
-    [GraphQLName("event")] public NotificationTypes NotificationType { get; set; }
-    [GraphQLType(typeof(DateTimeType))] public DateTime CreatedAt { get; set; }
-    [GraphQLType(typeof(UrlType))] public string Url { get; set; }
-    [GraphQLType(typeof(AnyType))] public IDictionary<string, object> AdditionalData { get; set; }
-    [GraphQLType(typeof(DateTimeType))] public DateTime? ReadAt { get; set; }
+    [JsonPropertyName("event")] public NotificationTypes NotificationType { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public string Url { get; set; }
+    public IDictionary<string, object> AdditionalData { get; set; }
+    public DateTime? ReadAt { get; set; }
     public bool Read { get; set; }
     public bool Deleted { get; set; }
   }

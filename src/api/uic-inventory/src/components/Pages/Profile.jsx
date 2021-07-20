@@ -1,10 +1,11 @@
-import { useQuery, useMutation, AccountMutation, AccountQuery } from '../GraphQL';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Chrome, toast, useParams } from '../PageElements';
 import { Facebook } from 'react-content-loader';
 import { Switch } from '@headlessui/react';
 import { AuthContext } from '../../AuthProvider';
+import { useQuery, useQueryClient, useMutation } from 'react-query';
+import ky from 'ky';
 import {
   ErrorMessage,
   ErrorMessageTag,
@@ -21,12 +22,22 @@ import { useContext, useEffect } from 'react';
 export function Profile() {
   const { id } = useParams();
   const { authInfo } = useContext(AuthContext);
-  const { loading, error, data, refetch } = useQuery(AccountQuery, { variables: { id: parseInt(id || authInfo.id) } });
-  const [updateAccount] = useMutation(AccountMutation);
+
+  const queryClient = useQueryClient();
+  const { status, error, data } = useQuery(
+    'profile',
+    () => ky.get(`/api/account/${parseInt(id || authInfo.id)}`).json(),
+    { enabled: id || authInfo?.id ? true : false }
+  );
+  const { mutate } = useMutation((data) => ky.put('/api/account', { json: { ...data, id: authInfo.id } }).json(), {
+    onSuccess: () => queryClient.invalidateQueries('auth'),
+  });
+
   const { control, formState, handleSubmit, register, reset } = useForm({
     resolver: yupResolver(schema),
   });
-  //! pull isDirty from form state to activate proxy
+
+  //* pull isDirty from form state to activate proxy
   const { isDirty } = formState;
   const {
     getValues: notificationValues,
@@ -35,16 +46,16 @@ export function Profile() {
     formState: notificationFormState,
     reset: notificationReset,
   } = useForm({});
-  //! pull isDirty from form state to activate proxy
+  //* pull isDirty from form state to activate proxy
   const { isDirty: isNotificationDirty } = notificationFormState;
 
   // fill form fields with existing data
   useEffect(() => {
-    if (data?.accountById) {
-      const defaults = data?.accountById;
+    if (data) {
+      const defaults = data;
 
       for (let name in defaults) {
-        if (defaults.hasOwnProperty(name) && defaults[name] === null) {
+        if (Object.prototype.hasOwnProperty.call(defaults, 'name') && defaults[name] === null) {
           defaults[name] = '';
         }
       }
@@ -72,27 +83,17 @@ export function Profile() {
       input[key] = formData[key];
     }
 
-    const { errors } = await updateAccount({
-      variables: {
-        input: { ...input },
-      },
-    });
-
-    if (errors) {
-      return toast.error('We had some trouble updating your profile');
-      // TODO: log error
-    }
+    await mutate(input);
 
     updateDefaultValues(formData);
-    refetch();
 
     toast.success('Profile updated successfully!');
   };
 
   return (
     <main>
-      <Chrome loading={loading}>
-        {!loading && !error && (
+      <Chrome loading={status === 'loading'}>
+        {status !== 'loading' && !error && (
           <>
             <form onSubmit={handleSubmit((data) => mutateAccount(formState, reset, data))}>
               <PageGrid
@@ -162,7 +163,7 @@ export function Profile() {
                 </FormGrid>
               </PageGrid>
             </form>
-            {data?.accountById.access === 'ELEVATED' ? (
+            {data?.access === 'elevated' ? (
               <form
                 onSubmit={handleNotificationSubmit((data) =>
                   mutateAccount(notificationFormState, notificationReset, data)
@@ -206,7 +207,7 @@ export function Profile() {
             ) : null}
           </>
         )}
-        {loading && <Facebook />}
+        {status === 'loading' && <Facebook />}
         {error && (
           <h1>Something went terribly wrong</h1>
           // Log error

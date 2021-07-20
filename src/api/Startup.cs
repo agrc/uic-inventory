@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using api.Features.Naics;
 using api.Infrastructure;
@@ -45,9 +47,9 @@ namespace api {
         options.UseNpgsql(database.ConnectionString)
                .UseSnakeCaseNamingConvention();
 
-        if (Env.IsDevelopment()) {
-          options.LogTo(Console.WriteLine);
-        }
+        // if (Env.IsDevelopment()) {
+        //   options.LogTo(Console.WriteLine);
+        // }
       });
 
       // add context for computations
@@ -59,7 +61,11 @@ namespace api {
           policy => policy.RequireAuthenticatedUser());
       });
 
-      services.AddGraphQL(Env);
+      services.AddControllers().AddJsonOptions(options => {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+      });
 
       services.AddSingleton(new Lazy<NaicsProvider>(() => new NaicsProvider()));
 
@@ -70,7 +76,10 @@ namespace api {
       });
     }
 
-    public void ConfigureContainer(ContainerBuilder builder) => builder.AddComputationMediator();
+    public void ConfigureContainer(ContainerBuilder builder) {
+      builder.RegisterType<OwnershipResolver>().As<IHasOwnership>();
+      builder.AddComputationMediator();
+    }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
       var redirectUrl = "/";
@@ -118,7 +127,7 @@ namespace api {
           await context.Response.WriteAsJsonAsync(naicsProvider.Value.GetCodesFor(naicsCode));
         });
 
-        endpoints.MapGraphQL();
+        endpoints.MapControllers();
 
         endpoints.MapFallbackToFile("index.html");
       });

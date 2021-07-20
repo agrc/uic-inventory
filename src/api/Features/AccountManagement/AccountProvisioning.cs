@@ -41,20 +41,20 @@ namespace api.Features.AccountManagement {
         _context = context;
       }
 
-      public async Task<Task> Handle(Computation computation, CancellationToken cancellationToken) {
-        var account = await _context.Accounts.SingleOrDefaultAsync(x => x.UtahId == computation.Account.UtahId, cancellationToken);
+      public async Task<Task> Handle(Computation computation, CancellationToken token) {
+        var account = await _context.Accounts.SingleOrDefaultAsync(x => x.UtahId == computation.Account.UtahId, token);
 
         if (account is not null) {
           return Task.FromResult(Task.CompletedTask);
         }
 
-        await _context.Accounts.AddAsync(computation.Account, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _context.Accounts.AddAsync(computation.Account, token);
+        await _context.SaveChangesAsync(token);
 
         var notification = CreateNotification(NotificationTypes.new_user_account_registration, computation.Account);
 
-        await _context.Notifications.AddAsync(notification, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _context.Notifications.AddAsync(notification, token);
+        await _context.SaveChangesAsync(token);
 
         return Task.FromResult(Task.CompletedTask);
       }

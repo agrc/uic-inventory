@@ -1,11 +1,12 @@
-import { useManualQuery, useMutation } from 'graphql-hooks';
+import { Fragment, useContext } from 'react';
 import clsx from 'clsx';
 import { BellIcon, LinkIcon, MailOpenIcon, MailIcon, MenuIcon, TrashIcon, XIcon } from '@heroicons/react/outline';
 import { Disclosure, Menu, Popover, Transition } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import { Facebook } from 'react-content-loader';
 import { AuthContext } from '../../AuthProvider';
-import { Fragment, useContext, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import ky from 'ky';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'numeric',
@@ -14,31 +15,6 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   hour: 'numeric',
   minute: 'numeric',
 });
-
-const NOTIFICATION_QUERY = `query GetAccount($id: Int!) {
-  accountById(id: $id) {
-    firstName
-    lastName
-    email
-    notifications {
-      id
-      event
-      url
-      createdAt
-      read
-      readAt
-      deleted
-      additionalData
-    }
-  }
-}`;
-
-const UPDATE_MUTATION = `mutation updateNotification($input: NotificationInput!) {
-  updateNotification(input: $input) {
-    read
-    readAt
-  }
-}`;
 
 const navigation = [
   {
@@ -68,50 +44,10 @@ const getInitials = (account) => {
 
 function Navigation() {
   const { authInfo, isAuthenticated, receiveNotifications } = useContext(AuthContext);
-
-  const [fetchNotifications, { loading, error, data, refetch }] = useManualQuery(NOTIFICATION_QUERY, {
-    variables: {
-      id: authInfo?.id,
-    },
+  const { status, data, error, refetch } = useQuery('notifications', () => ky.get(`/api/notifications/mine`).json(), {
+    enabled: authInfo?.id ? true : false,
+    refetchInterval: 1000 * 60 * 10,
   });
-
-  useEffect(() => {
-    if (authInfo?.id) {
-      return fetchNotifications();
-    }
-  }, [authInfo, fetchNotifications]);
-
-  const [updateNotification] = useMutation(UPDATE_MUTATION);
-
-  const _updateNotification = async (options) => {
-    const { error } = await updateNotification(options);
-
-    if (!error) {
-      refetch();
-    }
-  };
-
-  const markAsRead = async (notificationId) => {
-    await _updateNotification({
-      variables: {
-        input: {
-          id: notificationId,
-          read: true,
-        },
-      },
-    });
-  };
-
-  const markAsDeleted = async (notificationId) => {
-    await _updateNotification({
-      variables: {
-        input: {
-          id: notificationId,
-          deleted: true,
-        },
-      },
-    });
-  };
 
   return (
     <div>
@@ -122,16 +58,8 @@ function Navigation() {
               <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
-                    <img
-                      className="hidden w-auto h-12 sm:block"
-                      src="https://deq.utah.gov/wp-content/themes/deq/assets/images/branding/Logo-Utah-DEQ-Water-Quality-Secondary-White.svg"
-                      alt="Workflow"
-                    />
-                    <img
-                      className="w-auto h-12 sm:hidden"
-                      src="https://deq.utah.gov/wp-content/themes/deq/assets/images/branding/Logo-Utah-DEQ-Water-Quality.svg"
-                      alt="Workflow"
-                    />
+                    <img className="hidden w-auto h-12 sm:block" src="/logo-alternate.svg" alt="Workflow" />
+                    <img className="w-auto h-12 sm:hidden" src="/logo.svg" alt="Workflow" />
                   </div>
                   <div className="hidden md:block">
                     <div className="flex items-baseline ml-10 space-x-4">
@@ -149,11 +77,7 @@ function Navigation() {
                             {({ open }) => (
                               <>
                                 <Popover.Button className="flex p-1 text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                                  <NotificationBell
-                                    items={data?.accountById.notifications}
-                                    loading={loading}
-                                    error={error}
-                                  />
+                                  <NotificationBell items={data?.notifications} status={status} error={error} />
                                 </Popover.Button>
                                 <Transition
                                   show={open}
@@ -170,11 +94,10 @@ function Navigation() {
                                     className="absolute right-0 py-1 mt-2 overflow-scroll origin-top-right bg-white rounded-md shadow-lg w-96 ring-1 ring-black ring-opacity-5 focus:outline-none max-h-64"
                                   >
                                     <Notifications
-                                      notifications={data?.accountById.notifications}
-                                      loading={loading}
+                                      notifications={data?.notifications}
+                                      status={status}
                                       error={error}
-                                      read={markAsRead}
-                                      remove={markAsDeleted}
+                                      refetch={refetch}
                                     />
                                   </Popover.Panel>
                                 </Transition>
@@ -190,7 +113,7 @@ function Navigation() {
                                 <Menu.Button className="flex items-center max-w-xs text-sm bg-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                                   <span className="sr-only">Open user menu</span>
                                   <p className="w-8 h-8 text-2xl font-black tracking-tighter text-gray-400 uppercase rounded-full">
-                                    {getInitials(data?.accountById)}
+                                    {getInitials(data)}
                                   </p>
                                 </Menu.Button>
                               </div>
@@ -282,19 +205,19 @@ function Navigation() {
                     <div className="flex items-center px-5">
                       <div className="flex-shrink-0">
                         <p className="w-10 h-10 text-3xl font-black tracking-tighter text-gray-300 uppercase rounded-full">
-                          {`${data?.accountById.firstName[0]}${data?.accountById.lastName[0]}`}
+                          {`${data?.firstName[0]}${data?.lastName[0]}`}
                         </p>
                       </div>
                       <div className="ml-3">
                         <div className="text-base font-medium leading-none text-white">
-                          {`${data?.accountById.firstName} ${data?.accountById.lastName}`}
+                          {`${data?.firstName} ${data?.lastName}`}
                         </div>
-                        <div className="text-sm font-medium leading-none text-gray-400">{data?.accountById.email}</div>
+                        <div className="text-sm font-medium leading-none text-gray-400">{data?.email}</div>
                       </div>
                       <div className="flex-shrink-0 p-1 ml-auto text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                         {receiveNotifications() ? (
                           <Popover.Button>
-                            <NotificationBell items={data?.accountById.notifications} loading={loading} error={error} />
+                            <NotificationBell items={data?.notifications} status={status} error={error} />
                           </Popover.Button>
                         ) : null}
                       </div>
@@ -302,11 +225,10 @@ function Navigation() {
                     <div className="px-2 mt-3 space-y-1">
                       <Popover.Panel className="overflow-scroll bg-white rounded-sm max-h-36">
                         <Notifications
-                          notifications={data?.accountById.notifications}
-                          loading={loading}
+                          notifications={data?.notifications}
+                          status={status}
                           error={error}
-                          read={markAsRead}
-                          remove={markAsDeleted}
+                          refetch={refetch}
                         />
                       </Popover.Panel>
                     </div>
@@ -332,14 +254,14 @@ function Navigation() {
   );
 }
 
-function NotificationBell({ loading, error, items }) {
+function NotificationBell({ status, error, items }) {
   return (
     <>
       <span className="sr-only">View notifications</span>
       <BellIcon
         className={clsx('w-6 h-6', {
-          'text-yellow-400': !loading && !error && items?.filter((x) => !x.read).length > 0,
-          'text-gray-300': loading,
+          'text-yellow-400': status !== 'loading' && !error && items?.filter((x) => !x.read).length > 0,
+          'text-gray-300': status === 'loading',
           'text-red-400': error,
         })}
         aria-hidden="true"
@@ -377,8 +299,53 @@ function Links({ links, isAuthenticated }) {
   );
 }
 
-function Notifications({ loading, error, notifications, read, remove }) {
-  if (loading) {
+function Notifications({ status, error, notifications }) {
+  const queryClient = useQueryClient();
+  const { mutate, status: mutateStatus } = useMutation(
+    ({ id, key }) =>
+      ky
+        .put('/api/notification', {
+          json: {
+            id: id,
+            [key]: true,
+          },
+        })
+        .json(),
+    {
+      onMutate: async ({ id, key }) => {
+        await queryClient.cancelQueries('notifications');
+        const previousValue = queryClient.getQueryData('notifications');
+
+        queryClient.setQueryData('notifications', (old) => {
+          return {
+            ...old,
+            notifications: old.notifications.map((item) => {
+              if (item.id === id) {
+                return {
+                  ...item,
+                  [key]: true,
+                  [`${key}At`]: new Date().toISOString(),
+                };
+              }
+
+              return item;
+            }),
+          };
+        });
+
+        return previousValue;
+      },
+      onError: (err, variables, previousValue) => {
+        queryClient.setQueryData('notifications', previousValue);
+        //! toast error
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries('notifications');
+      },
+    }
+  );
+
+  if (['idle', 'loading'].includes(status)) {
     return <Facebook />;
   }
 
@@ -406,7 +373,7 @@ function Notifications({ loading, error, notifications, read, remove }) {
         {dateFormatter.format(Date.parse(notification.createdAt))}
       </span>{' '}
       <span>
-        {notification.event === 'NEW_USER_ACCOUNT_REGISTRATION'
+        {notification.event === 'new_user_account_registration'
           ? `${notification.additionalData.name} signed up`
           : 'Other'}
       </span>
@@ -423,10 +390,16 @@ function Notifications({ loading, error, notifications, read, remove }) {
           </span>
         ) : (
           <span>
-            <MailIcon className="inline-block w-5 h-5 ml-1 text-blue-400" onClick={() => read(notification.id)} />
+            <MailIcon
+              className="inline-block w-5 h-5 ml-1 text-blue-400 cursor-pointer"
+              onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'read' })}
+            />
           </span>
         )}
-        <TrashIcon className="inline-block w-5 h-5 ml-1 text-red-300" onClick={() => remove(notification.id)} />
+        <TrashIcon
+          className="inline-block w-5 h-5 ml-1 text-red-300 cursor-pointer"
+          onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'deleted' })}
+        />
       </span>
     </div>
   ));

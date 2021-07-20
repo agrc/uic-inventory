@@ -61,7 +61,7 @@ function NaicsPicker({ updateWith }) {
     <>
       <p className="mb-2 italic text-gray-500">
         For a keyword search and further information about NAICS, please visit the{' '}
-        <a type="primary" href="https://census.gov/naics" target="_blank" rel="noopener">
+        <a type="primary" href="https://census.gov/naics" target="_blank" rel="noopener noreferrer">
           US Census Bureau NAICS website
         </a>
         .
@@ -100,9 +100,9 @@ function NaicsPicker({ updateWith }) {
       </div>
       <div className="grid items-stretch grid-cols-2 gap-4 overflow-auto sm:grid-cols-3 md:grid-cols-5">
         {codes?.map((item) => (
-          <div key={item.code + item.value} className={classes} onClick={() => select(item)}>
+          <button key={item.code + item.value} className={classes} onClick={() => select(item)}>
             {item.value}
-          </div>
+          </button>
         ))}
       </div>
     </>

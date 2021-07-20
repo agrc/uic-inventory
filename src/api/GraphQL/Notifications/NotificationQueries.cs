@@ -1,60 +1,50 @@
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
+using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
-using HotChocolate;
-using HotChocolate.AspNetCore.Authorization;
-using HotChocolate.Types;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.GraphQL {
-  [Authorize]
-  [ExtendObjectType("Query")]
-  public class NotificationQueries {
+  [ApiController]
+  public class NotificationQueries : ControllerBase {
     private readonly IHttpContextAccessor _accessor;
     private readonly ILogger _log;
+    private readonly AppDbContext _context;
+    private readonly IHasOwnership _ownershipResolver;
 
-    public NotificationQueries(IHttpContextAccessor accessor, ILogger log) {
+    public NotificationQueries(AppDbContext context, IHasOwnership ownershipResolver, IHttpContextAccessor accessor, ILogger log) {
+      _context = context;
+      _ownershipResolver = ownershipResolver;
       _accessor = accessor;
       _log = log;
     }
 
-    [UseApplicationDbContext]
-    // [UseProjection]
-    public Task<List<NotificationPayload>> GetNotifications([ScopedService] AppDbContext context,
-      int id) {
+    [HttpGet("/api/notifications/mine")]
+    [Authorize]
+    public async Task<ActionResult> GetNotifications(CancellationToken token) {
+      var (hasAccount, statusCode, account, message) = await _ownershipResolver.HasAccountAsync(_accessor, token);
 
-      if (_accessor.HttpContext?.User.HasClaim(x => x.Type == ClaimTypes.NameIdentifier) != true) {
-        _log.ForContext("claims", _accessor.HttpContext?.User.Claims)
-           .Fatal("User is missing name identifier claim");
+      _log.ForContext("hasAccount", hasAccount)
+          .ForContext("account", account)
+          .ForContext("message", message)
+          .Debug("/api/notifications/mine");
 
-        return Task.FromResult(new List<NotificationPayload>());
+      if (!hasAccount || statusCode != HttpStatusCode.OK || account is null) {
+        return StatusCode((int)statusCode, message);
       }
 
-      var utahIdClaim = _accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-      if (utahIdClaim is null) {
-        _log.ForContext("claims", _accessor.HttpContext?.User.Claims)
-           .Fatal("Name identifier claim is empty");
-
-        return Task.FromResult(new List<NotificationPayload>());
-      }
-
-      var user = context.Accounts.Where(x => x.UtahId == utahIdClaim.Value).Select(x => new { x.Id, x.Access }).Single();
-
-      if (user.Access == AccessLevels.standard && user.Id != id) {
-        _log.ForContext("user", utahIdClaim.Value)
-           .Warning("User tried to access protected data");
-
-        return Task.FromResult(new List<NotificationPayload>());
-      }
-
-      return context.NotificationReceipts
+      var items = await _context.NotificationReceipts
        .Include(x => x.Notification)
-       .Where(x => x.RecipientId == id)
-       .Select(x => new NotificationPayload(x.Notification, x)).ToListAsync();
+       .Where(x => x.RecipientId == account.Id)
+       .Select(x => new NotificationPayload(x.Notification, x))
+       .ToListAsync(token);
+
+      return Ok(new { firstName = account.FirstName, lastName = account.LastName, email = account.Email, notifications = items });
     }
   }
 }

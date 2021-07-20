@@ -1,5 +1,4 @@
 import { BulletList } from 'react-content-loader';
-import { ContactMutation, ContactQuery, useQuery, useMutation } from '../../GraphQL';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Chrome, toast, useParams, Link } from '../../PageElements';
@@ -16,54 +15,56 @@ import {
   TextInput,
 } from '../../FormElements';
 import { useEffect, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import ky from 'ky';
 
 const contactType = [
   {
-    value: 'OWNER_OPERATOR',
+    value: 'owner_operator',
     label: 'Owner/Operator',
   },
   {
-    value: 'FACILITY_OWNER',
+    value: 'facility_owner',
     label: 'Owner',
   },
   {
-    value: 'FACILITY_OPERATOR',
+    value: 'facility_operator',
     label: 'Operator',
   },
   {
-    value: 'FACILITY_MANAGER',
+    value: 'facility_manager',
     label: 'Facility Manager',
   },
   {
-    value: 'LEGAL_REP',
+    value: 'legal_rep',
     label: 'Legal Representative',
   },
   {
-    value: 'OFFICE_REP',
+    value: 'office_rep',
     label: 'Official Representative',
   },
   {
-    value: 'CONTRACTOR',
+    value: 'contractor',
     label: 'Contractor',
   },
   {
-    value: 'PROJECT_MANAGER',
+    value: 'project_manager',
     label: 'DEQ Dist Eng/Project Manager',
   },
   {
-    value: 'HEALTH_DEP',
+    value: 'health_dep',
     label: 'Local Health Department',
   },
   {
-    value: 'PERMIT_WRITER',
+    value: 'permit_writer',
     label: 'Permit Writer',
   },
   {
-    value: 'DEVELOPER',
+    value: 'developer',
     label: 'Developer',
   },
   {
-    value: 'OTHER',
+    value: 'other',
     label: 'Other',
   },
 ];
@@ -75,28 +76,57 @@ const valueToLabel = (value) => {
 };
 
 function AddSiteContacts() {
-  const { siteId } = useParams();
-  const [createContact] = useMutation(ContactMutation);
   const { control, formState, handleSubmit, register, reset, unregister } = useForm({
     resolver: yupResolver(schema),
   });
-  const { loading, error, data, refetch } = useQuery(ContactQuery, { variables: { id: parseInt(siteId) } });
+  const { siteId } = useParams();
+  const queryClient = useQueryClient();
+  const { status, error, data } = useQuery('contacts', () => ky.get(`/api/site/${siteId}/contacts`).json(), {
+    enabled: siteId ?? 0 > 0 ? true : false,
+  });
+  const { mutate } = useMutation((input) => ky.post('/api/contact', { json: { ...input, id: siteId } }), {
+    onMutate: async (contact) => {
+      await queryClient.cancelQueries('contacts');
+      const previousValue = queryClient.getQueryData('contacts');
+
+      queryClient.setQueryData('contacts', (old) => ({
+        ...old,
+        contacts: [...old.contacts, { ...contact, id: 9999, contactType: valueToLabel(contact.contactType) }],
+      }));
+
+      return previousValue;
+    },
+    onSuccess: () => {
+      toast.success('Contact created successfully!');
+      reset({});
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries('contacts');
+    },
+    onError: (err, variables, previousValue) => {
+      queryClient.setQueryData('contacts', previousValue);
+      // TODO: log error
+      console.error(error);
+      return toast.error('We had some trouble creating the contact');
+    },
+  });
+
   const [optional, setOptional] = useState(false);
   //! pull isDirty from form state to activate proxy
   const { isDirty } = formState;
 
   // set default fields to owner
   useEffect(() => {
-    if (data?.siteById) {
-      let defaults = data?.siteById.owner;
+    if (data) {
+      let defaults = data.owner;
 
       //! contact already added do not pre-fill
-      if (data?.siteById.contacts.find((x) => x.email === defaults.email)) {
+      if (data.contacts?.find((x) => x.email === defaults.email)) {
         return;
       }
 
       for (let name in defaults) {
-        if (defaults.hasOwnProperty(name) && defaults[name] === null) {
+        if (Object.prototype.hasOwnProperty.call(defaults, 'name') && defaults[name] === null) {
           defaults[name] = '';
         }
       }
@@ -130,33 +160,20 @@ function AddSiteContacts() {
       input[key] = formData[key];
     }
 
-    const { error } = await createContact({
-      variables: {
-        input: { ...input },
-      },
-    });
-
-    if (error) {
-      return toast.error('We had some trouble creating the contact');
-      // TODO: log error
-    }
-
-    refetch();
-    toast.success('Contact created successfully!');
-    reset({});
+    await mutate({ ...input });
   };
 
   return (
-    <Chrome loading={loading}>
+    <Chrome loading={status === 'loading'}>
       <PageGrid
         heading="Site Contacts"
         subtext="At least one of the contacts listed must be the owner/operator or legal representative of the owner/operator of the injection well system for which the UIC Inventory Information is being submitted. The owner/operator or the legal representative must be the signatory for the form."
       >
         <div className="min-h-screen mt-5 md:mt-0 md:col-span-2">
-          {loading && <BulletList style={{ height: '20em' }} />}
-          {!loading && !error && (
+          {status === 'loading' && <BulletList style={{ height: '20em' }} />}
+          {status !== 'loading' && !error && (
             <>
-              <ContactsTable data={data?.siteById.contacts} />
+              <ContactsTable data={data?.contacts} />
               <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
                 <Link type="button" to={`/site/${siteId}/add-location`}>
                   Next

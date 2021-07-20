@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Dialog, Transition, RadioGroup } from '@headlessui/react';
-import { SiteMutation, useMutation } from './../../GraphQL';
 import { AuthContext } from './../../../AuthProvider';
 import {
   ErrorMessageTag,
@@ -11,10 +10,13 @@ import {
   TextInput,
   WellSchema as schema,
 } from './../../FormElements';
-import { Chrome, toast, useHistory } from './../../PageElements';
-import { Fragment, useContext, useState } from 'react';
+import { Chrome, toast, useParams, useHistory } from './../../PageElements';
+import { Fragment, useContext, useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { ErrorMessage } from '@hookform/error-message';
+import { useOpenClosed } from '../../Hooks';
+import { useQuery, useMutation } from 'react-query';
+import ky from 'ky';
 
 const wellTypes = [
   {
@@ -43,16 +45,41 @@ const wellTypes = [
 ];
 
 function CreateWell() {
-  const [selected, setSelected] = useState(wellTypes[0]);
   const { authInfo } = useContext(AuthContext);
-  const [createSite] = useMutation(SiteMutation);
-  const { formState, handleSubmit, register } = useForm({
+  const { siteId } = useParams();
+
+  const { data, status } = useQuery(['site', siteId], () => ky.get(`/api/site/${siteId}`).json(), {
+    enabled: siteId > 0,
+  });
+  const { mutate } = useMutation((input) => ky.post('/api/well', { json: input }).json(), {
+    onSuccess: () => {
+      toast.success('Site created successfully!');
+      history.push(`/site/${data.createSite.site.id}/add-contacts`);
+    },
+    onError: (error) => {
+      // TODO: log error
+      console.error(error);
+
+      return toast.error('We had some trouble creating the site');
+    },
+  });
+
+  const { formState, handleSubmit, register, reset } = useForm({
     resolver: yupResolver(schema),
   });
-  //! pull isDirty from form state to activate proxy
-  const { isDirty } = formState;
+
   const history = useHistory();
-  const [open, setOpen] = useState(false);
+  const [show, { open, close }] = useOpenClosed();
+  const [selected, setSelected] = useState(wellTypes[0]);
+
+  //* pull isDirty from form state to activate proxy
+  const { isDirty } = formState;
+
+  useEffect(() => {
+    if (data) {
+      reset(data);
+    }
+  }, [data, reset]);
 
   const create = async (formData) => {
     if (!isDirty) {
@@ -64,23 +91,11 @@ function CreateWell() {
       ...formData,
     };
 
-    const { data, error } = await createSite({
-      variables: {
-        input: { ...input },
-      },
-    });
-
-    if (error) {
-      return toast.error('We had some trouble creating the site');
-      // TODO: log error
-    }
-
-    toast.success('Site created successfully!');
-    history.push(`/site/${data.createSite.site.id}/add-contacts`);
+    await mutate(input);
   };
 
   return (
-    <Chrome>
+    <Chrome loading={status === 'loading'}>
       <form onSubmit={handleSubmit((data) => create(data))}>
         <PageGrid
           heading="Well Inventory"
@@ -106,9 +121,9 @@ function CreateWell() {
             <ResponsiveGridColumn full={true}>
               <p className="italic text-center text-gray-500">
                 To submit a UIC Inventory Form you must have a valid Inventory Review Fee order number or receipt.{' '}
-                <span type="Primary" onClick={() => setOpen(true)}>
+                <button type="primary" onClick={open}>
                   Click for instructions
-                </span>{' '}
+                </button>{' '}
                 to pay the UIC Inventory Fee online.
               </p>
             </ResponsiveGridColumn>
@@ -131,7 +146,7 @@ function CreateWell() {
                         )
                       }
                     >
-                      {({ _, checked }) => (
+                      {({ checked }) => (
                         <div className="flex items-center justify-between w-full">
                           <div className="flex items-center">
                             <div>
@@ -166,8 +181,8 @@ function CreateWell() {
           </FormGrid>
         </PageGrid>
       </form>
-      <Transition appear show={open} as={Fragment}>
-        <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" open={open} onClose={() => setOpen(false)}>
+      <Transition appear show={show} as={Fragment}>
+        <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" open={show} onClose={close}>
           <div className="flex items-center justify-center min-h-screen">
             <Transition.Child
               as={Fragment}
@@ -198,7 +213,7 @@ function CreateWell() {
                 <ul className="list-decimal list-inside">
                   <li className="leading-loose">
                     Go to{' '}
-                    <a type="Primary" href="https://secure.utah.gov/cart/dwq_cart/products.html">
+                    <a type="primary" href="https://secure.utah.gov/cart/dwq_cart/products.html">
                       https://secure.utah.gov/cart/dwq_cart/products.html
                     </a>
                     , the Products Page.
@@ -236,7 +251,7 @@ function CreateWell() {
                   <li className="leading-loose">Enter your order number on this page.</li>
                 </ul>
 
-                <button type="button" className="mt-4" onClick={() => setOpen(false)}>
+                <button type="button" className="mt-4" onClick={close}>
                   Close
                 </button>
               </div>

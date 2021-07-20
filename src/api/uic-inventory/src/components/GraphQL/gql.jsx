@@ -71,6 +71,12 @@ export const SitesQuery = `query MySites {
   }
 }`;
 
+export const SiteQuery = `query SiteById($id: Int!) {
+  siteById(id: $id) {
+    name
+  }
+}`;
+
 export const SiteMutation = `mutation CreateSite($input: SiteInput!) {
   createSite(input: $input) {
     site {

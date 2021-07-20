@@ -7,7 +7,7 @@ const roundedNumbers = new Intl.NumberFormat({
   maximumFractionDigits: 3,
 });
 
-export const enablePolygonDrawing = (view) => {
+export const enablePolygonDrawing = (view, setGraphic) => {
   const draw = new Draw({
     view: view,
   });
@@ -15,7 +15,7 @@ export const enablePolygonDrawing = (view) => {
   const action = draw.create('polygon', { mode: 'click' });
 
   const event = action.on(['vertex-add', 'vertex-remove', 'cursor-update', 'redo', 'undo', 'draw-complete'], (event) =>
-    drawPolygon(event, view)
+    drawPolygon(event, view, setGraphic)
   );
 
   view.focus();
@@ -23,12 +23,12 @@ export const enablePolygonDrawing = (view) => {
   return [action, event];
 };
 
-const drawPolygon = (event, view) => {
+const drawPolygon = (event, view, setGraphic) => {
   if (event.vertices.length < 1) {
     return;
   }
 
-  const result = createGraphic(event, view);
+  const result = createGraphic(event, view, setGraphic);
 
   //! if the last vertex is making the line intersects itself,
   //! prevent the events from firing
@@ -37,7 +37,7 @@ const drawPolygon = (event, view) => {
   }
 };
 
-const createGraphic = (event, view) => {
+const createGraphic = (event, view, setGraphic) => {
   const rings = event.vertices;
   let symbol;
 
@@ -63,11 +63,9 @@ const createGraphic = (event, view) => {
 
   const intersectingSegment = getIntersectingSegment(site.geometry);
 
-  view.graphics.removeAll();
-
   if (intersectingSegment) {
     site.symbol = IncompletePolygonSymbol;
-    view.graphics.addMany([site, intersectingSegment]);
+    setGraphic([site, intersectingSegment]);
   } else {
     let text = '';
 
@@ -77,7 +75,7 @@ const createGraphic = (event, view) => {
       text = `${roundedNumbers.format(geodesicLength(site.geometry, 'meters'))} m`;
     }
 
-    view.graphics.addMany([
+    setGraphic([
       site,
       new Graphic({
         geometry: site.geometry.centroid,

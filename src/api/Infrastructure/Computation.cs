@@ -8,19 +8,19 @@ namespace api.Infrastructure {
   public interface IComputation<TResult> { }
 
   public interface IComputationHandler<TComputation, TResult> where TComputation : IComputation<TResult> {
-    Task<TResult> Handle(TComputation computation, CancellationToken cancellationToken);
+    Task<TResult> Handle(TComputation computation, CancellationToken token);
   }
 
   public abstract class ComputationHandler<TRequest, TResponse> : IComputationHandler<TRequest, TResponse>
       where TRequest : IComputation<TResponse> {
-    Task<TResponse> IComputationHandler<TRequest, TResponse>.Handle(TRequest request, CancellationToken cancellationToken)
+    Task<TResponse> IComputationHandler<TRequest, TResponse>.Handle(TRequest request, CancellationToken token)
         => Task.FromResult(Handle(request));
 
     protected abstract TResponse Handle(TRequest request);
   }
 
   public interface IComputeMediator {
-    Task<TResult> Handle<TResult>(IComputation<TResult> command, CancellationToken cancellationToken);
+    Task<TResult> Handle<TResult>(IComputation<TResult> command, CancellationToken token);
   }
 
   public class ComputeMediator : IComputeMediator {
@@ -30,7 +30,7 @@ namespace api.Infrastructure {
 
     private Func<Type, object> Resolver { get; }
 
-    public Task<TResult> Handle<TResult>(IComputation<TResult> command, CancellationToken cancellationToken) {
+    public Task<TResult> Handle<TResult>(IComputation<TResult> command, CancellationToken token) {
       var commandType = command.GetType();
 
       var handlerType = typeof(IComputationHandler<,>).MakeGenericType(commandType, typeof(TResult));
@@ -39,7 +39,7 @@ namespace api.Infrastructure {
 
       var handleMethod = handlerType.GetMethod("Handle");
 
-      var parameters = new object[] { command, cancellationToken };
+      var parameters = new object[] { command, token };
 
       return (Task<TResult>)handleMethod.Invoke(handler, parameters);
     }

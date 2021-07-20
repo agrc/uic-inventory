@@ -55,13 +55,15 @@ const BootstrapDartboard = (props) => {
   return (
     <div className={classNames('dartboard', props.className)}>
       <div className="form-group">
-        <label {...getFirstLabelProps()}></label>
-        <input {...getFirstInputProps()} className="form-control"></input>
+        <label {...getFirstLabelProps()}>
+          <input {...getFirstInputProps()} className="form-control" />
+        </label>
         {!isFirstInputValid ? <small className="form-text text-danger">This field is required</small> : null}
       </div>
       <div className="form-group">
-        <label {...getSecondLabelProps()}></label>
-        <input {...getSecondInputProps()} className="form-control"></input>
+        <label {...getSecondLabelProps()}>
+          <input {...getSecondInputProps()} className="form-control" />
+        </label>
         {!isSecondInputValid ? <small className="form-text text-danger">This field is required</small> : null}
       </div>
       <div className="form-group">
@@ -91,21 +93,23 @@ const TailwindDartboard = (props) => {
   return (
     <div className={classNames('dartboard', props.className)}>
       <div className="group">
-        <label {...getFirstLabelProps()}></label>
-        <input
-          {...getFirstInputProps()}
-          className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
-        ></input>
+        <label {...getFirstLabelProps()}>
+          <input
+            {...getFirstInputProps()}
+            className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
+          />
+        </label>
         {!isFirstInputValid ? (
           <small {...getFirstHelpProps()} className="block -mt-2 text-xs text-red-600"></small>
         ) : null}
       </div>
       <div className="group">
-        <label {...getSecondLabelProps()}></label>
-        <input
-          {...getSecondInputProps()}
-          className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
-        ></input>
+        <label {...getSecondLabelProps()}>
+          <input
+            {...getSecondInputProps()}
+            className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
+          />
+        </label>
         {!isSecondInputValid ? (
           <small {...getSecondHelpProps()} className="block -mt-2 text-xs text-red-600"></small>
         ) : null}
@@ -121,7 +125,13 @@ const TailwindDartboard = (props) => {
           if (found === false) {
             return <small className="ml-3 text-xs text-red-600">No match found</small>;
           } else if (found === true) {
-            return <small className="ml-3 text-lg">✅</small>;
+            return (
+              <small className="ml-3 text-lg">
+                <span role="img" aria-label="success">
+                  ✅
+                </span>
+              </small>
+            );
           } else {
             return null;
           }

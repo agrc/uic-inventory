@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Dialog, Transition } from '@headlessui/react';
-import { SiteMutation, useMutation } from '../../GraphQL';
 import { AuthContext } from '../../../AuthProvider';
 import {
   FormGrid,
@@ -13,7 +12,10 @@ import {
   SiteSchema as schema,
 } from '../../FormElements';
 import { Chrome, toast, useHistory } from '../../PageElements';
-import { Fragment, useContext, useState } from 'react';
+import { Fragment, useContext } from 'react';
+import { useMutation } from 'react-query';
+import ky from 'ky';
+import { useOpenClosed } from '../../Hooks';
 
 const ownership = [
   {
@@ -60,14 +62,25 @@ const ownership = [
 
 function CreateSite() {
   const { authInfo } = useContext(AuthContext);
-  const [createSite] = useMutation(SiteMutation);
+  const { mutate } = useMutation((data) => ky.post('/api/site', { json: { ...data, id: authInfo.id } }).json(), {
+    onSuccess: (data) => {
+      toast.success('Site created successfully!');
+      history.push(`/site/${data.site.id}/add-contacts`);
+    },
+    onError: (err) => {
+      // TODO: log error
+      console.error(err);
+
+      return toast.error('We had some trouble creating the site');
+    },
+  });
   const { formState, handleSubmit, register, setValue } = useForm({
     resolver: yupResolver(schema),
   });
   //! pull isDirty from form state to activate proxy
   const { isDirty } = formState;
   const history = useHistory();
-  const [naicsOpen, setNaicsOpen] = useState(false);
+  const [status, { open, close }] = useOpenClosed(false);
 
   const create = async (formData) => {
     if (!isDirty) {
@@ -79,19 +92,7 @@ function CreateSite() {
       ...formData,
     };
 
-    const { data, error } = await createSite({
-      variables: {
-        input: { ...input },
-      },
-    });
-
-    if (error) {
-      return toast.error('We had some trouble creating the site');
-      // TODO: log error
-    }
-
-    toast.success('Site created successfully!');
-    history.push(`/site/${data.createSite.site.id}/add-contacts`);
+    await mutate({ ...input });
   };
 
   return (
@@ -126,7 +127,7 @@ function CreateSite() {
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true} className="self-center text-center sm:col-span-2 sm:row-span-3">
-              <button type="button" className="w-full sm:items-center sm:h-24" onClick={() => setNaicsOpen(true)}>
+              <button type="button" className="w-full sm:items-center sm:h-24" onClick={open}>
                 NAICS Code Helper
               </button>
             </ResponsiveGridColumn>
@@ -155,13 +156,8 @@ function CreateSite() {
           </FormGrid>
         </PageGrid>
       </form>
-      <Transition appear show={naicsOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-10 overflow-y-auto"
-          open={naicsOpen}
-          onClose={() => setNaicsOpen(false)}
-        >
+      <Transition appear show={status} as={Fragment}>
+        <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" open={status} onClose={close}>
           <div className="min-h-screen px-4 text-center">
             <Transition.Child
               as={Fragment}
@@ -192,7 +188,7 @@ function CreateSite() {
                 <NaicsPicker
                   updateWith={(item) => {
                     if (item.code.toString().length === 6) {
-                      setNaicsOpen(false);
+                      close();
                     }
 
                     setValue('naics', item.code, { shouldValidate: true, shouldDirty: true });
@@ -200,7 +196,7 @@ function CreateSite() {
                   }}
                 />
 
-                <button type="button" className="mt-4" onClick={() => setNaicsOpen(false)}>
+                <button type="button" className="mt-4" onClick={close}>
                   Cancel
                 </button>
               </div>

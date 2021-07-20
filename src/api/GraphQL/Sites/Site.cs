@@ -1,12 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using api.Infrastructure;
-using HotChocolate;
-using HotChocolate.Types;
-using Microsoft.EntityFrameworkCore;
 
 namespace api.GraphQL {
   public class Site {
@@ -20,49 +13,6 @@ namespace api.GraphQL {
     [Column(TypeName = "jsonb")] public string? Geometry { get; set; }
     public virtual Account? Account { get; set; }
     public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
-  }
-
-  public class SiteType : ObjectType<Site> {
-    protected override void Configure(IObjectTypeDescriptor<Site> descriptor) {
-      descriptor
-        .Field(f => f.Account)
-        .ResolveWith<AccountResolver>(resolver => resolver.GetAccountsAsync(default!, default!, default!, default))
-        .UseDbContext<AppDbContext>()
-        .Name("owner");
-
-      descriptor
-        .Field(f => f.Contacts)
-        .ResolveWith<ContactResolver>(r => r.GetContactsAsync(default!, default!, default))
-        .UseDbContext<AppDbContext>();
-    }
-
-    private class ContactResolver {
-      public async Task<IEnumerable<Contact>> GetContactsAsync(
-        Site site,
-        [ScopedService] AppDbContext context,
-        CancellationToken token
-      ) => await context.Contacts
-          .Where(c => c.SiteFk == site.Id)
-          .ToArrayAsync(token);
-    }
-
-    private class AccountResolver {
-      public async Task<Account> GetAccountsAsync(
-        Site site,
-        [ScopedService] AppDbContext context,
-        AccountByIdDataLoader loader,
-        CancellationToken cancellationToken) {
-        var ids = await context.Sites
-          .Where(a => a.Id == site.Id)
-          .Include(a => a.Account)
-          .Select(a => a.Account.Id)
-          .ToArrayAsync(cancellationToken: cancellationToken);
-
-        var accounts = await loader.LoadAsync(ids, cancellationToken);
-
-        return accounts.FirstOrDefault();
-      }
-    }
   }
 
   public class SiteInput {
@@ -104,7 +54,7 @@ namespace api.GraphQL {
     }
   }
 
-  public class SitePayload : Payload{
+  public class SitePayload : Payload {
     public SitePayload(Site site) {
       Site = site;
     }
@@ -113,6 +63,6 @@ namespace api.GraphQL {
         : base(errors) {
     }
 
-    public Site Site { get; }
+    public Site? Site { get; }
   }
 }

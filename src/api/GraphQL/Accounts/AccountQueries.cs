@@ -1,66 +1,76 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
-using HotChocolate;
-using HotChocolate.AspNetCore.Authorization;
-using HotChocolate.Data;
-using HotChocolate.Types;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.GraphQL {
-  [Authorize]
-  [ExtendObjectType("Query")]
-  public class AccountQueries {
+  [ApiController]
+  public class AccountQueries : ControllerBase {
     private readonly IHttpContextAccessor _accessor;
     private readonly ILogger _log;
 
-    public AccountQueries(IHttpContextAccessor accessor, ILogger log) {
+    private readonly AppDbContext _context;
+    private readonly IHasOwnership _ownershipResolver;
+
+    public AccountQueries(
+      AppDbContext context,
+      IHasOwnership ownershipResolver,
+      IHttpContextAccessor accessor,
+      ILogger log) {
+      _context = context;
+      _ownershipResolver = ownershipResolver;
       _accessor = accessor;
       _log = log;
     }
 
-    [UseDbContext(typeof(AppDbContext))]
-    public Account? GetMe(
-      [ScopedService] AppDbContext context) {
-      if (_accessor.HttpContext?.User.HasClaim(x => x.Type == ClaimTypes.NameIdentifier) != true) {
-        _log.ForContext("claims", _accessor.HttpContext?.User.Claims)
-           .Warning("User is missing name identifier claim");
+    [HttpGet("/api/me")]
+    [Authorize]
+    public async Task<ActionResult> GetMe(CancellationToken token) {
+      var (hasAccount, statusCode, account, message) =
+        await _ownershipResolver.HasAccountAsync(_accessor, token);
 
-        throw new System.Exception("user is missing required claims");
+       _log.ForContext("hasAccount", hasAccount)
+          .ForContext("account", account)
+          .ForContext("verb", "GET")
+          .ForContext("message", message)
+          .Debug("/api/me");
+
+      if (!hasAccount || account is null) {
+        return StatusCode((int)statusCode, message);
       }
 
-      var utahIdClaim = _accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-      if (utahIdClaim is null) {
-        _log.ForContext("claims", _accessor.HttpContext?.User.Claims)
-           .Warning("Name identifier claim is empty");
-
-        throw new System.Exception("user is missing required claims");
-      }
-
-      return context.Accounts.SingleOrDefault(x => x.UtahId == utahIdClaim.Value);
+      return Ok(new AuthPayload(account));
     }
 
-    [UseDbContext(typeof(AppDbContext))]
-    public IQueryable<Account> GetAccounts([ScopedService] AppDbContext context)
-      => context.Accounts.OrderBy(x => x.LastName);
+    [HttpGet("/api/accounts")]
+    [Authorize]
+    public async Task<List<Account>> GetAccounts(CancellationToken token)
+      => await _context.Accounts.OrderBy(x => x.LastName).ToListAsync(token);
 
-    // [UseProjection]
-    [UseDbContext(typeof(AppDbContext))]
-    public Task<Account> GetAccountById(
-      int id,
-      AccountByIdDataLoader loader,
-      CancellationToken cancellationToken)
-        => loader.LoadAsync(id, cancellationToken);
+    [HttpGet("/api/account/{id}")]
+    [Authorize]
+    public async Task<ActionResult> GetAccountById(int id, CancellationToken token) {
+      var (hasOwnership, statusCode, account, message) =
+        await _ownershipResolver.HasAccountOwnershipAsync(_accessor, id, token);
 
-    [UseDbContext(typeof(AppDbContext))]
-    public Task<IReadOnlyList<Account>> GetAccountsById(
-      int[] ids,
-      AccountByIdDataLoader loader,
-      CancellationToken cancellationToken)
-        => loader.LoadAsync(ids, cancellationToken);
+      _log.ForContext("hasOwnership", hasOwnership)
+          .ForContext("account", account)
+          .ForContext("verb", "GET")
+          .ForContext("message", message)
+          .Debug($"/api/account/{id}");
+
+      if (!hasOwnership || statusCode != HttpStatusCode.OK || account is null) {
+        return StatusCode((int)statusCode, message);
+      }
+
+      return Ok(new AccountPayload(await _context.Accounts.SingleOrDefaultAsync(x => x.Id == id, token)));
+    }
   }
 }
