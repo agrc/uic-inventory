@@ -107,7 +107,7 @@ function CreateSite() {
         >
           <FormGrid>
             <ResponsiveGridColumn full={true} half={true}>
-              <TextInput id="name" register={register} errors={formState.errors} />
+              <TextInput id="name" text="Site Name" register={register} errors={formState.errors} />
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true} half={true}>
