@@ -167,7 +167,7 @@ function AddSiteContacts() {
     <Chrome loading={status === 'loading'}>
       <PageGrid
         heading="Site Contacts"
-        subtext="At least one of the contacts listed must be the owner/operator or legal representative of the owner/operator of the injection well system for which the UIC Inventory Information is being submitted. The owner/operator or the legal representative must be the signatory for the form."
+        subtext="At least one of the contacts listed must be the owner, owner/operator, or legal representative of the injection well system for which the UIC Well Inventory is being submitted. The owner, owner/operator, or legal representative must be the signatory of the form."
       >
         <div className="min-h-screen mt-5 md:mt-0 md:col-span-2">
           {status === 'loading' && <BulletList style={{ height: '20em' }} />}
