@@ -7,6 +7,7 @@ using api.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.GraphQL {
@@ -89,6 +90,38 @@ namespace api.GraphQL {
       }
 
       return Ok(new {site.Id});
+    }
+
+    [HttpDelete("/api/site")]
+    [Authorize]
+    public async Task<ActionResult> DeleteSiteAsync(SiteInput input, CancellationToken token) {
+      var (hasAccount, statusCode, account, site, message) =
+        await _ownershipResolver.HasSiteOwnershipAsync(_accessor, input.Id, token);
+
+      _log.ForContext("hasAccount", hasAccount)
+          .ForContext("input", input)
+          .ForContext("account", account)
+          .ForContext("verb", "DELETE")
+          .ForContext("message", message)
+          .Debug("/api/site");
+
+      if (!hasAccount || statusCode != HttpStatusCode.OK || account is null || site is null) {
+        return StatusCode((int)statusCode, message);
+      }
+
+      try {
+        var connectedSite = await _context.Sites
+          .Include(s => s.Contacts)
+          .FirstAsync(s => s.Id == input.Id, cancellationToken: token);
+
+        _context.Sites.Remove(connectedSite);
+
+        await _context.SaveChangesAsync(token);
+      } catch (Exception ex) {
+        throw new AccountNotFoundException(input.Id.ToString(), ex);
+      }
+
+      return Accepted();
     }
   }
 }

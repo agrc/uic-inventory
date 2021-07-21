@@ -136,7 +136,7 @@ namespace api.Infrastructure {
         entity.HasOne(d => d.Site)
             .WithMany(p => p.Contacts)
             .HasForeignKey(d => d.SiteFk)
-            .OnDelete(DeleteBehavior.ClientSetNull)
+            .OnDelete(DeleteBehavior.ClientCascade)
             .HasConstraintName("contact_to_site_fk");
       }).HasPostgresEnum<ContactTypes>("public", "contact_types");
 
