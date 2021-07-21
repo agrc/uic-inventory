@@ -250,9 +250,10 @@ function SiteTable({ data }) {
               <table {...getTableProps()} className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   {headerGroups.map((headerGroup) => (
-                    <tr {...headerGroup.getHeaderGroupProps()}>
+                    <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
                       {headerGroup.headers.map((column) => (
                         <th
+                          key={`${headerGroup.index}-${column.id}`}
                           {...column.getHeaderProps(column.getSortByToggleProps())}
                           className="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                         >
@@ -274,9 +275,10 @@ function SiteTable({ data }) {
                     rows.map((row) => {
                       prepareRow(row);
                       return (
-                        <tr {...row.getRowProps()}>
+                        <tr key={`${row.index}`} {...row.getRowProps()}>
                           {row.cells.map((cell) => (
                             <td
+                              key={`${row.index}-${cell.column.id}`}
                               className={clsx(
                                 {
                                   'font-medium': ['action', 'id'].includes(cell.column.id),
