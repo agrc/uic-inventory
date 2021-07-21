@@ -103,7 +103,7 @@ function AddSiteContacts() {
     onSettled: () => {
       queryClient.invalidateQueries(['contacts', siteId]);
     },
-    onError: (err, variables, previousValue) => {
+    onError: (error, variables, previousValue) => {
       queryClient.setQueryData(['contacts', siteId], previousValue);
       // TODO: log error
       console.error(error);

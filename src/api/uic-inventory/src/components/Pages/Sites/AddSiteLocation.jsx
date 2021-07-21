@@ -294,7 +294,7 @@ function AddSiteLocation() {
     });
 
     siteDrawingEvents.current = [drawingEvent, finishEvent];
-  }, [state.activeTool]);
+  }, [state.activeTool, setPolygonGraphic]);
 
   const geocode = (result) => {
     if (!result) {
