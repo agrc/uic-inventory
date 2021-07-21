@@ -27,6 +27,7 @@
     "react-phone-number-input": "^3.1.25",
     "react-query": "^3.19.0",
     "react-router-dom": "^5.2.0",
+    "react-table": "^7.7.0",
     "react-toastify": "^7.0.4",
     "yup": "^0.32.9"
   },
