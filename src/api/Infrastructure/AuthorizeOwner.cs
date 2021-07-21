@@ -134,6 +134,10 @@ namespace api.Infrastructure {
 
       var site = await _context.Sites.SingleOrDefaultAsync(x => x.Id == id, token);
 
+      if (site is null) {
+        return (false, HttpStatusCode.BadRequest, account, null, "site not found");
+      }
+
       if (site.AccountFk != account.Id){
         if (account.Access == AccessLevels.elevated) {
           _log.ForContext("site", id)
