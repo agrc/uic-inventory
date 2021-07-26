@@ -8,6 +8,7 @@ namespace api.Infrastructure {
       NpgsqlConnection.GlobalTypeMapper.MapEnum<AccessLevels>();
       NpgsqlConnection.GlobalTypeMapper.MapEnum<NotificationTypes>();
       NpgsqlConnection.GlobalTypeMapper.MapEnum<ContactTypes>();
+      NpgsqlConnection.GlobalTypeMapper.MapEnum<SiteStatus>();
     }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }

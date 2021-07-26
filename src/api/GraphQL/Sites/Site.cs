@@ -11,6 +11,7 @@ namespace api.GraphQL {
     public int AccountFk { get; set; }
     public string? Address { get; set; }
     [Column(TypeName = "jsonb")] public string? Geometry { get; set; }
+    public SiteStatus Status { get; set; }
     public virtual Account? Account { get; set; }
     public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
   }
@@ -54,15 +55,11 @@ namespace api.GraphQL {
     }
   }
 
-  public class SitePayload : Payload {
-    public SitePayload(Site site) {
-      Site = site;
-    }
-
-    public SitePayload(IReadOnlyList<UserError> errors)
-        : base(errors) {
-    }
-
-    public Site? Site { get; }
+  public enum SiteStatus {
+    Incomplete,
+    Complete,
+    Submitted,
+    Authorized,
+    Ingested,
   }
 }
