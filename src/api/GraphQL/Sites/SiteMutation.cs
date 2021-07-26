@@ -109,6 +109,8 @@ namespace api.GraphQL {
         return StatusCode((int)statusCode, message);
       }
 
+      //! TODO: Site's can only be deleted if they have not been authorized
+
       try {
         var connectedSite = await _context.Sites
           .Include(s => s.Contacts)
