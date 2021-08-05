@@ -6,10 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" />
     <PackageReference Include="Dapper" />
     <PackageReference Include="EFCORE.NamingConventions" Version="5.0.2" />
     <PackageReference Include="ExcelDataReader" />
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="MediatR.Behaviors.Authorization" Version="1.2.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" />

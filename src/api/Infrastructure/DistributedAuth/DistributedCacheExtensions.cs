@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
-using api.Features.AccountManagement;
+using System.Threading.Tasks;
+using api.Features;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
@@ -26,17 +27,32 @@ namespace api.Infrastructure {
           options.SessionStore = store;
           options.ExpireTimeSpan = TimeSpan.FromHours(1);
 
-          options.ForwardChallenge = OpenIdConnectDefaults.AuthenticationScheme;
+          options.ForwardChallenge = null; //OpenIdConnectDefaults.AuthenticationScheme;
           options.LoginPath = "/authentication/login";
           options.AccessDeniedPath = "/authentication/access-denied";
           options.LogoutPath = "/";
-        }).PostConfigure<IComputeMediator>((options, mediator) => {
-          options.Events.OnSignedIn = context => {
+        }).PostConfigure<IServiceProvider>((options, provider) => {
+          options.Events.OnRedirectToAccessDenied = context => {
+            context.Response.Headers["Location"] = context.RedirectUri;
+            context.Response.StatusCode = 401;
+
+            return Task.CompletedTask;
+          };
+          options.Events.OnSignedIn = async (context) => {
             var claims = context.Principal?.Claims ?? Enumerable.Empty<Claim>();
 
             var computation = new AccountProvisioning.Computation(claims);
 
-            return mediator.Handle(computation, default);
+            var mediator = provider.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
+
+            var sendNotification = await mediator.Send(computation, default);
+
+            if (sendNotification) {
+              await mediator.Publish(new AccountNotifications.AccountNotification {
+                Account = computation.Account,
+                Type = NotificationTypes.new_user_account_registration
+              });
+            }
           };
         });
 

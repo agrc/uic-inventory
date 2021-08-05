@@ -1,11 +1,14 @@
 using System;
 using System.IO;
+using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using api.Features;
 using api.Features.Naics;
 using api.Infrastructure;
-using Autofac;
+using MediatR;
+using MediatR.Behaviors.Authorization.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -35,30 +38,37 @@ namespace api {
         services.AddHostedService<SpaProxyLaunchManager>();
       }
 
+      services.AddMediatR(typeof(Startup));
+      services.AddMediatorAuthorization(typeof(Startup).Assembly);
+      services.AddAuthorizersFromAssembly(typeof(Startup).Assembly);
+
+      services.AddScoped(typeof(IPipelineBehavior<,>), typeof(PerformanceLogger<,>));
+      services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+
+      services.AddSingleton(new Lazy<NaicsProvider>(() => new NaicsProvider()));
+      services.AddScoped<HasRequestMetadata>();
+
+      var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
+
+      services.AddEntityFrameworkNpgsql()
+        .AddDbContext<AppDbContext>(options => options
+          .UseNpgsql(database.ConnectionString)
+          .UseSnakeCaseNamingConvention());
+
+      services.AddScoped<IAppDbContext, AppDbContext>();
+
       var redis = Configuration.GetSection("Redis").Get<RedisOptions>();
       services.AddDistributedAuthentication(redis);
 
       var utahId = Configuration.GetSection("UtahId").Get<OAuthOptions>();
       services.AddUtahIdAuthentication(utahId);
 
-      var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
-      // add context for graphql
-      services.AddPooledDbContextFactory<AppDbContext>(options => {
-        options.UseNpgsql(database.ConnectionString)
-               .UseSnakeCaseNamingConvention();
-
-        // if (Env.IsDevelopment()) {
-        //   options.LogTo(Console.WriteLine);
-        // }
-      });
-
-      // add context for computations
-      services.AddDbContext<AppDbContext>(
-        options => options.UseNpgsql(database.ConnectionString));
-
       services.AddAuthorization(options => {
         options.AddPolicy(CookieAuthenticationDefaults.AuthenticationScheme,
-          policy => policy.RequireAuthenticatedUser());
+          policy => {
+            policy.RequireAuthenticatedUser();
+            policy.RequireClaim(ClaimTypes.NameIdentifier);
+          });
       });
 
       services.AddControllers().AddJsonOptions(options => {
@@ -67,18 +77,11 @@ namespace api {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
       });
 
-      services.AddSingleton(new Lazy<NaicsProvider>(() => new NaicsProvider()));
-
       services.Configure<ForwardedHeadersOptions>(options => {
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         options.KnownNetworks.Clear();
         options.KnownProxies.Clear();
       });
-    }
-
-    public void ConfigureContainer(ContainerBuilder builder) {
-      builder.RegisterType<OwnershipResolver>().As<IHasOwnership>();
-      builder.AddComputationMediator();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
