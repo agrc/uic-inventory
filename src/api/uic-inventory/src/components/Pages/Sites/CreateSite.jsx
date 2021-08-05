@@ -67,11 +67,18 @@ function CreateSite() {
       toast.success('Site created successfully!');
       history.push(`/site/${data.id}/add-contacts`);
     },
-    onError: (err) => {
+    onError: async (err) => {
       // TODO: log error
       console.error(err);
+      let toastMessage = 'We had some trouble creating the site';
 
-      return toast.error('We had some trouble creating the site');
+      const response = await err.response.json();
+
+      if (response.message) {
+        toastMessage = response.message;
+      }
+
+      return toast.error(toastMessage);
     },
   });
   const { formState, handleSubmit, register, setValue } = useForm({
