@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using api.Features;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using api.GraphQL;
 using api.Infrastructure;
 
 namespace api.Migrations

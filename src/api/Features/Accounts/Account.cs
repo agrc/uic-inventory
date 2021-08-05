@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 
-namespace api.GraphQL {
+namespace api.Features {
   public class Account {
     public int Id { get; set; }
     public string? UtahId { get; set; }

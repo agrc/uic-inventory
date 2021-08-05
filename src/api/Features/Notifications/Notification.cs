@@ -2,8 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using api.Infrastructure;
 
-namespace api.GraphQL {
+namespace api.Features {
+  public class ProfileNotification {
+    public ProfileNotification(Account account, List<NotificationPayload> notifications) {
+      FirstName = account?.FirstName ?? string.Empty;
+      LastName = account?.LastName ?? string.Empty;
+      Email = account?.Email ?? string.Empty;
+      Notifications = notifications;
+    }
+
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public IReadOnlyCollection<NotificationPayload> Notifications { get; set; } = Array.Empty<NotificationPayload>();
+  }
   public class Notification {
     public int Id { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
@@ -12,7 +26,6 @@ namespace api.GraphQL {
     public NotificationTypes? NotificationType { get; set; }
     public virtual ICollection<NotificationReceipt> NotificationReceipts { get; set; } = new HashSet<NotificationReceipt>();
   }
-
   public class NotificationReceipt {
     public int Id { get; set; }
 
@@ -26,18 +39,15 @@ namespace api.GraphQL {
     public virtual Notification Notification { get; set; } = default!;
     public virtual Account Recipient { get; set; } = default!;
   }
-
   public enum NotificationTypes {
     new_user_account_registration,
     facility_contact_modified,
   }
-
   public class NotificationInput {
     public int Id { get; set; }
     public bool? Read { get; set; }
     public bool? Deleted { get; set; }
   }
-
   public class NotificationPayload {
     public NotificationPayload(Notification notification, NotificationReceipt receipt) {
       if (receipt.ReadAt.HasValue) {
@@ -65,5 +75,24 @@ namespace api.GraphQL {
     public DateTime? ReadAt { get; set; }
     public bool Read { get; set; }
     public bool Deleted { get; set; }
+  }
+  public class NotificationMutationResponse : ResponseContract {
+    public NotificationMutationResponse(NotificationReceipt receipt) {
+      ReadAt = receipt.ReadAt;
+      Read = receipt.ReadAt.HasValue;
+      DeletedAt = receipt.DeletedAt;
+      Deleted = receipt.DeletedAt.HasValue;
+      Id = receipt.Id;
+    }
+
+    public NotificationMutationResponse(IReadOnlyList<ApiError> errors)
+        : base(errors) {
+    }
+
+    public bool Read { get; set; }
+    public bool Deleted { get; set; }
+    public int Id { get; set; }
+    public DateTime? ReadAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
   }
 }

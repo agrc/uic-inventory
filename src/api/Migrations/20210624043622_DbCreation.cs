@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using api.GraphQL;
+using api.Features;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 

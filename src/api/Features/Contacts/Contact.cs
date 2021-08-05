@@ -1,4 +1,6 @@
-namespace api.GraphQL {
+using System.Collections.Generic;
+
+namespace api.Features {
   public class Contact {
     public int Id { get; set; }
     public string? FirstName { get; set; }
@@ -94,9 +96,41 @@ namespace api.GraphQL {
 
   public class ContactPayload {
     public ContactPayload(Contact contact) {
-      Contact = contact;
+      Id = contact.Id;
+      FirstName = contact.FirstName;
+      LastName = contact.LastName;
+      Organization = contact.Organization;
+      Email = contact.Email;
+      PhoneNumber = contact.PhoneNumber;
+      MailingAddress = contact.MailingAddress;
+      City = contact.City;
+      State = contact.State;
+      ZipCode = contact.ZipCode;
+      ContactType = contact.ContactType;
     }
 
-    public Contact Contact { get; }
+    public int Id { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? Organization { get; set; }
+    public string? Email { get; set; }
+    public string? PhoneNumber { get; set; }
+    public string? MailingAddress { get; set; }
+    public string? City { get; set; }
+    public string? State { get; set; }
+    public string? ZipCode { get; set; }
+    public ContactTypes ContactType { get; set; }
+  }
+
+  public class SiteContactPayload {
+    public string Name { get; set; }
+    public AccountPayload Owner { get; set; }
+    public IReadOnlyCollection<ContactPayload> Contacts { get; }
+
+    public SiteContactPayload(Site site, IReadOnlyCollection<ContactPayload> contacts) {
+      Name = site.Name ?? "unknown";
+      Owner = new AccountPayload(site.Account);
+      Contacts = contacts;
+    }
   }
 }

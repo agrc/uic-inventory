@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.GraphQL {
+namespace api.Features {
   public class Site {
     public int Id { get; set; }
     public string? Name { get; set; }
@@ -12,10 +12,43 @@ namespace api.GraphQL {
     public string? Address { get; set; }
     [Column(TypeName = "jsonb")] public string? Geometry { get; set; }
     public SiteStatus Status { get; set; }
+    public bool DetailStatus { get; set; }
+    public bool ContactStatus { get; set; }
+    public bool LocationStatus { get; set; }
     public virtual Account? Account { get; set; }
     public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
   }
+  public class SiteListPayload : ResponseContract {
+    public SiteListPayload(Site site) {
+      Id = site.Id;
+      Name = site.Name ?? string.Empty;
+      NaicsTitle = site.NaicsTitle ?? string.Empty;
+      Status = site.Status;
+      DetailStatus = site.DetailStatus;
+      ContactStatus = site.ContactStatus;
+      LocationStatus = site.LocationStatus;
+    }
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string NaicsTitle { get; set; }
+    public SiteStatus Status { get; set; }
+    public bool DetailStatus { get; set; }
+    public bool ContactStatus { get; set; }
+    public bool LocationStatus { get; set; }
+  }
+  public class SitePayload : SiteListPayload {
+    public SitePayload(Site site) : base(site) {
+      Ownership = site.Ownership;
+      NaicsPrimary = site.NaicsPrimary;
+      Address = site.Address;
+      Geometry = site.Geometry;
+    }
 
+    public string? Ownership { get; set; }
+    public int? NaicsPrimary { get; set; }
+    public string? Address { get; set; }
+    public string? Geometry { get; set; }
+  }
   public class SiteInput {
     public int Id { get; set; }
     public string? Name { get; set; }
@@ -23,38 +56,42 @@ namespace api.GraphQL {
     public string? Naics { get; set; }
     public string? NaicsTitle { get; set; }
   }
-
   public class SiteLocationInput {
     public int Id { get; set; }
     public int SiteId { get; set; }
     public string? Address { get; set; }
     public string? Geometry { get; set; }
   }
-
   public static class SiteInputExtension {
     public static Site Update(this SiteInput input, Site site) {
       site.AccountFk = input.Id;
+      var siteCompletion = 0;
 
       if (input.Name != null) {
         site.Name = input.Name;
+        siteCompletion++;
       }
 
       if (input.Naics != null && int.TryParse(input.Naics, out var naicsCode)) {
         site.NaicsPrimary = naicsCode;
+        siteCompletion++;
       }
 
       if (input.NaicsTitle != null) {
         site.NaicsTitle = input.NaicsTitle;
+        siteCompletion++;
       }
 
       if (input.Ownership != null) {
         site.Ownership = input.Ownership;
+        siteCompletion++;
       }
+
+      site.DetailStatus = siteCompletion == 4;
 
       return site;
     }
   }
-
   public enum SiteStatus {
     Incomplete,
     Complete,
