@@ -30,5 +30,8 @@
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "javascript.suggest.autoImports": false
+  "javascript.suggest.autoImports": false,
+  "omnisharp.enableRoslynAnalyzers": true,
+  "omnisharp.enableEditorConfigSupport": true,
+  "omnisharp.autoStart": true
 }
