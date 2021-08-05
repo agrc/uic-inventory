@@ -1,9 +1,9 @@
-using api.GraphQL;
+using api.Features;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
 namespace api.Infrastructure {
-  public partial class AppDbContext : DbContext {
+  public partial class AppDbContext : DbContext, IAppDbContext {
     static AppDbContext() {
       NpgsqlConnection.GlobalTypeMapper.MapEnum<AccessLevels>();
       NpgsqlConnection.GlobalTypeMapper.MapEnum<NotificationTypes>();
@@ -211,7 +211,7 @@ namespace api.Infrastructure {
 
         entity.Property(e => e.AccountFk).HasColumnName("account_fk");
 
-        entity.HasOne(d => d.Account)
+        entity.HasOne<Account>(d => d.Account)
             .WithMany(p => p.Sites)
             .HasForeignKey(d => d.AccountFk)
             .OnDelete(DeleteBehavior.ClientSetNull)
