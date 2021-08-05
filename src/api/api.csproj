@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" />
-    <PackageReference Include="EFCORE.NamingConventions" Version="5.0.2" />
+    <PackageReference Include="EFCORE.NamingConventions" />
     <PackageReference Include="ExcelDataReader" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="MediatR.Behaviors.Authorization" Version="1.2.0" />

@@ -1,8 +1,9 @@
 <Project>
 
   <ItemGroup>
-    <!-- Dependency Injection -->
-    <PackageReference Update="Autofac.Extensions.DependencyInjection" Version="7.1.0" />
+    <!-- Mediatr -->
+    <PackageReference Update="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Update="MediatR" Version="9.0.0" />
 
     <!-- Authentication -->
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
@@ -14,6 +15,7 @@
     <PackageReference Update="Dapper" Version="2.0.90" />
     <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
     <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="5.0.8" />
+    <PackageReference Update="EFCORE.NamingConventions" Version="5.0.2" />
 
     <!-- Logging -->
     <PackageReference Update="Serilog" Version="2.10.0" />
