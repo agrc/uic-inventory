@@ -74,10 +74,12 @@ namespace api.Features {
       private readonly IAppDbContext _context;
       private readonly ILogger _log;
       private readonly HasRequestMetadata _metadata;
+      private readonly IPublisher _publisher;
 
-      public Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) {
+      public Handler(IAppDbContext context, HasRequestMetadata metadata, IPublisher publisher, ILogger log) {
         _context = context;
         _metadata = metadata;
+        _publisher = publisher;
         _log = log;
       }
       public async Task<Site> Handle(Command request, CancellationToken cancellationToken) {
@@ -91,10 +93,11 @@ namespace api.Features {
           site.Geometry = request.Geometry;
         }
 
-        //! TODO: update site status
         //! TODO: create requirement that site cannot be edited when authorized status
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _publisher.Publish(new SiteNotifications.EditNotification(site.Id), cancellationToken);
 
         return site;
       }

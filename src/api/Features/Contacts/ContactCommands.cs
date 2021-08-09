@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Features {
@@ -18,25 +20,20 @@ namespace api.Features {
       public class Handler : IRequestHandler<Command, Contact> {
         private readonly ILogger _log;
         private readonly AppDbContext _context;
+        private readonly IPublisher _publisher;
 
-        public Handler(AppDbContext context, ILogger log) {
+        public Handler(AppDbContext context, IPublisher publisher, ILogger log) {
           _context = context;
+          _publisher = publisher;
           _log = log;
         }
 
         public async Task<Contact> Handle(Command request, CancellationToken cancellationToken) {
           var contact = await _context.Contacts.AddAsync(request.Input.Update(new()), cancellationToken);
 
-          // var site = await _context.Sites .Include(x => x.Contacts)
-          //   .FirstAsync(x => x.Id == request.Input.Id, cancellationToken);
-
-          // site.ContactStatus = site.Contacts.Any(x => new[] {
-          //   ContactTypes.facility_owner,
-          //   ContactTypes.owner_operator,
-          //   ContactTypes.legal_rep
-          // }.Contains(x.ContactType));
-
           await _context.SaveChangesAsync(cancellationToken);
+
+          await _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken);
 
           return contact.Entity;
         }
