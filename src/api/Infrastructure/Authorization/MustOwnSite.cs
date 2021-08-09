@@ -26,6 +26,8 @@ namespace api.Infrastructure {
         CancellationToken token = default) {
         var site = await _context.Sites.SingleOrDefaultAsync(x => x.Id == requirement.SiteId, token);
 
+        _metadata.Site = site;
+
         if (site is null) {
           return AuthorizationResult.Fail("site not found");
         }
