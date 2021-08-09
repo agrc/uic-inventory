@@ -8,12 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Infrastructure {
+  public static class RequiredContactTypes {
+    public static IReadOnlyCollection<ContactTypes> Types => new List<ContactTypes> { ContactTypes.owner_operator, ContactTypes.facility_owner, ContactTypes.legal_rep };
+  }
   public class MustHaveSiteContact : IAuthorizationRequirement {
     public int SiteId { get; set; }
 
     private class Handler : IAuthorizationHandler<MustHaveSiteContact> {
-      private readonly IReadOnlyCollection<ContactTypes> _requiredContacts =
-        new List<ContactTypes> { ContactTypes.owner_operator, ContactTypes.facility_owner, ContactTypes.legal_rep };
       private readonly ILogger _log;
       private readonly IAppDbContext _context;
       public Handler(IAppDbContext context, ILogger log) {
@@ -33,7 +34,7 @@ namespace api.Infrastructure {
 
         var contactTypes = site.Contacts.Select(x => x.ContactType).ToList();
 
-        if (!_requiredContacts.Any(x => contactTypes.Contains(x))) {
+        if (!RequiredContactTypes.Types.Any(x => contactTypes.Contains(x))) {
           return AuthorizationResult.Fail("This site is missing a contact of the type owner, operator or legal representative.");
         }
 
