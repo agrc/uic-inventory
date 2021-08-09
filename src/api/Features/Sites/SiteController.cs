@@ -1,8 +1,6 @@
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using api.Infrastructure;
 using MediatR;
 using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -16,8 +14,7 @@ namespace api.Features {
     private readonly IMediator _mediator;
     private readonly ILogger _log;
 
-    public SiteController(IMediator mediator,
-      ILogger log) {
+    public SiteController(IMediator mediator, ILogger log) {
       _mediator = mediator;
       _log = log;
     }
@@ -88,7 +85,7 @@ namespace api.Features {
       try {
         var result = await _mediator.Send(new UpdateSite.Command(input), token);
 
-        return Accepted(result);
+        return Accepted(new SitePayload(result));
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "api/site")
           .Warning(ex, "requirements failure");
