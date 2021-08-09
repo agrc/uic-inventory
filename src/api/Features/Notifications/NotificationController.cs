@@ -42,7 +42,7 @@ namespace api.Features {
     [HttpPut("/api/notification")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult> UpdateNotification([FromBody] NotificationInput input, CancellationToken token) {
-     try {
+      try {
         var result = await _mediator.Send(new UpdateNotification.Command(input), token);
 
         return Accepted(result);

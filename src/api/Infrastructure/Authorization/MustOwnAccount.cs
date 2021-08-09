@@ -10,7 +10,7 @@ namespace api.Infrastructure {
     public MustOwnAccount(int id) {
       AccountId = id;
     }
-    public int AccountId { get;  }
+    public int AccountId { get; }
 
     private class Handler : IAuthorizationHandler<MustOwnAccount> {
       private readonly ILogger _log;
