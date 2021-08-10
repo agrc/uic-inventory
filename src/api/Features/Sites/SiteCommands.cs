@@ -25,13 +25,15 @@ namespace api.Features {
     }
     public class Handler : IRequestHandler<Command, Site> {
       private readonly IAppDbContext _context;
+      private readonly IPublisher _publisher;
       private readonly ILogger _log;
 
-      public Handler(IAppDbContext context, ILogger log) {
+      public Handler(IAppDbContext context, IPublisher publisher, ILogger log) {
         _context = context;
+        _publisher = publisher;
         _log = log;
       }
-      public async Task<Site> Handle(Command message, CancellationToken token) {
+      public async Task<Site> Handle(Command message, CancellationToken cancellationToken) {
         _log.ForContext("input", message)
           .ForContext("verb", "POST")
           .Debug("/api/site");
@@ -44,11 +46,13 @@ namespace api.Features {
           NaicsTitle = message.NaicsTitle
         };
 
-        var result = await _context.Sites.AddAsync(site, token);
+        var result = await _context.Sites.AddAsync(site, cancellationToken);
 
-        await _context.SaveChangesAsync(token);
+        await _context.SaveChangesAsync(cancellationToken);
 
         site.Id = result.Entity.Id;
+
+        await _publisher.Publish(new SiteNotifications.EditNotification(site.Id), cancellationToken);
 
         return site;
       }
