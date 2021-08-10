@@ -1,7 +1,7 @@
 import { BulletList } from 'react-content-loader';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Chrome, toast, useParams, Link } from '../../PageElements';
+import { Chrome, onRequestError, toast, useParams, Link } from '../../PageElements';
 import {
   ContactSchema as schema,
   ErrorMessage,
@@ -83,6 +83,7 @@ function AddSiteContacts() {
   const queryClient = useQueryClient();
   const { status, error, data } = useQuery(['contacts', siteId], () => ky.get(`/api/site/${siteId}/contacts`).json(), {
     enabled: siteId ?? 0 > 0 ? true : false,
+    onError: (error) => onRequestError(error, 'We had some trouble finding your contacts.'),
   });
   const { mutate } = useMutation((input) => ky.post('/api/contact', { json: { ...input, id: siteId } }), {
     onMutate: async (contact) => {
@@ -103,11 +104,9 @@ function AddSiteContacts() {
     onSettled: () => {
       queryClient.invalidateQueries(['contacts', siteId]);
     },
-    onError: (error, variables, previousValue) => {
+    onError: async (error, variables, previousValue) => {
       queryClient.setQueryData(['contacts', siteId], previousValue);
-      // TODO: log error
-      console.error(error);
-      return toast.error('We had some trouble creating the contact');
+      onRequestError(error, 'We had some trouble creating this contact.');
     },
   });
 

@@ -1,6 +1,6 @@
 import { List } from 'react-content-loader';
 import { AuthContext } from '../../AuthProvider';
-import { Chrome, Header, Link, toast } from '../PageElements';
+import { Chrome, Header, Link, onRequestError, toast } from '../PageElements';
 import { Fragment, useContext, useMemo, useRef } from 'react';
 import ky from 'ky';
 import { useSortBy, useTable } from 'react-table';
@@ -15,6 +15,7 @@ export function SitesAndInventory({ completeProfile }) {
   const { authInfo } = useContext(AuthContext);
   const siteQuery = useQuery('sites', () => ky.get(`/api/sites/mine`).json(), {
     enabled: authInfo?.id ? true : false,
+    onError: (error) => onRequestError(error, 'We had trouble fetching your sites.'),
   });
 
   return (
@@ -169,9 +170,7 @@ function SiteTable({ data }) {
     },
     onError: (error, variables, previousValue) => {
       queryClient.setQueryData('sites', previousValue);
-      // TODO: log error
-      console.error(error);
-      return toast.error('We had some trouble deleting the site');
+      onRequestError(error, 'We had some trouble deleting this site.');
     },
   });
 

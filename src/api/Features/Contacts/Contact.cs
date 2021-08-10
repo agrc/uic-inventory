@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace api.Features {
@@ -94,7 +95,10 @@ namespace api.Features {
     }
   }
 
-  public class ContactPayload {
+  public class ContactPayload : ResponseContract {
+    public ContactPayload(UnauthorizedAccessException error) : base(error.Message) { }
+    public ContactPayload(Exception error) : base("Something went terribly wrong that we did not expect.") { }
+
     public ContactPayload(Contact contact) {
       Id = contact.Id;
       FirstName = contact.FirstName;
@@ -122,15 +126,25 @@ namespace api.Features {
     public ContactTypes ContactType { get; set; }
   }
 
-  public class SiteContactPayload {
-    public string Name { get; set; }
-    public AccountPayload Owner { get; set; }
-    public IReadOnlyCollection<ContactPayload> Contacts { get; }
-
+  public class SiteContactPayload : ResponseContract {
+    public SiteContactPayload(UnauthorizedAccessException error) : base(error.Message) {
+      Name = "unknown";
+      Contacts = Array.Empty<ContactPayload>();
+      Owner = new AccountPayload(new Account());
+    }
+    public SiteContactPayload(Exception error) : base("Something went terribly wrong that we did not expect.") {
+      Name = "unknown";
+      Contacts = Array.Empty<ContactPayload>();
+      Owner = new AccountPayload(new Account());
+    }
     public SiteContactPayload(Site site, IReadOnlyCollection<ContactPayload> contacts) {
       Name = site.Name ?? "unknown";
       Owner = new AccountPayload(site.Account);
       Contacts = contacts;
     }
+
+    public string Name { get; set; }
+    public AccountPayload Owner { get; set; }
+    public IReadOnlyCollection<ContactPayload> Contacts { get; }
   }
 }

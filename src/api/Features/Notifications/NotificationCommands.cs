@@ -7,14 +7,14 @@ using Serilog;
 
 namespace api.Features {
   public static class UpdateNotification {
-    public class Command : IRequest<NotificationMutationResponse> {
+    public class Command : IRequest<NotificationMutationPayload> {
       public Command(NotificationInput input) {
         Input = input;
       }
 
       public NotificationInput Input { get; }
 
-      public class Handler : IRequestHandler<Command, NotificationMutationResponse> {
+      public class Handler : IRequestHandler<Command, NotificationMutationPayload> {
         private readonly ILogger _log;
         private readonly IAppDbContext _context;
         private readonly HasRequestMetadata _metadata;
@@ -25,7 +25,7 @@ namespace api.Features {
           _log = log;
         }
 
-        public async Task<NotificationMutationResponse> Handle(Command request, CancellationToken token) {
+        public async Task<NotificationMutationPayload> Handle(Command request, CancellationToken token) {
           var now = DateTime.Now;
 
           var receipt = _metadata.NotificationReceipt;
@@ -44,7 +44,7 @@ namespace api.Features {
 
           await _context.SaveChangesAsync(token);
 
-          return new NotificationMutationResponse(receipt);
+          return new NotificationMutationPayload(receipt);
         }
       }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace api.Features {
@@ -86,7 +87,10 @@ namespace api.Features {
     }
   }
 
-  public class AccountPayload {
+  public class AccountPayload : ResponseContract {
+    public AccountPayload(UnauthorizedAccessException error) : base(error.Message) { }
+    public AccountPayload(Exception error) : base("Something went terribly wrong that we did not expect.") { }
+
     public AccountPayload(Account? input) {
       input ??= new Account();
 
@@ -147,7 +151,18 @@ namespace api.Features {
     public AccessLevels? Access { get; set; }
   }
 
-  public class AuthPayload {
+  public class AuthPayload : ResponseContract {
+    public AuthPayload(UnauthorizedAccessException error) : base(error.Message) {
+      UserData = new Extra(new());
+    }
+    public AuthPayload(Exception error) : base("Something went terribly wrong that we did not expect.") {
+      UserData = new Extra(new());
+    }
+
+    public AuthPayload(Account account) {
+      Id = account.Id;
+      UserData = new Extra(account);
+    }
     public class Extra {
       public Extra(Account account) {
         FirstName = account.FirstName ?? "";
@@ -161,10 +176,6 @@ namespace api.Features {
       public AccessLevels Access { get; set; }
       public bool ReceiveNotifications { get; set; }
       public bool ProfileComplete { get; set; }
-    }
-    public AuthPayload(Account account) {
-      Id = account.Id;
-      UserData = new Extra(account);
     }
 
     public int Id { get; set; }

@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using api.Infrastructure;
 using MediatR;
 using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,29 +12,30 @@ namespace api.Features {
   [ApiController]
   public class NotificationController : ControllerBase {
     private readonly ILogger _log;
-    private readonly IAppDbContext _context;
     private readonly IMediator _mediator;
 
-    public NotificationController(IAppDbContext context,
-      IMediator mediator,
-      ILogger log) {
-      _context = context;
+    public NotificationController(IMediator mediator, ILogger log) {
       _mediator = mediator;
       _log = log;
     }
 
     [HttpGet("/api/notifications/mine")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult> GetNotifications(CancellationToken token) {
+    public async Task<ActionResult<ProfileNotificationPayload>> GetNotifications(CancellationToken token) {
       try {
         var notifications = await _mediator.Send(new GetNotifications.Query(), token);
 
         return Ok(notifications);
+      } catch (UnauthorizedAccessException ex) {
+        _log.ForContext("endpoint", "api/notifications/mine")
+          .Warning(ex, "unauthorized access");
+
+        return Unauthorized(new ProfileNotificationPayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", "api/notifications/mine")
           .Error(ex, "error getting notifications");
 
-        return Problem();
+        return StatusCode(500, new ProfileNotificationPayload(ex));
       }
     }
 
@@ -47,15 +47,17 @@ namespace api.Features {
 
         return Accepted(result);
       } catch (UnauthorizedException ex) {
-        _log.ForContext("endpoint", "api/site")
+        _log.ForContext("endpoint", "PUT:api/site")
+          .ForContext("input", input)
           .Warning(ex, "requirements failure");
 
-        return Unauthorized(new { ex.Message });
+        return Unauthorized(new NotificationMutationPayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", "api/site")
+        _log.ForContext("endpoint", "PUT:api/site")
+          .ForContext("input", input)
           .Fatal(ex, "unhandled exception");
 
-        return Problem(input.Id.ToString());
+        return StatusCode(500, new ProfileNotificationPayload(ex));
       }
     }
   }

@@ -2,11 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using api.Infrastructure;
 
 namespace api.Features {
-  public class ProfileNotification {
-    public ProfileNotification(Account account, List<NotificationPayload> notifications) {
+  public class ProfileNotificationPayload : ResponseContract {
+    public ProfileNotificationPayload(UnauthorizedAccessException error) : base(error.Message) {
+      FirstName = string.Empty;
+      LastName = string.Empty;
+      Email = string.Empty;
+      Notifications = Array.Empty<NotificationPayload>();
+    }
+    public ProfileNotificationPayload(Exception error) : base("Something went terribly wrong that we did not expect.") {
+      FirstName = string.Empty;
+      LastName = string.Empty;
+      Email = string.Empty;
+      Notifications = Array.Empty<NotificationPayload>();
+    }
+
+    public ProfileNotificationPayload(Account account, List<NotificationPayload> notifications) {
       FirstName = account?.FirstName ?? string.Empty;
       LastName = account?.LastName ?? string.Empty;
       Email = account?.Email ?? string.Empty;
@@ -76,8 +88,11 @@ namespace api.Features {
     public bool Read { get; set; }
     public bool Deleted { get; set; }
   }
-  public class NotificationMutationResponse : ResponseContract {
-    public NotificationMutationResponse(NotificationReceipt receipt) {
+  public class NotificationMutationPayload : ResponseContract {
+    public NotificationMutationPayload(UnauthorizedAccessException error) : base(error.Message) { }
+    public NotificationMutationPayload(Exception error) : base("Something went terribly wrong that we did not expect.") { }
+
+    public NotificationMutationPayload(NotificationReceipt receipt) {
       ReadAt = receipt.ReadAt;
       Read = receipt.ReadAt.HasValue;
       DeletedAt = receipt.DeletedAt;
@@ -85,7 +100,7 @@ namespace api.Features {
       Id = receipt.Id;
     }
 
-    public NotificationMutationResponse(IReadOnlyList<ApiError> errors)
+    public NotificationMutationPayload(IReadOnlyList<ApiError> errors)
         : base(errors) {
     }
 

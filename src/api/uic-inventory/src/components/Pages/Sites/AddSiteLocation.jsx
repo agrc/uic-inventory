@@ -5,6 +5,7 @@ import {
   useParams,
   PolygonIcon,
   OkNotToggle,
+  onRequestError,
   PointIcon,
   SelectPolygonIcon,
   useHistory,
@@ -36,18 +37,14 @@ function AddSiteLocation() {
   const siteDrawingEvents = useRef(null);
   const { status, data } = useQuery(['site', siteId], () => ky.get(`/api/site/${siteId}`).json(), {
     enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding your site location.'),
   });
   const { mutate } = useMutation((input) => ky.put('/api/site', { json: input }).json(), {
     onSuccess: () => {
-      toast.success('Location added successfully!');
+      toast.success('Site location updated successfully!');
       history.push(`/site/${siteId}/add-well`);
     },
-    onError: (error) => {
-      // TODO: log error
-      console.error(error);
-
-      return toast.error('We had some trouble adding the location');
-    },
+    onError: (error) => onRequestError(error, 'We had some trouble updating your site location.'),
   });
   const { handleSubmit, setValue } = useForm({
     resolver: yupResolver(schema),

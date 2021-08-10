@@ -11,7 +11,7 @@ import {
   SelectInput,
   SiteSchema as schema,
 } from '../../FormElements';
-import { Chrome, toast, useHistory } from '../../PageElements';
+import { Chrome, onRequestError, toast, useHistory } from '../../PageElements';
 import { Fragment, useContext } from 'react';
 import { useMutation } from 'react-query';
 import ky from 'ky';
@@ -67,19 +67,7 @@ function CreateSite() {
       toast.success('Site created successfully!');
       history.push(`/site/${data.id}/add-contacts`);
     },
-    onError: async (err) => {
-      // TODO: log error
-      console.error(err);
-      let toastMessage = 'We had some trouble creating the site';
-
-      const response = await err.response.json();
-
-      if (response.message) {
-        toastMessage = response.message;
-      }
-
-      return toast.error(toastMessage);
-    },
+    onError: (error) => onRequestError(error, 'We had some trouble creating this site.'),
   });
   const { formState, handleSubmit, register, setValue } = useForm({
     resolver: yupResolver(schema),

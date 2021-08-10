@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -36,15 +37,23 @@ namespace api.Features {
     public bool ContactStatus { get; set; }
     public bool LocationStatus { get; set; }
   }
-  public class SitePayload : SiteListPayload {
-    public SitePayload(Site site) : base(site) {
+  public class SitePayload : ResponseContract {
+    public SitePayload(UnauthorizedAccessException error) : base(error.Message) { }
+    public SitePayload(Exception error) : base("Something went terribly wrong that we did not expect.") { }
+    public SitePayload(Site site) {
+      Id = site.Id;
+      Name = site.Name ?? string.Empty;
+      NaicsTitle = site.NaicsTitle ?? string.Empty;
       Ownership = site.Ownership;
       NaicsPrimary = site.NaicsPrimary;
       Address = site.Address;
       Geometry = site.Geometry;
     }
 
+    public int? Id { get; set; }
+    public string? Name { get; set; }
     public string? Ownership { get; set; }
+    public string? NaicsTitle { get; set; }
     public int? NaicsPrimary { get; set; }
     public string? Address { get; set; }
     public string? Geometry { get; set; }

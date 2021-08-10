@@ -10,7 +10,7 @@ import {
   TextInput,
   WellSchema as schema,
 } from './../../FormElements';
-import { Chrome, toast, useParams, useHistory } from './../../PageElements';
+import { Chrome, toast, onRequestError, useParams, useHistory } from './../../PageElements';
 import { Fragment, useContext, useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { ErrorMessage } from '@hookform/error-message';
@@ -50,18 +50,14 @@ function CreateWell() {
 
   const { data, status } = useQuery(['site', siteId], () => ky.get(`/api/site/${siteId}`).json(), {
     enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding this wells information.'),
   });
   const { mutate } = useMutation((input) => ky.post('/api/well', { json: input }).json(), {
     onSuccess: () => {
       toast.success('Site created successfully!');
       history.push(`/site/${data.createSite.site.id}/add-contacts`);
     },
-    onError: (error) => {
-      // TODO: log error
-      console.error(error);
-
-      return toast.error('We had some trouble creating the site');
-    },
+    onError: (error) => onRequestError(error, 'We had some trouble creating this well.'),
   });
 
   const { formState, handleSubmit, register, reset } = useForm({

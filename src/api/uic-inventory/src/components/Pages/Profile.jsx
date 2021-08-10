@@ -1,6 +1,6 @@
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Chrome, toast, useParams } from '../PageElements';
+import { Chrome, onRequestError, toast, useParams } from '../PageElements';
 import { Facebook } from 'react-content-loader';
 import { Switch } from '@headlessui/react';
 import { AuthContext } from '../../AuthProvider';
@@ -27,10 +27,14 @@ export function Profile() {
   const { status, error, data } = useQuery(
     'profile',
     () => ky.get(`/api/account/${parseInt(id || authInfo.id)}`).json(),
-    { enabled: id || authInfo?.id ? true : false }
+    {
+      enabled: id || authInfo?.id ? true : false,
+      onError: (error) => onRequestError(error, 'We had some trouble finding your profile.'),
+    }
   );
   const { mutate } = useMutation((data) => ky.put('/api/account', { json: { ...data, id: authInfo.id } }).json(), {
     onSuccess: () => queryClient.invalidateQueries('auth'),
+    onError: (error) => onRequestError(error, 'We had some trouble updating your profile.'),
   });
 
   const { control, formState, handleSubmit, register, reset } = useForm({

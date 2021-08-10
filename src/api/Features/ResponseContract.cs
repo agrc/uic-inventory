@@ -5,6 +5,11 @@ namespace api.Features {
     protected ResponseContract(IReadOnlyList<ApiError>? errors = null) {
       Errors = errors;
     }
+    protected ResponseContract(string message) {
+      var parts = message.Split(':');
+
+      Errors = new List<ApiError> { new ApiError(parts[1], parts[2]) };
+    }
 
     public IReadOnlyList<ApiError>? Errors { get; }
   }
