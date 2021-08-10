@@ -26,14 +26,14 @@ namespace api.Infrastructure {
         _metadata.Account = new();
 
         if (requirement.User == null) {
-          return AuthorizationResult.Fail("no authenticated user");
+          return AuthorizationResult.Fail("A01:You must authenticated with UtahID.");
         }
 
         if (!requirement.User.HasClaim(x => x.Type == ClaimTypes.NameIdentifier)) {
           _log.ForContext("claims", requirement.User.Claims)
              .Warning("user is missing name identifier claim");
 
-          return AuthorizationResult.Fail("user is missing required claims");
+          return AuthorizationResult.Fail("A02:Your account is missing required UtahID information.");
         }
 
         var utahIdClaim = requirement.User.FindFirst(ClaimTypes.NameIdentifier);
@@ -41,7 +41,7 @@ namespace api.Infrastructure {
           _log.ForContext("claims", requirement.User.Claims)
             .Warning("name identifier claim is empty");
 
-          return AuthorizationResult.Fail("user is missing required claims");
+          return AuthorizationResult.Fail("A02:Your account is missing required UtahID information.");
         }
 
         var account = await _context.Accounts.SingleOrDefaultAsync(x => x.UtahId == utahIdClaim.Value, token);
@@ -50,7 +50,7 @@ namespace api.Infrastructure {
           _log.ForContext("claims", requirement.User.Claims)
             .Warning("account does not exist for request");
 
-          return AuthorizationResult.Fail("account does not exist");
+          return AuthorizationResult.Fail("A03:There is no UIC account for this UtahID account.");
         }
 
         _metadata.Account = account;

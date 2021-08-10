@@ -19,7 +19,7 @@ namespace api.Infrastructure {
           _log.ForContext("account", _metadata.Account)
             .Warning("account has incomplete profile");
 
-          return Task.FromResult(AuthorizationResult.Fail("You must complete your profile before submitting a site."));
+          return Task.FromResult(AuthorizationResult.Fail("P01:You must complete your profile before submitting a site."));
         }
 
         return Task.FromResult(AuthorizationResult.Succeed());

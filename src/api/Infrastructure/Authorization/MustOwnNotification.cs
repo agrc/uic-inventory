@@ -28,11 +28,11 @@ namespace api.Infrastructure {
         var receipt = await _context.NotificationReceipts.SingleOrDefaultAsync(x => x.Id == requirement.NotificationId, token);
 
         if (receipt is null) {
-          return AuthorizationResult.Fail("This notification does not exist.");
+          return AuthorizationResult.Fail("N01:This notification does not exist.");
         }
 
         if (receipt.RecipientId != _metadata.Account.Id) {
-          return AuthorizationResult.Fail("You cannot edit items that you do not own.");
+          return AuthorizationResult.Fail("N02:You cannot edit items that you do not own.");
         }
 
         _metadata.NotificationReceipt = receipt;

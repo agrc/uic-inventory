@@ -44,7 +44,7 @@ namespace api.Infrastructure {
           _log.ForContext("accessed by", _metadata.Account)
               .Warning("access to external item not permitted");
 
-          return AuthorizationResult.Fail("account does not own requested resource");
+          return AuthorizationResult.Fail("S01:You cannot access items that you do not own.");
         }
 
         return AuthorizationResult.Succeed();
