@@ -5,7 +5,7 @@ import { Fragment, useContext, useMemo, useRef } from 'react';
 import ky from 'ky';
 import { useSortBy, useTable } from 'react-table';
 import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
-import { PlayIcon } from '@heroicons/react/solid';
+import { DocumentTextIcon, LocationMarkerIcon, PlusIcon, UsersIcon } from '@heroicons/react/solid';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useOpenClosed } from '../Hooks/useOpenClosedHook';
 import clsx from 'clsx';
@@ -23,7 +23,7 @@ export function SitesAndInventory({ completeProfile }) {
       <div className="py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <Header>
           {completeProfile() ? (
-            <div className="flex justify-end">
+            <div className="flex justify-end mr-2 sm:mr-0">
               <SiteCreationButton className="m-0" access={!completeProfile()} />
             </div>
           ) : (
@@ -39,9 +39,6 @@ export function SitesAndInventory({ completeProfile }) {
         <Chrome title="Your sites and inventory">
           <div className="w-full">
             <SiteList show={completeProfile()} {...siteQuery} />
-          </div>
-          <div className="self-center w-full text-center">
-            <SiteCreationButton access={!completeProfile()} />
           </div>
         </Chrome>
       </div>
@@ -78,7 +75,10 @@ export function GenericLandingPage() {
 function SiteCreationButton({ access, className = 'm-4 text-2xl' }) {
   return (
     <Link to="/site/create" type="button" disabled={access} className={className}>
-      Add site
+      <div className="flex">
+        <PlusIcon className="self-center w-5 h-5 mr-2" />
+        <span>Create site</span>
+      </div>
     </Link>
   );
 }
@@ -120,25 +120,49 @@ function SiteTable({ data }) {
         accessor: 'naicsTitle',
       },
       {
-        Header: 'Status',
+        Header: 'Overall Status',
         accessor: 'status',
       },
       {
+        Header: 'Actions',
         id: 'action',
         Cell: function action(data) {
+          console.log(data);
           return (
-            <div className="flex justify-end">
+            <div className="flex">
               <Link
-                to={`/site/${data.row.cells[0].value}/add-contacts`}
-                className="text-indigo-600 hover:text-indigo-900"
+                to={`/site/${data.row.original.id}/add-details`}
+                className={clsx('hover:text-blue-800', {
+                  'text-green-700': data.row.original.detailStatus,
+                  'text-yellow-500': !data.row.original.detailStatus,
+                })}
               >
-                <PlayIcon className="w-5 h-5" />
+                <DocumentTextIcon className="w-6 h-6" aria-label="site details" />
+              </Link>
+              <Link
+                to={`/site/${data.row.original.id}/add-contacts`}
+                className={clsx('hover:text-blue-800', {
+                  'text-green-700': data.row.original.contactStatus,
+                  'text-yellow-500': !data.row.original.contactStatus,
+                })}
+              >
+                <UsersIcon className="w-6 h-6" aria-label="site contacts" />
+              </Link>
+              <Link
+                to={`/site/${data.row.original.id}/add-location`}
+                className={clsx('hover:text-blue-800', {
+                  'text-green-700': data.row.original.locationStatus,
+                  'text-yellow-500': !data.row.original.locationStatus,
+                })}
+              >
+                <LocationMarkerIcon className="w-6 h-6" aria-label="site location" />
               </Link>
               <TrashIcon
-                className="w-5 h-5 ml-1 text-red-600 cursor-pointer hover:text-red-900"
+                aria-label="delete site"
+                className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
                 onClick={() => {
                   open();
-                  deleteSite.current = data.row.cells[0].value;
+                  deleteSite.current = data.row.original.id;
                 }}
               />
             </div>
@@ -174,7 +198,18 @@ function SiteTable({ data }) {
     },
   });
 
-  return (
+  return data?.length < 1 ? (
+    <div className="flex flex-col items-center">
+      <div className="px-5 py-4 m-6 border rounded-lg shadow-sm bg-gray-50">
+        <h2 className="mb-1 text-xl font-medium">Create your first site</h2>
+        <p className="text-gray-700">Get started by clicking the button below to start creating your first site.</p>
+        <div className="mb-6 text-sm text-center text-gray-900"></div>
+        <div className="flex justify-center">
+          <SiteCreationButton className="m-0" />
+        </div>
+      </div>
+    </div>
+  ) : (
     <>
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog
@@ -270,36 +305,29 @@ function SiteTable({ data }) {
                   ))}
                 </thead>
                 <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
-                  {rows?.length > 0 ? (
-                    rows.map((row) => {
-                      prepareRow(row);
-                      return (
-                        <tr key={`${row.index}`} {...row.getRowProps()}>
-                          {row.cells.map((cell) => (
-                            <td
-                              key={`${row.index}-${cell.column.id}`}
-                              className={clsx(
-                                {
-                                  'font-medium': ['action', 'id'].includes(cell.column.id),
-                                  'text-right whitespace-nowrap': cell.column.id === 'action',
-                                },
-                                'px-3 py-4 whitespace-nowrap'
-                              )}
-                              {...cell.getCellProps()}
-                            >
-                              <div className="text-sm text-gray-900">{cell.render('Cell')}</div>
-                            </td>
-                          ))}
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan="5" className="px-3 py-4">
-                        <div className="text-sm text-center text-gray-900">No sites have been created yet</div>
-                      </td>
-                    </tr>
-                  )}
+                  {rows.map((row) => {
+                    prepareRow(row);
+
+                    return (
+                      <tr key={`${row.index}`} {...row.getRowProps()}>
+                        {row.cells.map((cell) => (
+                          <td
+                            key={`${row.index}-${cell.column.id}`}
+                            className={clsx(
+                              {
+                                'font-medium': ['action', 'id'].includes(cell.column.id),
+                                'text-right whitespace-nowrap': cell.column.id === 'action',
+                              },
+                              'px-3 py-4 whitespace-nowrap'
+                            )}
+                            {...cell.getCellProps()}
+                          >
+                            <div className="text-sm text-gray-900">{cell.render('Cell')}</div>
+                          </td>
+                        ))}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
