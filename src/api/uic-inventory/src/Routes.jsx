@@ -1,6 +1,6 @@
 import { Navigation, Route, Router, Switch, ToastContainer } from './components/PageElements';
 import {
-  CreateSite,
+  CreateOrEditSite,
   CreateWell,
   ContactProgram,
   Profile,
@@ -53,7 +53,7 @@ function AuthenticatedRoutes({ completeProfile }) {
         <Profile />
       </Route>
       <Route path="/site/create">
-        <CreateSite />
+        <CreateOrEditSite />
       </Route>
       <Route path="/site/:siteId/add-contacts">
         <Sites.AddSiteContacts />

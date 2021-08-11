@@ -60,7 +60,7 @@ const ownership = [
   },
 ];
 
-function CreateSite() {
+function CreateOrEditSite() {
   const { authInfo } = useContext(AuthContext);
   const { mutate } = useMutation((data) => ky.post('/api/site', { json: { ...data, id: authInfo.id } }).json(), {
     onSuccess: (data) => {
@@ -203,4 +203,4 @@ function CreateSite() {
   );
 }
 
-export default CreateSite;
+export default CreateOrEditSite;
