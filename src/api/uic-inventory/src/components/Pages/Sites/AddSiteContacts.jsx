@@ -324,7 +324,9 @@ function ContactsTable({ data }) {
                 ) : (
                   <tr>
                     <td colSpan="5" className="px-3 py-4">
-                      <div className="text-sm text-center text-gray-900">No contacts have been added yet</div>
+                      <div className="text-sm text-center text-gray-900">
+                        Get started by filling out the form below to add your first site contact.
+                      </div>
                     </td>
                   </tr>
                 )}
