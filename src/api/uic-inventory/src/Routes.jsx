@@ -1,13 +1,5 @@
 import { Navigation, Route, Router, Switch, ToastContainer } from './components/PageElements';
-import {
-  CreateOrEditSite,
-  CreateWell,
-  ContactProgram,
-  Profile,
-  Sites,
-  GenericLandingPage,
-  SitesAndInventory,
-} from './components/Pages';
+import { CreateWell, ContactProgram, Profile, Sites, GenericLandingPage, SitesAndInventory } from './components/Pages';
 import { AuthContext } from './AuthProvider';
 import { useContext } from 'react';
 
@@ -53,7 +45,10 @@ function AuthenticatedRoutes({ completeProfile }) {
         <Profile />
       </Route>
       <Route path="/site/create">
-        <CreateOrEditSite />
+        <Sites.CreateOrEditSite />
+      </Route>
+      <Route path="/site/:siteId/add-details">
+        <Sites.CreateOrEditSite />
       </Route>
       <Route path="/site/:siteId/add-contacts">
         <Sites.AddSiteContacts />
