@@ -133,8 +133,8 @@ function SiteTable({ data }) {
               <Link
                 to={`/site/${data.row.original.id}/add-details`}
                 className={clsx('hover:text-blue-800', {
-                  'text-green-700': data.row.original.detailStatus,
-                  'text-yellow-500': !data.row.original.detailStatus,
+                  'text-gray-500': data.row.original.detailStatus,
+                  'text-pink-500': !data.row.original.detailStatus,
                 })}
               >
                 <DocumentTextIcon className="w-6 h-6" aria-label="site details" />
@@ -142,8 +142,8 @@ function SiteTable({ data }) {
               <Link
                 to={`/site/${data.row.original.id}/add-contacts`}
                 className={clsx('hover:text-blue-800', {
-                  'text-green-700': data.row.original.contactStatus,
-                  'text-yellow-500': !data.row.original.contactStatus,
+                  'text-gray-500': data.row.original.contactStatus,
+                  'text-pink-500': !data.row.original.contactStatus,
                 })}
               >
                 <UsersIcon className="w-6 h-6" aria-label="site contacts" />
@@ -151,8 +151,8 @@ function SiteTable({ data }) {
               <Link
                 to={`/site/${data.row.original.id}/add-location`}
                 className={clsx('hover:text-blue-800', {
-                  'text-green-700': data.row.original.locationStatus,
-                  'text-yellow-500': !data.row.original.locationStatus,
+                  'text-gray-500': data.row.original.locationStatus,
+                  'text-pink-500': !data.row.original.locationStatus,
                 })}
               >
                 <LocationMarkerIcon className="w-6 h-6" aria-label="site location" />
@@ -176,7 +176,7 @@ function SiteTable({ data }) {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data }, useSortBy);
 
   const queryClient = useQueryClient();
-  const { mutate } = useMutation((id) => ky.delete(`/api/site`, { json: { id } }), {
+  const { mutate } = useMutation((siteId) => ky.delete(`/api/site`, { json: { siteId } }), {
     onMutate: async (id) => {
       await queryClient.cancelQueries('sites');
       const previousValue = queryClient.getQueryData('sites');

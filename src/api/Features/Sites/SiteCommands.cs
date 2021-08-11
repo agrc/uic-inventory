@@ -10,10 +10,10 @@ namespace api.Features {
   public static class CreateSite {
     public class Command : IRequest<Site> {
       public Command(SiteInput input) {
-        AccountId = input.Id;
+        AccountId = input.AccountId;
         Name = input.Name;
         Ownership = input.Ownership;
-        Naics = input.Naics;
+        Naics = input.NaicsPrimary;
         NaicsTitle = input.NaicsTitle;
       }
 
@@ -61,17 +61,11 @@ namespace api.Features {
 
   public static class UpdateSite {
     public class Command : IRequest<Site> {
-      public Command(SiteLocationInput input) {
-        AccountId = input.Id;
-        SiteId = input.SiteId;
-        Address = input.Address;
-        Geometry = input.Geometry;
+      public Command(SiteInput input) {
+        Site = input;
       }
 
-      public int AccountId { get; set; }
-      public int SiteId { get; set; }
-      public string? Address { get; set; }
-      public string? Geometry { get; set; }
+      public SiteInput Site { get; }
     }
 
     public class Handler : IRequestHandler<Command, Site> {
@@ -87,17 +81,11 @@ namespace api.Features {
         _log = log;
       }
       public async Task<Site> Handle(Command request, CancellationToken cancellationToken) {
+        //! TODO: create requirement that site cannot be edited when authorized status
+
         var site = _metadata.Site;
 
-        if (request.Address is not null) {
-          site.Address = request.Address;
-        }
-
-        if (request.Geometry is not null) {
-          site.Geometry = request.Geometry;
-        }
-
-        //! TODO: create requirement that site cannot be edited when authorized status
+        request.Site.Update(site);
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -111,8 +99,8 @@ namespace api.Features {
   public static class DeleteSite {
     public class Command : IRequest {
       public Command(SiteInput input) {
-        AccountId = input.Id;
-        SiteId = input.Id;
+        AccountId = input.AccountId;
+        SiteId = input.SiteId;
       }
 
       public int AccountId { get; set; }

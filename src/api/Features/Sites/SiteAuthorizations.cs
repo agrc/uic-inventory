@@ -48,7 +48,7 @@ namespace api.Features {
     }
     public override void BuildPolicy(UpdateSite.Command request) {
       UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-      UseRequirement(new MustOwnSite(request.SiteId));
+      UseRequirement(new MustOwnSite(request.Site.SiteId));
       UseRequirement(new MustHaveCompleteProfile());
       UseRequirement(new MustHaveEditableSiteStatus());
     }

@@ -31,7 +31,7 @@ export const ProfileSchema = yup.object().shape({
 export const SiteSchema = yup.object().shape({
   name: yup.string().max(512).required().label('Name'),
   ownership: yup.string().max(512).required().label('ownership'),
-  naics: yup
+  naicsPrimary: yup
     .string()
     .matches(/^\d{6}$/, 'NAICS codes must be a 6 digit code')
     .required()

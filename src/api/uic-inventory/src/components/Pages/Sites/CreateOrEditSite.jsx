@@ -11,9 +11,9 @@ import {
   SelectInput,
   SiteSchema as schema,
 } from '../../FormElements';
-import { Chrome, onRequestError, toast, useHistory } from '../../PageElements';
-import { Fragment, useContext } from 'react';
-import { useMutation } from 'react-query';
+import { Chrome, onRequestError, toast, useHistory, useParams } from '../../PageElements';
+import { Fragment, useContext, useEffect } from 'react';
+import { useMutation, useQuery } from 'react-query';
 import ky from 'ky';
 import { useOpenClosed } from '../../Hooks';
 
@@ -61,7 +61,12 @@ const ownership = [
 ];
 
 function CreateOrEditSite() {
+  const { siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
+  const { data } = useQuery(['site', siteId], () => ky.get(`/api/site/${siteId}`).json(), {
+    enabled: siteId ?? 0 > 0 ? true : false,
+    onError: (error) => onRequestError(error, 'We had some trouble finding your site.'),
+  });
   const { mutate } = useMutation((data) => ky.post('/api/site', { json: { ...data, id: authInfo.id } }).json(), {
     onSuccess: (data) => {
       toast.success('Site created successfully!');
@@ -69,7 +74,14 @@ function CreateOrEditSite() {
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this site.'),
   });
-  const { formState, handleSubmit, register, setValue } = useForm({
+  const { mutate: update } = useMutation((data) => ky.put('/api/site', { json: data }).json(), {
+    onSuccess: (data) => {
+      toast.success('Your site was updated.');
+      history.push(`/site/${data.id}/add-contacts`);
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble updating this site.'),
+  });
+  const { formState, handleSubmit, register, reset, setValue } = useForm({
     resolver: yupResolver(schema),
   });
   //! pull isDirty from form state to activate proxy
@@ -77,22 +89,54 @@ function CreateOrEditSite() {
   const history = useHistory();
   const [status, { open, close }] = useOpenClosed(false);
 
-  const create = async (formData) => {
-    if (!isDirty) {
-      return toast.info("We've got your most current information");
+  // set existing form values
+  useEffect(() => {
+    if (!data) {
+      return;
     }
 
+    let defaults = data;
+    for (let name in defaults) {
+      if (Object.prototype.hasOwnProperty.call(defaults, 'name') && defaults[name] === null) {
+        defaults[name] = '';
+      }
+    }
+
+    console.log(defaults);
+
+    reset(defaults);
+  }, [data, reset]);
+
+  const createOrUpdateSite = (data) => {
+    if (!isDirty) {
+      return history.push(`/site/${data.id}/add-contacts`);
+    }
+
+    if (siteId) {
+      return updateSite(data);
+    }
+
+    return createSite(data);
+  };
+
+  const updateSite = (formData) => {
+    const input = { ...formData, siteId: parseInt(siteId), accountId: parseInt(authInfo.id) };
+
+    update(input);
+  };
+
+  const createSite = (formData) => {
     const input = {
-      id: parseInt(authInfo.id),
+      accountId: parseInt(authInfo.id),
       ...formData,
     };
 
-    await mutate({ ...input });
+    mutate({ ...input });
   };
 
   return (
     <Chrome>
-      <form onSubmit={handleSubmit((data) => create(data))}>
+      <form onSubmit={handleSubmit((data) => createOrUpdateSite(data))}>
         <PageGrid
           heading="Site Details"
           subtext="Provide some basic information about the site"
@@ -129,7 +173,7 @@ function CreateOrEditSite() {
 
             <ResponsiveGridColumn full={true} className="sm:col-span-4">
               <TextInput
-                id="naics"
+                id="naicsPrimary"
                 text="6-digit NAICS code"
                 register={register}
                 errors={formState.errors}
@@ -186,7 +230,7 @@ function CreateOrEditSite() {
                       close();
                     }
 
-                    setValue('naics', item.code, { shouldValidate: true, shouldDirty: true });
+                    setValue('naicsPrimary', item.code, { shouldValidate: true, shouldDirty: true });
                     setValue('naicsTitle', item.value, { shouldValidate: true, shouldDirty: true });
                   }}
                 />

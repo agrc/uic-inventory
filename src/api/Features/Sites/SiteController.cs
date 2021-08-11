@@ -83,7 +83,7 @@ namespace api.Features {
 
     [HttpPut("/api/site")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<SitePayload>> UpdateSiteLocationAsync(SiteLocationInput input, CancellationToken token) {
+    public async Task<ActionResult<SitePayload>> UpdateSiteLocationAsync(SiteInput input, CancellationToken token) {
       try {
         var result = await _mediator.Send(new UpdateSite.Command(input), token);
 

@@ -59,44 +59,37 @@ namespace api.Features {
     public string? Geometry { get; set; }
   }
   public class SiteInput {
-    public int Id { get; set; }
+    public int AccountId { get; set; }
+    public int SiteId { get; set; }
     public string? Name { get; set; }
     public string? Ownership { get; set; }
-    public string? Naics { get; set; }
+    public string? NaicsPrimary { get; set; }
     public string? NaicsTitle { get; set; }
-  }
-  public class SiteLocationInput {
-    public int Id { get; set; }
-    public int SiteId { get; set; }
     public string? Address { get; set; }
     public string? Geometry { get; set; }
   }
   public static class SiteInputExtension {
     public static Site Update(this SiteInput input, Site site) {
-      site.AccountFk = input.Id;
-      var siteCompletion = 0;
-
       if (input.Name != null) {
         site.Name = input.Name;
-        siteCompletion++;
       }
 
-      if (input.Naics != null && int.TryParse(input.Naics, out var naicsCode)) {
+      if (input.NaicsPrimary != null && int.TryParse(input.NaicsPrimary, out var naicsCode)) {
         site.NaicsPrimary = naicsCode;
-        siteCompletion++;
       }
 
       if (input.NaicsTitle != null) {
         site.NaicsTitle = input.NaicsTitle;
-        siteCompletion++;
       }
 
       if (input.Ownership != null) {
         site.Ownership = input.Ownership;
-        siteCompletion++;
       }
 
-      site.DetailStatus = siteCompletion == 4;
+      if (!string.IsNullOrEmpty(input.Address)) {
+        site.Address = input.Address;
+      }
+
       if (!string.IsNullOrEmpty(input.Geometry)) {
         site.Geometry = input.Geometry;
       }
