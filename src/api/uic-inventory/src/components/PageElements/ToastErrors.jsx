@@ -4,11 +4,16 @@ const onRequestError = async (error, defaultMessage = 'Something went terribly w
   // TODO: log error
   console.error(error);
   let toastMessage = defaultMessage;
+  let response = { message: undefined };
 
-  const response = await error.response.json();
+  try {
+    response = await error.response.json();
+  } catch (ex) {
+    console.error(ex);
+  }
 
-  if (response.message) {
-    toastMessage = response.message;
+  if (response.errors) {
+    toastMessage = response.errors.map((x) => x.message).join('\n');
   }
 
   return toast.error(toastMessage);

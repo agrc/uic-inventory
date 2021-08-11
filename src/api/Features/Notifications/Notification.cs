@@ -11,7 +11,7 @@ namespace api.Features {
       Email = string.Empty;
       Notifications = Array.Empty<NotificationPayload>();
     }
-    public ProfileNotificationPayload(Exception error) : base("Something went terribly wrong that we did not expect.") {
+    public ProfileNotificationPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") {
       FirstName = string.Empty;
       LastName = string.Empty;
       Email = string.Empty;
@@ -90,7 +90,7 @@ namespace api.Features {
   }
   public class NotificationMutationPayload : ResponseContract {
     public NotificationMutationPayload(UnauthorizedAccessException error) : base(error.Message) { }
-    public NotificationMutationPayload(Exception error) : base("Something went terribly wrong that we did not expect.") { }
+    public NotificationMutationPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
 
     public NotificationMutationPayload(NotificationReceipt receipt) {
       ReadAt = receipt.ReadAt;

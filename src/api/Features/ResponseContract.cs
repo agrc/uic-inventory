@@ -8,7 +8,7 @@ namespace api.Features {
     protected ResponseContract(string message) {
       var parts = message.Split(':');
 
-      Errors = new List<ApiError> { new ApiError(parts[1], parts[2]) };
+      Errors = new List<ApiError> { new ApiError(parts[1], parts[0]) };
     }
 
     public IReadOnlyList<ApiError>? Errors { get; }

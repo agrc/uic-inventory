@@ -39,7 +39,7 @@ namespace api.Features {
   }
   public class SitePayload : ResponseContract {
     public SitePayload(UnauthorizedAccessException error) : base(error.Message) { }
-    public SitePayload(Exception error) : base("Something went terribly wrong that we did not expect.") { }
+    public SitePayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
     public SitePayload(Site site) {
       Id = site.Id;
       Name = site.Name ?? string.Empty;
@@ -97,6 +97,9 @@ namespace api.Features {
       }
 
       site.DetailStatus = siteCompletion == 4;
+      if (!string.IsNullOrEmpty(input.Geometry)) {
+        site.Geometry = input.Geometry;
+      }
 
       return site;
     }

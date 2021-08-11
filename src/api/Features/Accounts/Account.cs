@@ -89,7 +89,7 @@ namespace api.Features {
 
   public class AccountPayload : ResponseContract {
     public AccountPayload(UnauthorizedAccessException error) : base(error.Message) { }
-    public AccountPayload(Exception error) : base("Something went terribly wrong that we did not expect.") { }
+    public AccountPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
 
     public AccountPayload(Account? input) {
       input ??= new Account();
@@ -155,7 +155,7 @@ namespace api.Features {
     public AuthPayload(UnauthorizedAccessException error) : base(error.Message) {
       UserData = new Extra(new());
     }
-    public AuthPayload(Exception error) : base("Something went terribly wrong that we did not expect.") {
+    public AuthPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") {
       UserData = new Extra(new());
     }
 
