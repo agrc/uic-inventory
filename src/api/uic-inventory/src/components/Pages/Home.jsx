@@ -1,15 +1,15 @@
-import { List } from 'react-content-loader';
-import { AuthContext } from '../../AuthProvider';
-import { Chrome, Header, Link, onRequestError, toast } from '../PageElements';
 import { Fragment, useContext, useMemo, useRef } from 'react';
-import ky from 'ky';
-import { useSortBy, useTable } from 'react-table';
-import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
-import { DocumentTextIcon, LocationMarkerIcon, PlusIcon, UsersIcon } from '@heroicons/react/solid';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { useOpenClosed } from '../Hooks/useOpenClosedHook';
+import { List } from 'react-content-loader';
 import clsx from 'clsx';
 import { Dialog, Transition } from '@headlessui/react';
+import { useSortBy, useTable } from 'react-table';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import ky from 'ky';
+import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
+import { DocumentTextIcon, LocationMarkerIcon, PlusIcon, UsersIcon, XIcon, CheckIcon } from '@heroicons/react/solid';
+import { AuthContext } from '../../AuthProvider';
+import { Chrome, Header, Link, onRequestError, toast } from '../PageElements';
+import { useOpenClosed } from '../Hooks/useOpenClosedHook';
 
 export function SitesAndInventory({ completeProfile }) {
   const { authInfo } = useContext(AuthContext);
@@ -120,52 +120,61 @@ function SiteTable({ data }) {
         accessor: 'naicsTitle',
       },
       {
-        Header: 'Overall Status',
-        accessor: 'status',
-      },
-      {
-        Header: 'Actions',
-        id: 'action',
-        Cell: function action(data) {
-          console.log(data);
+        id: 'status',
+        Header: 'Completeness',
+        Cell: function status(data) {
           return (
-            <div className="flex">
+            <div className="stroke-2">
               <Link
                 to={`/site/${data.row.original.id}/add-details`}
-                className={clsx('hover:text-blue-800', {
-                  'text-gray-500': data.row.original.detailStatus,
-                  'text-pink-500': !data.row.original.detailStatus,
-                })}
+                className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
               >
-                <DocumentTextIcon className="w-6 h-6" aria-label="site details" />
+                <DocumentTextIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site details" />
+                {data.row.original.detailStatus ? (
+                  <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
+                ) : (
+                  <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
+                )}
               </Link>
               <Link
                 to={`/site/${data.row.original.id}/add-contacts`}
-                className={clsx('hover:text-blue-800', {
-                  'text-gray-500': data.row.original.contactStatus,
-                  'text-pink-500': !data.row.original.contactStatus,
-                })}
+                className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
               >
-                <UsersIcon className="w-6 h-6" aria-label="site contacts" />
+                <UsersIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site contacts" />
+                {data.row.original.contactStatus ? (
+                  <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
+                ) : (
+                  <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
+                )}
               </Link>
               <Link
                 to={`/site/${data.row.original.id}/add-location`}
-                className={clsx('hover:text-blue-800', {
-                  'text-gray-500': data.row.original.locationStatus,
-                  'text-pink-500': !data.row.original.locationStatus,
-                })}
+                className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
               >
-                <LocationMarkerIcon className="w-6 h-6" aria-label="site location" />
+                <LocationMarkerIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site location" />
+                {data.row.original.locationStatus ? (
+                  <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
+                ) : (
+                  <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
+                )}
               </Link>
-              <TrashIcon
-                aria-label="delete site"
-                className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
-                onClick={() => {
-                  open();
-                  deleteSite.current = data.row.original.id;
-                }}
-              />
             </div>
+          );
+        },
+      },
+      {
+        Header: '',
+        id: 'action',
+        Cell: function action(data) {
+          return (
+            <TrashIcon
+              aria-label="delete site"
+              className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
+              onClick={() => {
+                open();
+                deleteSite.current = data.row.original.id;
+              }}
+            />
           );
         },
       },
