@@ -42,9 +42,8 @@ namespace api.Features {
     [HttpPost("/api/contact")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<ContactPayload>> CreateContactAsync(ContactInput input, CancellationToken token) {
-      // * contact input.id is the site id
       try {
-        var result = await _mediator.Send(new CreateContact.Command(input.Id, input), token);
+        var result = await _mediator.Send(new CreateContact.Command(input.SiteId, input), token);
 
         return Ok(new ContactPayload(result));
       } catch (UnauthorizedException ex) {
@@ -64,8 +63,24 @@ namespace api.Features {
 
     [HttpDelete("/api/contact")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public Task<ActionResult> DeleteContactAsync(ContactInput input, CancellationToken token) {
-      throw new NotImplementedException();
+    public async Task<ActionResult<ContactPayload>> DeleteContactAsync(ContactInput input, CancellationToken token) {
+      try {
+        var result = await _mediator.Send(new DeleteContact.Command(input), token);
+
+        return Accepted();
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "DELETE:api/contact")
+          .ForContext("input", input)
+          .Warning(ex, "requirements failure");
+
+        return Unauthorized(new ContactPayload(ex));
+      } catch (Exception ex) {
+        _log.ForContext("endpoint", "DELETE:api/contact")
+          .ForContext("input", input)
+          .Fatal(ex, "unhandled exception");
+
+        return StatusCode(500, new ContactPayload(ex));
+      }
     }
   }
 }

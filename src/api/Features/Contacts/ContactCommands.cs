@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
@@ -36,6 +35,43 @@ namespace api.Features {
           await _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken);
 
           return contact.Entity;
+        }
+      }
+    }
+  }
+
+  public static class DeleteContact {
+    public class Command : IRequest {
+      public Command(ContactInput input) {
+        Input = input;
+      }
+
+      public ContactInput Input { get; }
+
+      public class Handler : IRequestHandler<Command> {
+        private readonly ILogger _log;
+        private readonly AppDbContext _context;
+        private readonly IPublisher _publisher;
+
+        public Handler(AppDbContext context, IPublisher publisher, ILogger log) {
+          _context = context;
+          _publisher = publisher;
+          _log = log;
+        }
+
+        async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+           var contact = await _context.Contacts
+            .FirstAsync(s => s.Id == request.Input.ContactId, cancellationToken);
+
+          _context.Contacts.Remove(contact);
+
+          //! TODO: create requirement that site cannot be deleted when authorized status
+
+          await _context.SaveChangesAsync(cancellationToken);
+
+          await _publisher.Publish(new SiteNotifications.EditNotification(request.Input.SiteId), cancellationToken);
+
+          return Unit.Value;
         }
       }
     }

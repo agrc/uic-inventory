@@ -34,7 +34,9 @@ namespace api.Features {
   }
 
   public class ContactInput {
-    public int Id { get; set; }
+    public int AccountId { get; set; }
+    public int SiteId { get; set; }
+    public int ContactId { get; set; }
     public string? Organization { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
@@ -49,7 +51,7 @@ namespace api.Features {
 
   public static class ContactInputExtension {
     public static Contact Update(this ContactInput input, Contact output) {
-      output.SiteFk = input.Id;
+      output.SiteFk = input.SiteId;
 
       if (input.FirstName != null) {
         output.FirstName = input.FirstName;
