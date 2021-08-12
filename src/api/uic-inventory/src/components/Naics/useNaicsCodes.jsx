@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
+import ky from 'ky';
+import { onRequestError } from '../PageElements';
 
 const topLevelItems = [
   { code: 11, value: 'Agriculture, Forestry, Fishing and Hunting' },
@@ -24,25 +26,23 @@ const topLevelItems = [
 ];
 
 function useNaicsCodes(naicsCode) {
-  const [codes, setCodes] = useState();
+  const { isFetching, data } = useQuery(
+    ['naics', naicsCode],
+    () => {
+      if (!naicsCode) {
+        return topLevelItems;
+      }
 
-  useEffect(() => {
-    if (!naicsCode) {
-      return setCodes(topLevelItems);
+      return ky.get(`/api/naics/${naicsCode}`).json();
+    },
+    {
+      keepPreviousData: true,
+      staleTime: Infinity,
+      onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),
     }
+  );
 
-    const fetchCodes = async () => {
-      const response = await fetch(`/api/naics/${naicsCode}`, {
-        method: 'GET',
-      });
-
-      setCodes(await response.json());
-    };
-
-    fetchCodes();
-  }, [naicsCode]);
-
-  return codes;
+  return [data, isFetching];
 }
 
 export default useNaicsCodes;

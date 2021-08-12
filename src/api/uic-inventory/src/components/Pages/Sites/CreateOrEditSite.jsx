@@ -227,7 +227,7 @@ function CreateOrEditSite() {
                 <NaicsPicker
                   updateWith={(item) => {
                     if (item.code.toString().length === 6) {
-                      close();
+                      setTimeout(close, 2500);
                     }
 
                     setValue('naicsPrimary', item.code, { shouldValidate: true, shouldDirty: true });

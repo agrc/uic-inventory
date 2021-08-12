@@ -6,7 +6,11 @@ module.exports = {
     minHeight: {
       profile: '36em',
     },
-    extend: {},
+    extend: {
+      blur: {
+        xs: '1px',
+      },
+    },
   },
   variants: {
     extend: {},
