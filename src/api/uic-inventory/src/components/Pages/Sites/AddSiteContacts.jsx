@@ -152,8 +152,6 @@ function AddSiteContacts() {
       return object;
     }, {});
 
-    console.log(defaults);
-
     reset({ ...defaults, contactType: undefined });
   }, [data, reset]);
 

@@ -102,8 +102,6 @@ function CreateOrEditSite() {
       }
     }
 
-    console.log(defaults);
-
     reset(defaults);
   }, [data, reset]);
 
