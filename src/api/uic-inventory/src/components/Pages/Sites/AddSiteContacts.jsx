@@ -502,7 +502,7 @@ function ContactTable({ data }) {
                         'font-medium': ['action', 'id'].includes(cell.column.id),
                         'text-right whitespace-nowrap': cell.column.id === 'action',
                       },
-                      'px-3 py-4 whitespace-nowrap'
+                      'px-3 py-4'
                     )}
                     {...cell.getCellProps()}
                   >
