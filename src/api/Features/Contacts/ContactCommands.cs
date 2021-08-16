@@ -60,8 +60,8 @@ namespace api.Features {
         }
 
         async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
-           var contact = await _context.Contacts
-            .FirstAsync(s => s.Id == request.Input.ContactId, cancellationToken);
+          var contact = await _context.Contacts
+           .FirstAsync(s => s.Id == request.Input.ContactId, cancellationToken);
 
           _context.Contacts.Remove(contact);
 

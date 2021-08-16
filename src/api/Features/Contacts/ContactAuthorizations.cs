@@ -16,7 +16,7 @@ namespace api.Features {
     }
   }
 
-   public class CreateContactAuthorizer : AbstractRequestAuthorizer<CreateContact.Command> {
+  public class CreateContactAuthorizer : AbstractRequestAuthorizer<CreateContact.Command> {
     private readonly IHttpContextAccessor _context;
 
     public CreateContactAuthorizer(IHttpContextAccessor context) {
