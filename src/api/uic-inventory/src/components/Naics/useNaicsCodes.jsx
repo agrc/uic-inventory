@@ -26,23 +26,14 @@ const topLevelItems = [
 ];
 
 function useNaicsCodes(naicsCode) {
-  const { isFetching, data } = useQuery(
-    ['naics', naicsCode],
-    () => {
-      if (!naicsCode) {
-        return topLevelItems;
-      }
+  const { isPreviousData, data } = useQuery(['naics', naicsCode], () => ky.get(`/api/naics/${naicsCode}`).json(), {
+    initialData: naicsCode === undefined || naicsCode === null ? topLevelItems : undefined,
+    keepPreviousData: true,
+    staleTime: Infinity,
+    onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),
+  });
 
-      return ky.get(`/api/naics/${naicsCode}`).json();
-    },
-    {
-      keepPreviousData: true,
-      staleTime: Infinity,
-      onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),
-    }
-  );
-
-  return [data, isFetching];
+  return [data, isPreviousData];
 }
 
 export default useNaicsCodes;

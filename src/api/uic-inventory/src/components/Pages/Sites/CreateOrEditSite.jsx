@@ -1,10 +1,12 @@
-import { useForm } from 'react-hook-form';
+import { Fragment, useContext, useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Dialog, Transition } from '@headlessui/react';
 import { AuthContext } from '../../../AuthProvider';
 import {
   FormGrid,
   NaicsPicker,
+  NaicsTypeAhead,
   PageGrid,
   ResponsiveGridColumn,
   TextInput,
@@ -12,8 +14,7 @@ import {
   SiteSchema as schema,
 } from '../../FormElements';
 import { Chrome, onRequestError, toast, useHistory, useParams } from '../../PageElements';
-import { Fragment, useContext, useEffect } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useQueryClient, useMutation, useQuery } from 'react-query';
 import ky from 'ky';
 import { useOpenClosed } from '../../Hooks';
 
@@ -63,6 +64,16 @@ const ownership = [
 function CreateOrEditSite() {
   const { siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
+  const [naicsCode, setNaicsCode] = useState([]);
+  const { control, formState, handleSubmit, register, reset, setValue } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      //! this makes the downshift think it's uncontrolled on the first render
+      naicsPrimary: '',
+    },
+  });
+
+  const queryClient = useQueryClient();
   const { data } = useQuery(['site', siteId], () => ky.get(`/api/site/${siteId}`).json(), {
     enabled: siteId ?? 0 > 0 ? true : false,
     onError: (error) => onRequestError(error, 'We had some trouble finding your site.'),
@@ -71,6 +82,7 @@ function CreateOrEditSite() {
     onSuccess: (data) => {
       toast.success('Site created successfully!');
       history.push(`/site/${data.id}/add-contacts`);
+      queryClient.invalidateQueries(['site', siteId]);
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this site.'),
   });
@@ -78,12 +90,20 @@ function CreateOrEditSite() {
     onSuccess: (data) => {
       toast.success('Your site was updated.');
       history.push(`/site/${data.id}/add-contacts`);
+      queryClient.invalidateQueries(['site', siteId]);
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating this site.'),
   });
-  const { formState, handleSubmit, register, reset, setValue } = useForm({
-    resolver: yupResolver(schema),
+  const { isFetching } = useQuery(['naicsCodes', naicsCode], () => ky.get(`/api/naics/${naicsCode}/single`).json(), {
+    staleTime: Infinity,
+    enabled: naicsCode?.length > 0 ? true : false,
+    onSuccess: (data) => {
+      setValue('naicsPrimary', naicsCode, { shouldValidate: true, shouldDirty: true });
+      setValue('naicsTitle', data, { shouldValidate: true, shouldDirty: true });
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),
   });
+
   //! pull isDirty from form state to activate proxy
   const { isDirty } = formState;
   const history = useHistory();
@@ -133,14 +153,14 @@ function CreateOrEditSite() {
   };
 
   return (
-    <Chrome>
+    <Chrome className="relative">
       <form onSubmit={handleSubmit((data) => createOrUpdateSite(data))}>
         <PageGrid
           heading="Site Details"
           subtext="Provide some basic information about the site"
           submit={true}
           submitLabel="Next"
-          disabled={!isDirty}
+          disabled={!isDirty && isFetching}
         >
           <FormGrid>
             <ResponsiveGridColumn full={true} half={true}>
@@ -170,13 +190,17 @@ function CreateOrEditSite() {
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true} className="sm:col-span-4">
-              <TextInput
-                id="naicsPrimary"
-                text="6-digit NAICS code"
-                register={register}
-                errors={formState.errors}
-                readOnly={true}
-                className="bg-gray-100"
+              <Controller
+                name="naicsPrimary"
+                control={control}
+                render={({ field }) => (
+                  <NaicsTypeAhead
+                    id="naicsPrimary"
+                    field={field}
+                    errors={formState.errors}
+                    setNaicsCode={setNaicsCode}
+                  />
+                )}
               />
             </ResponsiveGridColumn>
 

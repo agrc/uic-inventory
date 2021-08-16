@@ -4,6 +4,7 @@ import SelectInput from './SelectInput';
 import TextInput from './TextInput';
 import PhoneInput from 'react-phone-number-input/react-hook-form-input';
 import NaicsPicker from '../Naics/NaicsPicker';
+import NaicsTypeAhead from '../Naics/NaicsTypeAhead';
 
 export * from './TextInput';
 export * from './validationSchemas';
@@ -14,4 +15,4 @@ export * from './Separator';
 export { camelToProper } from './Helpers';
 export { ErrorMessage } from '@hookform/error-message';
 
-export { ErrorMessageTag, GridHeading, NaicsPicker, PhoneInput, SelectInput, TextInput };
+export { ErrorMessageTag, GridHeading, NaicsPicker, NaicsTypeAhead, PhoneInput, SelectInput, TextInput };

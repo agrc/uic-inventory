@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace api.Features.Naics {
+namespace api.Features {
   public struct NaicsModel {
     public NaicsModel(double code, string value) {
       Code = Convert.ToInt32(code);
-      Value = value;
+      Value = value.Trim();
     }
 
     public int Code { get; set; }

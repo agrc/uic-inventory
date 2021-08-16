@@ -31,8 +31,8 @@ const getCodeLevel = (code) => {
 const history = [];
 
 function NaicsPicker({ updateWith }) {
-  const [code, setCode] = useState();
-  const [codes, isFetching] = useNaicsCodes(code);
+  const [code, setCode] = useState(undefined);
+  const [codes, isPreviousData] = useNaicsCodes(code);
 
   let classes =
     'flex items-center justify-center p-4 text-center border border-gray-200 rounded-md h-32 hover:border-blue-800 hover:border-2 overflow-hidden overflow-ellipsis disabled:cursor-wait disabled:filter disabled:blur-xs';
@@ -50,11 +50,11 @@ function NaicsPicker({ updateWith }) {
       return setCode(history[index]);
     }
 
-    setCode();
+    setCode(undefined);
   };
 
   const select = (item) => {
-    if (isFetching) {
+    if (isPreviousData) {
       return;
     }
 
@@ -109,7 +109,12 @@ function NaicsPicker({ updateWith }) {
       </div>
       <div className="grid items-stretch grid-cols-2 gap-4 overflow-auto sm:grid-cols-3 md:grid-cols-5">
         {codes?.map((item) => (
-          <button key={item.code + item.value} className={classes} disabled={isFetching} onClick={() => select(item)}>
+          <button
+            key={item.code + item.value}
+            className={classes}
+            disabled={isPreviousData}
+            onClick={() => select(item)}
+          >
             {item.value}
           </button>
         ))}

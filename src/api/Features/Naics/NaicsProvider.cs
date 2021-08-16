@@ -6,7 +6,7 @@ using System.Text;
 using ExcelDataReader;
 using Serilog;
 
-namespace api.Features.Naics {
+namespace api.Features {
   public class NaicsProvider {
     public List<NaicsModel> NaicsCodes { get; set; } = new List<NaicsModel>();
     public List<NaicsModel> AllNaicsCodes { get; set; } = new List<NaicsModel>();
@@ -27,7 +27,6 @@ namespace api.Features.Naics {
       _twoDigitCodesPath = Path.Combine(Directory.GetCurrentDirectory(), "Features", "Naics", "data", "2-6 digit_2017_Codes.xlsx");
       _allNaicsPath = Path.Combine(Directory.GetCurrentDirectory(), "Features", "Naics", "data", "2017_NAICS_Index_File.xlsx");
 
-      // try {
       Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
       using var stream = File.Open(_twoDigitCodesPath, FileMode.Open, FileAccess.Read);
@@ -50,14 +49,12 @@ namespace api.Features.Naics {
           }
         }
       } while (reader.NextResult());
-      // } catch (Exception) { }
 
       _currentRow = 0;
       _skipRows = 1;
       _codeColumn = 0;
       _titleColumn = 1;
 
-      // try {
       using var stream2 = File.Open(_allNaicsPath, FileMode.Open, FileAccess.Read);
       using var reader2 = ExcelReaderFactory.CreateReader(stream2);
       do {
@@ -78,7 +75,6 @@ namespace api.Features.Naics {
           AllNaicsCodes.Add(new NaicsModel(code, reader2.GetString(_titleColumn)));
         }
       } while (reader2.NextResult());
-      // } catch (Exception) { }
     }
 
     public IEnumerable<NaicsModel> GetCodesFor(string naicsCode) {

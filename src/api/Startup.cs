@@ -1,11 +1,9 @@
 using System;
-using System.IO;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using api.Features;
-using api.Features.Naics;
 using api.Infrastructure;
 using MediatR;
 using MediatR.Behaviors.Authorization.Extensions.DependencyInjection;
@@ -115,20 +113,6 @@ namespace api {
           context.Response.Redirect(redirectUrl);
           return Task.CompletedTask;
         }).RequireAuthorization();
-
-        endpoints.MapGet("/api/naics/{naicsCode}", async (context) => {
-          var naicsProvider = endpoints.ServiceProvider.GetService<Lazy<NaicsProvider>>();
-          var naicsCode = context.Request.RouteValues["naicsCode"]?.ToString() ?? string.Empty;
-
-          if (naicsProvider?.Value is null) {
-            await context.Response.WriteAsync("di fail");
-
-            return;
-          }
-
-          context.Response.Headers["Cache-Control"] = new("max-age=2592000");
-          await context.Response.WriteAsJsonAsync(naicsProvider.Value.GetCodesFor(naicsCode));
-        });
 
         endpoints.MapControllers();
 

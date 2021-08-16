@@ -1,5 +1,5 @@
-import ErrorMessageTag from './ErrorMessage';
 import { ErrorMessage } from '@hookform/error-message';
+import ErrorMessageTag from './ErrorMessage';
 import { camelToProper } from './Helpers';
 
 function TextInput({ className, register, errors, id, text, type, readOnly = false }) {
