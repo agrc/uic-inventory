@@ -304,9 +304,9 @@ function AddSiteLocation() {
   const geocodeError = () => dispatch({ type: 'skip-geocoding', payload: false });
 
   const addSiteLocation = async (formData) => {
-    if (!isDirty) {
+    if (!isDirty.current) {
       history.push(`/site/${siteId}/add-well`);
-      return toast.info("We've got your most current information");
+      return;
     }
 
     const input = {
