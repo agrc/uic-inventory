@@ -48,15 +48,17 @@ namespace api.Features {
       NaicsPrimary = site.NaicsPrimary;
       Address = site.Address;
       Geometry = site.Geometry;
+      Status = site.Status;
     }
 
-    public int? Id { get; set; }
-    public string? Name { get; set; }
-    public string? Ownership { get; set; }
-    public string? NaicsTitle { get; set; }
-    public int? NaicsPrimary { get; set; }
-    public string? Address { get; set; }
-    public string? Geometry { get; set; }
+    public int? Id { get; }
+    public string? Name { get; }
+    public string? Ownership { get; }
+    public string? NaicsTitle { get; }
+    public int? NaicsPrimary { get; }
+    public string? Address { get; }
+    public string? Geometry { get; }
+    public SiteStatus Status { get; }
   }
   public class SiteInput {
     public int AccountId { get; set; }
