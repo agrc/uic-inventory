@@ -136,7 +136,7 @@ function CreateOrEditWell() {
             >
               <FormGrid>
                 <ResponsiveGridColumn full={true}>
-                  <span className="block mb-4 font-medium text-gray-700">Well Type</span>
+                  <span className="block mb-4 font-medium text-gray-700">Well Subclass</span>
                   <Controller
                     name="subClass"
                     control={control}
