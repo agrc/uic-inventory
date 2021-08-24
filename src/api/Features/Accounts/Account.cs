@@ -18,7 +18,8 @@ namespace api.Features {
     public bool ProfileComplete { get; set; }
     public AccessLevels Access { get; set; }
     public ICollection<NotificationReceipt>? NotificationReceipts { get; set; } = new HashSet<NotificationReceipt>();
-    public ICollection<Site>? Sites { get; set; } = new HashSet<Site>();
+    public ICollection<Site> Sites { get; set; } = new HashSet<Site>();
+    public ICollection<Well> Wells { get; set; } = new HashSet<Well>();
   }
 
   public enum AccessLevels {

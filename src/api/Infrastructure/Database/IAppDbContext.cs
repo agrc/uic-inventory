@@ -7,6 +7,7 @@ namespace api.Infrastructure {
   public interface IAppDbContext {
     DbSet<Account> Accounts { get; set; }
     DbSet<Site> Sites { get; set; }
+    DbSet<Well> Wells { get; set; }
     DbSet<Contact> Contacts { get; set; }
     DbSet<Notification> Notifications { get; set; }
     DbSet<NotificationReceipt> NotificationReceipts { get; set; }

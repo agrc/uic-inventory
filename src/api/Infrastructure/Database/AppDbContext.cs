@@ -1,3 +1,4 @@
+using System;
 using api.Features;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -18,6 +19,7 @@ namespace api.Infrastructure {
     public virtual DbSet<Notification> Notifications { get; set; } = default!;
     public virtual DbSet<NotificationReceipt> NotificationReceipts { get; set; } = default!;
     public virtual DbSet<Site> Sites { get; set; } = default!;
+    public virtual DbSet<Well> Wells { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
       modelBuilder.HasDefaultSchema("public").HasPostgresEnum("access_level", new[] { "elevated", "standard" })
@@ -192,30 +194,93 @@ namespace api.Infrastructure {
         entity.ToTable("sites");
 
         entity.Property(e => e.Id)
-            .HasColumnName("id");
+          .HasColumnName("id");
 
-        entity.Property(e => e.Name).IsRequired()
-                    .HasMaxLength(128)
-                    .HasColumnName("name");
+        entity.Property(e => e.Name)
+          .IsRequired()
+          .HasMaxLength(128)
+          .HasColumnName("name");
 
         entity.Property(e => e.Ownership)
-                .IsRequired()
-                .HasMaxLength(2)
-                .HasColumnName("ownership");
+          .IsRequired()
+          .HasMaxLength(2)
+          .HasColumnName("ownership");
 
-        entity.Property(e => e.NaicsPrimary).HasColumnName("naics_primary");
+        entity.Property(e => e.NaicsPrimary)
+          .HasColumnName("naics_primary");
 
-        entity.Property(e => e.NaicsTitle).HasColumnName("naics_title")
+        entity.Property(e => e.NaicsTitle)
+          .HasColumnName("naics_title")
           .IsRequired()
           .HasMaxLength(128);
 
-        entity.Property(e => e.AccountFk).HasColumnName("account_fk");
+        entity.Property(e => e.AccountFk)
+          .HasColumnName("account_fk");
 
         entity.HasOne<Account>(d => d.Account)
             .WithMany(p => p.Sites)
             .HasForeignKey(d => d.AccountFk)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName("site_to_account_fk");
+      });
+
+      modelBuilder.Entity<Well>(entity => {
+        entity.ToTable("wells");
+
+        entity.Property(e => e.Id)
+            .HasColumnName("id");
+
+        entity.Property(e => e.AccountFk)
+            .HasColumnName("account_fk");
+
+        entity.Property(e => e.SiteFk)
+            .HasColumnName("site_fk");
+
+        entity.Property(e => e.WellName)
+            .HasMaxLength(128)
+            .HasColumnName("well_name");
+
+        entity.Property(e => e.SubClass)
+            .IsRequired()
+            .HasColumnName("sub_class");
+
+        entity.Property(e => e.OrderNumber)
+            .IsRequired()
+            .HasColumnName("order_number");
+
+        entity.Property(e => e.Construction)
+            .HasMaxLength(512)
+            .HasColumnName("construction");
+
+        entity.Property(e => e.Injectate)
+            .HasMaxLength(512)
+            .HasColumnType("character varying(512)")
+            .HasColumnName("injectate");
+
+        entity.Property(e => e.Hydrogeologic)
+            .HasMaxLength(512)
+            .HasColumnType("character varying(512)")
+            .HasColumnName("hydrogeologic");
+
+        entity.Property(e => e.Signature)
+            .HasMaxLength(128)
+            .HasColumnType("character varying(128)")
+            .HasColumnName("signature");
+
+        entity.Property<DateTime?>("SubmittedOn")
+            .HasColumnName("submitted_on");
+
+        entity.HasOne<Account>(d => d.Account)
+            .WithMany(p => p.Wells)
+            .HasForeignKey(d => d.AccountFk)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName("well_to_account_fk");
+
+        entity.HasOne<Site>(d => d.Site)
+            .WithMany(p => p.Wells)
+            .HasForeignKey(d => d.SiteFk)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName("well_to_site_fk");
       });
 
       OnModelCreatingPartial(modelBuilder);

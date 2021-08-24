@@ -16,8 +16,9 @@ namespace api.Features {
     public bool DetailStatus { get; set; }
     public bool ContactStatus { get; set; }
     public bool LocationStatus { get; set; }
-    public virtual Account? Account { get; set; }
-    public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
+    public Account? Account { get; set; }
+    public ICollection<Well> Wells { get; set; } = new HashSet<Well>();
+    public ICollection<Contact> Contacts { get; set; } = new HashSet<Contact>();
   }
   public class SiteListPayload : ResponseContract {
     public SiteListPayload(Site site) {
