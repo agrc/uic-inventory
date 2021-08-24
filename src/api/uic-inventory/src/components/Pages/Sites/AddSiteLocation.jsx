@@ -305,7 +305,7 @@ function AddSiteLocation() {
 
   const addSiteLocation = async (formData) => {
     if (!isDirty.current) {
-      history.push(`/site/${siteId}/add-well`);
+      history.push(`/site/${siteId}/well/create`);
       return;
     }
 

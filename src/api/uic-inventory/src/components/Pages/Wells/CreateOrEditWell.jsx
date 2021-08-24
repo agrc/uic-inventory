@@ -15,47 +15,46 @@ import {
   TextInput,
   WellSchema as schema,
 } from '../../FormElements';
-import { Chrome, toast, onRequestError, useParams, useHistory } from '../../PageElements';
+import { Chrome, toast, IncompleteSiteWarning, onRequestError, useParams, useHistory } from '../../PageElements';
 import { useOpenClosed } from '../../Hooks';
 
 const wellTypes = [
   {
-    value: 'general',
+    value: -1,
     label: 'General',
   },
   {
-    value: 'storm',
+    value: 5047,
     label: 'Storm water drainage wells',
-    extra:
-      'https://deq.utah.gov/water-quality/storm-water-drainage-wells-utah-underground-injection-control-uic-program',
   },
   {
-    value: 'remediation',
+    value: 5002,
     label: 'Subsurface environmental remediation wells',
   },
   {
-    value: 'uic',
+    value: 5101,
     label: 'UIC - Regulated large underground wastewater disposal system',
     extra: '(LUWDS) => 5000 gdp',
   },
   {
-    value: 'veterinary',
+    value: 5026,
     label: 'Veterinary, kennel, or pet grooming wastewater disposal system',
   },
 ];
 
 function CreateOrEditWell() {
   const { authInfo } = useContext(AuthContext);
-  const { siteId } = useParams();
+  const { siteId, wellId = -1 } = useParams();
 
-  const { data, status } = useQuery(['site', siteId], () => ky.get(`/api/site/${siteId}`).json(), {
+  const { data, status } = useQuery(['well', wellId], () => ky.get(`/api/well/${wellId}/site/${siteId}`).json(), {
     enabled: siteId > 0,
     onError: (error) => onRequestError(error, 'We had some trouble finding this wells information.'),
   });
   const { mutate } = useMutation((json) => ky.post('/api/well', { json }).json(), {
-    onSuccess: () => {
+    onSuccess: (response) => {
       toast.success('Well created successfully!');
-      // history.push(`/site/${data.createSite.site.id}/add-contacts`);
+      history.replace(`/site/${siteId}/well/${response.id}/add-details`);
+      history.push(`/site/${siteId}/well/${response.id}/add-location`);
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this well.'),
   });
@@ -65,8 +64,8 @@ function CreateOrEditWell() {
   });
 
   const history = useHistory();
+  const [site, setSite] = useState({});
   const [show, { open, close }] = useOpenClosed();
-  const [selected, setSelected] = useState(wellTypes[0]);
 
   //* pull isDirty from form state to activate proxy
   const { isDirty } = formState;
@@ -76,14 +75,14 @@ function CreateOrEditWell() {
       return;
     }
 
-    const includeProps = ['name', 'order', 'wellType'];
+    const includeProps = ['orderNumber', 'subClass'];
 
     const defaults = Object.keys(data).reduce((object, key) => {
       if (!includeProps.includes(key)) {
         return object;
       }
 
-      if (data[key] === null) {
+      if (data[key] === null || data[key] === 0) {
         data[key] = '';
 
         return object;
@@ -136,36 +135,14 @@ function CreateOrEditWell() {
               disabled={!isDirty}
             >
               <FormGrid>
-                <ResponsiveGridColumn full={true} half={true}>
-                  <TextInput id="name" text="Site Name" register={register} errors={formState.errors} />
-                </ResponsiveGridColumn>
-
-                <ResponsiveGridColumn full={true} half={true}>
-                  <TextInput
-                    id="order"
-                    type="number"
-                    text="UIC inventory form order number"
-                    register={register}
-                    errors={formState.errors}
-                  />
-                </ResponsiveGridColumn>
-                <ResponsiveGridColumn full={true}>
-                  <p className="italic text-center text-gray-500">
-                    To submit a UIC Inventory Form you must have a valid Inventory Review Fee order number or receipt.{' '}
-                    <button type="primary" onClick={open}>
-                      Click for instructions
-                    </button>{' '}
-                    to pay the UIC Inventory Fee online.
-                  </p>
-                </ResponsiveGridColumn>
                 <ResponsiveGridColumn full={true}>
                   <span className="block mb-4 font-medium text-gray-700">Well Type</span>
                   <Controller
-                    name="wellType"
+                    name="subClass"
                     control={control}
                     render={({ field }) => (
                       <RadioGroup id="wellType" forwardRef={field.ref} onChange={field.onChange} value={field.value}>
-                        <div className="space-y-2">
+                        <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                           {wellTypes.map((well) => (
                             <RadioGroup.Option
                               key={well.value}
@@ -200,8 +177,8 @@ function CreateOrEditWell() {
                                     </div>
                                   </div>
                                   {checked && (
-                                    <div className="flex-shrink-0 text-white">
-                                      <CheckIcon className="w-6 h-6" />
+                                    <div className="flex-shrink-0 ">
+                                      <CheckIcon className="w-6 h-6 text-blue-300" />
                                     </div>
                                   )}
                                 </div>
@@ -213,6 +190,24 @@ function CreateOrEditWell() {
                     )}
                   />
                   <ErrorMessage errors={formState.errors} name="wellType" as={ErrorMessageTag} />
+                </ResponsiveGridColumn>
+                <ResponsiveGridColumn full={true} half={true}>
+                  <TextInput
+                    id="orderNumber"
+                    type="number"
+                    text="UIC inventory form order number"
+                    register={register}
+                    errors={formState.errors}
+                  />
+                </ResponsiveGridColumn>
+                <ResponsiveGridColumn full={true} half={true}>
+                  <p className="italic text-center text-gray-500 md:text-left">
+                    To submit a UIC Inventory Form you must have a valid Inventory Review Fee order number or receipt.{' '}
+                    <button type="primary" onClick={open}>
+                      Click for instructions
+                    </button>{' '}
+                    to pay the UIC Inventory Fee online.
+                  </p>
                 </ResponsiveGridColumn>
               </FormGrid>
             </PageGrid>
@@ -249,7 +244,12 @@ function CreateOrEditWell() {
                     <ul className="list-decimal list-inside">
                       <li className="leading-loose">
                         Go to{' '}
-                        <a type="primary" href="https://secure.utah.gov/cart/dwq_cart/products.html">
+                        <a
+                          type="primary"
+                          href="https://secure.utah.gov/cart/dwq_cart/products.html"
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
                           https://secure.utah.gov/cart/dwq_cart/products.html
                         </a>
                         , the Products Page.
@@ -304,8 +304,8 @@ function CreateOrEditWell() {
 function CheckIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <circle cx={12} cy={12} r={12} fill="#fff" opacity="0.2" />
-      <path d="M7 13l3 3 7-7" stroke="#fff" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx={12} cy={12} r={12} fill="currentColor" opacity="0.2" />
+      <path d="M7 13l3 3 7-7" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

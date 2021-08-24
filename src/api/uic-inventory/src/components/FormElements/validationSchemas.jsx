@@ -91,7 +91,11 @@ export const SiteLocationSchema = yup.object().shape({
 });
 
 export const WellSchema = yup.object().shape({
-  name: yup.string().max(512).required(),
-  order: yup.number().typeError('Order number is required').integer().positive().required('Order number is required'),
-  wellType: yup.string().oneOf(['general', 'storm', 'remediation', 'uic', 'veterinary']).required().label('Well Type'),
+  orderNumber: yup
+    .number()
+    .typeError('Order number is required')
+    .integer()
+    .positive()
+    .required('Order number is required'),
+  subClass: yup.number().oneOf([-1, 5047, 5002, 5101, 5026]).required().label('Well Type'),
 });

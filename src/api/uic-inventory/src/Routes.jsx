@@ -1,12 +1,5 @@
 import { Navigation, Route, Router, Switch, ToastContainer } from './components/PageElements';
-import {
-  CreateOrEditWell,
-  ContactProgram,
-  Profile,
-  Sites,
-  GenericLandingPage,
-  SitesAndInventory,
-} from './components/Pages';
+import { ContactProgram, Profile, Sites, GenericLandingPage, SitesAndInventory, Wells } from './components/Pages';
 import { AuthContext } from './AuthProvider';
 import { useContext } from 'react';
 
@@ -63,8 +56,12 @@ function AuthenticatedRoutes({ completeProfile }) {
       <Route path="/site/:siteId/add-location">
         <Sites.AddSiteLocation />
       </Route>
-      <Route path="/site/:siteId/add-well">
-        <CreateOrEditWell />
+      <Route path="/site/:siteId/well/create">
+        <Wells.CreateOrEditWell />
+      </Route>
+      <Route path="/site/:siteId/well/:wellId/add-details">
+        <Wells.CreateOrEditWell />
+      </Route>
       </Route>
       <Route exact path="/">
         <SitesAndInventory completeProfile={completeProfile} />
