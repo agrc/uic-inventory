@@ -97,6 +97,15 @@ function CreateOrEditWell() {
     reset(defaults);
   }, [data, reset]);
 
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    const { siteName, siteType } = data;
+    setSite({ name: siteName, title: siteType });
+  }, [data]);
+
   const create = async (formData) => {
     if (!isDirty) {
       return toast.info("We've got your most current information");
@@ -134,6 +143,7 @@ function CreateOrEditWell() {
             <PageGrid
               heading="Well Inventory"
               subtext="Provide some basic information about the well"
+              site={site}
               submit={true}
               submitLabel="Next"
               disabled={!isDirty}
