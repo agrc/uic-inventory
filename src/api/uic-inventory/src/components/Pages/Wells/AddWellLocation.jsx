@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
+import { Fragment, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTable } from 'react-table';
@@ -11,7 +11,7 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import Viewpoint from '@arcgis/core/Viewpoint';
 import clsx from 'clsx';
 import { Chrome, toast, useParams, OkNotToggle, onRequestError, PointIcon, useHistory } from '../../PageElements';
-import { GridHeading, SiteLocationSchema as schema, TextInput } from '../../FormElements';
+import { Label, GridHeading, WellLocationSchema as schema, SelectInput, TextInput } from '../../FormElements';
 import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { AuthContext } from '../../../AuthProvider';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
@@ -19,26 +19,59 @@ import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
+const operatingStatus = [
+  { value: 'AC', label: 'Active' },
+  { value: 'PA', label: 'Abandoned ‐ Approved' },
+  { value: 'TA', label: 'Abandoned ‐ Temporary' },
+  { value: 'AN', label: 'Abandoned ‐ Not Approved' },
+  { value: 'PW', label: 'Proposed Under Permit Application' },
+  { value: 'PR', label: 'Proposed Under Authorization By Rule' },
+  { value: 'PI', label: 'Post Injection CO2 Well' },
+  { value: 'OT', label: 'Other' },
+];
+
+const remediationType = [
+  { value: 1, label: 'Brownfield' },
+  { value: 2, label: 'LUST' },
+  { value: 3, label: 'NPL' },
+  { value: 4, label: 'RCRA' },
+  { value: 5, label: 'Superfund' },
+  { value: 6, label: 'TRI' },
+  { value: 7, label: 'VCP' },
+  { value: 8, label: 'DSHW' },
+  { value: 999, label: 'Other' },
+];
+
 function AddWellLocation() {
   const { authInfo } = useContext(AuthContext);
   const { siteId, wellId } = useParams();
   const history = useHistory();
   const mapDiv = useRef(null);
-  const isDirty = useRef(false);
-  const { status, data } = useQuery(['site', siteId], () => ky.get(`/api/site/${siteId}`).json(), {
+  const drawingEvent = useRef();
+  const [activeTool, setActiveTool] = useState();
+
+  const { status, data } = useQuery(['site', siteId], () => ky.get(`/api/well/${wellId}/site/${siteId}`).json(), {
     enabled: siteId > 0,
-    onError: (error) => onRequestError(error, 'We had some trouble finding your site location.'),
+    onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
   });
-  const { mutate } = useMutation((input) => ky.put('/api/site', { json: input }).json(), {
+  const { mutate } = useMutation((json) => ky.put('/api/well', { json }).json(), {
     onSuccess: () => {
-      toast.success('Site location updated successfully!');
-      history.push(`/site/${siteId}/add-well`);
+      toast.success('Well added successfully!');
     },
-    onError: (error) => onRequestError(error, 'We had some trouble updating your site location.'),
+    onError: (error) => onRequestError(error, 'We had some trouble adding your well.'),
   });
-  const { handleSubmit, register, formState } = useForm({
+
+  const { handleSubmit, register, formState, setValue, unregister, watch } = useForm({
     resolver: yupResolver(schema),
+    context: { subClass: data?.subClass },
   });
+
+  const watchStatus = watch('status');
+  const watchRemediationType = watch('remediationType');
+  const watchGeometry = watch('geometry');
+
+  //! pull value from form state to activate proxy
+  const { isDirty, isValid } = formState;
 
   const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
   // zoom map on geocode
@@ -49,11 +82,11 @@ function AddWellLocation() {
 
   // hydrate form with existing data
   useEffect(() => {
-    if (status !== 'success') {
+    if (status !== 'success' || !data?.site?.geometry) {
       return;
     }
 
-    const shape = JSON.parse(data.geometry);
+    const shape = JSON.parse(data.site.geometry);
     const geometry = new Polygon({
       type: 'polygon',
       rings: shape.rings,
@@ -71,9 +104,76 @@ function AddWellLocation() {
     setViewPoint(new Viewpoint({ targetGeometry: geometry.centroid, scale: 1500 }));
   }, [data, status]);
 
-  const addSiteLocation = async (formData) => {
+  // handle conditional control registration
+  useEffect(() => {
+    if (data?.subClass === 5002) {
+      register('remediationType', { required: true });
+    } else {
+      unregister('remediationType');
+    }
+  }, [data, register, unregister]);
+
+  // handle conditional control registration
+  useEffect(() => {
+    if (watchStatus === 'OT') {
+      register('description', { required: true });
+    } else {
+      unregister('description');
+    }
+  }, [watchStatus, register, unregister]);
+
+  // add and remove controls for SER well form
+  useEffect(() => {
+    if (watchRemediationType === '999') {
+      register('remediationDescription', { required: true });
+    } else {
+      unregister('remediationDescription');
+    }
+  }, [watchRemediationType, register, unregister]);
+
+  // activate point clicking for selecting an address
+  useEffect(() => {
+    // if the tool was changed clear existing events
+    if (activeTool !== 'draw-well') {
+      drawingEvent.current?.remove();
+      drawingEvent.current = null;
+
+      return;
+    }
+
+    mapView.current.focus();
+
+    // enable clicking on the map to set the address
+    drawingEvent.current = mapView.current.on('immediate-click', (event) => {
+      const graphic = new Graphic({
+        geometry: event.mapPoint,
+        attributes: {},
+        symbol: PinSymbol,
+      });
+
+      setPointGraphic(graphic);
+
+      if (mapView.current.scale > 10489.34) {
+        mapView.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
+      }
+
+      const coordinates = `${Math.round(graphic.geometry.x)}, ${Math.round(graphic.geometry.y)}`;
+      setValue('geometry', coordinates, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+
+      drawingEvent.current?.remove();
+      drawingEvent.current = null;
+
+      setActiveTool(null);
+    });
+
+    return () => {
+      drawingEvent.current?.remove();
+      drawingEvent.current = null;
+    };
+  }, [activeTool, setValue, setPointGraphic]);
+
+  const addLocation = async (formData) => {
     if (!isDirty.current) {
-      history.push(`/site/${siteId}/well/create`);
       return;
     }
 
@@ -81,7 +181,6 @@ function AddWellLocation() {
       id: parseInt(authInfo.id),
       siteId: parseInt(siteId),
       ...formData,
-      geometry: JSON.stringify(formData.geometry),
     };
 
     await mutate(input);
@@ -94,23 +193,56 @@ function AddWellLocation() {
           <GridHeading
             text="Well Location"
             subtext="Enter well information then click `Draw` to add a well location on the map. If there are more than 10 wells for a single Well Operating Status, place a single point in a representative location and specify the number of wells."
+            site={data?.site}
           >
-            <form className="border-t-2 border-gray-50" onSubmit={handleSubmit((data) => addSiteLocation(data))}>
+            <p className="mb-3">Fill out the information below to activate drawing the well location on the map.</p>
+            <form
+              className="grid gap-2 px-4 py-5 shadow sm:rounded-md"
+              onSubmit={handleSubmit((data) => addLocation(data))}
+            >
               <TextInput id="construction" register={register} errors={formState.errors} />
-              <TextInput id="status" register={register} errors={formState.errors} />
-              <TextInput id="count" register={register} errors={formState.errors} />
-              <div className="px-4 py-3 text-right">
-                <button type="submit">Add</button>
+              <SelectInput id="status" items={operatingStatus} register={register} errors={formState.errors} />
+              {watchStatus === 'OT' && <TextInput id="description" register={register} errors={formState.errors} />}
+              {data?.subClass === 5002 && (
+                <>
+                  <SelectInput
+                    id="remediationType"
+                    items={remediationType}
+                    register={register}
+                    errors={formState.errors}
+                  />
+                  {watchRemediationType === '999' && (
+                    <TextInput id="remediationDescription" register={register} errors={formState.errors} />
+                  )}
+                  <TextInput id="remediationProjectId" register={register} errors={formState.errors} />
+                </>
+              )}
+              <TextInput id="count" type="number" register={register} errors={formState.errors} />
+              <div>
+                <Label id="wellLocation" />
+                <OkNotToggle classes="h-12" status={watchGeometry} />
+              </div>
+              <div className="flex justify-between px-4 py-3">
+                <button
+                  type="button"
+                  className={clsx({ 'bg-blue-800': activeTool === 'draw-well' })}
+                  onClick={() => setActiveTool('draw-well')}
+                >
+                  <PointIcon classes="h-6 text-white fill-current" />
+                </button>
+                <button type="submit" disabled={!isValid}>
+                  Add
+                </button>
               </div>
             </form>
           </GridHeading>
           <div className="md:mt-0 md:col-span-2">
-            <div className="mt-6 overflow-hidden shadow sm:rounded-md">
+            <div className="overflow-hidden shadow sm:rounded-md">
               <div className="bg-white">
                 <div className="grid grid-cols-6">
                   <div className="col-span-6">
                     <div className="w-full h-96" ref={mapDiv}></div>
-                    <WellTable />
+                    <WellTable wells={data?.wells} />
                     <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
                       <button type="submit">Next</button>
                     </div>
