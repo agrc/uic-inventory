@@ -8,5 +8,5 @@ export const camelToProper = (text) => {
 
   const theRest = parts.slice(1).map((x) => x.toLowerCase());
 
-  return `${firstWord} ${theRest.join()}`;
+  return `${firstWord} ${theRest.join(' ')}`;
 };
