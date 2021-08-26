@@ -24,7 +24,7 @@ namespace api.Features {
 
     [HttpGet("/api/well/{wellId}/site/{siteId:min(1)}/")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<WellCreationPayload>> CreateWell(int siteId, int wellId, CancellationToken token) {
+    public async Task<ActionResult<WellCreationPayload>> GetWellById(int siteId, int wellId, CancellationToken token) {
       try {
         var result = await _mediator.Send(new GetWellById.Query(siteId, wellId), token);
 
