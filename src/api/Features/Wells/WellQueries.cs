@@ -8,13 +8,15 @@ using Serilog;
 namespace api.Features {
   public static class GetWellById {
     public class Query : IRequest<Well> {
-      public Query(int siteId, int wellId) {
+      public Query(int siteId, int inventoryId, int wellId) {
         SiteId = siteId;
         WellId = wellId;
+        InventoryId = inventoryId;
       }
 
-      public int SiteId { get; init; }
+      public int SiteId { get; }
       public int WellId { get; }
+      public int InventoryId { get; }
     }
     public class Handler : IRequestHandler<Query, Well> {
       private readonly IAppDbContext _context;

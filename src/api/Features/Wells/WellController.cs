@@ -22,26 +22,6 @@ namespace api.Features {
       _log = log;
     }
 
-    [HttpGet("/api/well/{wellId}/site/{siteId:min(1)}/")]
-    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<WellCreationPayload>> GetWellById(int siteId, int wellId, CancellationToken token) {
-      try {
-        var result = await _mediator.Send(new GetWellById.Query(siteId, wellId), token);
-
-        return Ok(new WellCreationPayload(result, _requestMetadata.Site));
-      } catch (UnauthorizedException ex) {
-        _log.ForContext("endpoint", $"GET:api/site/{siteId}/well/{wellId}")
-          .Warning(ex, "requirements failure");
-
-        return Unauthorized(new WellPayload(ex));
-      } catch (Exception ex) {
-        _log.ForContext("endpoint", $"GET:api/site/{siteId}/well/{wellId}")
-          .Fatal(ex, "unhandled exception");
-
-        return StatusCode(500, new WellPayload(ex));
-      }
-    }
-
     [HttpPost("/api/well")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<WellPayload>> CreateWell(WellInput input, CancellationToken token) {
@@ -57,6 +37,28 @@ namespace api.Features {
         return Unauthorized(new WellPayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", "POST:api/well")
+          .ForContext("input", input)
+          .Fatal(ex, "unhandled exception");
+
+        return StatusCode(500, new WellPayload(ex));
+      }
+    }
+
+    [HttpDelete("/api/well")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<WellPayload>> DeleteWell(WellInput input, CancellationToken token) {
+      try {
+        var result = await _mediator.Send(new DeleteWell.Command(input), token);
+
+        return Accepted();
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "DELETE:api/well")
+          .ForContext("input", input)
+          .Warning(ex, "requirements failure");
+
+        return Unauthorized(new WellPayload(ex));
+      } catch (Exception ex) {
+        _log.ForContext("endpoint", "DELETE:api/well")
           .ForContext("input", input)
           .Fatal(ex, "unhandled exception");
 

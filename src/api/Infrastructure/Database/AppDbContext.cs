@@ -19,6 +19,7 @@ namespace api.Infrastructure {
     public virtual DbSet<Notification> Notifications { get; set; } = default!;
     public virtual DbSet<NotificationReceipt> NotificationReceipts { get; set; } = default!;
     public virtual DbSet<Site> Sites { get; set; } = default!;
+    public virtual DbSet<Inventory> Inventories { get; set; } = default!;
     public virtual DbSet<Well> Wells { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
@@ -236,6 +237,34 @@ namespace api.Infrastructure {
         entity.Property(e => e.SiteFk)
             .HasColumnName("site_fk");
 
+        entity.Property(e => e.InventoryFk)
+          .HasColumnName("inventory_fk");
+
+        entity.Property(e => e.Description)
+          .HasColumnName("description");
+
+        entity.Property(e => e.Status)
+          .HasColumnName("status");
+
+        entity.Property(e => e.RemediationDescription)
+          .HasColumnName("remediation_description");
+
+        entity.Property(e => e.RemediationType)
+          .HasColumnName("remediation_type");
+
+        entity.Property(e => e.RemediationProjectId)
+          .HasColumnName("remediation_project_id");
+
+        entity.Property(e => e.Quantity)
+          .HasColumnName("quantity");
+
+        entity.Property(e => e.Geometry)
+          .HasColumnName("geometry");
+
+        entity.Property(e => e.CreatedOn)
+          .HasDefaultValueSql("CURRENT_TIMESTAMP")
+          .HasColumnName("created_on");
+
         entity.Property(e => e.WellName)
             .HasMaxLength(128)
             .HasColumnName("well_name");
@@ -243,32 +272,6 @@ namespace api.Infrastructure {
         entity.Property(e => e.SubClass)
             .IsRequired()
             .HasColumnName("sub_class");
-
-        entity.Property(e => e.OrderNumber)
-            .IsRequired()
-            .HasColumnName("order_number");
-
-        entity.Property(e => e.Construction)
-            .HasMaxLength(512)
-            .HasColumnName("construction");
-
-        entity.Property(e => e.Injectate)
-            .HasMaxLength(512)
-            .HasColumnType("character varying(512)")
-            .HasColumnName("injectate");
-
-        entity.Property(e => e.Hydrogeologic)
-            .HasMaxLength(512)
-            .HasColumnType("character varying(512)")
-            .HasColumnName("hydrogeologic");
-
-        entity.Property(e => e.Signature)
-            .HasMaxLength(128)
-            .HasColumnType("character varying(128)")
-            .HasColumnName("signature");
-
-        entity.Property<DateTime?>("SubmittedOn")
-            .HasColumnName("submitted_on");
 
         entity.HasOne<Account>(d => d.Account)
             .WithMany(p => p.Wells)
@@ -281,6 +284,68 @@ namespace api.Infrastructure {
             .HasForeignKey(d => d.SiteFk)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName("well_to_site_fk");
+
+        entity.HasOne<Inventory>(d => d.Inventory)
+            .WithMany(p => p.Wells)
+            .HasForeignKey(d => d.InventoryFk)
+            .OnDelete(DeleteBehavior.Cascade)
+            .HasConstraintName("well_to_inventory_fk");
+      });
+
+      modelBuilder.Entity<Inventory>(entity => {
+        entity.Property(e => e.Id)
+        .HasColumnName("id");
+
+        entity.Property(e => e.SiteFk)
+          .IsRequired()
+          .HasColumnName("site_fk");
+
+        entity.Property(e => e.AccountFk)
+          .IsRequired()
+          .HasColumnName("account_fk");
+
+        entity.Property(e => e.SubClass)
+          .IsRequired()
+          .HasColumnName("sub_class");
+
+        entity.Property(e => e.OrderNumber)
+          .IsRequired()
+          .HasMaxLength(128)
+          .HasColumnName("order_number");
+
+        entity.Property(e => e.Signature)
+          .HasMaxLength(128)
+          .HasColumnName("signature");
+
+        entity.Property<DateTime?>("SubmittedOn")
+          .HasColumnName("submitted_on");
+
+        entity.Property<DateTime?>("CreatedOn")
+          .HasDefaultValueSql("CURRENT_TIMESTAMP()")
+          .HasColumnName("created_on");
+
+        entity.HasKey("Id")
+          .HasName("inventory_primary_key");
+
+        entity.HasIndex("AccountFk")
+          .HasDatabaseName("ix_inventory_account_fk");
+
+        entity.HasIndex("SiteFk")
+          .HasDatabaseName("ix_inventory_site_fk");
+
+        entity.ToTable("inventories");
+
+        entity.HasOne<Account>(d => d.Account)
+          .WithMany(p => p.Inventories)
+          .HasForeignKey(d => d.AccountFk)
+          .HasConstraintName("inventory_to_account_fk")
+          .OnDelete(DeleteBehavior.NoAction);
+
+        entity.HasOne<Site>(d => d.Site)
+          .WithMany(p => p.Inventories)
+          .HasForeignKey(d => d.SiteFk)
+          .HasConstraintName("inventory_to_site_fk")
+          .IsRequired();
       });
 
       OnModelCreatingPartial(modelBuilder);

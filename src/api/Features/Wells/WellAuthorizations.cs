@@ -26,6 +26,7 @@ namespace api.Features {
       UseRequirement(new MustHaveCompleteProfile());
       UseRequirement(new MustOwnSite(request.SiteId));
       UseRequirement(new MustHaveCompleteSite());
+      UseRequirement(new MustOwnInventory(request.InventoryId));
     }
   }
 
@@ -38,8 +39,9 @@ namespace api.Features {
     public override void BuildPolicy(CreateWell.Command request) {
       UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
       UseRequirement(new MustHaveCompleteProfile());
-      UseRequirement(new MustOwnSite(request.SiteId));
+      UseRequirement(new MustOwnSite(request.Input.SiteId));
       UseRequirement(new MustHaveCompleteSite());
+      UseRequirement(new MustOwnInventory(request.Input.InventoryId));
     }
   }
 
@@ -57,17 +59,19 @@ namespace api.Features {
   //   }
   // }
 
-  // public class DeleteWellAuthorizer : AbstractRequestAuthorizer<DeleteWell.Command> {
-  //   private readonly IHttpContextAccessor _context;
+  public class DeleteWellAuthorizer : AbstractRequestAuthorizer<DeleteWell.Command> {
+    private readonly IHttpContextAccessor _context;
 
-  //   public DeleteWellAuthorizer(IHttpContextAccessor context) {
-  //     _context = context;
-  //   }
-  //   public override void BuildPolicy(DeleteWell.Command request) {
-  //     UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-  //     UseRequirement(new MustOwnSite(request.SiteId));
-  //     UseRequirement(new MustHaveCompleteProfile());
-  //     UseRequirement(new MustHaveEditableSiteStatus());
-  //   }
-  // }
+    public DeleteWellAuthorizer(IHttpContextAccessor context) {
+      _context = context;
+    }
+    public override void BuildPolicy(DeleteWell.Command request) {
+      UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+      UseRequirement(new MustOwnSite(request.SiteId));
+      UseRequirement(new MustHaveCompleteProfile());
+      UseRequirement(new MustHaveEditableSiteStatus());
+      UseRequirement(new MustOwnInventory(request.InventoryId));
+      UseRequirement(new MustOwnWell(request.WellId));
+    }
+  }
 }

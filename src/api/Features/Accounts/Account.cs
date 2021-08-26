@@ -20,6 +20,7 @@ namespace api.Features {
     public ICollection<NotificationReceipt>? NotificationReceipts { get; set; } = new HashSet<NotificationReceipt>();
     public ICollection<Site> Sites { get; set; } = new HashSet<Site>();
     public ICollection<Well> Wells { get; set; } = new HashSet<Well>();
+    public ICollection<Inventory> Inventories { get; set; } = new HashSet<Inventory>();
   }
 
   public enum AccessLevels {

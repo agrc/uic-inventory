@@ -19,6 +19,7 @@ namespace api.Features {
     public Account? Account { get; set; }
     public ICollection<Well> Wells { get; set; } = new HashSet<Well>();
     public ICollection<Contact> Contacts { get; set; } = new HashSet<Contact>();
+    public ICollection<Inventory> Inventories { get; set; } = new HashSet<Inventory>();
   }
   public class SiteListPayload : ResponseContract {
     public SiteListPayload(Site site) {
