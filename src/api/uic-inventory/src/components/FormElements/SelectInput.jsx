@@ -7,7 +7,7 @@ const noop = () => {};
 function SelectInput({ register, errors, id, text, items, onUpdate = noop, placeholder = '' }) {
   const { onChange, onBlur, ref, name } = register(id);
   return (
-    <>
+    <div>
       <label htmlFor={id} className="">
         {text || camelToProper(id)}
       </label>
@@ -32,7 +32,7 @@ function SelectInput({ register, errors, id, text, items, onUpdate = noop, place
         ))}
       </select>
       <ErrorMessage errors={errors} name={id} as={ErrorMessageTag} />
-    </>
+    </div>
   );
 }
 

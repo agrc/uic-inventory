@@ -4,7 +4,7 @@ import { camelToProper } from './Helpers';
 
 function TextInput({ className, register, errors, id, text, type, readOnly = false }) {
   return (
-    <>
+    <div>
       <Label id={id} text={text} />
       <input
         type={type || 'text'}
@@ -16,7 +16,7 @@ function TextInput({ className, register, errors, id, text, type, readOnly = fal
       />
 
       <ErrorMessage errors={errors} name={id} as={ErrorMessageTag} />
-    </>
+    </div>
   );
 }
 
