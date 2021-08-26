@@ -24,14 +24,10 @@ namespace api.Features {
     }
 
     public WellCreationPayload(Well well, Site site) : base(well) {
-      SiteStatus = site.Status;
-      SiteName = site.Name;
-      SiteType = site.NaicsTitle;
+      Site = new SitePayload(site);
     }
 
-    public SiteStatus SiteStatus { get; }
-    public string? SiteName { get; }
-    public string? SiteType { get; }
+    public SitePayload Site { get; }
   }
   public class WellPayload : ResponseContract {
     public WellPayload(UnauthorizedAccessException error) : base(error.Message) { }
