@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
 import clsx from 'clsx';
@@ -84,9 +84,12 @@ const valueToLabel = (value) => {
 function AddSiteContacts() {
   const { siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
-  const { control, formState, handleSubmit, register, reset, unregister } = useForm({
+  const { control, formState, handleSubmit, register, reset, unregister, watch } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const watchContactType = watch('contactType', '');
+
   const queryClient = useQueryClient();
   const { status, error, data } = useQuery(['contacts', siteId], () => ky.get(`/api/site/${siteId}/contacts`).json(), {
     enabled: siteId ?? 0 > 0 ? true : false,
@@ -118,8 +121,7 @@ function AddSiteContacts() {
     },
   });
 
-  const [optional, setOptional] = useState(false);
-  //! pull isDirty from form state to activate proxy
+  //! pull value from form state to activate proxy
   const { isDirty } = formState;
 
   // set default fields to owner
@@ -157,12 +159,12 @@ function AddSiteContacts() {
 
   // handle conditional control registration
   useEffect(() => {
-    if (optional) {
+    if (watchContactType === 'other') {
       register('description', { required: true });
     } else {
       unregister('description');
     }
-  }, [optional, register, unregister]);
+  }, [watchContactType, register, unregister]);
 
   const create = (formData) => {
     if (!isDirty) {
@@ -247,20 +249,14 @@ function AddSiteContacts() {
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true} half={true}>
-              <SelectInput
-                id="contactType"
-                items={contactType}
-                register={register}
-                errors={formState.errors}
-                onUpdate={(event) => setOptional(event.target.value?.toLowerCase() === 'other')}
-              />
+              <SelectInput id="contactType" items={contactType} register={register} errors={formState.errors} />
             </ResponsiveGridColumn>
 
-            {optional ? (
+            {watchContactType === 'other' && (
               <ResponsiveGridColumn full={true}>
                 <TextInput id="description" register={register} errors={formState.errors} />
               </ResponsiveGridColumn>
-            ) : null}
+            )}
 
             <ResponsiveGridColumn full={true}>
               <TextInput id="mailingAddress" text="Street address" register={register} errors={formState.errors} />
