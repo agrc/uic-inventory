@@ -99,3 +99,41 @@ export const WellSchema = yup.object().shape({
     .required('Order number is required'),
   subClass: yup.number().oneOf([-1, 5047, 5002, 5101, 5026]).required().label('Well Type'),
 });
+
+export const WellLocationSchema = yup.object().shape({
+  construction: yup.string().max(512).required(),
+  status: yup
+    .string()
+    .oneOf(['AC', 'PA', 'TA', 'AN', 'PW', 'PR', 'PI', 'OT'], 'A valid selection must be made')
+    .required(),
+  description: yup.string().when('status', {
+    is: 'OT',
+    then: yup.string().required().min(5).max(512),
+  }),
+  count: yup.number().typeError('A well count is required').integer().positive().required(),
+  geometry: yup
+    .string()
+    .matches(/^-?\d+,\s\d+$/, 'The format of the geometry is incorrect')
+    .required('A well point must be placed on the map')
+    .label('Well location'),
+  // only for SER wells
+  remediationType: yup
+    .mixed()
+    .optional()
+    .when('$subClass', {
+      is: 5002,
+      then: yup
+        .number()
+        .typeError('A valid selection is required')
+        .oneOf([1, 2, 3, 4, 5, 6, 7, 8, 999], 'A valid selection must be made')
+        .required(),
+    }),
+  remediationDescription: yup
+    .mixed()
+    .optional()
+    .when('remediationType', {
+      is: 999,
+      then: yup.string().required().min(5).max(512).label('Remediation Description'),
+    }),
+  remediationProjectId: yup.string().optional(),
+});
