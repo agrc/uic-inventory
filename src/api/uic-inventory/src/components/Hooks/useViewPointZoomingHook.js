@@ -5,7 +5,7 @@ export function useViewPointZooming(mapView) {
 
   useEffect(() => {
     if (viewPoint) {
-      mapView.current.goTo(viewPoint).catch(console.error);
+      mapView.current.when(() => mapView.current.goTo(viewPoint).catch());
     }
   }, [viewPoint, mapView]);
 
