@@ -8,6 +8,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { TrashIcon } from '@heroicons/react/outline';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
+import Point from '@arcgis/core/geometry/Point';
 import Viewpoint from '@arcgis/core/Viewpoint';
 import clsx from 'clsx';
 import { Chrome, toast, useParams, OkNotToggle, onRequestError, PointIcon, useHistory } from '../../PageElements';
@@ -42,26 +43,34 @@ const remediationType = [
   { value: 999, label: 'Other' },
 ];
 
-function AddWellLocation() {
+function AddWells() {
   const { authInfo } = useContext(AuthContext);
-  const { siteId, wellId } = useParams();
+  const { siteId, inventoryId } = useParams();
+  const queryClient = useQueryClient();
   const history = useHistory();
   const mapDiv = useRef(null);
   const drawingEvent = useRef();
   const [activeTool, setActiveTool] = useState();
 
-  const { status, data } = useQuery(['site', siteId], () => ky.get(`/api/well/${wellId}/site/${siteId}`).json(), {
-    enabled: siteId > 0,
-    onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
-  });
-  const { mutate } = useMutation((json) => ky.put('/api/well', { json }).json(), {
+  const { status, data } = useQuery(
+    ['inventory', inventoryId],
+    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    {
+      enabled: siteId > 0,
+      onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
+    }
+  );
+  const { mutate: addWell } = useMutation((json) => ky.post('/api/well', { json }).json(), {
     onSuccess: () => {
       toast.success('Well added successfully!');
+      queryClient.invalidateQueries(['inventory', inventoryId]);
+      reset();
+      setPointGraphic();
     },
     onError: (error) => onRequestError(error, 'We had some trouble adding your well.'),
   });
 
-  const { handleSubmit, register, formState, setValue, unregister, watch } = useForm({
+  const { handleSubmit, register, formState, reset, setValue, unregister, watch } = useForm({
     resolver: yupResolver(schema),
     context: { subClass: data?.subClass },
   });
@@ -77,12 +86,17 @@ function AddWellLocation() {
   // zoom map on geocode
   const { setViewPoint } = useViewPointZooming(mapView);
   // manage graphics
-  const { setGraphic: setPolygonGraphic } = useGraphicManager(mapView);
+  const { graphic, setGraphic: setPolygonGraphic } = useGraphicManager(mapView);
+  const { setGraphic: setExistingPointGraphics } = useGraphicManager(mapView);
   const { setGraphic: setPointGraphic } = useGraphicManager(mapView);
+
+  useEffect(() => {
+    register('geometry');
+  }, [register]);
 
   // hydrate form with existing data
   useEffect(() => {
-    if (status !== 'success' || !data?.site?.geometry) {
+    if (status !== 'success' || graphic) {
       return;
     }
 
@@ -102,6 +116,23 @@ function AddWellLocation() {
     );
 
     setViewPoint(new Viewpoint({ targetGeometry: geometry.centroid, scale: 1500 }));
+  }, [data, status]);
+
+  useEffect(() => {
+    if (status !== 'success') {
+      return;
+    }
+
+    const wells = data.wells.map(
+      (well) =>
+        new Graphic({
+          geometry: new Point(JSON.parse(well.geometry)),
+          attributes: {},
+          symbol: PinSymbol,
+        })
+    );
+
+    setExistingPointGraphics(wells);
   }, [data, status]);
 
   // handle conditional control registration
@@ -131,7 +162,7 @@ function AddWellLocation() {
     }
   }, [watchRemediationType, register, unregister]);
 
-  // activate point clicking for selecting an address
+  // activate point clicking for selecting a well location
   useEffect(() => {
     // if the tool was changed clear existing events
     if (activeTool !== 'draw-well') {
@@ -143,7 +174,7 @@ function AddWellLocation() {
 
     mapView.current.focus();
 
-    // enable clicking on the map to set the address
+    // enable clicking on the map to set the well location
     drawingEvent.current = mapView.current.on('immediate-click', (event) => {
       const graphic = new Graphic({
         geometry: event.mapPoint,
@@ -157,8 +188,7 @@ function AddWellLocation() {
         mapView.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
       }
 
-      const coordinates = `${Math.round(graphic.geometry.x)}, ${Math.round(graphic.geometry.y)}`;
-      setValue('geometry', coordinates, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+      setValue('geometry', event.mapPoint.toJSON(), { shouldValidate: true });
 
       drawingEvent.current?.remove();
       drawingEvent.current = null;
@@ -172,18 +202,20 @@ function AddWellLocation() {
     };
   }, [activeTool, setValue, setPointGraphic]);
 
-  const addLocation = async (formData) => {
-    if (!isDirty.current) {
+  const addLocation = (formData) => {
+    if (!isDirty) {
       return;
     }
 
     const input = {
-      id: parseInt(authInfo.id),
+      accountId: parseInt(authInfo.id),
+      inventoryId: parseInt(inventoryId),
       siteId: parseInt(siteId),
       ...formData,
+      geometry: JSON.stringify(formData.geometry),
     };
 
-    await mutate(input);
+    addWell(input);
   };
 
   return (
@@ -217,8 +249,8 @@ function AddWellLocation() {
                   <TextInput id="remediationProjectId" register={register} errors={formState.errors} />
                 </>
               )}
-              <TextInput id="count" type="number" register={register} errors={formState.errors} />
-              <div>
+              <TextInput id="quantity" type="number" register={register} errors={formState.errors} />
+              <div className="flex justify-between">
                 <Label id="wellLocation" />
                 <OkNotToggle classes="h-12" status={watchGeometry} />
               </div>
@@ -244,7 +276,12 @@ function AddWellLocation() {
                     <div className="w-full h-96" ref={mapDiv}></div>
                     <WellTable wells={data?.wells} />
                     <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
-                      <button type="submit">Next</button>
+                      <button
+                        type="submit"
+                        onClick={() => toast.info('There is nothing here yet. Check back after the next release.')}
+                      >
+                        Next
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -257,21 +294,21 @@ function AddWellLocation() {
   );
 }
 
-function WellTable({ data = [] }) {
-  const { siteId } = useParams();
+function WellTable({ wells = [] }) {
+  const { inventoryId, siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
   const [isOpen, { open, close }] = useOpenClosed();
-  const deleteContact = useRef();
+  const deleteWell = useRef();
 
-  const { mutate } = useMutation((json) => ky.delete(`/api/contact`, { json }), {
+  const { mutate } = useMutation((json) => ky.delete(`/api/well`, { json }), {
     onMutate: async (mutationData) => {
-      await queryClient.cancelQueries(['contacts', siteId]);
-      const previousValue = queryClient.getQueryData(['contacts', siteId]);
+      await queryClient.cancelQueries(['inventory', inventoryId]);
+      const previousValue = queryClient.getQueryData(['inventory', inventoryId]);
 
-      queryClient.setQueryData(['contacts', siteId], (old) => {
+      queryClient.setQueryData(['inventory', inventoryId], (old) => {
         return {
           ...old,
-          contacts: old.contacts.filter((x) => x.id !== mutationData.contactId),
+          wells: old.wells.filter((x) => x.id !== mutationData.wellId),
         };
       });
 
@@ -280,45 +317,28 @@ function WellTable({ data = [] }) {
       return previousValue;
     },
     onSuccess: () => {
-      toast.success('This contact was removed.');
+      toast.success('This well was removed.');
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['contacts', siteId]);
+      queryClient.invalidateQueries(['inventory', inventoryId]);
     },
-    onError: (error, variables, previousValue) => {
-      queryClient.setQueryData(['contacts', siteId], previousValue);
-      onRequestError(error, 'We had some trouble deleting this contact.');
+    onError: (error, previousValue) => {
+      queryClient.setQueryData(['inventory', inventoryId], previousValue);
+      onRequestError(error, 'We had some trouble deleting this well.');
     },
   });
   const columns = useMemo(
     () => [
       {
-        Header: 'Id',
         accessor: 'id',
       },
       {
-        id: 'type',
-        Header: 'Type',
-        Cell: function name(data) {
-          return (
-            <>
-              <div className="text-sm font-medium text-gray-900">{`${data.row.original.firstName} ${data.row.original.lastName}`}</div>
-              <div className="text-sm text-gray-500">{data.row.original.contactType}</div>
-            </>
-          );
-        },
+        accessor: 'wellName',
+        Header: 'Construction',
       },
       {
-        id: 'status',
-        Header: 'Status',
-        Cell: function status(data) {
-          return (
-            <>
-              <div className="text-sm text-gray-900">{data.row.original.email}</div>
-              <div className="text-sm text-gray-500">{data.row.original.phoneNumber}</div>
-            </>
-          );
-        },
+        accessor: 'status',
+        Header: 'Operating Status',
       },
       {
         Header: 'Count',
@@ -334,7 +354,7 @@ function WellTable({ data = [] }) {
               className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
               onClick={() => {
                 open();
-                deleteContact.current = data.row.original.id;
+                deleteWell.current = data.row.original.id;
               }}
             />
           );
@@ -344,18 +364,25 @@ function WellTable({ data = [] }) {
     [open]
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+    columns,
+    data: wells,
+    initialState: {
+      hiddenColumns: ['id'],
+    },
+  });
 
   const queryClient = useQueryClient();
 
   const remove = () =>
     mutate({
+      inventoryId: parseInt(inventoryId),
       siteId: parseInt(siteId),
       accountId: parseInt(authInfo.id),
-      contactId: deleteContact.current,
+      wellId: deleteWell.current,
     });
 
-  return data?.length < 1 ? (
+  return wells?.length < 1 ? (
     <div className="flex flex-col items-center">
       <div className="px-5 py-4 m-6">
         <h2 className="mb-1 text-xl font-medium">Create your first well</h2>
@@ -371,7 +398,7 @@ function WellTable({ data = [] }) {
           open={isOpen}
           onClose={() => {
             close();
-            deleteContact.current = null;
+            deleteWell.current = null;
           }}
           className="fixed inset-0 z-10 overflow-y-auto"
         >
@@ -419,7 +446,7 @@ function WellTable({ data = [] }) {
                     type="button"
                     onClick={() => {
                       close();
-                      deleteContact.current = null;
+                      deleteWell.current = null;
                     }}
                   >
                     No
@@ -477,4 +504,4 @@ function WellTable({ data = [] }) {
   );
 }
 
-export default AddWellLocation;
+export default AddWells;

@@ -41,14 +41,14 @@ function AuthenticatedRoutes({ completeProfile }) {
       <Route path="/site/:siteId/add-location">
         <Sites.AddSiteLocation />
       </Route>
-      <Route path="/site/:siteId/well/create">
-        <Wells.CreateOrEditWell />
+      <Route path="/site/:siteId/inventory/create">
+        <Wells.CreateOrEditInventory />
       </Route>
-      <Route path="/site/:siteId/well/:wellId/add-details">
-        <Wells.CreateOrEditWell />
+      <Route path="/site/:siteId/inventory/:inventoryId/details">
+        <Wells.CreateOrEditInventory />
       </Route>
-      <Route path="/site/:siteId/well/:wellId/add-location">
-        <Wells.AddWellLocation />
+      <Route path="/site/:siteId/inventory/:inventoryId/add-wells">
+        <Wells.AddWells />
       </Route>
       <Route exact path="/">
         <SitesAndInventory completeProfile={completeProfile} />

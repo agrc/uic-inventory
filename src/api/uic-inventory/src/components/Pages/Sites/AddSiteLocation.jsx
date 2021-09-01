@@ -42,7 +42,7 @@ function AddSiteLocation() {
   const { mutate } = useMutation((input) => ky.put('/api/site', { json: input }).json(), {
     onSuccess: () => {
       toast.success('Site location updated successfully!');
-      history.push(`/site/${siteId}/add-well`);
+      history.push(`/site/${siteId}/inventory/create`);
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating your site location.'),
   });
@@ -305,7 +305,7 @@ function AddSiteLocation() {
 
   const addSiteLocation = async (formData) => {
     if (!isDirty.current) {
-      history.push(`/site/${siteId}/well/create`);
+      history.push(`/site/${siteId}/inventory/create`);
       return;
     }
 

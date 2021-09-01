@@ -42,19 +42,23 @@ const wellTypes = [
   },
 ];
 
-function CreateOrEditWell() {
+function CreateOrEditInventory() {
   const { authInfo } = useContext(AuthContext);
-  const { siteId, wellId = -1 } = useParams();
+  const { siteId, inventoryId = -1 } = useParams();
 
-  const { data, status } = useQuery(['well', wellId], () => ky.get(`/api/well/${wellId}/site/${siteId}`).json(), {
-    enabled: siteId > 0,
-    onError: (error) => onRequestError(error, 'We had some trouble finding this wells information.'),
-  });
-  const { mutate } = useMutation((json) => ky.post('/api/well', { json }).json(), {
+  const { data, status } = useQuery(
+    ['inventory', inventoryId],
+    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    {
+      enabled: siteId > 0,
+      onError: (error) => onRequestError(error, 'We had some trouble finding this wells information.'),
+    }
+  );
+  const { mutate } = useMutation((json) => ky.post('/api/inventory', { json }).json(), {
     onSuccess: (response) => {
-      toast.success('Well created successfully!');
-      history.replace(`/site/${siteId}/well/${response.id}/add-details`);
-      history.push(`/site/${siteId}/well/${response.id}/add-location`);
+      toast.success('Inventory created successfully!');
+      history.replace(`/site/${siteId}/inventory/create`);
+      history.push(`/site/${siteId}/inventory/${response.id}/add-wells`);
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this well.'),
   });
@@ -132,7 +136,7 @@ function CreateOrEditWell() {
                     name="subClass"
                     control={control}
                     render={({ field }) => (
-                      <RadioGroup id="wellType" forwardRef={field.ref} onChange={field.onChange} value={field.value}>
+                      <RadioGroup id="wellType" onChange={field.onChange} value={field.value}>
                         <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                           {wellTypes.map((well) => (
                             <RadioGroup.Option
@@ -301,4 +305,4 @@ function CheckIcon(props) {
   );
 }
 
-export default CreateOrEditWell;
+export default CreateOrEditInventory;
