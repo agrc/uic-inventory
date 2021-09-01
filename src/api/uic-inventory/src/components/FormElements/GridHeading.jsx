@@ -12,8 +12,8 @@ function GridHeading({ text, subtext, site, children }) {
               {site?.name ?? 'Unknown'}
             </div>
             <div className="mx-2 font-semibold">Type</div>
-            <div className="truncate" title={site?.title}>
-              {site?.title ?? 'Unknown'}
+            <div className="truncate" title={site?.naicsTitle}>
+              {site?.naicsTitle ?? 'Unknown'}
             </div>
           </div>
         )}
