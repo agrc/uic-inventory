@@ -33,4 +33,10 @@
   [type='primary'] {
     @apply italic font-bold tracking-normal text-blue-800 hover:text-blue-400;
   }
+  :root {
+    --toastify-color-dark: theme('colors.gray.800') !important;
+  }
+  .Toastify__toast-container--top-right {
+    top: 4em;
+  }
 }
