@@ -110,10 +110,13 @@ export const WellLocationSchema = yup.object().shape({
     is: 'OT',
     then: yup.string().required().min(5).max(512),
   }),
-  count: yup.number().typeError('A well count is required').integer().positive().required(),
+  quantity: yup.number().typeError('A well count is required').integer().positive().required(),
   geometry: yup
-    .string()
-    .matches(/^-?\d+,\s\d+$/, 'The format of the geometry is incorrect')
+    .object()
+    .shape({
+      x: yup.number().required(),
+      y: yup.number().required(),
+    })
     .required('A well point must be placed on the map')
     .label('Well location'),
   // only for SER wells
