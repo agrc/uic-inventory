@@ -59,7 +59,7 @@ function CreateOrEditInventory() {
       toast.success('Inventory created successfully!');
       history.replace(`/site/${siteId}/inventory/${response.id}/add-wells`);
     },
-    onError: (error) => onRequestError(error, 'We had some trouble creating this well.'),
+    onError: (error) => onRequestError(error, 'We had some trouble creating this inventory.'),
   });
 
   const { control, formState, handleSubmit, register, reset } = useForm({
