@@ -219,7 +219,8 @@ function AddSiteContacts() {
 
       <form onSubmit={handleSubmit(create)} className="mt-10 sm:mt-0">
         <PageGrid
-          subtext="Provide additional contacts capable of providing reliable information regarding the operation of the facility."
+          heading="Add Contact"
+          subtext="Use the form to add more contacts that are capable of providing reliable information about the operation of the site."
           submit={true}
           submitLabel="Add"
           disabled={!isDirty}
