@@ -80,7 +80,7 @@ function AddSiteLocation() {
             })
           );
 
-          setViewPoint(new Viewpoint({ targetGeometry: geometry.centroid, scale: 1500 }));
+          setViewPoint(geometry.extent.expand(3));
         }
 
         if (action.payload.address) {

@@ -7,7 +7,6 @@ import { ErrorMessage } from '@hookform/error-message';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
-import Viewpoint from '@arcgis/core/Viewpoint';
 import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { BackButton, Chrome, onRequestError, toast, useParams } from '../../PageElements';
 import { GridHeading, LimitedTextarea, LimitedDropzone, Label, WellDetailSchema as schema } from '../../FormElements';
@@ -16,10 +15,6 @@ import { AuthContext } from '../../../AuthProvider';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
-
-const empty = (val) => {
-  return val === undefined || val === null || val === '';
-};
 
 const CompletedWellsSymbol = PinSymbol.clone();
 CompletedWellsSymbol.data.primitiveOverrides = [
@@ -123,7 +118,7 @@ function AddWellDetails() {
       })
     );
 
-    setViewPoint(new Viewpoint({ targetGeometry: geometry.centroid, scale: 1500 }));
+    setViewPoint(geometry.extent.expand(3));
   }, [data, graphic, setPolygonGraphic, setViewPoint, status]);
 
   // place site wells

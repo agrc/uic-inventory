@@ -136,7 +136,7 @@ function AddWells() {
       })
     );
 
-    setViewPoint(new Viewpoint({ targetGeometry: geometry.centroid, scale: 1500 }));
+    setViewPoint(geometry.extent.expand(3));
   }, [data, status]);
 
   // place site wells
@@ -206,7 +206,7 @@ function AddWells() {
 
       setPointGraphic(graphic);
 
-      if (mapView.current.scale > 10489.34) {
+      if (mapView.current.scale > 20000) {
         mapView.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
       }
 
