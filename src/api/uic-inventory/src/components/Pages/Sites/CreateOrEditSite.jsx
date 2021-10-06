@@ -81,7 +81,7 @@ function CreateOrEditSite() {
   const { mutate } = useMutation((data) => ky.post('/api/site', { json: { ...data, id: authInfo.id } }).json(), {
     onSuccess: (data) => {
       toast.success('Site created successfully!');
-      history.push(`/site/${data.id}/add-contacts`);
+      history.replace(`/site/${data.id}/add-contacts`);
       queryClient.invalidateQueries(['site', siteId]);
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this site.'),
@@ -127,7 +127,7 @@ function CreateOrEditSite() {
 
   const createOrUpdateSite = (data) => {
     if (!isDirty) {
-      return history.push(`/site/${data.id}/add-contacts`);
+      return history.goForward() || history.push(`/site/${data.id}/add-contacts`);
     }
 
     if (siteId) {
@@ -160,6 +160,7 @@ function CreateOrEditSite() {
           subtext="Provide some basic information about the site"
           submit={true}
           submitLabel="Next"
+          back={true}
           disabled={!isDirty && isFetching}
         >
           <FormGrid>

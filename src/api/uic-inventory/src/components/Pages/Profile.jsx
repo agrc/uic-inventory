@@ -106,6 +106,7 @@ export function Profile() {
                 heading="Personal Information"
                 subtext="Use a permanent address where you can receive mail."
                 submit={true}
+                back={true}
                 disabled={!isDirty}
                 submitLabel="Save"
               >

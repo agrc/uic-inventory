@@ -9,7 +9,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import ky from 'ky';
 import { useTable } from 'react-table';
 import { AuthContext } from '../../../AuthProvider';
-import { Chrome, onRequestError, toast, useParams, Link } from '../../PageElements';
+import { BackButton, Chrome, onRequestError, toast, useParams, Link } from '../../PageElements';
 import {
   ContactSchema as schema,
   ErrorMessage,
@@ -276,6 +276,7 @@ function AddSiteContacts() {
           </FormGrid>
         </PageGrid>
       </form>
+      <BackButton />
     </Chrome>
   );
 }

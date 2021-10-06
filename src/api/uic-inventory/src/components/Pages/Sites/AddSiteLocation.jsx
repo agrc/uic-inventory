@@ -1,5 +1,6 @@
 import '@arcgis/core/assets/esri/themes/light/main.css';
 import {
+  BackButton,
   Chrome,
   toast,
   useParams,
@@ -305,7 +306,8 @@ function AddSiteLocation() {
 
   const addSiteLocation = async (formData) => {
     if (!isDirty.current) {
-      history.push(`/site/${siteId}/inventory/create`);
+      history.goForward() || history.push(`/site/${siteId}/inventory/create`);
+
       return;
     }
 
@@ -415,7 +417,8 @@ function AddSiteLocation() {
                           </div>
                         </div>
                       </div>
-                      <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
+                      <div className="flex justify-between px-4 py-3 text-right bg-gray-100 sm:px-6">
+                        <BackButton />
                         <button type="submit" disabled={!state.formStatus === 'complete'}>
                           Next
                         </button>

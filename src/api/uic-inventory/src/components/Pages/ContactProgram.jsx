@@ -20,6 +20,7 @@ export function ContactProgram() {
             subtext="Provide a clear and concise message for the staff"
             submitLabel="Send"
             submit={true}
+            back={true}
             disabled={!isDirty}
           >
             <FormGrid>

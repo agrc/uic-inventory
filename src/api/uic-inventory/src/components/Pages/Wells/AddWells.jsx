@@ -12,7 +12,16 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
 import Viewpoint from '@arcgis/core/Viewpoint';
 import clsx from 'clsx';
-import { Chrome, toast, useParams, OkNotToggle, onRequestError, PointIcon, useHistory } from '../../PageElements';
+import {
+  BackButton,
+  Chrome,
+  toast,
+  useParams,
+  OkNotToggle,
+  onRequestError,
+  PointIcon,
+  useHistory,
+} from '../../PageElements';
 import { Label, GridHeading, WellLocationSchema as schema, SelectInput, TextInput } from '../../FormElements';
 import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { AuthContext } from '../../../AuthProvider';
@@ -294,7 +303,8 @@ function AddWells() {
                   <div className="col-span-6">
                     <div className="w-full h-96" ref={mapDiv}></div>
                     <WellTable wells={data?.wells} />
-                    <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
+                    <div className="flex justify-between px-4 py-3 text-right bg-gray-100 sm:px-6">
+                      <BackButton />
                       <button
                         type="submit"
                         onClick={() => history.push(`/site/${siteId}/inventory/${inventoryId}/add-well-details`)}

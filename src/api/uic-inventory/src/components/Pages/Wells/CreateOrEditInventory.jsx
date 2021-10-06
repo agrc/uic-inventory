@@ -57,8 +57,7 @@ function CreateOrEditInventory() {
   const { mutate } = useMutation((json) => ky.post('/api/inventory', { json }).json(), {
     onSuccess: (response) => {
       toast.success('Inventory created successfully!');
-      history.replace(`/site/${siteId}/inventory/create`);
-      history.push(`/site/${siteId}/inventory/${response.id}/add-wells`);
+      history.replace(`/site/${siteId}/inventory/${response.id}/add-wells`);
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this well.'),
   });
@@ -126,6 +125,7 @@ function CreateOrEditInventory() {
               subtext="All wells in this inventory must be of the same subclass. A separate inventory is needed for each subclass of wells. For example, all storm water drainage wells for a property/site can be included in the same inventory. However, if the site also contains a large underground wastewater disposal system, those wells must be submitted as a separate well inventory."
               site={data?.site}
               submit={true}
+              back={true}
               submitLabel="Next"
               disabled={!isDirty}
             >

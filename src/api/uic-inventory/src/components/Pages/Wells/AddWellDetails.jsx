@@ -9,7 +9,7 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
 import Viewpoint from '@arcgis/core/Viewpoint';
 import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
-import { Chrome, onRequestError, toast, useParams } from '../../PageElements';
+import { BackButton, Chrome, onRequestError, toast, useParams } from '../../PageElements';
 import { GridHeading, LimitedTextarea, LimitedDropzone, Label, WellDetailSchema as schema } from '../../FormElements';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { AuthContext } from '../../../AuthProvider';
@@ -329,6 +329,7 @@ function AddWellDetails() {
                   </div>
                 </div>
                 <div className="flex justify-around px-4 py-3 text-right bg-gray-100 sm:px-6">
+                  <BackButton />
                   <button type="submit" disabled={(selectedWells?.length ?? 0) === 0}>
                     Update
                   </button>
