@@ -368,7 +368,7 @@ function AddSiteLocation() {
             {state.formStatus === 'allow-site-boundary-from-click' || state.address ? (
               <>
                 <p className="my-3">
-                  Next, select a parcel as the site polygon or draw the site polygon if the parcel cannot be used.
+                  Next, click a tool below to either select a parcel on the map as the site area, or draw the site area.
                 </p>
                 <div className="flex justify-around px-4 py-5 ml-4 border rounded">
                   <div className="flex flex-col items-center space-y-2">
