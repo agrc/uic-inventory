@@ -1,6 +1,6 @@
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Chrome, onRequestError, toast, useParams } from '../PageElements';
+import { Chrome, onRequestError, toast, useHistory, useParams } from '../PageElements';
 import { Facebook } from 'react-content-loader';
 import { Switch } from '@headlessui/react';
 import { AuthContext } from '../../AuthProvider';
@@ -22,6 +22,7 @@ import { useContext, useEffect } from 'react';
 export function Profile() {
   const { id } = useParams();
   const { authInfo } = useContext(AuthContext);
+  const history = useHistory();
 
   const queryClient = useQueryClient();
   const { status, error, data } = useQuery(
@@ -92,6 +93,7 @@ export function Profile() {
     updateDefaultValues(formData);
 
     toast.success('Profile updated successfully!');
+    history.goBack();
   };
 
   return (
