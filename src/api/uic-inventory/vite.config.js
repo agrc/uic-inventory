@@ -13,6 +13,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         protocolRewrite: 'https',
+        cookieDomainRewrite: 'localhost:3000',
       },
     },
   },

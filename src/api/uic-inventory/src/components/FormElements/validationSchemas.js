@@ -114,10 +114,9 @@ export const WellLocationSchema = yup.object().shape({
   geometry: yup
     .object()
     .shape({
-      x: yup.number().required(),
+      x: yup.number().required('A well point must be placed on the map'),
       y: yup.number().required(),
     })
-    .required('A well point must be placed on the map')
     .label('Well location'),
   // only for SER wells
   remediationType: yup
@@ -139,4 +138,59 @@ export const WellLocationSchema = yup.object().shape({
       then: yup.string().required().min(5).max(512).label('Remediation Description'),
     }),
   remediationProjectId: yup.string().optional(),
+});
+
+export const WellDetailSchema = yup.object().shape({
+  selectedWells: yup
+    .array(
+      yup.object().shape({
+        id: yup.number().integer().positive(),
+      })
+    )
+    .min(1)
+    .typeError('You must select at least 1 well'),
+  hydrogeologicCharacterization: yup.string().max(2500).optional(),
+  constructionDetails: yup.lazy((value) => {
+    switch (typeof value) {
+      case 'object': {
+        return yup
+          .mixed()
+          .test('fileSize', 'Choose to type your response or upload a file', (value) => value.size > 0)
+          .label('Construction details');
+      }
+      case 'string': {
+        return yup.string().max(2500).required('Choose to type your response or upload a file');
+      }
+      default:
+        return yup.string().label('Construction details').required('Choose to type your response or upload a file');
+    }
+  }),
+  // only for SER wells
+  injectateCharacterization: yup
+    .mixed()
+    .optional()
+    .when('$subClass', {
+      is: (value) => {
+        console.log(value);
+        return value === 5002;
+      },
+      then: yup.lazy((value) => {
+        switch (typeof value) {
+          case 'object': {
+            return yup
+              .mixed()
+              .test('fileSize', 'Choose to type your response or upload a file', (value) => value.size > 0)
+              .label('Injectate characterization');
+          }
+          case 'string': {
+            return yup.string().max(2500).required('Choose to type your response or upload a file');
+          }
+          default:
+            return yup
+              .string()
+              .label('Injectate characterization')
+              .required('Choose to type your response or upload a file');
+        }
+      }),
+    }),
 });

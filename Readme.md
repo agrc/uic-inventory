@@ -12,6 +12,8 @@
 ./scripts/rebuild_db.sh
 ```
 
+chmod +x ./scripts/yada yada
+
 ## Secrets
 
 ```sh

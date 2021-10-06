@@ -50,6 +50,9 @@ function AuthenticatedRoutes({ completeProfile }) {
       <Route path="/site/:siteId/inventory/:inventoryId/add-wells">
         <Wells.AddWells />
       </Route>
+      <Route path="/site/:siteId/inventory/:inventoryId/add-well-details">
+        <Wells.AddWellDetails />
+      </Route>
       <Route exact path="/">
         <SitesAndInventory completeProfile={completeProfile} />
       </Route>

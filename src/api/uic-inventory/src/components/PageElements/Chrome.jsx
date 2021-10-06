@@ -7,7 +7,7 @@ function Chrome({ children, title, loading }) {
             loading ? 'min-h-screen md:min-h-profile' : 'h-full'
           } p-4 border-4 border-gray-200 border-dashed rounded-lg`}
         >
-          <h1 className="mb-3 text-2xl font-medium">{title}</h1>
+          {title && <h1 className="mb-3 text-2xl font-medium">{title}</h1>}
           {children}
         </div>
       </div>

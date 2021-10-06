@@ -363,3 +363,5 @@ FodyWeavers.xsd
 docker-compose.override.yaml
 .DS_Store
 src/api/uic-inventory/.eslintcache
+
+secrets/

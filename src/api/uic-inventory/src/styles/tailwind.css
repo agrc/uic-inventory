@@ -20,6 +20,10 @@
   select {
     @apply mt-0 text-gray-500 block w-full px-0.5 border-0 border-b-2 border-gray-300 focus:ring-0 focus:border-gray-800 disabled:bg-gray-100;
   }
+  textarea {
+    @apply border;
+  }
+  ,
   [type='checkbox'],
   [type='radio'] {
     @apply text-gray-700 border-gray-300 rounded focus:ring-gray-800;

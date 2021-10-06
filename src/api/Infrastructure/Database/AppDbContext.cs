@@ -273,6 +273,18 @@ namespace api.Infrastructure {
             .IsRequired()
             .HasColumnName("sub_class");
 
+        entity.Property(e => e.ConstructionDetails)
+            .HasMaxLength(2500)
+            .HasColumnName("construction_details");
+
+        entity.Property(e => e.InjectateCharacterization)
+            .HasMaxLength(2500)
+            .HasColumnName("injectate_characterization");
+
+        entity.Property(e => e.HydrogeologicCharacterization)
+            .HasMaxLength(2500)
+            .HasColumnName("hydrogeologic_characterization");
+
         entity.HasOne<Account>(d => d.Account)
             .WithMany(p => p.Wells)
             .HasForeignKey(d => d.AccountFk)

@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Http;
 
 namespace api.Features {
   public class Well {
@@ -23,6 +22,9 @@ namespace api.Features {
     public Account? Account { get; set; }
     public Site? Site { get; set; }
     public Inventory? Inventory { get; set; }
+    public string? ConstructionDetails { get; set; }
+    public string? InjectateCharacterization { get; set; }
+    public string? HydrogeologicCharacterization { get; set; }
   }
   public class WellCreationPayload : WellPayload {
     public WellCreationPayload(UnauthorizedAccessException error) : base(error) {
@@ -38,8 +40,6 @@ namespace api.Features {
     public SitePayload Site { get; }
   }
   public class WellPayload : ResponseContract {
-    private string status;
-
     public WellPayload(UnauthorizedAccessException error) : base(error.Message) { }
     public WellPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
     public WellPayload(Well well) {
@@ -49,6 +49,9 @@ namespace api.Features {
       Status = WellLookup.OperatingStatus(well.Status);
       Count = well.Quantity ?? 0;
       Geometry = well.Geometry ?? "{}";
+      ConstructionDetails = well.ConstructionDetails;
+      InjectateCharacterization = well.InjectateCharacterization;
+      HydrogeologicCharacterization = well.HydrogeologicCharacterization;
     }
 
     public int Id { get; }
@@ -57,6 +60,18 @@ namespace api.Features {
     public int Count { get; }
     public string Geometry { get; }
     public string Status { get; }
+    public string? ConstructionDetails { get; }
+    public string? InjectateCharacterization { get; }
+    public string? HydrogeologicCharacterization { get; }
+    public bool WellDetailsComplete {
+      get {
+        if (SubClass == 5002) {
+            return !string.IsNullOrEmpty(ConstructionDetails) && !string.IsNullOrEmpty(InjectateCharacterization) && !string.IsNullOrEmpty(HydrogeologicCharacterization);
+        }
+
+        return !string.IsNullOrEmpty(ConstructionDetails);
+      }
+    }
   }
   public class WellInput {
     public int WellId { get; set; }
@@ -72,8 +87,16 @@ namespace api.Features {
     public string? RemediationDescription { get; set; }
     public int? RemediationType { get; set; }
     public string? RemediationProjectId { get; set; }
+    public string? ConstructionDetails { get; set; }
+    public string? InjectateCharacterization { get; set; }
+    public string? HydrogeologicCharacterization { get; set; }
   }
 
+  public class WellDetailInput : WellInput {
+    public int[] SelectedWells { get; set; } = Array.Empty<int>();
+    public IFormFile? ConstructionDetailsFile { get; set; }
+    public IFormFile? InjectateCharacterizationFile { get; set; }
+  }
   public static class WellLookup {
     public static string OperatingStatus(string? key, string missingValue = "") {
       if (string.IsNullOrEmpty(key)) {
@@ -94,6 +117,36 @@ namespace api.Features {
       };
 
       return lookup.GetValueOrDefault(key, missingValue);
+    }
+  }
+
+   public static class WellDetailInputExtension {
+    public static Well Update(this WellDetailInput input, Well original) {
+      if (input.ConstructionDetails != null) {
+        if (input.ConstructionDetails == "null") {
+          original.ConstructionDetails = null;
+        } else {
+          original.ConstructionDetails = input.ConstructionDetails;
+        }
+      }
+
+      if (input.InjectateCharacterization != null) {
+        if (input.InjectateCharacterization == "null") {
+          original.InjectateCharacterization = null;
+        } else {
+          original.InjectateCharacterization = input.InjectateCharacterization;
+        }
+      }
+
+      if (input.HydrogeologicCharacterization != null) {
+        if (input.HydrogeologicCharacterization == "null") {
+          original.HydrogeologicCharacterization = null;
+        } else {
+          original.HydrogeologicCharacterization = input.HydrogeologicCharacterization;
+        }
+      }
+
+      return original;
     }
   }
 }

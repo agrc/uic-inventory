@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useTable } from 'react-table';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 import ky from 'ky';
+import { ErrorMessage } from '@hookform/error-message';
 import { Dialog, Transition } from '@headlessui/react';
 import { TrashIcon } from '@heroicons/react/outline';
 import Graphic from '@arcgis/core/Graphic';
@@ -17,6 +18,7 @@ import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { AuthContext } from '../../../AuthProvider';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
+import ErrorMessageTag from '../../FormElements/ErrorMessage';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
@@ -64,7 +66,7 @@ function AddWells() {
     onSuccess: () => {
       toast.success('Well added successfully!');
       queryClient.invalidateQueries(['inventory', inventoryId]);
-      reset();
+
       setPointGraphic();
     },
     onError: (error) => onRequestError(error, 'We had some trouble adding your well.'),
@@ -73,6 +75,7 @@ function AddWells() {
   const { handleSubmit, register, formState, reset, setValue, unregister, watch } = useForm({
     resolver: yupResolver(schema),
     context: { subClass: data?.subClass },
+    mode: 'onChange',
   });
 
   const watchStatus = watch('status');
@@ -94,7 +97,16 @@ function AddWells() {
     register('geometry');
   }, [register]);
 
-  // hydrate form with existing data
+  //* decouple reset from handleSubmit because we use formState and they both act on it
+  useEffect(() => {
+    if (!formState.isSubmitSuccessful) {
+      return;
+    }
+
+    reset();
+  }, [formState, register, reset, setValue]);
+
+  // place site polygon
   useEffect(() => {
     if (status !== 'success' || graphic) {
       return;
@@ -118,6 +130,7 @@ function AddWells() {
     setViewPoint(new Viewpoint({ targetGeometry: geometry.centroid, scale: 1500 }));
   }, [data, status]);
 
+  // place site wells
   useEffect(() => {
     if (status !== 'success') {
       return;
@@ -254,6 +267,7 @@ function AddWells() {
                 <Label id="wellLocation" />
                 <OkNotToggle classes="h-12" status={watchGeometry} />
               </div>
+              <ErrorMessage errors={formState.errors} name="geometry.x" as={ErrorMessageTag} />
               <div className="flex justify-between px-4 py-3">
                 <button
                   type="button"
@@ -278,7 +292,7 @@ function AddWells() {
                     <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
                       <button
                         type="submit"
-                        onClick={() => toast.info('There is nothing here yet. Check back after the next release.')}
+                        onClick={() => history.push(`/site/${siteId}/inventory/${inventoryId}/add-well-details`)}
                       >
                         Next
                       </button>

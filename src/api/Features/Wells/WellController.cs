@@ -44,6 +44,29 @@ namespace api.Features {
       }
     }
 
+    [HttpPut("api/well")]
+    [Consumes("multipart/form-data")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<WellPayload>> UpdateWell([FromForm]WellDetailInput input, CancellationToken token) {
+      try {
+        var result = await _mediator.Send(new UpdateWell.Command(input), token);
+
+        return Accepted();
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "PUT:api/well")
+          .ForContext("input", input)
+          .Warning(ex, "requirements failure");
+
+        return Unauthorized(new WellPayload(ex));
+      } catch (Exception ex) {
+        _log.ForContext("endpoint", "PUT:api/well")
+          .ForContext("input", input)
+          .Fatal(ex, "unhandled exception");
+
+        return StatusCode(500, new WellPayload(ex));
+      }
+    }
+
     [HttpDelete("/api/well")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<WellPayload>> DeleteWell(WellInput input, CancellationToken token) {

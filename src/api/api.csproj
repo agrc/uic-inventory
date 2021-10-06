@@ -26,6 +26,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="System.Text.Encoding.CodePages" />
+    <PackageReference Include="Google.Cloud.Storage.V1" />
   </ItemGroup>
 
    <ItemGroup>

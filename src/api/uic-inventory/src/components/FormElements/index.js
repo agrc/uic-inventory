@@ -6,6 +6,7 @@ import PhoneInput from 'react-phone-number-input/react-hook-form-input';
 import NaicsPicker from '../Naics/NaicsPicker';
 import NaicsTypeAhead from '../Naics/NaicsTypeAhead';
 
+export * from './LimitedTextarea';
 export * from './TextInput';
 export * from './validationSchemas';
 export * from './ResponsiveGridColumn';
