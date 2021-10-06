@@ -84,7 +84,7 @@ const valueToLabel = (value) => {
 function AddSiteContacts() {
   const { siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
-  const { control, formState, handleSubmit, register, reset, unregister, watch } = useForm({
+  const { control, formState, handleSubmit, register, reset, trigger, unregister, watch } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -155,7 +155,8 @@ function AddSiteContacts() {
     }, {});
 
     reset({ ...defaults, contactType: undefined });
-  }, [data, reset]);
+    trigger();
+  }, [data, reset, trigger]);
 
   // handle conditional control registration
   useEffect(() => {
