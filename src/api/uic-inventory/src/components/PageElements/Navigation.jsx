@@ -133,15 +133,12 @@ function Navigation() {
                                 >
                                   {profile.map((item) => (
                                     <Menu.Item key={item.key}>
-                                      {({ active }) =>
+                                      {() =>
                                         item.clientSide ? (
                                           <Link
                                             key={item.key}
                                             to={item.to}
-                                            className={clsx(
-                                              active ? 'bg-gray-100' : '',
-                                              'block px-4 py-2 text-sm text-gray-700'
-                                            )}
+                                            className="block px-4 py-2 text-sm text-gray-700"
                                           >
                                             {item.text}
                                           </Link>
@@ -149,10 +146,7 @@ function Navigation() {
                                           <a
                                             href={item.to}
                                             key={item.key}
-                                            className={clsx(
-                                              active ? 'bg-gray-100' : '',
-                                              'block px-4 py-2 text-sm text-gray-700'
-                                            )}
+                                            className="block px-4 py-2 text-sm text-gray-700"
                                           >
                                             {item.text}
                                           </a>
@@ -282,21 +276,15 @@ function Links({ links, isAuthenticated }) {
     );
   }
 
-  return links.map((item, itemIdx) =>
-    itemIdx === 0 ? (
-      <Link key={item.key} className="px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-md" to={item.to}>
-        {item.text}
-      </Link>
-    ) : (
-      <Link
-        key={item.key}
-        to={item.to}
-        className="px-3 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
-      >
-        {item.text}
-      </Link>
-    )
-  );
+  return links.map((item) => (
+    <Link
+      key={item.key}
+      to={item.to}
+      className="px-3 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
+    >
+      {item.text}
+    </Link>
+  ));
 }
 
 function Notifications({ status, error, notifications }) {
