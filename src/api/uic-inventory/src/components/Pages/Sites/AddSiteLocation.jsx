@@ -369,20 +369,26 @@ function AddSiteLocation() {
                   Next, select a parcel as the site polygon or draw the site polygon if the parcel cannot be used.
                 </p>
                 <div className="flex justify-around px-4 py-5 ml-4 border rounded">
-                  <button
-                    type="button"
-                    className={clsx({ 'bg-blue-800': state.activeTool === 'selecting-a-parcel' })}
-                    onClick={() => dispatch({ type: 'select-site-from-parcel', payload: '' })}
-                  >
-                    <SelectPolygonIcon classes="h-6 text-white fill-current" />
-                  </button>
-                  <button
-                    type="button"
-                    className={clsx({ 'bg-blue-800': state.activeTool === 'freehand-polygon-drawing' })}
-                    onClick={() => dispatch({ type: 'draw-site-boundary', payload: '' })}
-                  >
-                    <PolygonIcon classes="h-6 text-white fill-current" />
-                  </button>
+                  <div className="flex flex-col items-center space-y-2">
+                    <button
+                      type="button"
+                      className={clsx({ 'bg-blue-800': state.activeTool === 'selecting-a-parcel' })}
+                      onClick={() => dispatch({ type: 'select-site-from-parcel', payload: '' })}
+                    >
+                      <SelectPolygonIcon classes="h-6 text-white fill-current" />
+                    </button>
+                    <span className="block text-xs text-gray-500">Select Parcel</span>
+                  </div>
+                  <div className="flex flex-col items-center space-y-2">
+                    <button
+                      type="button"
+                      className={clsx({ 'bg-blue-800': state.activeTool === 'freehand-polygon-drawing' })}
+                      onClick={() => dispatch({ type: 'draw-site-boundary', payload: '' })}
+                    >
+                      <PolygonIcon classes="h-6 text-white fill-current" />
+                    </button>
+                    <span className="block text-xs text-gray-500">Draw Site</span>
+                  </div>
                 </div>
               </>
             ) : null}

@@ -269,16 +269,21 @@ function AddWells() {
               </div>
               <ErrorMessage errors={formState.errors} name="geometry.x" as={ErrorMessageTag} />
               <div className="flex justify-between px-4 py-3">
-                <button
-                  type="button"
-                  className={clsx({ 'bg-blue-800': activeTool === 'draw-well' })}
-                  onClick={() => setActiveTool('draw-well')}
-                >
-                  <PointIcon classes="h-6 text-white fill-current" />
-                </button>
-                <button type="submit" disabled={!isValid}>
-                  Add
-                </button>
+                <div className="flex flex-col items-center space-y-2">
+                  <button
+                    type="button"
+                    className={clsx({ 'bg-blue-800': activeTool === 'draw-well' })}
+                    onClick={() => setActiveTool('draw-well')}
+                  >
+                    <PointIcon classes="h-6 text-white fill-current" />
+                  </button>
+                  <span className="block text-xs text-gray-500">Draw Well</span>
+                </div>
+                <div className="flex flex-col items-center space-y-2">
+                  <button type="submit" disabled={!isValid}>
+                    Add
+                  </button>
+                </div>
               </div>
             </form>
           </GridHeading>
