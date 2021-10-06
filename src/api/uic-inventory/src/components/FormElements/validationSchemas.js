@@ -170,10 +170,7 @@ export const WellDetailSchema = yup.object().shape({
     .mixed()
     .optional()
     .when('$subClass', {
-      is: (value) => {
-        console.log(value);
-        return value === 5002;
-      },
+      is: 5002,
       then: yup.lazy((value) => {
         switch (typeof value) {
           case 'object': {
