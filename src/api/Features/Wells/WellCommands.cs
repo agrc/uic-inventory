@@ -107,7 +107,7 @@ namespace api.Features {
           .ToListAsync(cancellationToken);
 
         if (request.Wells.ConstructionDetailsFile != null || request.Wells.InjectateCharacterizationFile != null) {
-          using var stream = new FileStream("./secrets/storage-service-account-dev.json", FileMode.Open, FileAccess.Read);
+          using var stream = new FileStream("./secrets/cloud-storage-sa", FileMode.Open, FileAccess.Read);
           var client = await StorageClient.CreateAsync(GoogleCredential.FromStream(stream));
 
           if (request.Wells.ConstructionDetailsFile != null) {
