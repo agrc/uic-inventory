@@ -9,7 +9,6 @@ export const PinSymbol = new CIMSymbol({
         {
           type: 'CIMVectorMarker',
           enable: true,
-          colorLocked: true,
           anchorPoint: {
             x: 0,
             y: -2.296875,
@@ -83,14 +82,12 @@ export const PinSymbol = new CIMSymbol({
                     width: 2,
                     color: [251, 191, 36, 255],
                     primitiveName: 'selected-stroke',
-                    colorLocked: true,
                   },
                   {
                     primitiveName: 'selected',
                     type: 'CIMSolidFill',
                     enable: true,
                     color: [255, 255, 255, 255],
-                    colorLocked: true,
                   },
                 ],
               },
@@ -158,7 +155,6 @@ export const PinSymbol = new CIMSymbol({
                     miterLimit: 10,
                     width: 1,
                     color: [251, 251, 251, 128],
-                    colorLocked: true,
                   },
                   {
                     primitiveName: 'complete',
