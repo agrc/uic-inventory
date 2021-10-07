@@ -325,7 +325,7 @@ function AddSiteLocation() {
     <main>
       <Chrome>
         <div className="md:grid md:grid-cols-3 md:gap-6">
-          <GridHeading text="Site Location" subtext="Set the address and polygon for your site">
+          <GridHeading text="Site Location" subtext="Set the address and polygon for your site" site={data}>
             <p className="mb-3">
               First, find your site location by it&apos;s address. If you don&apos;t have an address{' '}
               <button type="primary" onClick={() => dispatch({ type: 'skip-geocoding', payload: null })}>
