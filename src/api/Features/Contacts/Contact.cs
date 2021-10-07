@@ -141,11 +141,13 @@ namespace api.Features {
     }
     public SiteContactPayload(Site site, IReadOnlyCollection<ContactPayload> contacts) {
       Name = site.Name ?? "unknown";
+      NaicsTitle = site.NaicsTitle ?? "unknown";
       Owner = new AccountPayload(site.Account);
       Contacts = contacts;
     }
 
     public string Name { get; set; }
+    public string NaicsTitle { get; set; }
     public AccountPayload Owner { get; set; }
     public IReadOnlyCollection<ContactPayload> Contacts { get; }
   }
