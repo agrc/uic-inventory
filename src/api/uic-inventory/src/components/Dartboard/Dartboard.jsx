@@ -93,23 +93,21 @@ const TailwindDartboard = (props) => {
   return (
     <div className={classNames('dartboard', props.className)}>
       <div className="group">
-        <label {...getFirstLabelProps()}>
-          <input
-            {...getFirstInputProps()}
-            className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
-          />
-        </label>
+        <label {...getFirstLabelProps()} />
+        <input
+          {...getFirstInputProps()}
+          className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
+        />
         {!isFirstInputValid ? (
           <small {...getFirstHelpProps()} className="block -mt-2 text-xs text-red-600"></small>
         ) : null}
       </div>
       <div className="group">
-        <label {...getSecondLabelProps()}>
-          <input
-            {...getSecondInputProps()}
-            className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
-          />
-        </label>
+        <label {...getSecondLabelProps()} />
+        <input
+          {...getSecondInputProps()}
+          className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
+        />
         {!isSecondInputValid ? (
           <small {...getSecondHelpProps()} className="block -mt-2 text-xs text-red-600"></small>
         ) : null}
