@@ -256,7 +256,12 @@ function AddWells() {
               className="grid gap-2 px-4 py-5 shadow sm:rounded-md"
               onSubmit={handleSubmit((data) => addLocation(data))}
             >
-              <TextInput id="construction" register={register} errors={formState.errors} />
+              <TextInput
+                id="construction"
+                text="Well Construction/Name"
+                register={register}
+                errors={formState.errors}
+              />
               <SelectInput id="status" items={operatingStatus} register={register} errors={formState.errors} />
               {watchStatus === 'OT' && <TextInput id="description" register={register} errors={formState.errors} />}
               {data?.subClass === 5002 && (
