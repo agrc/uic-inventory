@@ -1,6 +1,6 @@
 FROM node:16-alpine AS nodejs
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS dotnet
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS dotnet-sdk
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS dotnet
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS dotnet-sdk
 
 FROM nodejs as vite-build
 WORKDIR /build
