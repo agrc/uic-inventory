@@ -96,6 +96,8 @@ export const WellSchema = yup.object().shape({
     .typeError('Order number is required')
     .integer()
     .positive()
+    .min(1000000, 'Order number must be 7 digits long')
+    .max(9999999, 'Order number must be 7 digits long')
     .required('Order number is required'),
   subClass: yup.number().oneOf([-1, 5047, 5002, 5101, 5026]).required().label('Well Type'),
 });
