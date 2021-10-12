@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ky from 'ky';
 import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
 import { DocumentTextIcon, LocationMarkerIcon, PlusIcon, UsersIcon, XIcon, CheckIcon } from '@heroicons/react/solid';
+import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import { AuthContext } from '../../AuthProvider';
 import { Chrome, Header, Link, onRequestError, toast } from '../PageElements';
 import { useOpenClosed } from '../Hooks/useOpenClosedHook';
@@ -126,39 +127,45 @@ function SiteTable({ data }) {
         Cell: function status(data) {
           return (
             <div className="stroke-2">
-              <Link
-                to={`/site/${data.row.original.id}/add-details`}
-                className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
-              >
-                <DocumentTextIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site details" />
-                {data.row.original.detailStatus ? (
-                  <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
-                ) : (
-                  <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
-                )}
-              </Link>
-              <Link
-                to={`/site/${data.row.original.id}/add-contacts`}
-                className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
-              >
-                <UsersIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site contacts" />
-                {data.row.original.contactStatus ? (
-                  <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
-                ) : (
-                  <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
-                )}
-              </Link>
-              <Link
-                to={`/site/${data.row.original.id}/add-location`}
-                className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
-              >
-                <LocationMarkerIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site location" />
-                {data.row.original.locationStatus ? (
-                  <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
-                ) : (
-                  <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
-                )}
-              </Link>
+              <Tippy content="Site details" singleton={target}>
+                <Link
+                  to={`/site/${data.row.original.id}/add-details`}
+                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                >
+                  <DocumentTextIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site details" />
+                  {data.row.original.detailStatus ? (
+                    <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
+                  ) : (
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
+                  )}
+                </Link>
+              </Tippy>
+              <Tippy content="Site contacts" singleton={target}>
+                <Link
+                  to={`/site/${data.row.original.id}/add-contacts`}
+                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                >
+                  <UsersIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site contacts" />
+                  {data.row.original.contactStatus ? (
+                    <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
+                  ) : (
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
+                  )}
+                </Link>
+              </Tippy>
+              <Tippy content="Site location" singleton={target}>
+                <Link
+                  to={`/site/${data.row.original.id}/add-location`}
+                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                >
+                  <LocationMarkerIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site location" />
+                  {data.row.original.locationStatus ? (
+                    <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
+                  ) : (
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
+                  )}
+                </Link>
+              </Tippy>
             </div>
           );
         },
@@ -184,6 +191,7 @@ function SiteTable({ data }) {
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data }, useSortBy);
+  const [source, target] = useSingleton();
 
   const queryClient = useQueryClient();
   const { mutate } = useMutation((siteId) => ky.delete(`/api/site`, { json: { siteId } }), {
@@ -287,6 +295,28 @@ function SiteTable({ data }) {
           </div>
         </Dialog>
       </Transition>
+      <Tippy
+        singleton={source}
+        delay={25}
+        render={(attrs, content) => (
+          <div
+            className="z-20 px-3 py-1 text-sm text-white lowercase bg-gray-800 rounded-lg shadow-xl pointer-events-none"
+            tabIndex={-1}
+            {...attrs}
+          >
+            {content}
+            <svg
+              className="absolute left-0 w-full h-2 text-black top-full"
+              x="0px"
+              y="0px"
+              viewBox="0 0 255 255"
+              xmlSpace="preserve"
+            >
+              <polygon className="fill-current" points="0,0 127.5,127.5 255,0" />
+            </svg>
+          </div>
+        )}
+      />
       <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
