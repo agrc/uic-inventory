@@ -37,7 +37,6 @@ function NaicsPicker({ updateWith }) {
   let classes =
     'flex items-center justify-center p-4 text-center border border-gray-200 rounded-md h-32 hover:border-blue-800 hover:border-2 overflow-hidden overflow-ellipsis disabled:cursor-wait disabled:filter disabled:blur-xs';
   classes = clsx(classes, {
-    'bg-blue-800 cursor-default text-white': code?.toString().length === 6,
     'cursor-pointer': code?.toString().length !== 6,
   });
 

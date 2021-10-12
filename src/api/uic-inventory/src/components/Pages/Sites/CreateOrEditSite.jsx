@@ -249,17 +249,13 @@ function CreateOrEditSite() {
 
                 <NaicsPicker
                   updateWith={(item) => {
-                    if (item.code.toString().length === 6) {
-                      setTimeout(close, 2500);
-                    }
-
                     setValue('naicsPrimary', item.code, { shouldValidate: true, shouldDirty: true });
                     setValue('naicsTitle', item.value, { shouldValidate: true, shouldDirty: true });
                   }}
                 />
 
                 <button type="button" className="mt-4" onClick={close}>
-                  Cancel
+                  Close
                 </button>
               </div>
             </Transition.Child>
