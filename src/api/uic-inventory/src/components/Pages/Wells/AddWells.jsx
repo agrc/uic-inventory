@@ -12,6 +12,7 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
 import Viewpoint from '@arcgis/core/Viewpoint';
 import clsx from 'clsx';
+import Tippy from '@tippyjs/react/headless';
 import {
   BackButton,
   Chrome,
@@ -28,6 +29,7 @@ import { AuthContext } from '../../../AuthProvider';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
+import { Tooltip } from '../../PageElements';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
@@ -278,16 +280,24 @@ function AddWells() {
               </div>
               <ErrorMessage errors={formState.errors} name="geometry.x" as={ErrorMessageTag} />
               <div className="flex justify-between px-4 py-3">
-                <div className="flex flex-col items-center space-y-2">
-                  <button
-                    type="button"
-                    className={clsx({ 'bg-blue-800': activeTool === 'draw-well' })}
-                    onClick={() => setActiveTool('draw-well')}
-                  >
-                    <PointIcon classes="h-6 text-white fill-current" />
-                  </button>
-                  <span className="block text-xs text-gray-500">Draw Well</span>
-                </div>
+                <Tippy
+                  render={(attrs) => (
+                    <Tooltip {...attrs}>
+                      Click to activate drawing. Then click on the map to create or move a well location.
+                    </Tooltip>
+                  )}
+                >
+                  <div className="flex flex-col items-center space-y-2">
+                    <button
+                      type="button"
+                      className={clsx({ 'bg-blue-800': activeTool === 'draw-well' })}
+                      onClick={() => setActiveTool('draw-well')}
+                    >
+                      <PointIcon classes="h-6 text-white fill-current" />
+                    </button>
+                    <span className="block text-xs text-gray-500">Draw Well</span>
+                  </div>
+                </Tippy>
                 <div className="flex flex-col items-center space-y-2">
                   <button type="submit" disabled={!isValid}>
                     Add
