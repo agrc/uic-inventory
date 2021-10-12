@@ -9,7 +9,7 @@ import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outl
 import { DocumentTextIcon, LocationMarkerIcon, PlusIcon, UsersIcon, XIcon, CheckIcon } from '@heroicons/react/solid';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import { AuthContext } from '../../AuthProvider';
-import { Chrome, Header, Link, onRequestError, toast } from '../PageElements';
+import { Chrome, Header, Link, onRequestError, toast, Tooltip } from '../PageElements';
 import { useOpenClosed } from '../Hooks/useOpenClosedHook';
 
 export function SitesAndInventory({ completeProfile }) {
@@ -295,28 +295,7 @@ function SiteTable({ data }) {
           </div>
         </Dialog>
       </Transition>
-      <Tippy
-        singleton={source}
-        delay={25}
-        render={(attrs, content) => (
-          <div
-            className="z-20 px-3 py-1 text-sm text-white lowercase bg-gray-800 rounded-lg shadow-xl pointer-events-none"
-            tabIndex={-1}
-            {...attrs}
-          >
-            {content}
-            <svg
-              className="absolute left-0 w-full h-2 text-black top-full"
-              x="0px"
-              y="0px"
-              viewBox="0 0 255 255"
-              xmlSpace="preserve"
-            >
-              <polygon className="fill-current" points="0,0 127.5,127.5 255,0" />
-            </svg>
-          </div>
-        )}
-      />
+      <Tippy singleton={source} delay={25} render={(attrs, content) => <Tooltip {...attrs}>{content}</Tooltip>} />
       <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
