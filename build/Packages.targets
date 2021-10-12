@@ -7,15 +7,15 @@
 
     <!-- Authentication -->
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
-    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.10" />
-    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="5.0.10" />
-    <PackageReference Update="Microsoft.Extensions.Caching.StackExchangeRedis" Version="5.0.1" />
+    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.0-rc.2.*" />
+    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="6.0.0-rc.2.*" />
+    <PackageReference Update="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.0-rc.2.*" />
 
     <!-- Database -->
     <PackageReference Update="Dapper" Version="2.0.90" />
-    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="5.0.10" />
-    <PackageReference Update="EFCORE.NamingConventions" Version="5.0.2" />
+    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0-rc.1" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="6.0.0-rc.2.*" />
+    <PackageReference Update="EFCORE.NamingConventions" Version="6.0.0-rc.1" />
 
     <!-- Logging -->
     <PackageReference Update="Serilog" Version="2.10.0" />
