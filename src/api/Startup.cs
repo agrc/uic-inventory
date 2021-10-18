@@ -32,10 +32,6 @@ namespace api {
       services.AddCors()
         .AddHttpContextAccessor();
 
-      if (Env.IsDevelopment()) {
-        services.AddHostedService<SpaProxyLaunchManager>();
-      }
-
       services.AddMediatR(typeof(Startup));
       services.AddMediatorAuthorization(typeof(Startup).Assembly);
       services.AddAuthorizersFromAssembly(typeof(Startup).Assembly);

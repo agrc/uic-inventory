@@ -1,6 +1,9 @@
 <Project>
 
   <ItemGroup>
+    <!-- Proxy -->
+    <PackageReference Update="Microsoft.AspNetCore.SpaProxy" Version="6.0.0-rc.2.*" />
+
     <!-- Mediatr -->
     <PackageReference Update="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
     <PackageReference Update="MediatR" Version="9.0.0" />
@@ -20,12 +23,12 @@
     <!-- Logging -->
     <PackageReference Update="Serilog" Version="2.10.0" />
     <PackageReference Update="Serilog.AspNetCore" Version="4.1.0" />
-    <PackageReference Update="Serilog.Settings.Configuration" Version="3.2.0" />
+    <PackageReference Update="Serilog.Settings.Configuration" Version="3.3.0" />
     <PackageReference Update="Serilog.Sinks.Console" Version="4.0.0" />
 
     <!-- Excell Reading -->
     <PackageReference Update="ExcelDataReader" Version="3.6.0" />
-    <PackageReference Update="System.Text.Encoding.CodePages" Version="5.0.0" />
+    <PackageReference Update="System.Text.Encoding.CodePages" Version="6.0.0-rc.2.*" />
 
     <!-- Cloud -->
     <PackageReference Update="Google.Cloud.Storage.V1" Version="3.6.0" />
