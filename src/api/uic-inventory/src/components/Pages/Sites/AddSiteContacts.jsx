@@ -75,6 +75,8 @@ const contactType = [
   },
 ];
 
+const validContactTypes = ['legal_rep', 'facility_owner', 'owner_operator'];
+
 const valueToLabel = (value) => {
   const item = contactType.find((x) => x.value === value);
 
@@ -86,6 +88,7 @@ function AddSiteContacts() {
   const { authInfo } = useContext(AuthContext);
   const { control, formState, handleSubmit, register, reset, trigger, unregister, watch } = useForm({
     resolver: yupResolver(schema),
+    mode: 'onChange',
   });
 
   const watchContactType = watch('contactType', '');
@@ -205,6 +208,12 @@ function AddSiteContacts() {
                       </Link>
                     </div>
                   </div>
+                  {data?.contacts.filter((x) => validContactTypes.includes(x.contactType)).length === 0 && (
+                    <ErrorMessageTag>
+                      One of these contact must be either an owner, owner/operator, or legal representative to complete
+                      the UIC form submission
+                    </ErrorMessageTag>
+                  )}
                 </div>
               </div>
             </div>
@@ -469,7 +478,6 @@ function ContactTable({ data }) {
           </div>
         </Dialog>
       </Transition>
-
       <table {...getTableProps()} className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           {headerGroups.map((headerGroup) => (
