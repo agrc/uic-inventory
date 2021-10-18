@@ -26,11 +26,11 @@ namespace api.Features {
     legal_rep,
     official_rep,
     contractor,
+    project_manager,
     health_dept,
     permit_writer,
     developer,
     other,
-    project_manager
   }
 
   public class ContactInput {

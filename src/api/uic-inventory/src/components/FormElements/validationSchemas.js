@@ -54,7 +54,7 @@ export const ContactSchema = yup.object().shape({
         'facility_operator',
         'facility_manager',
         'legal_rep',
-        'office_rep',
+        'official_rep',
         'contractor',
         'project_manager',
         'health_dept',

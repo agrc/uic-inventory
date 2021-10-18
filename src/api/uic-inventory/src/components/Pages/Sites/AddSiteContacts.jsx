@@ -46,7 +46,7 @@ const contactType = [
     label: 'Legal Representative',
   },
   {
-    value: 'office_rep',
+    value: 'official_rep',
     label: 'Official Representative',
   },
   {
