@@ -1,4 +1,13 @@
 import { toast } from 'react-toastify';
+import * as yup from 'yup';
+
+const errorSchema = yup.object().shape({
+  errors: yup.array().of(
+    yup.object().shape({
+      message: yup.string().required(),
+    })
+  ),
+});
 
 const onRequestError = async (error, defaultMessage = 'Something went terribly wrong that we did not expect.') => {
   // TODO: log error
@@ -12,7 +21,7 @@ const onRequestError = async (error, defaultMessage = 'Something went terribly w
     console.error(ex);
   }
 
-  if (response.errors) {
+  if (errorSchema.isValidSync(response)) {
     toastMessage = response.errors.map((x) => x.message).join('\n');
   }
 
