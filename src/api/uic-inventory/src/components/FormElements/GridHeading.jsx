@@ -18,7 +18,7 @@ const SiteInformation = ({ site }) => {
 
   return site && show ? (
     <div className="relative grid gap-1 px-4 py-3 mt-4 text-white bg-gray-800 rounded-lg shadow md:mt-12 auto-cols-auto">
-      <button type="button" className="absolute top-0 right-0 px-3 py-1" onClick={() => setShow(false)}>
+      <button type="button" meta="default" className="absolute top-0 right-0 px-3 py-1" onClick={() => setShow(false)}>
         x
       </button>
       <div className="col-span-2 text-lg font-medium ">Site Information</div>

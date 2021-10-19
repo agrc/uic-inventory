@@ -122,7 +122,7 @@ function AddSerWellContact() {
                   <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
                     <ContactTable data={data?.contacts} />
                     <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
-                      <Link type="button" to={`/site/${siteId}/inventory/${inventoryId}/add-wells`}>
+                      <Link type="button" meta="default" to={`/site/${siteId}/inventory/${inventoryId}/add-wells`}>
                         Next
                       </Link>
                     </div>
@@ -337,11 +337,12 @@ function ContactTable({ data }) {
                 </p>
 
                 <div className="flex justify-around mt-6">
-                  <button type="button" className="bg-indigo-900" onClick={remove}>
+                  <button type="button" meta="default" className="bg-indigo-900" onClick={remove}>
                     Yes
                   </button>
                   <button
                     type="button"
+                    meta="default"
                     onClick={() => {
                       close();
                       deleteContact.current = null;

@@ -75,7 +75,7 @@ export function GenericLandingPage() {
 
 function SiteCreationButton({ access, className = 'm-4 text-2xl' }) {
   return (
-    <Link to="/site/create" type="button" disabled={access} className={className}>
+    <Link to="/site/create" type="button" meta="default" disabled={access} className={className}>
       <div className="flex">
         <PlusIcon className="self-center w-5 h-5 mr-2" />
         <span>Create site</span>
@@ -277,11 +277,17 @@ function SiteTable({ data }) {
                 </p>
 
                 <div className="flex justify-around mt-6">
-                  <button type="button" className="bg-indigo-900" onClick={() => mutate(deleteSite.current)}>
+                  <button
+                    type="button"
+                    meta="default"
+                    className="bg-indigo-900"
+                    onClick={() => mutate(deleteSite.current)}
+                  >
                     Yes
                   </button>
                   <button
                     type="button"
+                    meta="default"
                     onClick={() => {
                       close();
                       deleteSite.current = null;

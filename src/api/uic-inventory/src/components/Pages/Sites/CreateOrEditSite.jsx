@@ -185,7 +185,7 @@ function CreateOrEditSite() {
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true} className="self-center text-center sm:col-span-2 sm:row-span-3">
-              <button type="button" className="w-full sm:items-center sm:h-24" onClick={open}>
+              <button type="button" meta="default" className="w-full sm:items-center sm:h-24" onClick={open}>
                 NAICS Code Helper
               </button>
             </ResponsiveGridColumn>
@@ -254,7 +254,7 @@ function CreateOrEditSite() {
                   }}
                 />
 
-                <button type="button" className="mt-4" onClick={close}>
+                <button type="button" meta="default" className="mt-4" onClick={close}>
                   Close
                 </button>
               </div>

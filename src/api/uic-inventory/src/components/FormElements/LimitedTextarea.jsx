@@ -91,7 +91,7 @@ export const DropzoneMessaging = ({ isDragActive, files = [], reset = () => {} }
           <CheckIcon className="w-8 h-8 mx-2 text-green-500" />
           <span className="self-center overflow-hidden lowercase truncate whitespace-nowrap">{files[0].name}</span>
         </div>
-        <button type="button" className="w-full mt-4" onClick={reset}>
+        <button type="button" meta="default" className="w-full mt-4" onClick={reset}>
           <XIcon className="w-6 h-6 mx-2 text-pink-500" />
           <span className="self-center justify-between">Clear</span>
         </button>
@@ -198,7 +198,7 @@ export const LimitedDropzone = ({ textarea, forms }) => {
             }}
           />
           {files.length === 0 && (
-            <button className="items-center pl-0" type="button" onClick={open}>
+            <button className="items-center pl-0" type="button" meta="default" onClick={open}>
               <CloudUploadIcon className="w-6 h-6 mx-2 text-white" />
               Pick a file
             </button>

@@ -6,6 +6,7 @@ import { Switch } from '@headlessui/react';
 import { AuthContext } from '../../AuthProvider';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 import ky from 'ky';
+import clsx from 'clsx';
 import {
   ErrorMessage,
   ErrorMessageTag,
@@ -196,14 +197,22 @@ export function Profile() {
                           checked={value}
                           id={name}
                           onChange={onChange}
-                          className={`${
-                            value ? 'bg-indigo-600' : 'bg-gray-300'
-                          } relative inline-flex items-center flex-shrink-0 h-6 transition-colors duration-200 ease-in-out border-transparent rounded-full cursor-pointer w-11 b-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-700`}
+                          className={clsx(
+                            {
+                              'bg-indigo-600 focus:ring-indigo-500': value,
+                              'bg-gray-300 focus:ring-gray-300': !value,
+                            },
+                            'relative inline-flex items-center h-8 rounded-full w-16 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
+                          )}
                         >
                           <span
-                            className={`${
-                              value ? 'translate-x-5' : 'translate-x-1'
-                            } pointer-events-none inline-block w-5 h-5 transform bg-white rounded-full shadow ease-in-out duration-300 ring-0`}
+                            className={clsx(
+                              {
+                                'translate-x-8 border-indigo-700 bg-gray-100': value,
+                                'translate-x-1 border-gray-400 bg-white': !value,
+                              },
+                              'inline-block w-7 h-7 transform border-2 border-gray-400 rounded-full transition-transform'
+                            )}
                           />
                         </Switch>
                       )}

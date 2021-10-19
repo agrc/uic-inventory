@@ -287,7 +287,7 @@ function CreateOrEditInventory() {
                       <li className="leading-loose">Enter your order number on this page.</li>
                     </ul>
 
-                    <button type="button" className="mt-4" onClick={close}>
+                    <button type="button" meta="default" className="mt-4" onClick={close}>
                       Close
                     </button>
                   </div>

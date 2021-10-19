@@ -328,7 +328,7 @@ function AddWellDetails() {
                   <button type="submit" disabled={(selectedWells?.length ?? 0) === 0}>
                     Update
                   </button>
-                  <button type="button" disabled={wellsRemaining > 0}>
+                  <button type="button" meta="default" disabled={wellsRemaining > 0}>
                     Next
                   </button>
                 </div>

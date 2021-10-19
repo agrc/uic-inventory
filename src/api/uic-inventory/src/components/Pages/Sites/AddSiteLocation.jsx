@@ -357,6 +357,7 @@ function AddSiteLocation() {
                 >
                   <button
                     type="button"
+                    meta="default"
                     className={clsx({ 'bg-blue-800': state.activeTool === 'site-address-click' })}
                     onClick={() => dispatch({ type: 'activate-site-address-from-click', payload: '' })}
                   >
@@ -374,6 +375,7 @@ function AddSiteLocation() {
                   <div className="flex flex-col items-center space-y-2">
                     <button
                       type="button"
+                      meta="default"
                       className={clsx({ 'bg-blue-800': state.activeTool === 'selecting-a-parcel' })}
                       onClick={() => dispatch({ type: 'select-site-from-parcel', payload: '' })}
                     >
@@ -384,6 +386,7 @@ function AddSiteLocation() {
                   <div className="flex flex-col items-center space-y-2">
                     <button
                       type="button"
+                      meta="default"
                       className={clsx({ 'bg-blue-800': state.activeTool === 'freehand-polygon-drawing' })}
                       onClick={() => dispatch({ type: 'draw-site-boundary', payload: '' })}
                     >

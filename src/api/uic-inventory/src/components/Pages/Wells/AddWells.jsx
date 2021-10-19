@@ -295,6 +295,7 @@ function AddWells() {
                   <div className="flex flex-col items-center space-y-2">
                     <button
                       type="button"
+                      meta="default"
                       className={clsx({ 'bg-blue-800': activeTool === 'draw-well' })}
                       onClick={() => setActiveTool('draw-well')}
                     >
@@ -483,11 +484,12 @@ function WellTable({ wells = [] }) {
                 </p>
 
                 <div className="flex justify-around mt-6">
-                  <button type="button" className="bg-indigo-900" onClick={remove}>
+                  <button type="button" meta="default" className="bg-indigo-900" onClick={remove}>
                     Yes
                   </button>
                   <button
                     type="button"
+                    meta="default"
                     onClick={() => {
                       close();
                       deleteWell.current = null;
