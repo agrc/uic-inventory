@@ -19,6 +19,7 @@ import {
   PhoneInput,
   ResponsiveGridColumn,
   Separator,
+  SelectInput,
   TextInput,
 } from '../../FormElements';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
@@ -28,6 +29,14 @@ const contactType = [
     value: 'project_manager',
     label: 'DEQ Dist Eng/Project Manager',
   },
+];
+
+const divisions = [
+  { value: 'Division of Air Quality' },
+  { value: 'Division of Drinking Water' },
+  { value: 'Division of Environmental Response and Remediation' },
+  { value: 'Division of Waste Management and Radiation Control' },
+  { value: 'Division of Water Quality' },
 ];
 
 const valueToLabel = (value) => {
@@ -175,7 +184,13 @@ function AddSerWellContact() {
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true} half={true}>
-              <TextInput text="Oversight agency" id="organization" register={register} errors={formState.errors} />
+              <SelectInput
+                text="Oversight agency"
+                items={divisions}
+                id="organization"
+                register={register}
+                errors={formState.errors}
+              />
             </ResponsiveGridColumn>
           </FormGrid>
         </PageGrid>

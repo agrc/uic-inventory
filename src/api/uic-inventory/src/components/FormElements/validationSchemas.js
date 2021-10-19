@@ -80,7 +80,20 @@ export const SerContactSchema = yup.object().shape({
   firstName,
   lastName,
   email,
-  organization,
+  organization: yup
+    .string()
+    .oneOf(
+      [
+        'Division of Air Quality',
+        'Division of Drinking Water',
+        'Division of Environmental Response and Remediation',
+        'Division of Waste Management and Radiation Control',
+        'Division of Water Quality',
+      ],
+      'A valid selection must be made'
+    )
+    .required()
+    .label('Oversight agency'),
   phoneNumber,
 });
 
