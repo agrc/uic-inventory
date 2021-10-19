@@ -26,7 +26,7 @@ export function Profile() {
 
   const queryClient = useQueryClient();
   const { status, error, data } = useQuery(
-    'profile',
+    ['profile', parseInt(id || authInfo.id)],
     () => ky.get(`/api/account/${parseInt(id || authInfo.id)}`).json(),
     {
       enabled: id || authInfo?.id ? true : false,
