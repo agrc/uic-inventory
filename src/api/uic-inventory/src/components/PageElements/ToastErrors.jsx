@@ -1,13 +1,23 @@
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 
-const errorSchema = yup.object().shape({
-  errors: yup.array().of(
-    yup.object().shape({
-      message: yup.string().required(),
-    })
-  ),
-});
+const errorSchema = yup
+  .object()
+  .shape({
+    errors: yup
+      .array()
+      .of(
+        yup
+          .object()
+          .shape({
+            message: yup.string().required(),
+          })
+          .required()
+      )
+      .min(1)
+      .required(),
+  })
+  .required();
 
 const onRequestError = async (error, defaultMessage = 'Something went terribly wrong that we did not expect.') => {
   // TODO: log error
