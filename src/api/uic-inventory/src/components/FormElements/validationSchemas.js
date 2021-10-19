@@ -76,6 +76,14 @@ export const ContactSchema = yup.object().shape({
   zipCode,
 });
 
+export const SerContactSchema = yup.object().shape({
+  firstName,
+  lastName,
+  email,
+  organization,
+  phoneNumber,
+});
+
 export const ContactProgramSchema = yup.object().shape({
   message: yup.string().max(512).required().label('Message'),
 });

@@ -57,7 +57,12 @@ function CreateOrEditInventory() {
   const { mutate } = useMutation((json) => ky.post('/api/inventory', { json }).json(), {
     onSuccess: (response) => {
       toast.success('Inventory created successfully!');
-      history.replace(`/site/${siteId}/inventory/${response.id}/add-wells`);
+
+      if (response.subClass === 5002) {
+        history.replace(`/site/${siteId}/inventory/${response.id}/regulatory-contact`);
+      } else {
+        history.replace(`/site/${siteId}/inventory/${response.id}/add-wells`);
+      }
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this inventory.'),
   });
