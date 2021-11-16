@@ -108,11 +108,7 @@ namespace api.Features {
       var lookup = new Dictionary<string, string> {
         {"AC", "Active"},
         {"PA", "Abandoned ‐ Approved"},
-        {"TA", "Abandoned ‐ Temporary"},
-        {"AN", "Abandoned ‐ Not Approved"},
-        {"PW", "Proposed Under Permit Application"},
         {"PR", "Proposed Under Authorization By Rule"},
-        {"PI", "Post Injection CO2 Well"},
         {"OT", "Other"},
       };
 

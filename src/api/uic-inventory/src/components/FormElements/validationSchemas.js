@@ -125,10 +125,7 @@ export const WellSchema = yup.object().shape({
 
 export const WellLocationSchema = yup.object().shape({
   construction: yup.string().max(512).required(),
-  status: yup
-    .string()
-    .oneOf(['AC', 'PA', 'TA', 'AN', 'PW', 'PR', 'PI', 'OT'], 'A valid selection must be made')
-    .required(),
+  status: yup.string().oneOf(['AC', 'PA', 'PR', 'OT'], 'A valid selection must be made').required(),
   description: yup.string().when('status', {
     is: 'OT',
     then: yup.string().required().min(5).max(512),

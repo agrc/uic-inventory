@@ -36,11 +36,7 @@ import '@arcgis/core/assets/esri/themes/light/main.css';
 const operatingStatus = [
   { value: 'AC', label: 'Active' },
   { value: 'PA', label: 'Abandoned ‐ Approved' },
-  { value: 'TA', label: 'Abandoned ‐ Temporary' },
-  { value: 'AN', label: 'Abandoned ‐ Not Approved' },
-  { value: 'PW', label: 'Proposed Under Permit Application' },
   { value: 'PR', label: 'Proposed Under Authorization By Rule' },
-  { value: 'PI', label: 'Post Injection CO2 Well' },
   { value: 'OT', label: 'Other' },
 ];
 
