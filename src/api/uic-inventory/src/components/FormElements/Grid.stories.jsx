@@ -5,29 +5,24 @@ export default {
   component: FormGrid,
 };
 
-export const FormGridDefault = () => (
-  <FormGrid>
-    <div>child</div>
-    <div>child</div>
-    <div>child</div>
-    <div>child</div>
-  </FormGrid>
-);
+const getChildren = (size = 4) => {
+  const children = [];
+  for (let i = 0; i < size; i++) {
+    children.push(<div key={i}>child {i}</div>);
+  }
+  return children;
+};
+
+export const FormGridDefault = () => <FormGrid>{getChildren()}</FormGrid>;
 
 export const PageGridDefault = () => (
   <PageGrid heading="hello" subtext="stories are fun" site={{}}>
-    <div>child</div>
-    <div>child</div>
-    <div>child</div>
-    <div>child</div>
+    {getChildren()}
   </PageGrid>
 );
 
 export const PageGridWithoutSite = () => (
   <PageGrid heading="hello" subtext="stories are fun">
-    <div>child</div>
-    <div>child</div>
-    <div>child</div>
-    <div>child</div>
+    {getChildren()}
   </PageGrid>
 );
