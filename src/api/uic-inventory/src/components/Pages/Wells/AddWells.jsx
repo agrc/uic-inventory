@@ -284,7 +284,7 @@ function AddWells() {
                 <Tippy
                   render={(attrs) => (
                     <Tooltip {...attrs}>
-                      Click to activate drawing. Then click on the map to create or move a well location.
+                      Click to activate drawing, then click on the map to create or move well location.
                     </Tooltip>
                   )}
                 >
