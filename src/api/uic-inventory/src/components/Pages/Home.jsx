@@ -30,7 +30,7 @@ export function SitesAndInventory({ completeProfile }) {
           ) : (
             <p>
               You must complete your{' '}
-              <Link type="primary" to="/profile">
+              <Link meta="primary" to="/profile">
                 profile
               </Link>{' '}
               before submitting sites.
@@ -55,7 +55,7 @@ export function GenericLandingPage() {
           As of August 15, 2021 all Class V injection well inventory information forms must be submitted via online web
           form. To submit, you must first create a Utah ID account and provide UIC user profile information. Please
           visit{' '}
-          <a type="primary" href="/api/login">
+          <a meta="primary" href="/api/login">
             Utah ID
           </a>{' '}
           to register with Utah ID and then return to this page to login and complete your profile. If you already have
@@ -94,7 +94,7 @@ function SiteList({ show, status, data }) {
   ) : (
     <p>
       You must complete your{' '}
-      <Link type="primary" to="/profile">
+      <Link meta="primary" to="/profile">
         {' '}
         profile{' '}
       </Link>{' '}

@@ -328,7 +328,7 @@ function AddSiteLocation() {
           <GridHeading text="Site Location" subtext="Set the address and polygon for your site" site={data}>
             <p className="mb-3">
               First, find your site location by it&apos;s address. If you don&apos;t have an address{' '}
-              <button type="primary" onClick={() => dispatch({ type: 'skip-geocoding', payload: null })}>
+              <button meta="primary" onClick={() => dispatch({ type: 'skip-geocoding', payload: null })}>
                 skip
               </button>{' '}
               this step.

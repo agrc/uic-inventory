@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState, useEffect } from 'react';
+import { Fragment, useContext, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -72,7 +72,6 @@ function CreateOrEditInventory() {
   });
 
   const history = useHistory();
-  const [site, setSite] = useState({});
   const [show, { open, close }] = useOpenClosed();
 
   //* pull isDirty from form state to activate proxy
@@ -203,7 +202,7 @@ function CreateOrEditInventory() {
                 <ResponsiveGridColumn full={true} half={true}>
                   <p className="italic text-center text-gray-500 md:text-left">
                     To submit a UIC Inventory Form you must have a valid Inventory Review Fee order number or receipt.{' '}
-                    <button type="primary" onClick={open}>
+                    <button meta="primary" onClick={open}>
                       Click for instructions
                     </button>{' '}
                     to pay the UIC Inventory Fee online.
@@ -245,7 +244,7 @@ function CreateOrEditInventory() {
                       <li className="leading-loose">
                         Go to{' '}
                         <a
-                          type="primary"
+                          meta="primary"
                           href="https://secure.utah.gov/cart/dwq_cart/products.html"
                           target="_blank"
                           rel="noreferrer noopener"

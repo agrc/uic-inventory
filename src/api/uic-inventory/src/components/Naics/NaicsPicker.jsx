@@ -69,7 +69,7 @@ function NaicsPicker({ updateWith }) {
     <>
       <p className="mb-2 italic text-gray-500">
         For a keyword search and further information about NAICS, please visit the{' '}
-        <a type="primary" href="https://census.gov/naics" target="_blank" rel="noopener noreferrer">
+        <a meta="primary" href="https://census.gov/naics" target="_blank" rel="noopener noreferrer">
           US Census Bureau NAICS website
         </a>
         .
