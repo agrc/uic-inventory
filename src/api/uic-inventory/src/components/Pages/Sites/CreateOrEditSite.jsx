@@ -255,7 +255,7 @@ function CreateOrEditSite() {
                 />
 
                 <button type="button" meta="default" className="mt-4" onClick={close}>
-                  Close
+                  Select
                 </button>
               </div>
             </Transition.Child>
