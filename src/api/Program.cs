@@ -12,7 +12,7 @@ namespace api {
       .UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration))
       .ConfigureAppConfiguration((_, config) => {
         foreach (var secret in new[] { "storage", "email" }) {
-          config.AddKeyPerFile(Path.Combine(Directory.GetCurrentDirectory(), "secrets", secret), false, true);
+          config.AddKeyPerFile(Path.Combine("secrets", secret), false, true);
         }
       })
       .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>().UseWebRoot("uic-inventory/dist"));
