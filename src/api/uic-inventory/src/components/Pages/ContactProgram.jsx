@@ -1,20 +1,34 @@
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Chrome } from '../PageElements';
+import { useMutation } from 'react-query';
+import ky from 'ky';
+import { Chrome, onRequestError, toast } from '../PageElements';
 import { FormGrid, PageGrid, ContactProgramSchema as schema, ResponsiveGridColumn, TextInput } from '../FormElements';
 
 export function ContactProgram() {
-  const { formState, handleSubmit, register } = useForm({
+  const { formState, handleSubmit, register, reset } = useForm({
     resolver: yupResolver(schema),
   });
 
-  //! pull isDirty from form state to activate proxy
+  const { mutate, status } = useMutation((json) => ky.post('/api/notify/staff', { json }), {
+    onSuccess: () => {
+      reset();
+      toast.success('Your message has been sent');
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble updating your profile.'),
+  });
+
+  //* pull isDirty from form state to activate proxy
   const { isDirty } = formState;
+
+  const sendMessage = (data) => {
+    mutate(data);
+  };
 
   return (
     <main>
       <Chrome>
-        <form onSubmit={handleSubmit((data) => console.log(data))}>
+        <form onSubmit={handleSubmit((data) => sendMessage(data))}>
           <PageGrid
             heading="Contact the UIC Program"
             subtext="Provide a clear and concise message for the staff"
@@ -25,7 +39,7 @@ export function ContactProgram() {
           >
             <FormGrid>
               <ResponsiveGridColumn full={true}>
-                <TextInput id="message" register={register} errors={formState.errors} />
+                <TextInput id="message" register={register} errors={formState.errors} disabled={status === 'loading'} />
               </ResponsiveGridColumn>
             </FormGrid>
           </PageGrid>

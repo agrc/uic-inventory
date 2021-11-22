@@ -32,6 +32,9 @@
 
     <!-- Cloud -->
     <PackageReference Update="Google.Cloud.Storage.V1" Version="3.6.0" />
+
+    <!-- Email -->
+    <PackageReference Update="SendGrid" Version="9.25.0" />
   </ItemGroup>
 
 </Project>

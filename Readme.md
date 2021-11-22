@@ -29,4 +29,6 @@ dotnet user-secrets set "CloudSql:Port" "5432"
 dotnet user-secrets set "CloudSql:Db" "app"
 dotnet user-secrets set "CloudSql:Username" "postgres"
 dotnet user-secrets set "CloudSql:Password" "what password"
+
+dotnet user-secrets set "App:AdminEmail" "you@email.com"
 ```

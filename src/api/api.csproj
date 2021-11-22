@@ -30,6 +30,7 @@
     <PackageReference Include="Serilog.Sinks.Console" />
     <PackageReference Include="System.Text.Encoding.CodePages" />
     <PackageReference Include="Google.Cloud.Storage.V1" />
+    <PackageReference Include="SendGrid" />
   </ItemGroup>
 
    <ItemGroup>
