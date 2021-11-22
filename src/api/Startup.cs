@@ -44,8 +44,7 @@ namespace api {
 
       var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
 
-      services.AddEntityFrameworkNpgsql()
-        .AddDbContext<AppDbContext>(options => options
+      services.AddDbContext<AppDbContext>(options => options
           .UseNpgsql(database.ConnectionString)
           .UseSnakeCaseNamingConvention());
 
