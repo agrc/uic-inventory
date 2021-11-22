@@ -9,6 +9,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 namespace api.Features {
@@ -79,21 +80,24 @@ namespace api.Features {
     }
 
     public class Handler : IRequestHandler<Command, Well> {
-      private readonly string [] _acceptableFileTypes = new[] { "pdf", "png", "doc", "docx", "jpg", "jpeg" };
+      private readonly string[] _acceptableFileTypes = new[] { "pdf", "png", "doc", "docx", "jpg", "jpeg" };
       private readonly IAppDbContext _context;
       private readonly IPublisher _publisher;
       private readonly ILogger _log;
       private readonly HasRequestMetadata _metadata;
+      private readonly string _serviceAccount;
 
       public Handler(
         IAppDbContext context,
         IPublisher publisher,
+        IConfiguration configuration,
         HasRequestMetadata metadata,
         ILogger log) {
         _context = context;
         _publisher = publisher;
         _log = log;
         _metadata = metadata;
+        _serviceAccount = configuration["cloud-storage-sa"];
       }
       public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
@@ -103,15 +107,14 @@ namespace api.Features {
         var errors = new List<string>(2);
 
         var wells = await _context.Wells
-          .Where(x =>  request.Wells.SelectedWells.Contains(x.Id))
+          .Where(x => request.Wells.SelectedWells.Contains(x.Id))
           .ToListAsync(cancellationToken);
 
         if (request.Wells.ConstructionDetailsFile != null || request.Wells.InjectateCharacterizationFile != null) {
-          using var stream = new FileStream("/secrets/cloud-storage-sa", FileMode.Open, FileAccess.Read);
-          var client = await StorageClient.CreateAsync(GoogleCredential.FromStream(stream));
+          var client = await StorageClient.CreateAsync(GoogleCredential.FromJson(_serviceAccount));
 
           if (request.Wells.ConstructionDetailsFile != null) {
-            var fileType = request.Wells.ConstructionDetailsFile.FileName.Split('.').Last();
+            var fileType = request.Wells.ConstructionDetailsFile.FileName.Split('.').Last().ToLower();
 
             if (_acceptableFileTypes.Contains(fileType)) {
               try {
@@ -133,11 +136,13 @@ namespace api.Features {
 
                 errors.Add(message);
               }
+            } else {
+              errors.Add($"The file type must be one of `{string.Join(", ", _acceptableFileTypes)}`");
             }
           }
 
           if (request.Wells.InjectateCharacterizationFile != null) {
-            var fileType = request.Wells.InjectateCharacterizationFile.FileName.Split('.').Last();
+            var fileType = request.Wells.InjectateCharacterizationFile.FileName.Split('.').Last().ToLower();
 
             if (_acceptableFileTypes.Contains(fileType)) {
               try {
@@ -159,6 +164,8 @@ namespace api.Features {
 
                 errors.Add(message);
               }
+            } else {
+              errors.Add($"The file type must be one of `{string.Join(", ", _acceptableFileTypes)}`");
             }
           }
         }
@@ -169,8 +176,8 @@ namespace api.Features {
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        if (errors.Count > 0){
-          throw new Exception(string.Join("\n", errors));
+        if (errors.Count > 0) {
+          throw new InvalidOperationException(string.Join("\n", errors));
         }
 
         // await _publisher.Publish(new SiteNotifications.EditNotification(site.Id), cancellationToken);

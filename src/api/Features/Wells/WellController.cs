@@ -13,12 +13,10 @@ namespace api.Features {
   [ApiController]
   public class WellController : ControllerBase {
     private readonly IMediator _mediator;
-    private readonly HasRequestMetadata _requestMetadata;
     private readonly ILogger _log;
 
-    public WellController(IMediator mediator, HasRequestMetadata requestMetadata, ILogger log) {
+    public WellController(IMediator mediator, ILogger log) {
       _mediator = mediator;
-      _requestMetadata = requestMetadata;
       _log = log;
     }
 
@@ -47,7 +45,7 @@ namespace api.Features {
     [HttpPut("api/well")]
     [Consumes("multipart/form-data")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<WellPayload>> UpdateWell([FromForm]WellDetailInput input, CancellationToken token) {
+    public async Task<ActionResult<WellPayload>> UpdateWell([FromForm] WellDetailInput input, CancellationToken token) {
       try {
         var result = await _mediator.Send(new UpdateWell.Command(input), token);
 
@@ -58,6 +56,12 @@ namespace api.Features {
           .Warning(ex, "requirements failure");
 
         return Unauthorized(new WellPayload(ex));
+      } catch (InvalidOperationException ex) {
+        _log.ForContext("endpoint", "PUT:api/well")
+          .ForContext("input", input)
+          .Fatal(ex, "unhandled exception");
+
+        return StatusCode(500, new WellPayload(ex.Message));
       } catch (Exception ex) {
         _log.ForContext("endpoint", "PUT:api/well")
           .ForContext("input", input)

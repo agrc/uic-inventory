@@ -42,6 +42,7 @@ namespace api.Features {
   public class WellPayload : ResponseContract {
     public WellPayload(UnauthorizedAccessException error) : base(error.Message) { }
     public WellPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public WellPayload(string error) : base($"UP01:{error}") { }
     public WellPayload(Well well) {
       Id = well.Id;
       WellName = well.WellName;
@@ -66,7 +67,7 @@ namespace api.Features {
     public bool WellDetailsComplete {
       get {
         if (SubClass == 5002) {
-            return !string.IsNullOrEmpty(ConstructionDetails) && !string.IsNullOrEmpty(InjectateCharacterization) && !string.IsNullOrEmpty(HydrogeologicCharacterization);
+          return !string.IsNullOrEmpty(ConstructionDetails) && !string.IsNullOrEmpty(InjectateCharacterization) && !string.IsNullOrEmpty(HydrogeologicCharacterization);
         }
 
         return !string.IsNullOrEmpty(ConstructionDetails);
@@ -116,7 +117,7 @@ namespace api.Features {
     }
   }
 
-   public static class WellDetailInputExtension {
+  public static class WellDetailInputExtension {
     public static Well Update(this WellDetailInput input, Well original) {
       if (input.ConstructionDetails != null) {
         if (input.ConstructionDetails == "null") {
