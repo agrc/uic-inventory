@@ -19,7 +19,7 @@ namespace api.Features {
       public int SiteId { get; init; }
       public int OrderNumber { get; init; }
       public int SubClass { get; init; }
-      public DateTime? CreatedOn { get; } = DateTime.Now;
+      public DateTime? CreatedOn { get; } = DateTime.UtcNow;
     }
     public class Handler : IRequestHandler<Command, Inventory> {
       private readonly IAppDbContext _context;

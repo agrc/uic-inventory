@@ -35,7 +35,7 @@ namespace api.Features {
         }
 
         var item = new Notification {
-          CreatedAt = DateTime.Now,
+          CreatedAt = DateTime.UtcNow,
           NotificationType = notification.Type,
           AdditionalData = new Dictionary<string, object> {
             { "name", $"{notification.Account.FirstName} {notification.Account.LastName}" }

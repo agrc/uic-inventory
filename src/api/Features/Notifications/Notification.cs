@@ -32,7 +32,7 @@ namespace api.Features {
   }
   public class Notification {
     public int Id { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public string? Url { get; set; }
     [Column(TypeName = "jsonb")] public Dictionary<string, object>? AdditionalData { get; set; }
     public NotificationTypes? NotificationType { get; set; }
