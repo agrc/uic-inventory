@@ -10,9 +10,15 @@ namespace api {
       => CreateHostBuilder(args).Build().Run();
     public static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
       .UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration))
-      .ConfigureAppConfiguration((_, config) => {
+      .ConfigureAppConfiguration((hostingContext, config) => {
+        var path = Path.DirectorySeparatorChar.ToString();
+
+        if (hostingContext.HostingEnvironment.EnvironmentName == "Development") {
+          path = Directory.GetCurrentDirectory();
+        }
+
         foreach (var secret in new[] { "storage", "email" }) {
-          config.AddKeyPerFile(Path.Combine(Path.DirectorySeparatorChar.ToString(), "secrets", secret), false, true);
+          config.AddKeyPerFile(Path.Combine(path, "secrets", secret), false, true);
         }
       })
       .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>().UseWebRoot("uic-inventory/dist"));
