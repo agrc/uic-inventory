@@ -35,11 +35,11 @@ jobs:
       #     project_id: ${{ secrets.PROJECT_ID }}
       #     service_account_key: ${{ secrets.SERVICE_ACCOUNT }}
 
-      - name: Setup gcloud
-        run: gcloud auth login --brief --cred-file=${{ steps.auth.outputs.credentials_file_path }}
-
       - name: Setup docker
-        run: gcloud --quiet auth configure-docker
+        run: |
+          gcloud auth login --brief --cred-file=${{ steps.auth.outputs.credentials_file_path }}
+
+          gcloud --quiet auth configure-docker
 
       - name: Build image
         run: docker build --build-arg VITE_API_KEY=${{ secrets.AGRC_API_KEY }} --file ./src/api/Api.Dockerfile --tag gcr.io/${{ secrets.PROJECT_ID }}/api .
