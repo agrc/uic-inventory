@@ -19,39 +19,37 @@ jobs:
       name: dev
 
     steps:
-      - name: Checkout project
+      - name: 🛑 Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.0
+
+      - name: ⬇️ Set up code
         uses: actions/checkout@v2
 
       - id: auth
-        name: Authenticate to Google Cloud
+        name: 🗝️ Authenticate to Google Cloud
         uses: google-github-actions/auth@v0.3.1
         with:
           create_credentials_file: true
           workload_identity_provider: projects/834965039662/locations/global/workloadIdentityPools/github-action/providers/github-provider
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
 
-      # - uses: google-github-actions/setup-gcloud@master
-      #   with:
-      #     project_id: ${{ secrets.PROJECT_ID }}
-      #     service_account_key: ${{ secrets.SERVICE_ACCOUNT }}
-
-      - name: Setup docker
+      - name: ☁️ Setup gcloud
         run: |
           gcloud auth login --brief --cred-file=${{ steps.auth.outputs.credentials_file_path }}
+          gcloud --quiet config set project ${{ secrets.PROJECT_ID }}
 
-          gcloud --quiet auth configure-docker
+      - name: 🐳 Setup docker
+        run: gcloud --quiet auth configure-docker
 
-      - name: Build image
+      - name: 📦 Build image
         run: docker build --build-arg VITE_API_KEY=${{ secrets.AGRC_API_KEY }} --file ./src/api/Api.Dockerfile --tag gcr.io/${{ secrets.PROJECT_ID }}/api .
 
-      # Push the Docker image to Google Container Registry
-      - name: Publish image
+      - name: 📤 Publish image
         run: docker push "gcr.io/${{ secrets.PROJECT_ID }}/api"
 
-      - name: Create cloud run revision
+      - name: 🚀 Create cloud run revision
         run: |-
           gcloud run deploy "$SERVICE_NAME" \
-            --project ${{ secrets.PROJECT_ID }} \
             --quiet \
             --platform "managed" \
             --region "us-central1" \
