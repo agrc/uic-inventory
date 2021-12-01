@@ -5,9 +5,6 @@ on:
     branches:
       - main
       - dev
-env:
-  IMAGE: gcr.io/${{ secrets.PROJECT_ID }}/api
-  SERVICE_NAME: uic-inventory-api
 
 jobs:
   build:
@@ -41,21 +38,16 @@ jobs:
           username: oauth2accesstoken
           password: ${{ steps.auth.outputs.access_token }}
 
-      - name: ☁️ Setup gcloud
-        run: |
-          gcloud auth login --brief --cred-file=${{ steps.auth.outputs.credentials_file_path }}
-          gcloud --quiet config set project ${{ secrets.PROJECT_ID }}
-
       - name: 📦 Build image
         run: docker build --build-arg VITE_API_KEY=${{ secrets.AGRC_API_KEY }} --file ./src/api/Api.Dockerfile --tag gcr.io/${{ secrets.PROJECT_ID }}/api .
 
       - name: 📤 Publish image
         run: docker push "gcr.io/${{ secrets.PROJECT_ID }}/api"
 
-      - name: 🚀 Create cloud run revision
-        run: |-
-          gcloud run deploy "$SERVICE_NAME" \
-            --quiet \
-            --platform "managed" \
-            --region "us-central1" \
-            --image "$IMAGE:latest"
+      - name: 🚀 Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0.6.0
+        with:
+          service: uic-inventory-api
+          image: gcr.io/${{ secrets.PROJECT_ID }}/api
+          region: us-central1
