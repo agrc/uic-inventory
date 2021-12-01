@@ -30,16 +30,20 @@ jobs:
         uses: google-github-actions/auth@v0.3.1
         with:
           create_credentials_file: true
-          workload_identity_provider: projects/834965039662/locations/global/workloadIdentityPools/github-action/providers/github-provider
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+
+      - name: 🐳 Setup docker
+        uses: docker/login-action@v1
+        with:
+          registry: gcr.io
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
 
       - name: ☁️ Setup gcloud
         run: |
           gcloud auth login --brief --cred-file=${{ steps.auth.outputs.credentials_file_path }}
           gcloud --quiet config set project ${{ secrets.PROJECT_ID }}
-
-      - name: 🐳 Setup docker
-        run: gcloud --quiet auth configure-docker
 
       - name: 📦 Build image
         run: docker build --build-arg VITE_API_KEY=${{ secrets.AGRC_API_KEY }} --file ./src/api/Api.Dockerfile --tag gcr.io/${{ secrets.PROJECT_ID }}/api .
