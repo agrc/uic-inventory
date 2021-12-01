@@ -30,15 +30,13 @@ const getCodeLevel = (code) => {
 
 const history = [];
 
-function NaicsPicker({ updateWith }) {
+export default function NaicsPicker({ updateWith }) {
   const [code, setCode] = useState(undefined);
   const [codes, isPreviousData] = useNaicsCodes(code);
+  const [selectedItem, setSelectedItem] = useState(undefined);
 
   let classes =
-    'flex items-center justify-center p-4 text-center border border-gray-200 rounded-md h-32 hover:border-blue-800 hover:border-2 overflow-hidden overflow-ellipsis disabled:cursor-wait disabled:filter disabled:blur-xs';
-  classes = clsx(classes, {
-    'cursor-pointer': code?.toString().length !== 6,
-  });
+    'flex items-center justify-center p-4 text-center border border-gray-200 rounded-md h-32 cursor-pointer hover:border-blue-800 hover:border-2 overflow-hidden overflow-ellipsis disabled:cursor-wait disabled:filter disabled:blur-xs';
 
   const back = () => {
     history.pop();
@@ -63,6 +61,7 @@ function NaicsPicker({ updateWith }) {
 
     updateWith(item);
     setCode(item.code);
+    setSelectedItem(`${item.code}${item.value}`);
   };
 
   return (
@@ -110,7 +109,7 @@ function NaicsPicker({ updateWith }) {
         {codes?.map((item) => (
           <button
             key={item.code + item.value}
-            className={classes}
+            className={clsx(classes, { 'bg-blue-100 border-blue-500': item.code + item.value === selectedItem })}
             disabled={isPreviousData}
             onClick={() => select(item)}
           >
@@ -121,5 +120,3 @@ function NaicsPicker({ updateWith }) {
     </>
   );
 }
-
-export default NaicsPicker;
