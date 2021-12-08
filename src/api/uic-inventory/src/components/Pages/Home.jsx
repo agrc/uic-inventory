@@ -2,7 +2,7 @@ import { Fragment, useContext, useMemo, useRef } from 'react';
 import { List } from 'react-content-loader';
 import clsx from 'clsx';
 import { Dialog, Transition } from '@headlessui/react';
-import { useSortBy, useTable } from 'react-table';
+import { useExpanded, useSortBy, useTable } from 'react-table';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ky from 'ky';
 import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
@@ -11,6 +11,7 @@ import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import { AuthContext } from '../../AuthProvider';
 import { Chrome, Header, Link, onRequestError, toast, Tooltip } from '../PageElements';
 import { useOpenClosed } from '../Hooks/useOpenClosedHook';
+import { wellTypes } from '../../data/lookups';
 
 export function SitesAndInventory({ completeProfile }) {
   const { authInfo } = useContext(AuthContext);
@@ -106,20 +107,29 @@ function SiteList({ show, status, data }) {
 function SiteTable({ data }) {
   const [isOpen, { open, close }] = useOpenClosed();
   const deleteSite = useRef();
+  const [source, target] = useSingleton();
+
   const columns = useMemo(
     () => [
       {
         Header: 'Id',
         accessor: 'id',
+        SubCell: ({ row }) => (
+          <div className="flex items-center content-center justify-between h-full">
+            <div className="w-3 h-full mr-2 bg-gray-200 border-r border-gray-500"></div>
+          </div>
+        ),
       },
       {
         Header: 'Name',
         accessor: 'name',
+        SubCell: ({ row }) => row.original.orderNumber,
       },
       {
         id: 'type',
         Header: 'Type',
         accessor: 'naicsTitle',
+        SubCell: ({ row }) => wellTypes.find((item) => item.value === row.original.subClass).label,
       },
       {
         id: 'status',
@@ -169,6 +179,7 @@ function SiteTable({ data }) {
             </div>
           );
         },
+        SubCell: ({ row }) => <></>,
       },
       {
         Header: '',
@@ -185,13 +196,17 @@ function SiteTable({ data }) {
             />
           );
         },
+        SubCell: ({ row }) => <></>,
       },
     ],
-    [open]
+    [open, target]
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data }, useSortBy);
-  const [source, target] = useSingleton();
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, visibleColumns } = useTable(
+    { columns, data },
+    useSortBy,
+    useExpanded
+  );
 
   const queryClient = useQueryClient();
   const { mutate } = useMutation((siteId) => ky.delete(`/api/site`, { json: { siteId } }), {
@@ -306,7 +321,7 @@ function SiteTable({ data }) {
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
             <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
-              <table {...getTableProps()} className="min-w-full divide-y divide-gray-200">
+              <table {...getTableProps()} className="h-full min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   {headerGroups.map((headerGroup) => (
                     <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
@@ -332,25 +347,32 @@ function SiteTable({ data }) {
                 <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
                   {rows.map((row) => {
                     prepareRow(row);
+                    const rowProps = row.getRowProps();
+                    const expandProps = row.getToggleRowExpandedProps();
 
                     return (
-                      <tr key={`${row.index}`} {...row.getRowProps()}>
-                        {row.cells.map((cell) => (
-                          <td
-                            key={`${row.index}-${cell.column.id}`}
-                            className={clsx(
-                              {
-                                'font-medium': ['action', 'id'].includes(cell.column.id),
-                                'text-right whitespace-nowrap': cell.column.id === 'action',
-                              },
-                              'px-3 py-4'
-                            )}
-                            {...cell.getCellProps()}
-                          >
-                            <div className="text-sm text-gray-900">{cell.render('Cell')}</div>
-                          </td>
-                        ))}
-                      </tr>
+                      <Fragment key={rowProps.key}>
+                        <tr {...rowProps} {...expandProps}>
+                          {row.cells.map((cell) => (
+                            <td
+                              key={`${row.index}-${cell.column.id}`}
+                              className={clsx(
+                                {
+                                  'font-medium': ['action', 'id'].includes(cell.column.id),
+                                  'text-right whitespace-nowrap': cell.column.id === 'action',
+                                },
+                                'px-3 py-4'
+                              )}
+                              {...cell.getCellProps()}
+                            >
+                              <div className="text-sm text-gray-900">{cell.render('Cell')}</div>
+                            </td>
+                          ))}
+                        </tr>
+                        {row.isExpanded && (
+                          <WellInventorySubTable row={row} rowProps={rowProps} visibleColumns={visibleColumns} />
+                        )}
+                      </Fragment>
                     );
                   })}
                 </tbody>
@@ -361,4 +383,73 @@ function SiteTable({ data }) {
       </div>
     </>
   );
+}
+
+function SubRows({ row, rowProps, visibleColumns, data, status }) {
+  if (status === 'loading') {
+    return (
+      <tr>
+        <td />
+        <td colSpan={visibleColumns.length - 1}>Loading...</td>
+      </tr>
+    );
+  } else if (status === 'error') {
+    return (
+      <tr>
+        <td />
+        <td colSpan={visibleColumns.length - 1}>There was a problem finding the inventories for this site</td>
+      </tr>
+    );
+  }
+
+  if (data?.inventories.length < 1) {
+    return (
+      <tr>
+        <td />
+        <td colSpan={visibleColumns.length - 1}>No inventories have been created for this site.</td>
+      </tr>
+    );
+  }
+
+  return (
+    <>
+      {data?.inventories.map((x, i) => {
+        return (
+          <tr {...rowProps} key={`${rowProps.key}-expanded-${i}`}>
+            {row.cells.map((cell) => {
+              console.log(cell.column.id);
+              return (
+                <td
+                  className={clsx('text-sm text-gray-900', {
+                    'px-3 py-1 ': cell.column.id !== 'id',
+                  })}
+                  key={`${row.index}-expanded-${cell.column.id}`}
+                  {...cell.getCellProps()}
+                >
+                  {cell.render(cell.column.SubCell ? 'SubCell' : 'Cell', {
+                    value: cell.column.accessor && cell.column.accessor(x, i),
+                    row: { ...row, original: x },
+                  })}
+                </td>
+              );
+            })}
+          </tr>
+        );
+      })}
+    </>
+  );
+}
+
+function WellInventorySubTable({ row, rowProps, visibleColumns }) {
+  const { authInfo } = useContext(AuthContext);
+  const wellQuery = useQuery(
+    ['well', row.original.id],
+    () => ky.get(`/api/site/${row.original.id}/inventories`).json(),
+    {
+      enabled: authInfo?.id ? true : false,
+      onError: (error) => onRequestError(error, 'We had trouble fetching the inventories for this site.'),
+    }
+  );
+
+  return <SubRows row={row} rowProps={rowProps} visibleColumns={visibleColumns} {...wellQuery} />;
 }
