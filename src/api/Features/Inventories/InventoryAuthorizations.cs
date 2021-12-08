@@ -4,15 +4,19 @@ using MediatR.Behaviors.Authorization;
 using Microsoft.AspNetCore.Http;
 
 namespace api.Features {
-  // public class GetInventorysAuthorizer : AbstractRequestAuthorizer<GetSites.Query> {
-  //   private readonly IHttpContextAccessor _context;
+  public class GetInventoriesBySiteAuthorizer : AbstractRequestAuthorizer<GetInventoriesBySite.Query> {
+    private readonly IHttpContextAccessor _context;
 
-  //   public GetInventorysAuthorizer(IHttpContextAccessor context) {
-  //     _context = context;
-  //   }
-  //   public override void BuildPolicy(GetSites.Query request) =>
-  //     UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-  // }
+    public GetInventoriesBySiteAuthorizer(IHttpContextAccessor context) {
+      _context = context;
+    }
+
+    public override void BuildPolicy(GetInventoriesBySite.Query request) {
+      UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+      UseRequirement(new MustHaveCompleteProfile());
+      UseRequirement(new MustOwnSite(request.SiteId));
+    }
+  }
 
   public class GetInventoryByIdAuthorizer : AbstractRequestAuthorizer<GetInventoryById.Query> {
     private readonly IHttpContextAccessor _context;
