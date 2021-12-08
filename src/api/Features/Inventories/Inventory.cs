@@ -37,6 +37,20 @@ namespace api.Features {
     public IReadOnlyCollection<WellPayload> Wells { get; set; } = Array.Empty<WellPayload>();
   }
 
+  public class InventoriesForSitePayload : ResponseContract {
+    public InventoriesForSitePayload(UnauthorizedAccessException error) : base(error.Message) { }
+    public InventoriesForSitePayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public InventoriesForSitePayload(string error) : base($"SI01:{error}") { }
+    public InventoriesForSitePayload(IEnumerable<Inventory> inventories, Site site) {
+      Inventories = new List<InventoryPayload>();
+
+      foreach (var item in inventories) {
+        Inventories.Add(new InventoryPayload(item, site));
+      }
+    }
+
+    public IList<InventoryPayload> Inventories { get; } = Array.Empty<InventoryPayload>();
+  }
   public class InventoryInput {
     public int SiteId { get; set; }
     public int AccountId { get; set; }

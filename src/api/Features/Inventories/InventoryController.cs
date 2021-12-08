@@ -22,6 +22,26 @@ namespace api.Features {
       _log = log;
     }
 
+    [HttpGet("/api/site/{siteId:min(1)}/inventories")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<InventoriesForSitePayload>> GetInventory(int siteId, CancellationToken token) {
+      try {
+        var result = await _mediator.Send(new GetInventoriesBySite.Query(siteId), token);
+
+        return Ok(new InventoriesForSitePayload(result, _requestMetadata.Site));
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", $"api/site/{siteId}/inventories")
+          .Warning(ex, "requirements failure");
+
+        return Unauthorized(new InventoriesForSitePayload(ex));
+      } catch (Exception ex) {
+        _log.ForContext("endpoint", $"api/site/{siteId}/inventories")
+          .Fatal(ex, "unhandled exception");
+
+        return StatusCode(500, new InventoriesForSitePayload(ex));
+      }
+    }
+
     [HttpGet("/api/site/{siteId:min(1)}/inventory/{inventoryId:min(-1)}")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<InventoryPayload>> GetInventoryById(int siteId, int inventoryId, CancellationToken token) {
