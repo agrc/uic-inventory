@@ -123,7 +123,7 @@ function SiteTable({ data }) {
       {
         Header: 'Name',
         accessor: 'name',
-        SubCell: ({ row }) => row.original.orderNumber,
+        SubCell: ({ row }) => wellTypes.find((item) => item.value === row.original.subClass).label,
       },
       {
         id: 'type',
