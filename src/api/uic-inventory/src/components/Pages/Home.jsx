@@ -215,7 +215,8 @@ function SiteTable({ data }) {
             <TrashIcon
               aria-label="delete site"
               className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
-              onClick={() => {
+              onClick={(event) => {
+                event.stopPropagation();
                 open();
                 deleteSite.current = data.row.original.id;
               }}
