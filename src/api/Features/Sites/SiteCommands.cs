@@ -120,6 +120,8 @@ namespace api.Features {
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
         var connectedSite = await _context.Sites
           .Include(s => s.Contacts)
+          .Include(i => i.Inventories)
+          .Include(w => w.Wells)
           .FirstAsync(s => s.Id == request.SiteId, cancellationToken);
 
         _context.Sites.Remove(connectedSite);
