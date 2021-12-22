@@ -260,6 +260,7 @@ function SiteTable({ data }) {
 
   return data?.length < 1 ? (
     <div className="flex flex-col items-center">
+      <Tippy singleton={source} delay={25} render={(attrs, content) => <Tooltip {...attrs}>{content}</Tooltip>} />
       <div className="px-5 py-4 m-6 border rounded-lg shadow-sm bg-gray-50">
         <h2 className="mb-1 text-xl font-medium">Create your first site</h2>
         <p className="text-gray-700">Get started by clicking the button below to start creating your first site.</p>
