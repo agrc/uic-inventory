@@ -74,14 +74,29 @@ export function GenericLandingPage() {
   );
 }
 
-function SiteCreationButton({ access, className = 'm-4 text-2xl' }) {
+function CreationButton({ access, url = '/site/create', label = 'Create item', className = 'm-4 text-2xl' }) {
   return (
-    <Link to="/site/create" type="button" meta="default" disabled={access} className={className}>
+    <Link to={url} type="button" meta="default" disabled={access} className={className}>
       <div className="flex">
         <PlusIcon className="self-center w-5 h-5 mr-2" />
-        <span>Create site</span>
+        <span>{label}</span>
       </div>
     </Link>
+  );
+}
+
+function SiteCreationButton({ access, className = 'm-4 text-2xl' }) {
+  return <CreationButton url="/site/create" label="Create site" access={access} className={className} />;
+}
+
+function InventoryCreationButton({ site, access, className = 'm-4 text-2xl' }) {
+  return (
+    <CreationButton
+      url={`/site/${site}/inventory/create`}
+      label="Create inventory"
+      access={access}
+      className={className}
+    />
   );
 }
 
@@ -117,9 +132,9 @@ function SiteTable({ data }) {
           return (
             <div className="flex justify-between">
               {row.isExpanded ? (
-                <ChevronDownIcon className="w-4 h-4 -ml-2" />
+                <ChevronDownIcon className="inline w-4 h-4 -ml-2" />
               ) : (
-                <ChevronRightIcon className="w-4 h-4 -ml-2" />
+                <ChevronRightIcon className="inline w-4 h-4 -ml-2" />
               )}
               {row.original.id}
             </div>
@@ -417,7 +432,20 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
     return (
       <tr>
         <td />
-        <td colSpan={visibleColumns.length - 1}>No inventories have been created for this site.</td>
+        <td colSpan={visibleColumns.length - 1}>
+          <div className="flex flex-col items-center">
+            <div className="px-5 py-4 m-6 border rounded-lg shadow-sm bg-gray-50">
+              <h2 className="mb-1 text-xl font-medium">Create your first inventory</h2>
+              <p className="text-gray-700">
+                Get started by clicking the button below to start creating your first inventory.
+              </p>
+              <div className="mb-6 text-sm text-center text-gray-900"></div>
+              <div className="flex justify-center">
+                <InventoryCreationButton site={row.original.id} className="m-0" />
+              </div>
+            </div>
+          </div>
+        </td>
       </tr>
     );
   }
@@ -428,11 +456,10 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
         return (
           <tr {...rowProps} key={`${rowProps.key}-expanded-${i}`}>
             {row.cells.map((cell) => {
-              console.log(cell.column.id);
               return (
                 <td
                   className={clsx('text-sm text-gray-900', {
-                    'px-3 py-1 ': cell.column.id !== 'id',
+                    'px-3 py-1 ': cell.column.id.toLowerCase() !== 'id',
                   })}
                   key={`${row.index}-expanded-${cell.column.id}`}
                   {...cell.getCellProps()}
@@ -447,6 +474,13 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
           </tr>
         );
       })}
+      <tr>
+        <td colSpan={visibleColumns.length - 1}>
+          <div className="flex justify-center">
+            <InventoryCreationButton site={row.original.id} className="my-4" />
+          </div>
+        </td>
+      </tr>
     </>
   );
 }
