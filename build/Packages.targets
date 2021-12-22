@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <!-- Proxy -->
-    <PackageReference Update="Microsoft.AspNetCore.SpaProxy" Version="6.0.0" />
+    <PackageReference Update="Microsoft.AspNetCore.SpaProxy" Version="6.0.1" />
 
     <!-- Mediatr -->
     <PackageReference Update="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
@@ -10,15 +10,15 @@
 
     <!-- Authentication -->
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
-    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.0" />
-    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="6.0.0" />
-    <PackageReference Update="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.0" />
+    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.1" />
+    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="6.0.1" />
+    <PackageReference Update="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.1" />
 
     <!-- Database -->
     <PackageReference Update="Dapper" Version="2.0.123" />
-    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="6.0.0" />
-    <PackageReference Update="EFCORE.NamingConventions" Version="6.0.0-rc.1" />
+    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.1" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="6.0.1" />
+    <PackageReference Update="EFCORE.NamingConventions" Version="6.0.0" />
 
     <!-- Logging -->
     <PackageReference Update="Serilog" Version="2.10.0" />
@@ -34,7 +34,7 @@
     <PackageReference Update="Google.Cloud.Storage.V1" Version="3.6.0" />
 
     <!-- Email -->
-    <PackageReference Update="SendGrid" Version="9.25.0" />
+    <PackageReference Update="SendGrid" Version="9.25.1" />
   </ItemGroup>
 
 </Project>
