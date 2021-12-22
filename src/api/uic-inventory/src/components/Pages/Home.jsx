@@ -5,7 +5,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useExpanded, useSortBy, useTable } from 'react-table';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ky from 'ky';
-import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
+import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
 import { DocumentTextIcon, LocationMarkerIcon, PlusIcon, UsersIcon, XIcon, CheckIcon } from '@heroicons/react/solid';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import { AuthContext } from '../../AuthProvider';
@@ -113,10 +113,21 @@ function SiteTable({ data }) {
     () => [
       {
         Header: 'Id',
-        accessor: 'id',
-        SubCell: ({ row }) => (
+        Cell: function id({ row }) {
+          return (
+            <div className="flex justify-between">
+              {row.isExpanded ? (
+                <ChevronDownIcon className="w-4 h-4 -ml-2" />
+              ) : (
+                <ChevronRightIcon className="w-4 h-4 -ml-2" />
+              )}
+              {row.original.id}
+            </div>
+          );
+        },
+        SubCell: () => (
           <div className="flex items-center content-center justify-between h-full">
-            <div className="w-3 h-full mr-2 bg-gray-200 border-r border-gray-500"></div>
+            <div className="w-full h-full mr-2 bg-gray-200 border-r border-gray-500"></div>
           </div>
         ),
       },
