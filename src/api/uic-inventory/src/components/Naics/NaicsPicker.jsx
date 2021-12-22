@@ -36,7 +36,7 @@ export default function NaicsPicker({ updateWith }) {
   const [selectedItem, setSelectedItem] = useState(undefined);
 
   let classes =
-    'flex items-center justify-center p-4 text-center border border-gray-200 rounded-md h-32 cursor-pointer hover:border-blue-800 hover:border-2 overflow-hidden overflow-ellipsis disabled:cursor-wait disabled:filter disabled:blur-xs';
+    'flex items-center justify-center p-4 text-center border border-gray-200 rounded-md h-32 cursor-pointer hover:border-blue-800 hover:border-2 overflow-hidden text-ellipsis disabled:cursor-wait disabled:filter disabled:blur-xs';
 
   const back = () => {
     history.pop();
@@ -88,7 +88,7 @@ export default function NaicsPicker({ updateWith }) {
               <span
                 className={clsx(
                   'relative inline-flex items-center px-4 py-2 text-sm font-medium bg-white border border-gray-300 hover:bg-gray-50',
-                  code?.toString().length === 6 ? 'text-green-500 font-semibold' : 'text-gray-700'
+                  code?.toString().length === 6 ? 'text-emerald-500 font-semibold' : 'text-gray-700'
                 )}
               >
                 {getCodeLevel(code)}
@@ -96,7 +96,7 @@ export default function NaicsPicker({ updateWith }) {
               <span
                 className={clsx(
                   'relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50',
-                  code?.toString().length === 6 ? 'text-green-500 font-semibold' : 'text-gray-700'
+                  code?.toString().length === 6 ? 'text-emerald-500 font-semibold' : 'text-gray-700'
                 )}
               >
                 {code || '?'}

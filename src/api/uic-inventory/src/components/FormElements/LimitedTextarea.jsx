@@ -12,7 +12,7 @@ export const LimitedTextarea = ({ rows, placeholder, value, maxLength, field, er
   const { limit, remaining } = useMaxLength({ value: field.value, limit: maxLength });
 
   return (
-    <div className="relative flex flex-grow">
+    <div className="relative flex grow">
       <textarea
         disabled={disabled}
         id={field.name}
@@ -88,7 +88,7 @@ export const DropzoneMessaging = ({ isDragActive, files = [], reset = () => {} }
     return (
       <div className="">
         <div className="flex flex-row">
-          <CheckIcon className="w-8 h-8 mx-2 text-green-500" />
+          <CheckIcon className="w-8 h-8 mx-2 text-emerald-500" />
           <span className="self-center overflow-hidden lowercase truncate whitespace-nowrap">{files[0].name}</span>
         </div>
         <button type="button" meta="default" className="w-full mt-4" onClick={reset}>
@@ -113,7 +113,7 @@ export const CharactersRemaining = ({ remaining, limit }) => {
     <span
       className={clsx('absolute bottom-0 text-xs right-3', {
         'text-gray-500': percentage >= 0 && percentage < 0.8,
-        'text-yellow-600': percentage >= 0.8 && percentage < 0.9,
+        'text-amber-600': percentage >= 0.8 && percentage < 0.9,
         'text-red-600': percentage >= 0.9,
       })}
     >
@@ -179,7 +179,7 @@ export const LimitedDropzone = ({ textarea, forms }) => {
           hidden: remaining < limit,
         })}
       >
-        <div className={clsx('flex flex-col justify-around flex-grow px-2')}>
+        <div className={clsx('flex flex-col justify-around grow px-2')}>
           <input
             {...(files.length > 0 ? forms.field : {})}
             {...getInputProps({

@@ -153,7 +153,7 @@ function CreateOrEditInventory() {
                                     </div>
                                   </div>
                                   {checked && (
-                                    <div className="flex-shrink-0 ">
+                                    <div className="shrink-0 ">
                                       <CheckIcon className="w-6 h-6 text-blue-300" />
                                     </div>
                                   )}

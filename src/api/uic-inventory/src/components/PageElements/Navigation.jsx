@@ -57,7 +57,7 @@ function Navigation() {
             <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-16">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <img className="hidden w-auto h-12 sm:block" src="/logo-alternate.svg" alt="Workflow" />
                     <img className="w-auto h-12 sm:hidden" src="/logo.svg" alt="Workflow" />
                   </div>
@@ -83,11 +83,11 @@ function Navigation() {
                                   show={open}
                                   as={Fragment}
                                   enter="transition ease-out duration-100"
-                                  enterFrom="transform opacity-0 scale-95"
-                                  enterTo="transform opacity-100 scale-100"
+                                  enterFrom="opacity-0 scale-95"
+                                  enterTo="opacity-100 scale-100"
                                   leave="transition ease-in duration-75"
-                                  leaveFrom="transform opacity-100 scale-100"
-                                  leaveTo="transform opacity-0 scale-95"
+                                  leaveFrom="opacity-100 scale-100"
+                                  leaveTo="opacity-0 scale-95"
                                 >
                                   <Popover.Panel
                                     static
@@ -121,11 +121,11 @@ function Navigation() {
                                 show={open}
                                 as={Fragment}
                                 enter="transition ease-out duration-100"
-                                enterFrom="transform opacity-0 scale-95"
-                                enterTo="transform opacity-100 scale-100"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
                                 leave="transition ease-in duration-75"
-                                leaveFrom="transform opacity-100 scale-100"
-                                leaveTo="transform opacity-0 scale-95"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
                               >
                                 <Menu.Items
                                   static
@@ -197,7 +197,7 @@ function Navigation() {
                 <div className="pt-4 pb-3 border-t border-gray-700">
                   <Popover>
                     <div className="flex items-center px-5">
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         <p className="w-10 h-10 text-3xl font-black tracking-tighter text-gray-300 uppercase rounded-full">
                           {`${data?.firstName[0]}${data?.lastName[0]}`}
                         </p>
@@ -208,7 +208,7 @@ function Navigation() {
                         </div>
                         <div className="text-sm font-medium leading-none text-gray-400">{data?.email}</div>
                       </div>
-                      <div className="flex-shrink-0 p-1 ml-auto text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                      <div className="shrink-0 p-1 ml-auto text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                         {receiveNotifications() ? (
                           <Popover.Button>
                             <NotificationBell items={data?.notifications} status={status} error={error} />
@@ -254,7 +254,7 @@ function NotificationBell({ status, error, items }) {
       <span className="sr-only">View notifications</span>
       <BellIcon
         className={clsx('w-6 h-6', {
-          'text-yellow-400': status !== 'loading' && !error && items?.filter((x) => !x.read).length > 0,
+          'text-amber-400': status !== 'loading' && !error && items?.filter((x) => !x.read).length > 0,
           'text-gray-300': status === 'loading',
           'text-red-400': error,
         })}

@@ -42,7 +42,7 @@ export const CloseIcon = ({ classes }) => (
 export const OkNotToggle = ({ status, classes }) => {
   const classNames = clsx(classes, 'fill-current', {
     'text-red-500 ': !status,
-    'text-green-500': status,
+    'text-emerald-500': status,
   });
 
   return status ? <CheckIcon classes={classNames} /> : <CloseIcon classes={classNames} />;

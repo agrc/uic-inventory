@@ -129,7 +129,7 @@ function SiteTable({ data }) {
         id: 'type',
         Header: 'Type',
         accessor: 'naicsTitle',
-        SubCell: ({ row }) => wellTypes.find((item) => item.value === row.original.subClass).label,
+        SubCell: <></>,
       },
       {
         id: 'status',
@@ -144,7 +144,7 @@ function SiteTable({ data }) {
                 >
                   <DocumentTextIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site details" />
                   {data.row.original.detailStatus ? (
-                    <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
+                    <CheckIcon className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3" />
                   ) : (
                     <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
                   )}
@@ -157,7 +157,7 @@ function SiteTable({ data }) {
                 >
                   <UsersIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site contacts" />
                   {data.row.original.contactStatus ? (
-                    <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
+                    <CheckIcon className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3" />
                   ) : (
                     <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
                   )}
@@ -170,7 +170,7 @@ function SiteTable({ data }) {
                 >
                   <LocationMarkerIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site location" />
                   {data.row.original.locationStatus ? (
-                    <CheckIcon className="absolute w-6 h-6 m-auto text-green-500 stroke-current bottom-3" />
+                    <CheckIcon className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3" />
                   ) : (
                     <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
                   )}
@@ -443,7 +443,7 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
 function WellInventorySubTable({ row, rowProps, visibleColumns }) {
   const { authInfo } = useContext(AuthContext);
   const wellQuery = useQuery(
-    ['well', row.original.id],
+    ['site-inventories', row.original.id],
     () => ky.get(`/api/site/${row.original.id}/inventories`).json(),
     {
       enabled: authInfo?.id ? true : false,

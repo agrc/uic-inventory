@@ -211,7 +211,7 @@ export function Profile() {
                                 'translate-x-8 border-indigo-700 bg-gray-100': value,
                                 'translate-x-1 border-gray-400 bg-white': !value,
                               },
-                              'inline-block w-7 h-7 transform border-2 border-gray-400 rounded-full transition-transform'
+                              'inline-block w-7 h-7 border-2 border-gray-400 rounded-full transform transition-transform'
                             )}
                           />
                         </Switch>
