@@ -8,7 +8,7 @@ using Serilog;
 namespace api.Features {
   public static class CreateInventory {
     public class Command : IRequest<Inventory> {
-      public Command(InventoryInput input) {
+      public Command(InventoryCreationInput input) {
         AccountId = input.AccountId;
         SiteId = input.SiteId;
         SubClass = input.SubClass;

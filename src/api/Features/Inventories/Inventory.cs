@@ -54,7 +54,13 @@ namespace api.Features {
   public class InventoryInput {
     public int SiteId { get; set; }
     public int AccountId { get; set; }
+  }
+  public class InventoryCreationInput : InventoryInput {
+
     public int SubClass { get; set; }
     public int OrderNumber { get; set; }
+  }
+  public class InventoryDeletionInput : InventoryInput {
+    public int InventoryId { get; set; }
   }
 }

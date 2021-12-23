@@ -64,7 +64,7 @@ namespace api.Features {
 
     [HttpPost("/api/inventory")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<InventoryPayload>> CreateInventory(InventoryInput input, CancellationToken token) {
+    public async Task<ActionResult<InventoryPayload>> CreateInventory(InventoryCreationInput input, CancellationToken token) {
       try {
         var result = await _mediator.Send(new CreateInventory.Command(input), token);
 
