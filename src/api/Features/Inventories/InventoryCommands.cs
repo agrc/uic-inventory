@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Features {
