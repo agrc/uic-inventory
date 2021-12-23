@@ -61,17 +61,17 @@ namespace api.Features {
   //   }
   // }
 
-  // public class DeleteInventoryAuthorizer : AbstractRequestAuthorizer<DeleteInventory.Command> {
-  //   private readonly IHttpContextAccessor _context;
+  public class DeleteInventoryAuthorizer : AbstractRequestAuthorizer<DeleteInventory.Command> {
+    private readonly IHttpContextAccessor _context;
 
-  //   public DeleteInventoryAuthorizer(IHttpContextAccessor context) {
-  //     _context = context;
-  //   }
-  //   public override void BuildPolicy(DeleteInventory.Command request) {
-  //     UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-  //     UseRequirement(new MustOwnSite(request.SiteId));
-  //     UseRequirement(new MustHaveCompleteProfile());
-  //     UseRequirement(new MustHaveEditableSiteStatus());
-  //   }
-  // }
+    public DeleteInventoryAuthorizer(IHttpContextAccessor context) {
+      _context = context;
+    }
+    public override void BuildPolicy(DeleteInventory.Command request) {
+      UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+      UseRequirement(new MustOwnSite(request.SiteId));
+      UseRequirement(new MustHaveCompleteProfile());
+      UseRequirement(new MustHaveEditableSiteStatus());
+    }
+  }
 }

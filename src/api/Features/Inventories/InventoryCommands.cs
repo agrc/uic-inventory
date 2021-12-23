@@ -55,4 +55,41 @@ namespace api.Features {
       }
     }
   }
+
+  public static class DeleteInventory {
+    public class Command : IRequest {
+      public Command(InventoryDeletionInput input) {
+        AccountId = input.AccountId;
+        SiteId = input.SiteId;
+        InventoryId = input.InventoryId;
+      }
+
+      public int AccountId { get; set; }
+      public int SiteId { get; set; }
+      public int InventoryId { get; set; }
+    }
+
+    public class Handler : IRequestHandler<Command> {
+      private readonly IAppDbContext _context;
+      private readonly ILogger _log;
+
+      public Handler(IAppDbContext context, ILogger log) {
+        _context = context;
+        _log = log;
+      }
+      async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+        var inventory = await _context.Inventories
+          .Include(w => w.Wells)
+          .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
+
+        _context.Inventories.Remove(inventory);
+
+        //! TODO: create requirement that inventory cannot be deleted when authorized status
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Unit.Value;
+      }
+    }
+  }
 }

@@ -83,5 +83,27 @@ namespace api.Features {
         return StatusCode(500, new InventoryPayload(ex));
       }
     }
+
+    [HttpDelete("/api/inventory")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<InventoryPayload>> DeleteInventoryAsync(InventoryDeletionInput input, CancellationToken token) {
+      try {
+        var result = await _mediator.Send(new DeleteInventory.Command(input), token);
+
+        return Accepted();
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "DELETE:api/inventory")
+          .ForContext("input", input)
+          .Warning(ex, "requirements failure");
+
+        return Unauthorized(new InventoryPayload(ex));
+      } catch (Exception ex) {
+        _log.ForContext("endpoint", "DELETE:api/inventory")
+          .ForContext("input", input)
+          .Fatal(ex, "unhandled exception");
+
+        return StatusCode(500, new InventoryPayload(ex));
+      }
+    }
   }
 }
