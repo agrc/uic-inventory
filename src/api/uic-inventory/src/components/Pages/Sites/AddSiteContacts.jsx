@@ -293,6 +293,15 @@ function AddSiteContacts() {
   );
 }
 
+function Address({ mailingAddress, city, state, zipCode }) {
+  return (
+    <>
+      <div>{mailingAddress}</div>
+      <div>{city && `${city}, ${state} ${zipCode}`} </div>
+    </>
+  );
+}
+
 function ContactTable({ data }) {
   const { siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
@@ -363,13 +372,8 @@ function ContactTable({ data }) {
       {
         id: 'address',
         Header: 'Address',
-        Cell: function contact(data) {
-          return (
-            <>
-              <div>{data.row.original.mailingAddress}</div>
-              <div>{`${data.row.original.city}, ${data.row.original.state} ${data.row.original.zipCode}`} </div>
-            </>
-          );
+        Cell: function contact({ row }) {
+          return <Address {...row.original} />;
         },
       },
       {
