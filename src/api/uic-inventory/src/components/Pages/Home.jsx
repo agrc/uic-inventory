@@ -1,7 +1,7 @@
 import { Fragment, useContext, useMemo, useRef } from 'react';
 import { List } from 'react-content-loader';
 import clsx from 'clsx';
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog } from '@headlessui/react';
 import { useExpanded, useSortBy, useTable } from 'react-table';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ky from 'ky';
@@ -9,7 +9,7 @@ import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@he
 import { DocumentTextIcon, LocationMarkerIcon, PlusIcon, UsersIcon, XIcon, CheckIcon } from '@heroicons/react/solid';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import { AuthContext } from '../../AuthProvider';
-import { Chrome, Header, Link, onRequestError, toast, Tooltip } from '../PageElements';
+import { ConfirmationModal, Chrome, Header, Link, onRequestError, toast, Tooltip } from '../PageElements';
 import { useOpenClosed } from '../Hooks/useOpenClosedHook';
 import { wellTypes } from '../../data/lookups';
 
@@ -120,8 +120,10 @@ function SiteList({ show, status, data }) {
 }
 
 function SiteTable({ data }) {
-  const [isOpen, { open, close }] = useOpenClosed();
+  const [isSiteModalOpen, { open: openSiteModal, close: closeSiteModal }] = useOpenClosed();
+  const [isInventoryModalOpen, { open: openInventoryModal, close: closeInventoryModal }] = useOpenClosed();
   const deleteSite = useRef();
+  const deleteInventory = useRef();
   const [source, target] = useSingleton();
 
   const columns = useMemo(
@@ -205,28 +207,56 @@ function SiteTable({ data }) {
             </div>
           );
         },
-        SubCell: ({ row }) => <></>,
+        SubCell: ({ row }) => {
+          let url = `/site/${row.original.site.id}/inventory/${row.original.id}/add-wells`;
+          if (row.original.subClass === 5002) {
+            url = `/site/${row.original.site.id}/inventory/${row.original.id}/regulatory-contact`;
+          }
+
+          return (
+            <Link to={url} className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800">
+              View
+            </Link>
+          );
+        },
       },
       {
         Header: '',
         id: 'action',
-        Cell: function action(data) {
+        Cell: function action({ row }) {
           return (
             <TrashIcon
               aria-label="delete site"
               className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
               onClick={(event) => {
                 event.stopPropagation();
-                open();
-                deleteSite.current = data.row.original.id;
+
+                deleteSite.current = row.original.id;
+
+                openSiteModal();
               }}
             />
           );
         },
-        SubCell: ({ row }) => <></>,
+        SubCell: function action({ row }) {
+          return (
+            <TrashIcon
+              aria-label="delete inventory"
+              className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
+              onClick={(event) => {
+                event.stopPropagation();
+
+                deleteSite.current = row.original.site.id;
+                deleteInventory.current = row.original.id;
+
+                openInventoryModal();
+              }}
+            />
+          );
+        },
       },
     ],
-    [open, target]
+    [openSiteModal, openInventoryModal, target]
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, visibleColumns } = useTable(
@@ -242,7 +272,7 @@ function SiteTable({ data }) {
       const previousValue = queryClient.getQueryData('sites');
 
       queryClient.setQueryData('sites', (old) => old.filter((x) => x.id !== id));
-      close();
+      closeSiteModal();
 
       return previousValue;
     },
@@ -252,11 +282,39 @@ function SiteTable({ data }) {
     onSettled: () => {
       queryClient.invalidateQueries('sites');
     },
-    onError: (error, variables, previousValue) => {
+    onError: (error, _, previousValue) => {
       queryClient.setQueryData('sites', previousValue);
       onRequestError(error, 'We had some trouble deleting this site.');
     },
   });
+
+  const { mutate: mutateInventory } = useMutation(
+    ({ siteId, inventoryId }) => ky.delete(`/api/inventory`, { json: { siteId, inventoryId } }),
+    {
+      onMutate: async ({ siteId, inventoryId }) => {
+        closeInventoryModal();
+
+        await queryClient.cancelQueries(['site-inventories', siteId]);
+        const previousValue = queryClient.getQueryData(['site-inventories', siteId]);
+
+        queryClient.setQueryData(['site-inventories', siteId], (old) => {
+          return {
+            ...old,
+            inventories: old.inventories.filter((x) => x.id !== inventoryId),
+          };
+        });
+
+        return previousValue;
+      },
+      onSuccess: () => {
+        toast.success('Inventory deleted successfully!');
+      },
+      onError: (error, variables, previousValue) => {
+        queryClient.setQueryData(['site-inventories', variables.siteId], previousValue);
+        onRequestError(error, 'We had some trouble deleting this inventory.');
+      },
+    }
+  );
 
   return data?.length < 1 ? (
     <div className="flex flex-col items-center">
@@ -272,78 +330,43 @@ function SiteTable({ data }) {
     </div>
   ) : (
     <>
-      <Transition appear show={isOpen} as={Fragment}>
-        <Dialog
-          as="div"
-          open={isOpen}
-          onClose={() => {
-            close();
-            deleteSite.current = null;
-          }}
-          className="fixed inset-0 z-10 overflow-y-auto"
-        >
-          <div className="min-h-screen px-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-            </Transition.Child>
+      <ConfirmationModal
+        isOpen={isSiteModalOpen}
+        onYes={() => mutate(deleteSite.current)}
+        onClose={() => {
+          deleteSite.current = null;
 
-            <span className="inline-block h-screen align-middle" aria-hidden="true">
-              &#8203;
-            </span>
+          closeSiteModal();
+        }}
+      >
+        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">Site Deletion Confirmation</Dialog.Title>
+        <Dialog.Description className="mt-1">This site will be permanently deleted</Dialog.Description>
 
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <div className="inline-block w-full max-w-md p-6 mx-auto my-48 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-                <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
-                  Site Deletion Confirmation
-                </Dialog.Title>
-                <Dialog.Description className="mt-1">This site will be permanently deleted</Dialog.Description>
+        <p className="mt-1 text-sm text-gray-500">
+          Are you sure you want to delete this site? All of your data will be permanently removed. This action cannot be
+          undone.
+        </p>
+      </ConfirmationModal>
+      <ConfirmationModal
+        isOpen={isInventoryModalOpen}
+        onYes={() => mutateInventory({ siteId: deleteSite.current, inventoryId: deleteInventory.current })}
+        onClose={() => {
+          deleteSite.current = null;
+          deleteInventory.current = null;
 
-                <p className="mt-1 text-sm text-gray-500">
-                  Are you sure you want to delete this site? All of your data will be permanently removed. This action
-                  cannot be undone.
-                </p>
+          closeInventoryModal();
+        }}
+      >
+        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+          Inventory Deletion Confirmation
+        </Dialog.Title>
+        <Dialog.Description className="mt-1">This inventory will be permanently deleted</Dialog.Description>
 
-                <div className="flex justify-around mt-6">
-                  <button
-                    type="button"
-                    meta="default"
-                    className="bg-indigo-900"
-                    onClick={() => mutate(deleteSite.current)}
-                  >
-                    Yes
-                  </button>
-                  <button
-                    type="button"
-                    meta="default"
-                    onClick={() => {
-                      close();
-                      deleteSite.current = null;
-                    }}
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-            </Transition.Child>
-          </div>
-        </Dialog>
-      </Transition>
+        <p className="mt-1 text-sm text-gray-500">
+          Are you sure you want to delete this inventory? All of your data will be permanently removed. This action
+          cannot be undone.
+        </p>
+      </ConfirmationModal>
       <Tippy singleton={source} delay={25} render={(attrs, content) => <Tooltip {...attrs}>{content}</Tooltip>} />
       <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -355,8 +378,8 @@ function SiteTable({ data }) {
                     <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
                       {headerGroup.headers.map((column) => (
                         <th
-                          key={`${headerGroup.index}-${column.id}`}
                           {...column.getHeaderProps(column.getSortByToggleProps())}
+                          key={`${headerGroup.index}-${column.id}`}
                           className="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
                         >
                           {column.render('Header')}
