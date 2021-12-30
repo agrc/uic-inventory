@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.Features;
@@ -13,9 +14,10 @@ using api.Infrastructure;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211230195344_Synchronize")]
+    partial class Synchronize
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,49 +207,25 @@ namespace api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("account_fk");
 
-                    b.Property<bool>("ContactStatus")
-                        .HasColumnType("boolean")
-                        .HasColumnName("contact_status");
-
                     b.Property<DateTime?>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_on")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP()");
 
-                    b.Property<bool>("DetailStatus")
-                        .HasColumnType("boolean")
-                        .HasColumnName("detail_status");
-
-                    b.Property<bool>("LocationStatus")
-                        .HasColumnType("boolean")
-                        .HasColumnName("location_status");
-
                     b.Property<int>("OrderNumber")
                         .HasMaxLength(128)
                         .HasColumnType("integer")
                         .HasColumnName("order_number");
-
-                    b.Property<bool>("PaymentStatus")
-                        .HasColumnType("boolean")
-                        .HasColumnName("payment_status");
 
                     b.Property<string>("Signature")
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
                         .HasColumnName("signature");
 
-                    b.Property<bool>("SignatureStatus")
-                        .HasColumnType("boolean")
-                        .HasColumnName("signature_status");
-
                     b.Property<int>("SiteFk")
                         .HasColumnType("integer")
                         .HasColumnName("site_fk");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
 
                     b.Property<int>("SubClass")
                         .HasColumnType("integer")

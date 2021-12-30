@@ -10,6 +10,7 @@ namespace api.Infrastructure {
       NpgsqlConnection.GlobalTypeMapper.MapEnum<NotificationTypes>();
       NpgsqlConnection.GlobalTypeMapper.MapEnum<ContactTypes>();
       NpgsqlConnection.GlobalTypeMapper.MapEnum<SiteStatus>();
+      NpgsqlConnection.GlobalTypeMapper.MapEnum<InventoryStatus>();
     }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }

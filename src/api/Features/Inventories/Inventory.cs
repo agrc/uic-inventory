@@ -10,6 +10,12 @@ namespace api.Features {
     public int SubClass { get; set; }
     public int OrderNumber { get; set; }
     public string? Signature { get; set; }
+    public InventoryStatus Status { get; set; }
+    public bool DetailStatus { get; set; }
+    public bool ContactStatus { get; set; }
+    public bool LocationStatus { get; set; }
+    public bool PaymentStatus { get; set; }
+    public bool SignatureStatus { get; set; }
     public DateTime? CreatedOn { get; set; }
     public DateTime? SubmittedOn { get; set; }
     public Account? Account { get; set; }
@@ -62,5 +68,13 @@ namespace api.Features {
   }
   public class InventoryDeletionInput : InventoryInput {
     public int InventoryId { get; set; }
+  }
+
+  public enum InventoryStatus {
+    Incomplete,
+    Complete,
+    Submitted,
+    Authorized,
+    Ingested,
   }
 }
