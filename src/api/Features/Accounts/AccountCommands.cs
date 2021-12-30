@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -19,15 +18,12 @@ namespace api.Features {
 
     public class Handler : IRequestHandler<Command, Account> {
       private readonly IAppDbContext _context;
-      private readonly IHttpContextAccessor _accessor;
       private readonly ILogger _log;
 
       public Handler(
         IAppDbContext context,
-        IHttpContextAccessor accessor,
         ILogger log) {
         _context = context;
-        _accessor = accessor;
         _log = log;
       }
       public async Task<Account> Handle(Command request, CancellationToken token) {
