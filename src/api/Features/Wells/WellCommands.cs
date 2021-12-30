@@ -62,7 +62,7 @@ namespace api.Features {
 
         well.Id = result.Entity.Id;
 
-        // await _publisher.Publish(new WellNotifications.EditNotification(well.Id), cancellationToken);
+        await _publisher.Publish(new InventoryNotifications.EditNotification(message.Input.InventoryId), cancellationToken);
 
         return well;
       }
@@ -174,11 +174,11 @@ namespace api.Features {
 
         await _context.SaveChangesAsync(cancellationToken);
 
+        await _publisher.Publish(new InventoryNotifications.EditNotification(request.Wells.InventoryId), cancellationToken);
+
         if (errors.Count > 0) {
           throw new InvalidOperationException(string.Join("\n", errors));
         }
-
-        // await _publisher.Publish(new SiteNotifications.EditNotification(site.Id), cancellationToken);
 
         return new Well();
       }
@@ -202,10 +202,12 @@ namespace api.Features {
 
     public class Handler : IRequestHandler<Command> {
       private readonly IAppDbContext _context;
+      private readonly IPublisher _publisher;
       private readonly ILogger _log;
 
-      public Handler(IAppDbContext context, ILogger log) {
+      public Handler(IAppDbContext context, IPublisher publisher, ILogger log) {
         _context = context;
+        _publisher = publisher;
         _log = log;
       }
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
@@ -220,6 +222,8 @@ namespace api.Features {
         //! TODO: create requirement that well cannot be deleted when authorized status
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
 
         return Unit.Value;
       }

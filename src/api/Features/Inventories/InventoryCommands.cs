@@ -49,7 +49,7 @@ namespace api.Features {
 
         inventory.Id = result.Entity.Id;
 
-        // await _publisher.Publish(new InventoryNotifications.EditNotification(Inventory.Id), cancellationToken);
+        await _publisher.Publish(new InventoryNotifications.EditNotification(inventory.Id), cancellationToken);
 
         return inventory;
       }
