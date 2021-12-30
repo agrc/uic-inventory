@@ -44,25 +44,46 @@ namespace api.Features {
   }
 
   public class InventoriesForSitePayload : ResponseContract {
+    public class Payload {
+      public int SiteId { get; set; }
+      public int Id { get; set; }
+      public int SubClass { get; set; }
+      public InventoryStatus Status { get; set; }
+      public bool DetailStatus { get; set; }
+      public bool ContactStatus { get; set; }
+      public bool LocationStatus { get; set; }
+      public bool PaymentStatus { get; set; }
+      public bool SignatureStatus { get; set; }
+      public Payload(Inventory inventory, Site site) {
+        SiteId = site.Id;
+        Id = inventory.Id;
+        SubClass = inventory.SubClass;
+        Status = inventory.Status;
+        DetailStatus = inventory.DetailStatus;
+        ContactStatus = inventory.ContactStatus;
+        LocationStatus = inventory.LocationStatus;
+        PaymentStatus = inventory.PaymentStatus;
+        SignatureStatus = inventory.SignatureStatus;
+      }
+    }
     public InventoriesForSitePayload(UnauthorizedAccessException error) : base(error.Message) { }
     public InventoriesForSitePayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
     public InventoriesForSitePayload(string error) : base($"SI01:{error}") { }
     public InventoriesForSitePayload(IEnumerable<Inventory> inventories, Site site) {
-      Inventories = new List<InventoryPayload>();
+      Inventories = new List<Payload>();
 
       foreach (var item in inventories) {
-        Inventories.Add(new InventoryPayload(item, site));
+        Inventories.Add(new Payload(item, site));
       }
     }
 
-    public IList<InventoryPayload> Inventories { get; } = Array.Empty<InventoryPayload>();
+    public IList<Payload> Inventories { get; } = Array.Empty<Payload>();
   }
   public class InventoryInput {
     public int SiteId { get; set; }
     public int AccountId { get; set; }
   }
   public class InventoryCreationInput : InventoryInput {
-
     public int SubClass { get; set; }
     public int OrderNumber { get; set; }
   }

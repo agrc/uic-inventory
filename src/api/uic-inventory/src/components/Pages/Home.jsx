@@ -6,7 +6,16 @@ import { useExpanded, useSortBy, useTable } from 'react-table';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ky from 'ky';
 import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
-import { DocumentTextIcon, LocationMarkerIcon, PlusIcon, UsersIcon, XIcon, CheckIcon } from '@heroicons/react/solid';
+import {
+  CurrencyDollarIcon,
+  CheckIcon,
+  DocumentTextIcon,
+  LocationMarkerIcon,
+  PencilAltIcon,
+  PlusIcon,
+  UsersIcon,
+  XIcon,
+} from '@heroicons/react/solid';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import { AuthContext } from '../../AuthProvider';
 import { ConfirmationModal, Chrome, Header, Link, onRequestError, toast, Tooltip } from '../PageElements';
@@ -172,9 +181,12 @@ function SiteTable({ data }) {
                 >
                   <DocumentTextIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site details" />
                   {data.row.original.detailStatus ? (
-                    <CheckIcon className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3" />
+                    <CheckIcon
+                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      aria-label="yes"
+                    />
                   ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
                   )}
                 </Link>
               </Tippy>
@@ -185,9 +197,12 @@ function SiteTable({ data }) {
                 >
                   <UsersIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site contacts" />
                   {data.row.original.contactStatus ? (
-                    <CheckIcon className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3" />
+                    <CheckIcon
+                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      aria-label="yes"
+                    />
                   ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
                   )}
                 </Link>
               </Tippy>
@@ -198,9 +213,12 @@ function SiteTable({ data }) {
                 >
                   <LocationMarkerIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site location" />
                   {data.row.original.locationStatus ? (
-                    <CheckIcon className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3" />
+                    <CheckIcon
+                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      aria-label="yes"
+                    />
                   ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" />
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
                   )}
                 </Link>
               </Tippy>
@@ -208,15 +226,91 @@ function SiteTable({ data }) {
           );
         },
         SubCell: ({ row }) => {
-          let url = `/site/${row.original.site.id}/inventory/${row.original.id}/add-wells`;
-          if (row.original.subClass === 5002) {
-            url = `/site/${row.original.site.id}/inventory/${row.original.id}/regulatory-contact`;
-          }
-
           return (
-            <Link to={url} className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800">
-              View
-            </Link>
+            <div className="stroke-2">
+              <Tippy content="order status" singleton={target}>
+                <div className="relative inline-block w-6 h-6 text-gray-500">
+                  <CurrencyDollarIcon className="absolute w-6 h-6 m-auto top-2" aria-label="payment status" />
+                  {row.original.paymentStatus ? (
+                    <CheckIcon
+                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      aria-label="yes"
+                    />
+                  ) : (
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                  )}
+                </div>
+              </Tippy>
+              {row.original.subClass === 5002 && (
+                <Tippy content="regulatory contact" singleton={target}>
+                  <Link
+                    to={`/site/${row.original.siteId}/inventory/${row.original.id}/regulatory-contact`}
+                    className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                  >
+                    <UsersIcon className="absolute w-6 h-6 m-auto top-2" aria-label="regulatory contacts" />
+                    {row.original.contactStatus ? (
+                      <CheckIcon
+                        className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                        aria-label="yes"
+                      />
+                    ) : (
+                      <XIcon
+                        className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3"
+                        aria-label="no"
+                      />
+                    )}
+                  </Link>
+                </Tippy>
+              )}
+              <Tippy content="well locations" singleton={target}>
+                <Link
+                  to={`/site/${row.original.siteId}/inventory/${row.original.id}/add-wells`}
+                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                >
+                  <LocationMarkerIcon className="absolute w-6 h-6 m-auto top-2" aria-label="well locations" />
+                  {row.original.locationStatus ? (
+                    <CheckIcon
+                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      aria-label="yes"
+                    />
+                  ) : (
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                  )}
+                </Link>
+              </Tippy>
+              <Tippy content="well details" singleton={target}>
+                <Link
+                  to={`/site/${row.original.siteId}/inventory/${row.original.id}/add-wells`}
+                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                >
+                  <DocumentTextIcon className="absolute w-6 h-6 m-auto top-2" aria-label="well details" />
+                  {row.original.detailStatus ? (
+                    <CheckIcon
+                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      aria-label="yes"
+                    />
+                  ) : (
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                  )}
+                </Link>
+              </Tippy>
+              <Tippy content="sign and submit" singleton={target}>
+                <Link
+                  to={`/site/${row.original.siteId}/inventory/${row.original.id}/submit`}
+                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                >
+                  <PencilAltIcon className="absolute w-6 h-6 m-auto top-2" aria-label="signature status" />
+                  {row.original.signatureStatus ? (
+                    <CheckIcon
+                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      aria-label="yes"
+                    />
+                  ) : (
+                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                  )}
+                </Link>
+              </Tippy>
+            </div>
           );
         },
       },
@@ -246,7 +340,7 @@ function SiteTable({ data }) {
               onClick={(event) => {
                 event.stopPropagation();
 
-                deleteSite.current = row.original.site.id;
+                deleteSite.current = row.original.siteId;
                 deleteInventory.current = row.original.id;
 
                 openInventoryModal();
@@ -412,7 +506,7 @@ function SiteTable({ data }) {
                                   'font-medium': ['action', 'id'].includes(cell.column.id),
                                   'text-right whitespace-nowrap': cell.column.id === 'action',
                                 },
-                                'px-3 py-4'
+                                'px-3 pt-4 pb-2'
                               )}
                               {...cell.getCellProps()}
                             >
@@ -484,7 +578,7 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
               return (
                 <td
                   className={clsx('text-sm text-gray-900', {
-                    'px-3 py-1 ': cell.column.id.toLowerCase() !== 'id',
+                    'px-3 pt-3 pb-1': cell.column.id.toLowerCase() !== 'id',
                   })}
                   key={`${row.index}-expanded-${cell.column.id}`}
                   {...cell.getCellProps()}
