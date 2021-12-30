@@ -35,8 +35,7 @@ namespace api.Features {
       }
       public async Task<Site> Handle(Command message, CancellationToken cancellationToken) {
         _log.ForContext("input", message)
-          .ForContext("verb", "POST")
-          .Debug("/api/site");
+          .Debug("creating site");
 
         var site = new Site {
           AccountFk = message.AccountId,
@@ -81,6 +80,8 @@ namespace api.Features {
         _log = log;
       }
       public async Task<Site> Handle(Command request, CancellationToken cancellationToken) {
+        _log.ForContext("input", request)
+          .Debug("updating site");
         //! TODO: create requirement that site cannot be edited when authorized status
 
         var site = _metadata.Site;
@@ -118,6 +119,9 @@ namespace api.Features {
         _log = log;
       }
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+        _log.ForContext("input", request)
+          .Debug("deleting site");
+
         var connectedSite = await _context.Sites
           .Include(s => s.Contacts)
           .Include(i => i.Inventories)

@@ -39,8 +39,7 @@ namespace api.Features {
       }
       public async Task<Well> Handle(Command message, CancellationToken cancellationToken) {
         _log.ForContext("input", message)
-          .ForContext("verb", "POST")
-          .Debug("/api/well");
+          .Debug("creating well");
 
         var well = new Well {
           AccountFk = message.Input.AccountId,
@@ -101,8 +100,7 @@ namespace api.Features {
       }
       public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
-          .ForContext("verb", "PUT")
-          .Debug("/api/well");
+          .Debug("updating well");
 
         var errors = new List<string>(2);
 
@@ -211,6 +209,9 @@ namespace api.Features {
         _log = log;
       }
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+        _log.ForContext("input", request)
+          .Debug("deleting well");
+
         var well = await _context.Wells
           .FirstAsync(s => s.Id == request.WellId, cancellationToken);
 

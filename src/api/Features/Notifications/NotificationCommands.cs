@@ -26,6 +26,9 @@ namespace api.Features {
         }
 
         public async Task<NotificationMutationPayload> Handle(Command request, CancellationToken token) {
+          _log.ForContext("input", request)
+           .Debug("updating notification");
+
           var now = DateTime.UtcNow;
 
           var receipt = _metadata.NotificationReceipt;

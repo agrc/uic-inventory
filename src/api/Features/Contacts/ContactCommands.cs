@@ -28,6 +28,9 @@ namespace api.Features {
         }
 
         public async Task<Contact> Handle(Command request, CancellationToken cancellationToken) {
+          _log.ForContext("input", request)
+            .Debug("creating contact");
+
           var contact = await _context.Contacts.AddAsync(request.Input.Update(new()), cancellationToken);
 
           await _context.SaveChangesAsync(cancellationToken);
@@ -60,6 +63,9 @@ namespace api.Features {
         }
 
         async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+          _log.ForContext("input", request)
+            .Debug("deleting contact");
+
           var contact = await _context.Contacts
            .FirstAsync(s => s.Id == request.Input.ContactId, cancellationToken);
 

@@ -34,8 +34,7 @@ namespace api.Features {
       }
       public async Task<Inventory> Handle(Command message, CancellationToken cancellationToken) {
         _log.ForContext("input", message)
-          .ForContext("verb", "POST")
-          .Debug("/api/inventory");
+          .Debug("creating inventory");
 
         var inventory = new Inventory {
           AccountFk = message.AccountId,
@@ -79,6 +78,9 @@ namespace api.Features {
         _log = log;
       }
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+        _log.ForContext("input", request)
+          .Debug("deleting inventory");
+
         var inventory = await _context.Inventories
           .Include(w => w.Wells)
           .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
