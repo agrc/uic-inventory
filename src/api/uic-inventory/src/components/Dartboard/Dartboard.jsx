@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import PropTypes from 'prop-types';
 import { toQueryString } from '@agrc/helpers';
 import classNames from 'clsx';
@@ -171,6 +172,7 @@ const useDartboard = (userProps = {}) => {
   const getFirstInputProps = (inputProps) => ({
     onChange: (e) => setFirstInput(e.target.value),
     name: props.type === ADDRESS_TYPE ? 'dartboard_street_input' : 'dartboard_milepost_input',
+    id: props.type === ADDRESS_TYPE ? 'dartboard_street_input' : 'dartboard_milepost_input',
     onKeyUp: (e) => {
       inputProps?.beforeKeyUp(e);
       handleKeyUp(e);
