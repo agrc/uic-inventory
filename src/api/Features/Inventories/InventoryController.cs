@@ -48,6 +48,10 @@ namespace api.Features {
       try {
         var result = await _mediator.Send(new GetInventoryById.Query(siteId, inventoryId), token);
 
+        if (result == null) {
+          return NotFound(new InventoryPayload("Inventory not found"));
+        }
+
         return Ok(new InventoryPayload(result, _requestMetadata.Site));
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", $"GET:api/site/{siteId}/Inventory/{inventoryId}")
@@ -83,6 +87,29 @@ namespace api.Features {
         return StatusCode(500, new InventoryPayload(ex));
       }
     }
+
+    [HttpPost("/api/inventory/submit")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<InventoryPayload>> SubmitInventory(InventorySubmissionInput input, CancellationToken token) {
+      try {
+        var result = await _mediator.Send(new SubmitInventory.Command(input), token);
+
+        return Accepted();
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "POST:api/inventory/submit")
+          .ForContext("input", input)
+          .Warning(ex, "requirements failure");
+
+        return Unauthorized(new InventoryPayload(ex));
+      } catch (Exception ex) {
+        _log.ForContext("endpoint", "POST:api/inventory/submit")
+          .ForContext("input", input)
+          .Fatal(ex, "unhandled exception");
+
+        return StatusCode(500, new InventoryPayload(ex));
+      }
+    }
+
 
     [HttpDelete("/api/inventory")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]

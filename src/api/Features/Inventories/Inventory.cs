@@ -26,12 +26,19 @@ namespace api.Features {
   public class InventoryPayload : ResponseContract {
     public InventoryPayload(UnauthorizedAccessException error) : base(error.Message) { }
     public InventoryPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public InventoryPayload(string error) : base($"I01:{error}") { }
+
     public InventoryPayload(Inventory inventory, Site site) {
       Site = new SitePayload(site);
       Id = inventory.Id;
       SubClass = inventory.SubClass;
       OrderNumber = inventory.OrderNumber;
       SubmittedOn = inventory.SubmittedOn;
+      Status = inventory.Status;
+      DetailStatus = inventory.DetailStatus;
+      ContactStatus = inventory.ContactStatus;
+      LocationStatus = inventory.LocationStatus;
+      PaymentStatus = inventory.PaymentStatus;
       Wells = inventory.Wells.Select(x => new WellPayload(x)).ToList();
     }
     public int Id { get; set; }
@@ -39,6 +46,11 @@ namespace api.Features {
     public int OrderNumber { get; set; }
     public string? Signature { get; set; }
     public DateTime? SubmittedOn { get; set; }
+    public InventoryStatus Status { get; set; }
+    public bool DetailStatus { get; set; }
+    public bool ContactStatus { get; set; }
+    public bool LocationStatus { get; set; }
+    public bool PaymentStatus { get; set; }
     public SitePayload? Site { get; set; }
     public IReadOnlyCollection<WellPayload> Wells { get; set; } = Array.Empty<WellPayload>();
   }
@@ -89,6 +101,10 @@ namespace api.Features {
   }
   public class InventoryDeletionInput : InventoryInput {
     public int InventoryId { get; set; }
+  }
+  public class InventorySubmissionInput : InventoryInput {
+    public int InventoryId { get; set; }
+    public string Signature { get; set; } = default!;
   }
 
   public enum InventoryStatus {
