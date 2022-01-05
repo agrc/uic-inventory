@@ -280,7 +280,7 @@ function SiteTable({ data }) {
               </Tippy>
               <Tippy content="well details" singleton={target}>
                 <Link
-                  to={`/site/${row.original.siteId}/inventory/${row.original.id}/add-wells`}
+                  to={`/site/${row.original.siteId}/inventory/${row.original.id}/add-well-details`}
                   className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
                 >
                   <DocumentTextIcon className="absolute w-6 h-6 m-auto top-2" aria-label="well details" />
