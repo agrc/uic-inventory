@@ -22,16 +22,26 @@ export function PageGrid({
       <div className="mt-5 md:mt-0 md:col-span-2">
         <div className="overflow-hidden shadow sm:rounded-md">
           <div className="px-4 py-5 bg-white sm:p-6">{children}</div>
-          {submit ? (
-            <div className={clsx({ 'flex justify-between': back }, 'px-4 py-3 text-right bg-gray-100 sm:px-6')}>
-              {back ? <BackButton /> : null}
-              <button type="submit" disabled={disabled}>
-                {submitLabel}
-              </button>
-            </div>
-          ) : null}
+          <Buttons submit={submit} submitLabel={submitLabel} back={back} disabled={disabled} />
         </div>
       </div>
     </div>
   );
 }
+
+const Buttons = ({ submit, submitLabel, back, disabled }) => {
+  if (submit || back) {
+    return (
+      <div className={clsx({ 'flex justify-between': back }, 'px-4 py-3 text-right bg-gray-100 sm:px-6')}>
+        {back ? <BackButton /> : null}
+        {submit ? (
+          <button type="submit" disabled={disabled}>
+            {submitLabel}
+          </button>
+        ) : null}
+      </div>
+    );
+  }
+
+  return null;
+};
