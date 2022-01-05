@@ -211,3 +211,12 @@ export const WellDetailSchema = yup.object().shape({
       }),
     }),
 });
+
+export const InventorySubmissionSchema = yup.object().shape({
+  signature: yup.string().required(),
+  verification: yup
+    .bool()
+    .required()
+    .oneOf([true], 'You must verify your association with the inventory')
+    .label('Signature verification'),
+});

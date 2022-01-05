@@ -3,6 +3,7 @@ import Navigation from './Navigation';
 import Header from './Header';
 import onRequestError from './ToastErrors';
 import IncompleteSiteWarning from './IncompleteSiteWarning';
+import IncompleteInventoryWarning from './IncompleteInventoryWarning';
 import BackButton from './BackButton';
 import Tooltip from './Tooltip';
 import ConfirmationModal from './ConfirmationModal';
@@ -12,4 +13,14 @@ export { Link, Route, BrowserRouter as Router, Switch, useParams, useHistory } f
 export { toast } from 'react-toastify';
 export * from './Icons';
 
-export { BackButton, ConfirmationModal, Chrome, Header, Navigation, onRequestError, IncompleteSiteWarning, Tooltip };
+export {
+  BackButton,
+  ConfirmationModal,
+  Chrome,
+  Header,
+  Navigation,
+  onRequestError,
+  IncompleteInventoryWarning,
+  IncompleteSiteWarning,
+  Tooltip,
+};

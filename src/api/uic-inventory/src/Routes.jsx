@@ -56,6 +56,9 @@ function AuthenticatedRoutes({ completeProfile }) {
       <Route path="/site/:siteId/inventory/:inventoryId/add-well-details">
         <Wells.AddWellDetails />
       </Route>
+      <Route path="/site/:siteId/inventory/:inventoryId/submit">
+        <Wells.SubmitInventory />
+      </Route>
       <Route exact path="/">
         <SitesAndInventory completeProfile={completeProfile} />
       </Route>

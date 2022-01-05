@@ -25,6 +25,10 @@ const onRequestError = async (error, defaultMessage = 'Something went terribly w
   let toastMessage = defaultMessage;
   let response = { message: undefined };
 
+  if (error.response.status === 404) {
+    return toast.error('This item does not exist.');
+  }
+
   try {
     response = await error.response.json();
   } catch (ex) {
