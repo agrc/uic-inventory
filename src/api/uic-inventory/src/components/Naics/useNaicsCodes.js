@@ -31,7 +31,12 @@ function useNaicsCodes(naicsCode) {
     keepPreviousData: true,
     staleTime: Infinity,
     onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),
+    enabled: naicsCode !== undefined || naicsCode === null,
   });
+
+  if (naicsCode === undefined || naicsCode === null) {
+    return [topLevelItems, false];
+  }
 
   return [data, isPreviousData];
 }
