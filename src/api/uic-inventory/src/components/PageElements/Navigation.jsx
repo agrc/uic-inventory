@@ -325,7 +325,7 @@ function Notifications({ status, error, notifications }) {
       },
       onError: (err, variables, previousValue) => {
         queryClient.setQueryData('notifications', previousValue);
-        //! toast error
+        //! TODO: toast error
       },
       onSettled: () => {
         queryClient.invalidateQueries('notifications');
@@ -338,7 +338,7 @@ function Notifications({ status, error, notifications }) {
   }
 
   if (error) {
-    // todo: log this
+    // TODO: log this
     return <NotificationMessage title="Uh oh!" message="We're having trouble finding your notifications." />;
   }
 
@@ -352,6 +352,17 @@ function Notifications({ status, error, notifications }) {
     return <NotificationMessage title="All caught up!" message="Take a break, go for a walk, be your best you." />;
   }
 
+  const formatNotification = (notification) => {
+    switch (notification.event) {
+      case 'new_user_account_registration':
+        return `${notification.additionalData.name} signed up`;
+      case 'inventory_submission':
+        return `${notification.additionalData.name} submitted inventory ${notification.additionalData.inventoryId}`;
+      default:
+        return `Other notification: ${notification.event}`;
+    }
+  };
+
   return availableNotifications.map((notification) => (
     <div
       key={notification.id}
@@ -360,11 +371,7 @@ function Notifications({ status, error, notifications }) {
       <span className="self-center text-xs text-gray-400">
         {dateFormatter.format(Date.parse(notification.createdAt))}
       </span>{' '}
-      <span>
-        {notification.event === 'new_user_account_registration'
-          ? `${notification.additionalData.name} signed up`
-          : 'Other'}
-      </span>
+      <span>{formatNotification(notification)}</span>
       <span>
         <Link to={notification.url}>
           <LinkIcon className="inline-block w-5 h-5 ml-1 text-blue-400" />
