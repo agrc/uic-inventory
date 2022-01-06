@@ -55,7 +55,6 @@ namespace api.Features {
       }
     }
   }
-
   public static class SubmitInventory {
     public class Command : IRequest {
       public Command(InventorySubmissionInput input) {
@@ -75,12 +74,16 @@ namespace api.Features {
       private readonly IAppDbContext _context;
       private readonly IPublisher _publisher;
       private readonly ILogger _log;
+      private readonly HasRequestMetadata _metadata;
 
       public Handler(IAppDbContext context,
-              IPublisher publisher, ILogger log) {
+              IPublisher publisher,
+              HasRequestMetadata metadata,
+              ILogger log) {
         _context = context;
         _publisher = publisher;
         _log = log;
+        _metadata = metadata;
       }
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
@@ -102,7 +105,8 @@ namespace api.Features {
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _publisher.Publish(new InventoryNotifications.SubmitNotification(request.SiteId, request.InventoryId), cancellationToken);
+        await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
+        await _publisher.Publish(new InventoryNotifications.SubmitNotification(_metadata.Site, _metadata.Inventory, _metadata.Account), cancellationToken);
 
         return Unit.Value;
       }

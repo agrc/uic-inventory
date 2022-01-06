@@ -33,12 +33,14 @@ namespace api.Features {
       Id = inventory.Id;
       SubClass = inventory.SubClass;
       OrderNumber = inventory.OrderNumber;
+      Signature = inventory.Signature;
       SubmittedOn = inventory.SubmittedOn;
       Status = inventory.Status;
       DetailStatus = inventory.DetailStatus;
       ContactStatus = inventory.ContactStatus;
       LocationStatus = inventory.LocationStatus;
       PaymentStatus = inventory.PaymentStatus;
+      SignatureStatus = inventory.SignatureStatus;
       Wells = inventory.Wells.Select(x => new WellPayload(x)).ToList();
     }
     public int Id { get; set; }
@@ -51,6 +53,7 @@ namespace api.Features {
     public bool ContactStatus { get; set; }
     public bool LocationStatus { get; set; }
     public bool PaymentStatus { get; set; }
+    public bool SignatureStatus { get; set; }
     public SitePayload? Site { get; set; }
     public IReadOnlyCollection<WellPayload> Wells { get; set; } = Array.Empty<WellPayload>();
   }
