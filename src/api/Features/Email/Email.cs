@@ -9,7 +9,7 @@ namespace api.Features {
   public class EmailPayload : ResponseContract {
     public EmailPayload(UnauthorizedException error) : base(error.Message) {
     }
-    public EmailPayload(Exception error) : base("EM01:Something went terribly wrong that we did not expect.") {
+    public EmailPayload(Exception _) : base("EM01:Something went terribly wrong that we did not expect.") {
     }
 
     public EmailPayload() { }

@@ -91,9 +91,9 @@ namespace api.Features {
   }
 
   public class AccountPayload : ResponseContract {
-    public AccountPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
     public AccountPayload(UnauthorizedAccessException _) : base("A01:You are not allowed to access this resource.") { }
     public AccountPayload(UnauthorizedException error) : base(error.Message) { }
+    public AccountPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
 
     public AccountPayload(Account? input) {
       input ??= new Account();

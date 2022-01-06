@@ -99,8 +99,8 @@ namespace api.Features {
   }
 
   public class ContactPayload : ResponseContract {
-    public ContactPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
     public ContactPayload(UnauthorizedException error) : base(error.Message) { }
+    public ContactPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
 
     public ContactPayload(Contact contact) {
       Id = contact.Id;
@@ -135,7 +135,7 @@ namespace api.Features {
       Contacts = Array.Empty<ContactPayload>();
       Owner = new AccountPayload(new Account());
     }
-    public SiteContactPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") {
+    public SiteContactPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") {
       Name = "unknown";
       Contacts = Array.Empty<ContactPayload>();
       Owner = new AccountPayload(new Account());

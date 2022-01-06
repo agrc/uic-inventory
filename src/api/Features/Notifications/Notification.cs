@@ -12,7 +12,7 @@ namespace api.Features {
       Email = string.Empty;
       Notifications = Array.Empty<NotificationPayload>();
     }
-    public ProfileNotificationPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") {
+    public ProfileNotificationPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") {
       FirstName = string.Empty;
       LastName = string.Empty;
       Email = string.Empty;
@@ -91,8 +91,8 @@ namespace api.Features {
     public bool Deleted { get; set; }
   }
   public class NotificationMutationPayload : ResponseContract {
-    public NotificationMutationPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
     public NotificationMutationPayload(UnauthorizedException error) : base(error.Message) { }
+    public NotificationMutationPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
 
     public NotificationMutationPayload(NotificationReceipt receipt) {
       ReadAt = receipt.ReadAt;

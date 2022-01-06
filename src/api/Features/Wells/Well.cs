@@ -42,7 +42,7 @@ namespace api.Features {
   }
   public class WellPayload : ResponseContract {
     public WellPayload(UnauthorizedAccessException error) : base(error.Message) { }
-    public WellPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public WellPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
     public WellPayload(string error) : base($"UP01:{error}") { }
     public WellPayload(Well well) {
       Id = well.Id;
