@@ -575,8 +575,13 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
         return (
           <tr {...rowProps} key={`${rowProps.key}-expanded-${i}`}>
             {row.cells.map((cell) => {
+              if (cell.column.id.toLowerCase() === 'type') {
+                return null;
+              }
+
               return (
                 <td
+                  colSpan={cell.column.id.toLowerCase() === 'name' ? 2 : null}
                   className={clsx('text-sm text-gray-900', {
                     'px-3 pt-3 pb-1': cell.column.id.toLowerCase() !== 'id',
                   })}
