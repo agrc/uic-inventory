@@ -10,7 +10,7 @@ import { Switch } from '@headlessui/react';
 
 import clsx from 'clsx';
 import { AuthContext } from '../../../AuthProvider';
-import { Chrome, onRequestError, IncompleteInventoryWarning, toast, useParams } from '../../PageElements';
+import { Chrome, onRequestError, IncompleteInventoryWarning, toast, useHistory, useParams } from '../../PageElements';
 import {
   FormGrid,
   PageGrid,
@@ -18,6 +18,15 @@ import {
   InventorySubmissionSchema as schema,
   TextInput,
 } from '../../FormElements';
+
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'numeric',
+  day: 'numeric',
+  year: 'numeric',
+  hour12: true,
+  hour: 'numeric',
+  minute: 'numeric',
+});
 
 export default function SubmitInventory() {
   const { siteId, inventoryId } = useParams();
@@ -50,6 +59,10 @@ const PageStatus = ({ status, data, error }) => {
   if (status === 'success') {
     if (data?.status === 404) {
       return <h1>Inventory does not existing</h1>;
+    }
+
+    if (data.signature && data.signatureStatus) {
+      return <AlreadySubmitted data={data} />;
     }
 
     const success = [data.detailStatus, data.locationStatus];
@@ -85,6 +98,7 @@ const PageStatus = ({ status, data, error }) => {
 const SubmissionForm = ({ data }) => {
   const { authInfo } = useContext(AuthContext);
   const { siteId, inventoryId } = useParams();
+  const history = useHistory();
 
   const { control, formState, handleSubmit, register } = useForm({
     resolver: yupResolver(schema),
@@ -93,22 +107,23 @@ const SubmissionForm = ({ data }) => {
   const queryClient = useQueryClient();
 
   const { mutate } = useMutation(
-    (data) => ky.post('/api/inventory/submit', { json: { ...data, id: authInfo.id, siteId, inventoryId } }).json(),
+    (data) => ky.post('/api/inventory/submit', { json: { ...data, id: authInfo.id, siteId, inventoryId } }),
     {
       onSuccess: () => {
+        toast.success('Inventory submitted successfully!');
+        history.push('/');
         queryClient.invalidateQueries(['inventory', inventoryId]);
-        history.replaceState('/');
       },
       onError: (error) => onRequestError(error, 'We had some trouble submitting this inventory.'),
     }
   );
 
-  const submitInventory = async (data) => {
-    await mutate(data);
+  const submitInventory = (data) => {
+    mutate(data);
   };
 
   return (
-    <form onSubmit={handleSubmit(submitInventory)}>
+    <form onSubmit={handleSubmit((data) => submitInventory(data))}>
       <PageGrid
         heading="Sign and Submit Inventory"
         subtext="In keeping with the requirement of Section R317-7-6.4(C) of the Utah Administrative Rules for the Underground Injection Control Program that the owner or operator must submit inventory information, the UIC Inventory Form must be signed by the owner or operator (or his/her legal representative) of the injection well(s) for which the inventory information is being submitted."
@@ -173,5 +188,25 @@ const SubmissionForm = ({ data }) => {
         </FormGrid>
       </PageGrid>
     </form>
+  );
+};
+
+const AlreadySubmitted = ({ data }) => {
+  return (
+    <PageGrid
+      heading="Sign and Submit Inventory"
+      subtext="In keeping with the requirement of Section R317-7-6.4(C) of the Utah Administrative Rules for the Underground Injection Control Program that the owner or operator must submit inventory information, the UIC Inventory Form must be signed by the owner or operator (or his/her legal representative) of the injection well(s) for which the inventory information is being submitted."
+      submit={false}
+      back={true}
+    >
+      <h2 className="mb-6 text-xl font-semibold text-center">This inventory has been submitted</h2>
+      <h3 className="mb-2 text-lg font-medium">
+        Inventory status: <span className="text-xl font-black text-blue-700">{data.status}</span>
+      </h3>
+      <ResponsiveGridColumn full={true}>
+        This inventory was submitted on {dateFormatter.format(Date.parse(data.submittedOn))} and signed for by{' '}
+        {data.signature}.
+      </ResponsiveGridColumn>
+    </PageGrid>
   );
 };
