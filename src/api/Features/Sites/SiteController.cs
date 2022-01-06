@@ -26,9 +26,9 @@ namespace api.Features {
         var payload = await _mediator.Send(new GetSites.Query(), token);
 
         return Ok(payload);
-      } catch (UnauthorizedAccessException ex) {
         _log.ForContext("endpoint", "api/sites/mine")
           .Warning(ex, "requirements failure");
+      } catch (UnauthorizedException ex) {
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {

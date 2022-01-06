@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using api.Infrastructure;
 using MediatR;
+using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +23,6 @@ namespace api.Features {
 
     [HttpPost("/api/notify/staff")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<EmailPayload>> SendMail(EmailInput email, CancellationToken token) {
       try {
         var payload = await _mediator.Send(new SendEmail.Command(_email, email.Message), token);
 
@@ -31,6 +30,12 @@ namespace api.Features {
       } catch (UnauthorizedAccessException ex) {
         _log.ForContext("endpoint", "/api/notify/staff")
           .Warning(ex, "unauthorized access");
+
+        return Unauthorized(new EmailPayload(ex));
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "POST:api/notify/staff")
+          .ForContext("email", email)
+          .Warning(ex, "SendMailAsync requirements failure");
 
         return Unauthorized(new EmailPayload(ex));
       } catch (Exception ex) {

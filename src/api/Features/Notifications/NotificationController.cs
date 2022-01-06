@@ -31,6 +31,11 @@ namespace api.Features {
           .Warning(ex, "unauthorized access");
 
         return Unauthorized(new ProfileNotificationPayload(ex));
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "GET:api/notifications/mine")
+          .Warning(ex, "GetNotificationsAsync requirements failure");
+
+        return Unauthorized(new NotificationMutationPayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", "api/notifications/mine")
           .Error(ex, "error getting notifications");

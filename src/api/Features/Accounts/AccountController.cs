@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,9 @@ namespace api.Features {
         var payload = await _mediator.Send(new GetMyAccount.Query(Request.HttpContext.User), token);
 
         return Ok(new AuthPayload(payload));
-      } catch (UnauthorizedAccessException ex) {
         _log.ForContext("endpoint", "api/me")
          .Warning(ex, "requirements failure");
+      } catch (UnauthorizedException ex) {
 
         return Unauthorized(new AuthPayload(ex));
       } catch (Exception ex) {
@@ -45,9 +46,9 @@ namespace api.Features {
         var payload = await _mediator.Send(new GetAccountById.Query(id), token);
 
         return Ok(new AccountPayload(payload));
-      } catch (UnauthorizedAccessException ex) {
         _log.ForContext("endpoint", $"api/account/{id}")
           .Warning(ex, "requirements failure");
+      } catch (UnauthorizedException ex) {
 
         return Unauthorized(new AccountPayload(ex));
       } catch (Exception ex) {

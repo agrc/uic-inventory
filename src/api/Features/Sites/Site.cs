@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using MediatR.Behaviors.Authorization.Exceptions;
 
 namespace api.Features {
   public class Site {
@@ -40,8 +41,8 @@ namespace api.Features {
     public bool LocationStatus { get; set; }
   }
   public class SitePayload : ResponseContract {
-    public SitePayload(UnauthorizedAccessException error) : base(error.Message) { }
     public SitePayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public SitePayload(UnauthorizedException error) : base(error.Message) { }
     public SitePayload(Site site) {
       Id = site.Id;
       Name = site.Name ?? string.Empty;

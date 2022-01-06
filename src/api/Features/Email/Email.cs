@@ -1,4 +1,5 @@
 using System;
+using MediatR.Behaviors.Authorization.Exceptions;
 
 namespace api.Features {
   public class EmailInput {
@@ -6,7 +7,7 @@ namespace api.Features {
   }
 
   public class EmailPayload : ResponseContract {
-    public EmailPayload(UnauthorizedAccessException error) : base(error.Message) {
+    public EmailPayload(UnauthorizedException error) : base(error.Message) {
     }
     public EmailPayload(Exception error) : base("EM01:Something went terribly wrong that we did not expect.") {
     }

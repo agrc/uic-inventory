@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MediatR.Behaviors.Authorization.Exceptions;
 
 namespace api.Features {
   public class Account {
@@ -90,8 +91,9 @@ namespace api.Features {
   }
 
   public class AccountPayload : ResponseContract {
-    public AccountPayload(UnauthorizedAccessException error) : base(error.Message) { }
     public AccountPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public AccountPayload(UnauthorizedAccessException _) : base("A01:You are not allowed to access this resource.") { }
+    public AccountPayload(UnauthorizedException error) : base(error.Message) { }
 
     public AccountPayload(Account? input) {
       input ??= new Account();
@@ -157,7 +159,7 @@ namespace api.Features {
     public AuthPayload(UnauthorizedAccessException error) : base(error.Message) {
       UserData = new Extra(new());
     }
-    public AuthPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") {
+    public AuthPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") {
       UserData = new Extra(new());
     }
 

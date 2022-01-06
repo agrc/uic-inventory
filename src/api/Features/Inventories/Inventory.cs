@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MediatR.Behaviors.Authorization.Exceptions;
 
 namespace api.Features {
   public class Inventory {
@@ -24,8 +25,8 @@ namespace api.Features {
   }
 
   public class InventoryPayload : ResponseContract {
-    public InventoryPayload(UnauthorizedAccessException error) : base(error.Message) { }
     public InventoryPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public InventoryPayload(UnauthorizedException error) : base(error.Message) { }
     public InventoryPayload(string error) : base($"I01:{error}") { }
 
     public InventoryPayload(Inventory inventory, Site site) {
@@ -81,8 +82,8 @@ namespace api.Features {
         SignatureStatus = inventory.SignatureStatus;
       }
     }
-    public InventoriesForSitePayload(UnauthorizedAccessException error) : base(error.Message) { }
     public InventoriesForSitePayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public InventoriesForSitePayload(UnauthorizedException error) : base(error.Message) { }
     public InventoriesForSitePayload(string error) : base($"SI01:{error}") { }
     public InventoriesForSitePayload(IEnumerable<Inventory> inventories, Site site) {
       Inventories = new List<Payload>();

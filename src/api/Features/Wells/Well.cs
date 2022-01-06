@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Http;
 
 namespace api.Features {
@@ -27,7 +28,7 @@ namespace api.Features {
     public string? HydrogeologicCharacterization { get; set; }
   }
   public class WellCreationPayload : WellPayload {
-    public WellCreationPayload(UnauthorizedAccessException error) : base(error) {
+    public WellCreationPayload(UnauthorizedException error) : base(error) {
     }
 
     public WellCreationPayload(Exception error) : base(error) {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MediatR.Behaviors.Authorization.Exceptions;
 
 namespace api.Features {
   public class Contact {
@@ -98,8 +99,8 @@ namespace api.Features {
   }
 
   public class ContactPayload : ResponseContract {
-    public ContactPayload(UnauthorizedAccessException error) : base(error.Message) { }
     public ContactPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public ContactPayload(UnauthorizedException error) : base(error.Message) { }
 
     public ContactPayload(Contact contact) {
       Id = contact.Id;
@@ -129,7 +130,7 @@ namespace api.Features {
   }
 
   public class SiteContactPayload : ResponseContract {
-    public SiteContactPayload(UnauthorizedAccessException error) : base(error.Message) {
+    public SiteContactPayload(UnauthorizedException error) : base(error.Message) {
       Name = "unknown";
       Contacts = Array.Empty<ContactPayload>();
       Owner = new AccountPayload(new Account());

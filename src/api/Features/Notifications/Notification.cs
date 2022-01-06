@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using MediatR.Behaviors.Authorization.Exceptions;
 
 namespace api.Features {
   public class ProfileNotificationPayload : ResponseContract {
-    public ProfileNotificationPayload(UnauthorizedAccessException error) : base(error.Message) {
+    public ProfileNotificationPayload(UnauthorizedException error) : base(error.Message) {
       FirstName = string.Empty;
       LastName = string.Empty;
       Email = string.Empty;
@@ -90,8 +91,8 @@ namespace api.Features {
     public bool Deleted { get; set; }
   }
   public class NotificationMutationPayload : ResponseContract {
-    public NotificationMutationPayload(UnauthorizedAccessException error) : base(error.Message) { }
     public NotificationMutationPayload(Exception error) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public NotificationMutationPayload(UnauthorizedException error) : base(error.Message) { }
 
     public NotificationMutationPayload(NotificationReceipt receipt) {
       ReadAt = receipt.ReadAt;
