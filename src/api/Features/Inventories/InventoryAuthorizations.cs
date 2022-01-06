@@ -47,19 +47,20 @@ namespace api.Features {
     }
   }
 
-  // public class UpdateInventoryAuthorizer : AbstractRequestAuthorizer<UpdateInventory.Command> {
-  //   private readonly IHttpContextAccessor _context;
+  public class SubmitInventoryAuthorizer : AbstractRequestAuthorizer<SubmitInventory.Command> {
+    private readonly IHttpContextAccessor _context;
 
-  //   public UpdateInventoryAuthorizer(IHttpContextAccessor context) {
-  //     _context = context;
-  //   }
-  //   public override void BuildPolicy(UpdateInventory.Command request) {
-  //     UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-  //     UseRequirement(new MustOwnSite(request.Site.SiteId));
-  //     UseRequirement(new MustHaveCompleteProfile());
-  //     UseRequirement(new MustHaveEditableSiteStatus());
-  //   }
-  // }
+    public SubmitInventoryAuthorizer(IHttpContextAccessor context) {
+      _context = context;
+    }
+    public override void BuildPolicy(SubmitInventory.Command request) {
+      UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+      UseRequirement(new MustOwnSite(request.SiteId));
+      UseRequirement(new MustHaveCompleteProfile());
+      UseRequirement(new MustHaveEditableSiteStatus());
+      UseRequirement(new MustHaveCompleteInventory(request.InventoryId));
+    }
+  }
 
   public class DeleteInventoryAuthorizer : AbstractRequestAuthorizer<DeleteInventory.Command> {
     private readonly IHttpContextAccessor _context;
