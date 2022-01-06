@@ -1,11 +1,8 @@
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using SendGrid;
 using SendGrid.Helpers.Mail;
 using Serilog;
 
@@ -23,11 +20,11 @@ namespace api.Features {
       public class Handler : IRequestHandler<Command, EmailPayload> {
         private readonly ILogger _log;
         private readonly HasRequestMetadata _metadata;
-        private readonly string _apiKey;
-        public Handler(IConfiguration configuration, HasRequestMetadata metadata, ILogger log) {
+        private readonly EmailService _client;
+        public Handler(EmailService client, HasRequestMetadata metadata, ILogger log) {
           _log = log;
           _metadata = metadata;
-          _apiKey = configuration["sendgrid-key"];
+          _client = client;
         }
 
         public async Task<EmailPayload> Handle(Command request, CancellationToken token) {
@@ -42,8 +39,6 @@ namespace api.Features {
             throw new ArgumentNullException(nameof(request));
           }
 
-          var client = new SendGridClient(_apiKey);
-
           var htmlContent = $@"<h1>UIC Inventory Application feedback</h1>
             <h2>From: {_metadata.Account.FirstName} {_metadata.Account.LastName}</h2>
             <p>{request.Message}</p>";
@@ -57,14 +52,17 @@ namespace api.Features {
 
           msg.AddTo(new EmailAddress(request.To, "UIC Administrators"));
 
-          var response = await client.SendEmailAsync(msg, token);
+          var response = await _client.SendEmailAsync(msg, token);
 
           if (!response.IsSuccessStatusCode) {
-            _log.ForContext("content", htmlContent)
-              .ForContext("from", _metadata.Account.Email)
-              .Error("email not sent");
+            _log.ForContext("message", msg)
+               .ForContext("response", response)
+              .Error("Contact staff email not sent");
 
             throw new Exception(response.StatusCode.ToString());
+          } else {
+            _log.ForContext("message", msg)
+              .Debug("Sent contact staff email");
           }
 
           return new EmailPayload();
