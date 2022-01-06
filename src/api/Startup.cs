@@ -17,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SendGrid.Extensions.DependencyInjection;
 
 namespace api {
   public class Startup {
@@ -40,6 +41,7 @@ namespace api {
       services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
       services.AddSingleton(new Lazy<NaicsProvider>(() => new NaicsProvider()));
+      services.AddSingleton<EmailService>();
       services.AddScoped<HasRequestMetadata>();
 
       var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
@@ -63,6 +65,8 @@ namespace api {
             policy.RequireClaim(ClaimTypes.NameIdentifier);
           });
       });
+
+      services.AddSendGrid(options => options.ApiKey = Configuration["sendgrid-key"]);
 
       services.AddControllers().AddJsonOptions(options => {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
