@@ -50,7 +50,7 @@ namespace api.Features {
 
           var msg = new SendGridMessage {
             From = new EmailAddress("noreply@utah.gov", "UIC Inventory App"),
-            Subject = $"UIC Inventory feedback from {_metadata.Account.FirstName} {_metadata.Account.LastName}",
+            Subject = $"UIC Inventory App: Feedback from {_metadata.Account.FirstName} {_metadata.Account.LastName}",
             HtmlContent = htmlContent,
             ReplyTo = new EmailAddress(_metadata.Account.Email, $"{_metadata.Account.FirstName} {_metadata.Account.LastName}"),
           };
