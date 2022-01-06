@@ -48,6 +48,11 @@ namespace api.Features {
       try {
         var result = await _mediator.Send(new GetInventoryById.Query(siteId, inventoryId), token);
 
+        if (inventoryId == -1) {
+          // creating a new inventory
+          return Ok(new InventoryPayload(new(), _requestMetadata.Site));
+        }
+
         if (result == null) {
           return NotFound(new InventoryPayload("Inventory not found"));
         }
@@ -109,7 +114,6 @@ namespace api.Features {
         return StatusCode(500, new InventoryPayload(ex));
       }
     }
-
 
     [HttpDelete("/api/inventory")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
