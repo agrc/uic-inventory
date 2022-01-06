@@ -13,7 +13,7 @@ namespace api.Features {
     public string Value { get; set; }
 
     public static IEnumerable<NaicsModel> CreateNaicsFromRange(string range, string value) {
-      if (!range.Contains("-")) {
+      if (!range.Contains('-')) {
         return Enumerable.Empty<NaicsModel>();
       }
 
