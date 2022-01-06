@@ -53,6 +53,7 @@ namespace api.Features {
   }
   public enum NotificationTypes {
     new_user_account_registration,
+    inventory_submission,
     facility_contact_modified,
   }
   public class NotificationInput {
