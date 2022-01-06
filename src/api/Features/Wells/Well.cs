@@ -116,6 +116,14 @@ namespace api.Features {
 
       return lookup.GetValueOrDefault(key, missingValue);
     }
+    public static string WellType(int type) => type switch {
+      -1 => "General wells",
+      5047 => "Storm water drainage wells",
+      5002 => "Subsurface environmental remediation wells",
+      5101 => "UIC - Regulated large underground wastewater disposal systems",
+      5026 => "Veterinary, kennel, or pet grooming wastewater disposal systems",
+      _ => "Unknown",
+    };
   }
 
   public static class WellDetailInputExtension {

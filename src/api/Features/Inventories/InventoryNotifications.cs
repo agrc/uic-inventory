@@ -13,14 +13,6 @@ using Serilog;
 
 namespace api.Features {
   public static class InventoryNotifications {
-    public static string LookupWellType(int type) => type switch {
-      -1 => "General wells",
-      5047 => "Storm water drainage wells",
-      5002 => "Subsurface environmental remediation wells",
-      5101 => "UIC - Regulated large underground wastewater disposal systems",
-      5026 => "Veterinary, kennel, or pet grooming wastewater disposal systems",
-      _ => "Unknown",
-    };
     public class EditNotification : INotification {
       public EditNotification(int inventoryId) {
         Id = inventoryId;
@@ -204,7 +196,7 @@ namespace api.Features {
            review your submission in the order it was received.</p>
           <h2>Submission Summary</h2>
           <ul>
-            <li>{LookupWellType(notification.Inventory.SubClass)} - Inventory #{notification.Inventory.Id} (Order #{notification.Inventory.OrderNumber})</li>
+            <li>{WellLookup.WellType(notification.Inventory.SubClass)} - Inventory #{notification.Inventory.Id} (Order #{notification.Inventory.OrderNumber})</li>
             <li>{notification.Site.Name} - Site #{notification.Site.Id}</li>
             <li>Submission Date: {notification.Inventory.SubmittedOn:yyyy/MM/dd}</li>
             <li>Signed for by: {notification.Inventory.Signature}</li>
@@ -255,7 +247,7 @@ namespace api.Features {
           <p>{notification.Account.FirstName} {notification.Account.LastName} submitted the following inventory:</p>
           <h2>Submission Summary</h2>
           <ul>
-            <li>{LookupWellType(notification.Inventory.SubClass)} - Inventory #{notification.Inventory.Id} (Order #{notification.Inventory.OrderNumber})</li>
+            <li>{WellLookup.WellType(notification.Inventory.SubClass)} - Inventory #{notification.Inventory.Id} (Order #{notification.Inventory.OrderNumber})</li>
             <li>{notification.Site.Name} - Site #{notification.Site.Id}</li>
             <li>Submission Date: {notification.Inventory.SubmittedOn:yyyy/MM/dd}</li>
             <li>Signed for by: {notification.Inventory.Signature}</li>
