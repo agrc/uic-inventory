@@ -21,18 +21,18 @@ namespace api.Features {
 
     [HttpGet("/api/sites/mine")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<SitePayload>> MySites(CancellationToken token) {
+    public async Task<ActionResult<SitePayload>> MySitesAsync(CancellationToken token) {
       try {
         var payload = await _mediator.Send(new GetSites.Query(), token);
 
         return Ok(payload);
-        _log.ForContext("endpoint", "api/sites/mine")
-          .Warning(ex, "requirements failure");
       } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "GET:api/sites/mine")
+          .Warning(ex, "MySitesAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", "api/sites/mine")
+        _log.ForContext("endpoint", "GET:api/sites/mine")
           .Fatal(ex, "unhandled excpetion");
 
         return StatusCode(500, new SitePayload(ex));
@@ -41,18 +41,18 @@ namespace api.Features {
 
     [HttpGet("/api/site/{siteId:min(1)}")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<SitePayload>> GetSiteById(int siteId, CancellationToken token) {
+    public async Task<ActionResult<SitePayload>> GetSiteByIdAsync(int siteId, CancellationToken token) {
       try {
         var payload = await _mediator.Send(new GetSiteById.Query(siteId), token);
 
         return Ok(payload);
       } catch (UnauthorizedException ex) {
-        _log.ForContext("endpoint", $"api/site/{siteId}")
-          .Warning(ex, "requirements failure");
+        _log.ForContext("endpoint", $"GET:api/site/{siteId}")
+          .Warning(ex, "GetSiteByIdAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", $"api/site/{siteId}")
+        _log.ForContext("endpoint", $"GET:api/site/{siteId}")
           .Fatal(ex, "unhandled excpetion");
 
         return StatusCode(500, new SitePayload(ex));
@@ -69,7 +69,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/site")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "CreateSiteAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {
@@ -91,7 +91,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "PUT:api/site")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "UpdateSiteLocationAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {
@@ -113,7 +113,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "DELETE:api/site")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "DeleteSiteAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {

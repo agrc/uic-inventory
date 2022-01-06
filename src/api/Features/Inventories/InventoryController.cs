@@ -24,18 +24,18 @@ namespace api.Features {
 
     [HttpGet("/api/site/{siteId:min(1)}/inventories")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<InventoriesForSitePayload>> GetInventory(int siteId, CancellationToken token) {
+    public async Task<ActionResult<InventoriesForSitePayload>> GetInventoryAsync(int siteId, CancellationToken token) {
       try {
         var result = await _mediator.Send(new GetInventoriesBySite.Query(siteId), token);
 
         return Ok(new InventoriesForSitePayload(result, _requestMetadata.Site));
       } catch (UnauthorizedException ex) {
-        _log.ForContext("endpoint", $"api/site/{siteId}/inventories")
-          .Warning(ex, "requirements failure");
+        _log.ForContext("endpoint", $"GET:api/site/{siteId}/inventories")
+          .Warning(ex, "GetInventoryAsync requirements failure");
 
         return Unauthorized(new InventoriesForSitePayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", $"api/site/{siteId}/inventories")
+        _log.ForContext("endpoint", $"GET:api/site/{siteId}/inventories")
           .Fatal(ex, "unhandled exception");
 
         return StatusCode(500, new InventoriesForSitePayload(ex));
@@ -44,7 +44,7 @@ namespace api.Features {
 
     [HttpGet("/api/site/{siteId:min(1)}/inventory/{inventoryId:min(-1)}")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<InventoryPayload>> GetInventoryById(int siteId, int inventoryId, CancellationToken token) {
+    public async Task<ActionResult<InventoryPayload>> GetInventoryByIdAsync(int siteId, int inventoryId, CancellationToken token) {
       try {
         var result = await _mediator.Send(new GetInventoryById.Query(siteId, inventoryId), token);
 
@@ -60,7 +60,7 @@ namespace api.Features {
         return Ok(new InventoryPayload(result, _requestMetadata.Site));
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", $"GET:api/site/{siteId}/Inventory/{inventoryId}")
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "GetInventoryByIdAsync requirements failure");
 
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {
@@ -73,7 +73,7 @@ namespace api.Features {
 
     [HttpPost("/api/inventory")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<InventoryPayload>> CreateInventory(InventoryCreationInput input, CancellationToken token) {
+    public async Task<ActionResult<InventoryPayload>> CreateInventoryAsync(InventoryCreationInput input, CancellationToken token) {
       try {
         var result = await _mediator.Send(new CreateInventory.Command(input), token);
 
@@ -81,7 +81,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/Inventory")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "CreateInventoryAsync requirements failure");
 
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {
@@ -95,7 +95,7 @@ namespace api.Features {
 
     [HttpPost("/api/inventory/submit")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<InventoryPayload>> SubmitInventory(InventorySubmissionInput input, CancellationToken token) {
+    public async Task<ActionResult<InventoryPayload>> SubmitInventoryAsync(InventorySubmissionInput input, CancellationToken token) {
       try {
         var result = await _mediator.Send(new SubmitInventory.Command(input), token);
 
@@ -103,7 +103,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/inventory/submit")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "SubmitInventoryAsync requirements failure");
 
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {
@@ -125,7 +125,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "DELETE:api/inventory")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "DeleteInventoryAsync requirements failure");
 
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {

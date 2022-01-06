@@ -21,18 +21,18 @@ namespace api.Features {
 
     [HttpGet("/api/me")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<AuthPayload>> GetMe(CancellationToken token) {
+    public async Task<ActionResult<AuthPayload>> GetMeAsync(CancellationToken token) {
       try {
         var payload = await _mediator.Send(new GetMyAccount.Query(Request.HttpContext.User), token);
 
         return Ok(new AuthPayload(payload));
-        _log.ForContext("endpoint", "api/me")
-         .Warning(ex, "requirements failure");
       } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "GET:api/me")
+         .Warning(ex, "GetMeAsync requirements failure");
 
         return Unauthorized(new AuthPayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", "api/me")
+        _log.ForContext("endpoint", "GET:api/me")
           .Fatal(ex, "unhandled exception");
 
         return StatusCode(500, new AuthPayload(ex));
@@ -41,18 +41,18 @@ namespace api.Features {
 
     [HttpGet("/api/account/{id}")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<AccountPayload>> GetAccountById(int id, CancellationToken token) {
+    public async Task<ActionResult<AccountPayload>> GetAccountByIdAsync(int id, CancellationToken token) {
       try {
         var payload = await _mediator.Send(new GetAccountById.Query(id), token);
 
         return Ok(new AccountPayload(payload));
-        _log.ForContext("endpoint", $"api/account/{id}")
-          .Warning(ex, "requirements failure");
       } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", $"GET:api/account/{id}")
+          .Warning(ex, "GetAccountByIdAsync requirements failure");
 
         return Unauthorized(new AccountPayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", $"api/account/{id}")
+        _log.ForContext("endpoint", $"GET:api/account/{id}")
           .Fatal(ex, "unhandled exception");
 
         return StatusCode(500, new AccountPayload(ex));
@@ -67,19 +67,19 @@ namespace api.Features {
 
         return Accepted(new AccountPayload(payload));
       } catch (UnauthorizedAccessException ex) {
-        _log.ForContext("endpoint", "api/account")
+        _log.ForContext("endpoint", "PUT:api/account")
           .ForContext("input", input)
           .Warning(ex, "unauthorized access");
 
         return Unauthorized(new AccountPayload(ex));
       } catch (ArgumentNullException ex) {
-        _log.ForContext("endpoint", "api/account")
+        _log.ForContext("endpoint", "PUT:api/account")
           .ForContext("input", input)
           .Warning(ex, "account not found");
 
         return NotFound(new AccountPayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", "api/account")
+        _log.ForContext("endpoint", "PUT:api/account")
           .Error(ex, "unhandled excpetion");
 
         return StatusCode(500, new AccountPayload(ex));

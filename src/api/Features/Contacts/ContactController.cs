@@ -21,18 +21,18 @@ namespace api.Features {
 
     [HttpGet("/api/site/{siteId:min(1)}/contacts")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<SiteContactPayload>> GetSiteContacts(int siteId, CancellationToken token) {
+    public async Task<ActionResult<SiteContactPayload>> GetSiteContactsAsync(int siteId, CancellationToken token) {
       try {
         var result = await _mediator.Send(new GetSiteContacts.Query(siteId), token);
 
         return Ok(result);
       } catch (UnauthorizedException ex) {
-        _log.ForContext("endpoint", $"api/site/{siteId}/contacts")
-          .Warning(ex, "requirements failure");
+        _log.ForContext("endpoint", $"GET:api/site/{siteId}/contacts")
+          .Warning(ex, "GetSiteContactsAsync requirements failure");
 
         return Unauthorized(new SiteContactPayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", $"api/site/{siteId}/contacts")
+        _log.ForContext("endpoint", $"GET:api/site/{siteId}/contacts")
           .Fatal(ex, "unhandled exception");
 
         return StatusCode(500, new SiteContactPayload(ex));
@@ -47,13 +47,13 @@ namespace api.Features {
 
         return Ok(new ContactPayload(result));
       } catch (UnauthorizedException ex) {
-        _log.ForContext("endpoint", "api/site/contact")
+        _log.ForContext("endpoint", "POST:api/site/contact")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "CreateContactAsync requirements failure");
 
         return Unauthorized(new ContactPayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", "api/site/contact")
+        _log.ForContext("endpoint", "POST:api/site/contact")
           .ForContext("input", input)
           .Fatal(ex, "unhandled exception");
 
@@ -71,7 +71,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "DELETE:api/contact")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "DeleteContactAsync requirements failure");
 
         return Unauthorized(new ContactPayload(ex));
       } catch (Exception ex) {

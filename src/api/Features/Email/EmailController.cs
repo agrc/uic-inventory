@@ -23,12 +23,13 @@ namespace api.Features {
 
     [HttpPost("/api/notify/staff")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<EmailPayload>> SendMailAsync(EmailInput email, CancellationToken token) {
       try {
         var payload = await _mediator.Send(new SendEmail.Command(_email, email.Message), token);
 
         return Accepted(payload);
       } catch (UnauthorizedAccessException ex) {
-        _log.ForContext("endpoint", "/api/notify/staff")
+        _log.ForContext("endpoint", "POST:/api/notify/staff")
           .Warning(ex, "unauthorized access");
 
         return Unauthorized(new EmailPayload(ex));
@@ -39,7 +40,7 @@ namespace api.Features {
 
         return Unauthorized(new EmailPayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", "/api/notify/staff")
+        _log.ForContext("endpoint", "POST:/api/notify/staff")
           .Error(ex, "error sending email");
 
         return StatusCode(500, new EmailPayload(ex));

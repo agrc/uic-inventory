@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using api.Infrastructure;
 using MediatR;
 using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -22,7 +21,7 @@ namespace api.Features {
 
     [HttpPost("/api/well")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<WellPayload>> CreateWell(WellInput input, CancellationToken token) {
+    public async Task<ActionResult<WellPayload>> CreateWellAsync(WellInput input, CancellationToken token) {
       try {
         var result = await _mediator.Send(new CreateWell.Command(input), token);
 
@@ -30,7 +29,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/well")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "CreateWellAsync requirements failure");
 
         return Unauthorized(new WellPayload(ex));
       } catch (Exception ex) {
@@ -45,7 +44,7 @@ namespace api.Features {
     [HttpPut("api/well")]
     [Consumes("multipart/form-data")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<WellPayload>> UpdateWell([FromForm] WellDetailInput input, CancellationToken token) {
+    public async Task<ActionResult<WellPayload>> UpdateWellAsync([FromForm] WellDetailInput input, CancellationToken token) {
       try {
         var result = await _mediator.Send(new UpdateWell.Command(input), token);
 
@@ -53,7 +52,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "PUT:api/well")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "UpdateWellAsync requirements failure");
 
         return Unauthorized(new WellPayload(ex));
       } catch (InvalidOperationException ex) {
@@ -73,7 +72,7 @@ namespace api.Features {
 
     [HttpDelete("/api/well")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<WellPayload>> DeleteWell(WellInput input, CancellationToken token) {
+    public async Task<ActionResult<WellPayload>> DeleteWellAsync(WellInput input, CancellationToken token) {
       try {
         var result = await _mediator.Send(new DeleteWell.Command(input), token);
 
@@ -81,7 +80,7 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "DELETE:api/well")
           .ForContext("input", input)
-          .Warning(ex, "requirements failure");
+          .Warning(ex, "DeleteWellAsync requirements failure");
 
         return Unauthorized(new WellPayload(ex));
       } catch (Exception ex) {
