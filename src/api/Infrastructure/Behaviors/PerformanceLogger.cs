@@ -5,7 +5,8 @@ using MediatR;
 using Serilog;
 
 namespace api.Infrastructure {
-  public class PerformanceLogger<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> {
+  public class PerformanceLogger<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest<TResponse> {
     private readonly Stopwatch _timer;
     private readonly ILogger _log;
 

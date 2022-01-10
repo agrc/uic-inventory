@@ -12,7 +12,7 @@
     <PackageReference Include="EFCORE.NamingConventions" />
     <PackageReference Include="ExcelDataReader" />
     <PackageReference Include="MediatR" />
-    <PackageReference Include="MediatR.Behaviors.Authorization" Version="1.2.0" />
+    <PackageReference Include="MediatR.Behaviors.Authorization" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
