@@ -86,7 +86,7 @@ export const DropzoneMessaging = ({ isDragActive, files = [], reset = () => {} }
 
   if (files.length > 0) {
     return (
-      <div className="">
+      <div>
         <div className="flex flex-row">
           <CheckIcon className="w-8 h-8 mx-2 text-emerald-500" />
           <span className="self-center overflow-hidden lowercase truncate whitespace-nowrap">{files[0].name}</span>
@@ -157,20 +157,33 @@ export const LimitedDropzone = ({ textarea, forms }) => {
           'col-span-2': remaining < limit,
         })}
       >
-        <textarea
-          className={clsx('px-2', {
-            'rounded-l': remaining === limit,
-            rounded: remaining < limit,
-          })}
-          rows={textarea.rows}
-          disabled={textarea.disabled}
-          type="textarea"
-          placeholder={textarea.placeholder}
-          defaultValue={textarea.value}
-          maxLength={limit}
-          {...(files.length >= 1 ? {} : forms.field)}
-        />
-        <CharactersRemaining limit={limit} remaining={remaining} />
+        <div className="relative">
+          <textarea
+            className={clsx('px-2', {
+              'rounded-l': remaining === limit,
+              rounded: remaining < limit,
+            })}
+            rows={textarea.rows}
+            disabled={textarea.disabled}
+            type="textarea"
+            placeholder={textarea.placeholder}
+            defaultValue={textarea.value}
+            maxLength={limit}
+            {...(files.length >= 1 ? {} : forms.field)}
+          />
+          <CharactersRemaining limit={limit} remaining={remaining} />
+        </div>
+        {remaining < limit && (
+          <button
+            type="button"
+            meta="default"
+            className="w-full mt-4"
+            onClick={() => forms.reset({ ...forms.getValues(), [textarea.id]: '' }, { keepDefaultValues: true })}
+          >
+            <XIcon className="w-6 h-6 mx-2 text-pink-500" />
+            <span className="self-center justify-between">Clear</span>
+          </button>
+        )}
       </section>
       <section
         className={clsx('flex p-2', {
@@ -193,7 +206,7 @@ export const LimitedDropzone = ({ textarea, forms }) => {
             isDragActive={isDragActive}
             files={files}
             reset={() => {
-              forms.reset({ [forms.field.name]: '' });
+              forms.reset({ ...forms.getValues(), [forms.field.name]: '' });
               setFiles([]);
             }}
           />

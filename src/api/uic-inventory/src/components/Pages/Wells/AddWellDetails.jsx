@@ -74,7 +74,7 @@ function AddWellDetails() {
     }
   );
 
-  const { control, formState, handleSubmit, reset, setValue } = useForm({
+  const { control, formState, handleSubmit, reset, setValue, getValues } = useForm({
     resolver: yupResolver(schema),
     context: { subClass: data?.subClass },
   });
@@ -276,6 +276,7 @@ function AddWellDetails() {
                                 field,
                                 reset,
                                 fieldState,
+                                getValues,
                                 setValue,
                                 formState,
                               }}
@@ -302,6 +303,7 @@ function AddWellDetails() {
                                 reset,
                                 fieldState,
                                 setValue,
+                                getValues,
                                 formState,
                               }}
                               file={{
