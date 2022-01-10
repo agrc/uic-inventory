@@ -198,10 +198,13 @@ export const LimitedDropzone = ({ textarea, forms }) => {
             }}
           />
           {files.length === 0 && (
-            <button className="items-center pl-0" type="button" meta="default" onClick={open}>
-              <CloudUploadIcon className="w-6 h-6 mx-2 text-white" />
-              Pick a file
-            </button>
+            <>
+              <button className="items-center pl-0" type="button" meta="default" onClick={open}>
+                <CloudUploadIcon className="w-6 h-6 mx-2 text-white" />
+                Pick a file
+              </button>
+              <div className="self-center text-sm text-gray-600">(pdf, doc, docx, jpg, jpeg, png)</div>
+            </>
           )}
         </div>
       </section>
