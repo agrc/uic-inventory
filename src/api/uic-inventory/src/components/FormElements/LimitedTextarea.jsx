@@ -111,10 +111,10 @@ export const CharactersRemaining = ({ remaining, limit }) => {
 
   return (
     <span
-      className={clsx('absolute bottom-0 text-xs right-3', {
-        'text-gray-500': percentage >= 0 && percentage < 0.8,
-        'text-amber-600': percentage >= 0.8 && percentage < 0.9,
-        'text-red-600': percentage >= 0.9,
+      className={clsx('absolute bottom-0 right-3', {
+        'text-xs text-gray-500': percentage >= 0 && percentage < 0.8,
+        'text-xs text-amber-600': percentage >= 0.8 && percentage < 0.9,
+        'text-red-600 font-black text-lg bg-white p-2 border border-red-600': percentage >= 0.9,
       })}
     >
       {remaining} characters left
