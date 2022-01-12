@@ -7,7 +7,6 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ky from 'ky';
 import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
 import {
-  CurrencyDollarIcon,
   CheckIcon,
   DocumentTextIcon,
   LocationMarkerIcon,
@@ -260,19 +259,6 @@ function SiteTable({ data }) {
         SubCell: ({ row }) => {
           return (
             <div className="stroke-2">
-              <Tippy content="order status" singleton={target}>
-                <div className="relative inline-block w-6 h-6 text-gray-500">
-                  <CurrencyDollarIcon className="absolute w-6 h-6 m-auto top-2" aria-label="payment status" />
-                  {row.original.paymentStatus ? (
-                    <CheckIcon
-                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
-                      aria-label="yes"
-                    />
-                  ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
-                  )}
-                </div>
-              </Tippy>
               {row.original.subClass === 5002 && (
                 <Tippy content="regulatory contact" singleton={target}>
                   <Link

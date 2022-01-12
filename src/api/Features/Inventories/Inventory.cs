@@ -68,7 +68,6 @@ namespace api.Features {
       public bool DetailStatus { get; set; }
       public bool ContactStatus { get; set; }
       public bool LocationStatus { get; set; }
-      public bool PaymentStatus { get; set; }
       public bool SignatureStatus { get; set; }
       public Payload(Inventory inventory, Site site) {
         SiteId = site.Id;
@@ -78,7 +77,6 @@ namespace api.Features {
         DetailStatus = inventory.DetailStatus;
         ContactStatus = inventory.ContactStatus;
         LocationStatus = inventory.LocationStatus;
-        PaymentStatus = inventory.PaymentStatus;
         SignatureStatus = inventory.SignatureStatus;
       }
     }
