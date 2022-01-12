@@ -33,6 +33,43 @@ import { Tooltip } from '../../PageElements';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
+const SelectedWellsSymbol = PinSymbol.clone();
+SelectedWellsSymbol.data.primitiveOverrides = [
+  {
+    type: 'CIMPrimitiveOverride',
+    primitiveName: 'complete',
+    propertyName: 'Color',
+    valueExpressionInfo: {
+      type: 'CIMExpressionInfo',
+      title: 'Color of pin based on completeness',
+      expression: 'iif($feature.complete, [31, 41, 55, .25], [31, 41, 55, 1]);',
+      returnType: 'Default',
+    },
+  },
+  {
+    type: 'CIMPrimitiveOverride',
+    primitiveName: 'selected',
+    propertyName: 'Color',
+    valueExpressionInfo: {
+      type: 'CIMExpressionInfo',
+      title: 'Color of pin based on selected status',
+      expression: 'iif($feature.selected, [147, 197, 253, 1], [251, 251, 251, 1]);',
+      returnType: 'Default',
+    },
+  },
+  {
+    type: 'CIMPrimitiveOverride',
+    primitiveName: 'selected-stroke',
+    propertyName: 'Color',
+    valueExpressionInfo: {
+      type: 'CIMExpressionInfo',
+      title: 'Color of pin based on selected status',
+      expression: 'iif($feature.selected, [255, 255, 255, 1], [251, 191, 36, 1]);',
+      returnType: 'Default',
+    },
+  },
+];
+
 const operatingStatus = [
   { value: 'AC', label: 'Active' },
   { value: 'PA', label: 'Abandoned ‐ Approved' },
@@ -97,7 +134,7 @@ function AddWells() {
   const { setViewPoint } = useViewPointZooming(mapView);
   // manage graphics
   const { graphic, setGraphic: setPolygonGraphic } = useGraphicManager(mapView);
-  const { setGraphic: setExistingPointGraphics } = useGraphicManager(mapView);
+  const { graphic: existingGraphics, setGraphic: setExistingPointGraphics } = useGraphicManager(mapView);
   const { setGraphic: setPointGraphic } = useGraphicManager(mapView);
 
   useEffect(() => {
@@ -147,8 +184,8 @@ function AddWells() {
       (well) =>
         new Graphic({
           geometry: new Point(JSON.parse(well.geometry)),
-          attributes: {},
-          symbol: PinSymbol,
+          attributes: { id: well.id, selected: false, complete: false },
+          symbol: SelectedWellsSymbol,
         })
     );
 
@@ -314,7 +351,7 @@ function AddWells() {
                 <div className="grid grid-cols-6">
                   <div className="col-span-6">
                     <div className="w-full h-96" ref={mapDiv}></div>
-                    <WellTable wells={data?.wells} />
+                    <WellTable wells={data?.wells} graphics={existingGraphics} />
                     <div className="flex justify-between px-4 py-3 text-right bg-gray-100 sm:px-6">
                       <BackButton />
                       <button
@@ -335,7 +372,21 @@ function AddWells() {
   );
 }
 
-function WellTable({ wells = [] }) {
+const selectGraphic = (id, graphics, selected = undefined) => {
+  graphics.map((x) => {
+    if (x.attributes.id !== id) {
+      x.attributes.selected = false;
+      x.symbol = SelectedWellsSymbol.clone();
+    }
+  });
+
+  const graphic = graphics.filter((x) => x.attributes.id === id)[0];
+
+  graphic.attributes.selected = selected === undefined ? !graphic.attributes.selected : selected;
+  graphic.symbol = SelectedWellsSymbol.clone();
+};
+
+function WellTable({ graphics, wells = [] }) {
   const { inventoryId, siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
   const [isOpen, { open, close }] = useOpenClosed();
@@ -393,9 +444,11 @@ function WellTable({ wells = [] }) {
             <TrashIcon
               aria-label="delete site"
               className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
-              onClick={() => {
+              onClick={(event) => {
                 open();
+
                 deleteWell.current = data.row.original.id;
+                event.stopPropagation();
               }}
             />
           );
@@ -521,7 +574,14 @@ function WellTable({ wells = [] }) {
             prepareRow(row);
 
             return (
-              <tr key={`${row.index}`} {...row.getRowProps()}>
+              <tr
+                className="hover:bg-blue-100"
+                key={`${row.index}`}
+                {...row.getRowProps()}
+                onMouseEnter={() => selectGraphic(row.original.id, graphics, true)}
+                onMouseLeave={() => selectGraphic(row.original.id, graphics, false)}
+                onClick={() => selectGraphic(row.original.id, graphics)}
+              >
                 {row.cells.map((cell) => (
                   <td
                     key={`${row.index}-${cell.column.id}`}
