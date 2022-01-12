@@ -1,4 +1,4 @@
-import { Navigation, Route, Router, Switch, ToastContainer } from './components/PageElements';
+import { Navigation, Redirect, Route, Router, Switch, ToastContainer } from './components/PageElements';
 import { ContactProgram, Profile, Sites, GenericLandingPage, SitesAndInventory, Wells } from './components/Pages';
 import { AuthContext } from './AuthProvider';
 import { useContext } from 'react';
@@ -59,6 +59,17 @@ function AuthenticatedRoutes({ completeProfile }) {
       <Route path="/site/:siteId/inventory/:inventoryId/submit">
         <Wells.SubmitInventory />
       </Route>
+      <Switch>
+        <Redirect
+          exact
+          strict
+          from="/site/:siteId/inventory/:inventoryId"
+          to="/site/:siteId/inventory/:inventoryId/details"
+        />
+        <Redirect exact strict from="/site/:siteId" to="/site/:siteId/add-details" />
+        <Redirect exact strict from="/site/:siteId/inventory" to="/" />
+        <Redirect exact strict from="/site" to="/" />
+      </Switch>
       <Route exact path="/">
         <SitesAndInventory completeProfile={completeProfile} />
       </Route>
