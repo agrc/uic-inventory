@@ -64,6 +64,7 @@ namespace api.Features {
       public int SiteId { get; set; }
       public int Id { get; set; }
       public int SubClass { get; set; }
+      public int OrderNumber { get; set; }
       public InventoryStatus Status { get; set; }
       public bool DetailStatus { get; set; }
       public bool ContactStatus { get; set; }
@@ -73,6 +74,7 @@ namespace api.Features {
         SiteId = site.Id;
         Id = inventory.Id;
         SubClass = inventory.SubClass;
+        OrderNumber = inventory.OrderNumber;
         Status = inventory.Status;
         DetailStatus = inventory.DetailStatus;
         ContactStatus = inventory.ContactStatus;

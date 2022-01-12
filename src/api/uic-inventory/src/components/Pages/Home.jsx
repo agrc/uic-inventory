@@ -182,6 +182,12 @@ function SiteTable({ data }) {
       {
         Header: 'Name',
         accessor: 'name',
+        SubCell: ({ row }) => <>Order #{row.original.orderNumber}</>,
+      },
+      {
+        id: 'type',
+        Header: 'Type',
+        accessor: 'naicsTitle',
         SubCell: ({ row }) => {
           const statusProps = getStatusProps(row.original.status);
 
@@ -192,12 +198,6 @@ function SiteTable({ data }) {
             </div>
           );
         },
-      },
-      {
-        id: 'type',
-        Header: 'Type',
-        accessor: 'naicsTitle',
-        SubCell: <></>,
       },
       {
         id: 'status',
@@ -593,13 +593,8 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
         return (
           <tr {...rowProps} key={`${rowProps.key}-expanded-${i}`}>
             {row.cells.map((cell) => {
-              if (cell.column.id.toLowerCase() === 'type') {
-                return null;
-              }
-
               return (
                 <td
-                  colSpan={cell.column.id.toLowerCase() === 'name' ? 2 : null}
                   className={clsx('text-sm text-gray-900', {
                     'px-3 pt-2 pb-1': cell.column.id.toLowerCase() !== 'id',
                   })}
