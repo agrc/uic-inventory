@@ -31,7 +31,8 @@ namespace api.Features {
         return Ok(new InventoriesForSitePayload(result, _requestMetadata.Site));
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", $"GET:api/site/{siteId}/inventories")
-          .Warning(ex, "GetInventoryAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("GetInventoryAsync requirements failure");
 
         return Unauthorized(new InventoriesForSitePayload(ex));
       } catch (Exception ex) {
@@ -60,7 +61,8 @@ namespace api.Features {
         return Ok(new InventoryPayload(result, _requestMetadata.Site));
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", $"GET:api/site/{siteId}/Inventory/{inventoryId}")
-          .Warning(ex, "GetInventoryByIdAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("GetInventoryByIdAsync requirements failure");
 
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {
@@ -81,7 +83,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/Inventory")
           .ForContext("input", input)
-          .Warning(ex, "CreateInventoryAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("CreateInventoryAsync requirements failure");
 
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {
@@ -103,7 +106,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/inventory/submit")
           .ForContext("input", input)
-          .Warning(ex, "SubmitInventoryAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("SubmitInventoryAsync requirements failure");
 
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {
@@ -125,7 +129,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "DELETE:api/inventory")
           .ForContext("input", input)
-          .Warning(ex, "DeleteInventoryAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("DeleteInventoryAsync requirements failure");
 
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {

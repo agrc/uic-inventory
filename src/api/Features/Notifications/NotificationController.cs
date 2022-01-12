@@ -33,7 +33,8 @@ namespace api.Features {
         return Unauthorized(new ProfileNotificationPayload(ex));
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "GET:api/notifications/mine")
-          .Warning(ex, "GetNotificationsAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("GetNotificationsAsync requirements failure");
 
         return Unauthorized(new NotificationMutationPayload(ex));
       } catch (Exception ex) {
@@ -54,7 +55,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "PUT:api/site")
           .ForContext("input", input)
-          .Warning(ex, "UpdateNotificationAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("UpdateNotificationAsync requirements failure");
 
         return Unauthorized(new NotificationMutationPayload(ex));
       } catch (Exception ex) {

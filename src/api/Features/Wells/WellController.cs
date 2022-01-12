@@ -29,7 +29,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/well")
           .ForContext("input", input)
-          .Warning(ex, "CreateWellAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("CreateWellAsync requirements failure");
 
         return Unauthorized(new WellPayload(ex));
       } catch (Exception ex) {
@@ -52,7 +53,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "PUT:api/well")
           .ForContext("input", input)
-          .Warning(ex, "UpdateWellAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("UpdateWellAsync requirements failure");
 
         return Unauthorized(new WellPayload(ex));
       } catch (InvalidOperationException ex) {
@@ -80,7 +82,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "DELETE:api/well")
           .ForContext("input", input)
-          .Warning(ex, "DeleteWellAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("DeleteWellAsync requirements failure");
 
         return Unauthorized(new WellPayload(ex));
       } catch (Exception ex) {

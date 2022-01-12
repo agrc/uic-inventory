@@ -28,7 +28,8 @@ namespace api.Features {
         return Ok(result);
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", $"GET:api/site/{siteId}/contacts")
-          .Warning(ex, "GetSiteContactsAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("GetSiteContactsAsync requirements failure");
 
         return Unauthorized(new SiteContactPayload(ex));
       } catch (Exception ex) {
@@ -49,7 +50,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/site/contact")
           .ForContext("input", input)
-          .Warning(ex, "CreateContactAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("CreateContactAsync requirements failure");
 
         return Unauthorized(new ContactPayload(ex));
       } catch (Exception ex) {
@@ -71,7 +73,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "DELETE:api/contact")
           .ForContext("input", input)
-          .Warning(ex, "DeleteContactAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("DeleteContactAsync requirements failure");
 
         return Unauthorized(new ContactPayload(ex));
       } catch (Exception ex) {

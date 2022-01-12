@@ -36,7 +36,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/notify/staff")
           .ForContext("email", email)
-          .Warning(ex, "SendMailAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("SendMailAsync requirements failure");
 
         return Unauthorized(new EmailPayload(ex));
       } catch (Exception ex) {

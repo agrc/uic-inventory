@@ -28,7 +28,8 @@ namespace api.Features {
         return Ok(new AuthPayload(payload));
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "GET:api/me")
-         .Warning(ex, "GetMeAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("GetMeAsync requirements failure");
 
         return Unauthorized(new AuthPayload(ex));
       } catch (Exception ex) {
@@ -48,7 +49,8 @@ namespace api.Features {
         return Ok(new AccountPayload(payload));
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", $"GET:api/account/{id}")
-          .Warning(ex, "GetAccountByIdAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("GetAccountByIdAsync requirements failure");
 
         return Unauthorized(new AccountPayload(ex));
       } catch (Exception ex) {
@@ -70,6 +72,12 @@ namespace api.Features {
         _log.ForContext("endpoint", "PUT:api/account")
           .ForContext("input", input)
           .Warning(ex, "unauthorized access");
+
+        return Unauthorized(new AccountPayload(ex));
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "GET:api/account")
+          .ForContext("requirement", ex.Message)
+          .Warning("UpdateAccountAsync requirements failure");
 
         return Unauthorized(new AccountPayload(ex));
       } catch (ArgumentNullException ex) {

@@ -28,7 +28,8 @@ namespace api.Features {
         return Ok(payload);
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "GET:api/sites/mine")
-          .Warning(ex, "MySitesAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("MySitesAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {
@@ -48,7 +49,8 @@ namespace api.Features {
         return Ok(payload);
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", $"GET:api/site/{siteId}")
-          .Warning(ex, "GetSiteByIdAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("GetSiteByIdAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {
@@ -69,7 +71,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "POST:api/site")
           .ForContext("input", input)
-          .Warning(ex, "CreateSiteAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("CreateSiteAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {
@@ -91,7 +94,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "PUT:api/site")
           .ForContext("input", input)
-          .Warning(ex, "UpdateSiteLocationAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("UpdateSiteLocationAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {
@@ -113,7 +117,8 @@ namespace api.Features {
       } catch (UnauthorizedException ex) {
         _log.ForContext("endpoint", "DELETE:api/site")
           .ForContext("input", input)
-          .Warning(ex, "DeleteSiteAsync requirements failure");
+          .ForContext("requirement", ex.Message)
+          .Warning("DeleteSiteAsync requirements failure");
 
         return Unauthorized(new SitePayload(ex));
       } catch (Exception ex) {
