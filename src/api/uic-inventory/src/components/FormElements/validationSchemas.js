@@ -164,10 +164,10 @@ export const WellDetailSchema = yup.object().shape({
   selectedWells: yup
     .array(
       yup.object().shape({
-        id: yup.number().integer().positive(),
+        id: yup.number().integer().positive().label('Select at least one well to set the details for'),
       })
     )
-    .min(1)
+    .min(1, 'Select at least one well to set the details for')
     .typeError('You must select at least 1 well'),
   hydrogeologicCharacterization: yup.string().max(2500).optional(),
   constructionDetails: yup.lazy((value) => {

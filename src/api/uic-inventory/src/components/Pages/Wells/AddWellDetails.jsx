@@ -2,8 +2,8 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
+import clsx from 'clsx';
 import ky from 'ky';
-import { ErrorMessage } from '@hookform/error-message';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
@@ -12,7 +12,6 @@ import { BackButton, Chrome, onRequestError, toast, useHistory, useParams } from
 import { GridHeading, LimitedTextarea, LimitedDropzone, Label, WellDetailSchema as schema } from '../../FormElements';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { AuthContext } from '../../../AuthProvider';
-import ErrorMessageTag from '../../FormElements/ErrorMessage';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
@@ -188,6 +187,7 @@ function AddWellDetails() {
     };
   }, [wellGraphics, append, remove, selectedWells]);
 
+  // form reset after submission
   useEffect(() => {
     if (isSubmitSuccessful) {
       setSelectedWells([]);
@@ -237,11 +237,19 @@ function AddWellDetails() {
             subtext="Select the wells on the map to which the following descriptions apply. You must have a description for all submitted wells. Upload existing plan(s) or provide a narrative description."
             site={data?.site}
           >
-            <div className="text-2xl">
-              <div className="flex justify-around">
-                <div className="flex flex-col text-center justify-items-center">
-                  <Label id="wellsRemaining" />
-                  <span className="text-5xl font-extrabold text-red-700">{wellsRemaining}</span>
+            <div className="text-2xl lg:mt-32">
+              <div className="relative px-2 py-3 text-center">
+                <div className="mb-6 font-medium text-gray-700">Wells remaining without details</div>
+                <div
+                  className={clsx(
+                    {
+                      'text-red-700': wellsRemaining !== 0,
+                      'text-emerald-500': wellsRemaining === 0,
+                    },
+                    'inline-flex items-center justify-center w-32 h-32 text-5xl font-extrabold border-4 border-gray-200 rounded-full'
+                  )}
+                >
+                  {wellsRemaining}
                 </div>
               </div>
             </div>
@@ -254,11 +262,16 @@ function AddWellDetails() {
                     <div className="col-span-6">
                       <div className="w-full border-b-2 h-96 border-gray-50" ref={mapDiv}></div>
                       <section className="flex flex-col gap-2 px-4 py-5">
-                        <span className="text-2xl font-extrabold">
+                        <span
+                          className={clsx(
+                            {
+                              'text-red-700': selectedWells?.length < 1,
+                              'text-emerald-500': selectedWells?.length > 0,
+                            },
+                            'text-2xl font-extrabold'
+                          )}
+                        >
                           {selectedWells?.length ?? 0} wells selected
-                          <span className="text-base border-gray-100">
-                            <ErrorMessage errors={formState.errors} name="selectedWells" as={ErrorMessageTag} />
-                          </span>
                         </span>
                         <Controller
                           control={control}
