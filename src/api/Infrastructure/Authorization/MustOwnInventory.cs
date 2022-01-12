@@ -26,11 +26,11 @@ namespace api.Infrastructure {
         CancellationToken token = default) {
         var inventory = await _context.Inventories.SingleOrDefaultAsync(x => x.Id == requirement.InventoryId, token);
 
-        _metadata.Inventory = inventory;
-
         if (inventory is null) {
-          return AuthorizationResult.Fail("inventory not found");
+          return AuthorizationResult.Fail("I01:You cannot access items that you do not own.");
         }
+
+        _metadata.Inventory = inventory;
 
         if (_metadata.Account.Id != inventory.AccountFk) {
           if (_metadata.Account.Access == AccessLevels.elevated) {

@@ -20,7 +20,7 @@ namespace api.Infrastructure {
           _log.ForContext("site", _metadata.Site)
             .Warning("cannot add well to incomplete site");
 
-          return Task.FromResult(AuthorizationResult.Fail("W01:You must complete your site information before submitting a well."));
+          return Task.FromResult(AuthorizationResult.Fail("S03:You must complete your site information before submitting a well."));
         }
 
         return Task.FromResult(AuthorizationResult.Succeed());

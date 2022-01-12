@@ -31,13 +31,13 @@ namespace api.Infrastructure {
         var inventory = await _context.Inventories.SingleOrDefaultAsync(x => x.Id == requirement.InventoryId, token);
 
         if (inventory is null) {
-          return AuthorizationResult.Fail("inventory not found");
+          return AuthorizationResult.Fail("I01:You cannot access items that you do not own.");
         }
 
         _metadata.Inventory = inventory;
 
         if (_metadata.Inventory.Status != InventoryStatus.Incomplete) {
-          return AuthorizationResult.Fail("W02:This inventory has already been submitted.");
+          return AuthorizationResult.Fail("I02:This inventory has already been submitted.");
         }
 
         var status = new List<bool> { _metadata.Inventory.DetailStatus, _metadata.Inventory.LocationStatus };
@@ -50,7 +50,7 @@ namespace api.Infrastructure {
           _log.ForContext("inventory", _metadata.Inventory)
             .Warning("cannot submit to incomplete inventory");
 
-          return AuthorizationResult.Fail("W01:You must complete your inventory before submitting.");
+          return AuthorizationResult.Fail("I03:You must complete your inventory before submitting.");
         }
 
         return AuthorizationResult.Succeed();

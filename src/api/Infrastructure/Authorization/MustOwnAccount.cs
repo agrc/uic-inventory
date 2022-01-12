@@ -39,7 +39,7 @@ namespace api.Infrastructure {
               .ForContext("accessed by", _metadata.Account)
               .Warning("access to external item not permitted");
 
-          return AuthorizationResult.Fail("OA01:You cannot access resources you do not own.");
+          return AuthorizationResult.Fail("A04:You cannot access resources you do not own.");
         }
 
         return AuthorizationResult.Succeed();

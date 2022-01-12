@@ -27,7 +27,7 @@ namespace api.Infrastructure {
         var well = await _context.Wells.SingleOrDefaultAsync(x => x.Id == requirement.WellId, token);
 
         if (well is null) {
-          return AuthorizationResult.Fail("well not found");
+          return AuthorizationResult.Fail("W01:You cannot access items that you do not own.");
         }
 
         if (_metadata.Account.Id != well.AccountFk) {

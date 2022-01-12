@@ -27,7 +27,7 @@ namespace api.Infrastructure {
         var site = await _context.Sites.SingleOrDefaultAsync(x => x.Id == requirement.SiteId, token);
 
         if (site is null) {
-          return AuthorizationResult.Fail("site not found");
+          return AuthorizationResult.Fail("S02:You cannot access items that you do not own.");
         }
 
         _metadata.Site = site;
