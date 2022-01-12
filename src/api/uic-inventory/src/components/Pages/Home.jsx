@@ -128,6 +128,29 @@ function SiteList({ show, status, data }) {
   );
 }
 
+const getStatusProps = (status) => {
+  const commonClasses = 'uppercase text-xs border px-2 py-1 w-24 text-center rounded font-bold text-white';
+  switch (status) {
+    case 'incomplete':
+      return {
+        children: 'draft',
+        className: clsx(commonClasses, 'bg-gray-500 border-gray-700'),
+      };
+    case 'submitted': {
+      return {
+        children: 'submitted',
+        className: clsx(commonClasses, 'bg-blue-500 border-blue-700'),
+      };
+    }
+    case 'authorized': {
+      return {
+        children: 'approved',
+        className: clsx(commonClasses, 'bg-emerald-500 border-emerald-700'),
+      };
+    }
+  }
+};
+
 function SiteTable({ data }) {
   const [isSiteModalOpen, { open: openSiteModal, close: closeSiteModal }] = useOpenClosed();
   const [isInventoryModalOpen, { open: openInventoryModal, close: closeInventoryModal }] = useOpenClosed();
@@ -160,7 +183,16 @@ function SiteTable({ data }) {
       {
         Header: 'Name',
         accessor: 'name',
-        SubCell: ({ row }) => wellTypes.find((item) => item.value === row.original.subClass).label,
+        SubCell: ({ row }) => {
+          const statusProps = getStatusProps(row.original.status);
+
+          return (
+            <div className="flex items-center justify-between">
+              <div>{wellTypes.find((item) => item.value === row.original.subClass).label}</div>
+              <span {...statusProps} />
+            </div>
+          );
+        },
       },
       {
         id: 'type',
@@ -583,7 +615,7 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
                 <td
                   colSpan={cell.column.id.toLowerCase() === 'name' ? 2 : null}
                   className={clsx('text-sm text-gray-900', {
-                    'px-3 pt-3 pb-1': cell.column.id.toLowerCase() !== 'id',
+                    'px-3 pt-2 pb-1': cell.column.id.toLowerCase() !== 'id',
                   })}
                   key={`${row.index}-expanded-${cell.column.id}`}
                   {...cell.getCellProps()}
