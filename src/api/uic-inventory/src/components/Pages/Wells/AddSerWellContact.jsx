@@ -23,27 +23,7 @@ import {
   TextInput,
 } from '../../FormElements';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
-
-const contactType = [
-  {
-    value: 'project_manager',
-    label: 'DEQ Dist Eng/Project Manager',
-  },
-];
-
-const divisions = [
-  { value: 'Division of Air Quality' },
-  { value: 'Division of Drinking Water' },
-  { value: 'Division of Environmental Response and Remediation' },
-  { value: 'Division of Waste Management and Radiation Control' },
-  { value: 'Division of Water Quality' },
-];
-
-const valueToLabel = (value) => {
-  const item = contactType.find((x) => x.value === value);
-
-  return item?.label ?? value;
-};
+import { serContactTypes, serDivisions, valueToLabel } from '../../../data/lookups';
 
 function AddSerWellContact() {
   const { siteId, inventoryId } = useParams();
@@ -75,7 +55,7 @@ function AddSerWellContact() {
 
       queryClient.setQueryData(['ser-contacts', siteId], (old) => ({
         ...old,
-        contacts: [...old.contacts, { ...contact, contactType: valueToLabel(contact.contactType) }],
+        contacts: [...old.contacts, { ...contact, contactType: valueToLabel(serContactTypes, contact.contactType) }],
       }));
 
       return previousValue;
@@ -186,7 +166,7 @@ function AddSerWellContact() {
             <ResponsiveGridColumn full={true} half={true}>
               <SelectInput
                 text="Oversight agency"
-                items={divisions}
+                items={serDivisions}
                 id="organization"
                 register={register}
                 errors={formState.errors}

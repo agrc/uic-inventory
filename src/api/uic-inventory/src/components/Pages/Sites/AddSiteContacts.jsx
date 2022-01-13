@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 import clsx from 'clsx';
 import { BulletList } from 'react-content-loader';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { TrashIcon } from '@heroicons/react/outline';
+import { TrashIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline';
+import { Switch } from '@headlessui/react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import ky from 'ky';
 import { useTable } from 'react-table';
@@ -23,69 +24,14 @@ import {
   TextInput,
 } from '../../FormElements';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
-
-const contactType = [
-  {
-    value: 'owner_operator',
-    label: 'Owner/Operator',
-  },
-  {
-    value: 'facility_owner',
-    label: 'Owner',
-  },
-  {
-    value: 'facility_operator',
-    label: 'Operator',
-  },
-  {
-    value: 'facility_manager',
-    label: 'Facility Manager',
-  },
-  {
-    value: 'legal_rep',
-    label: 'Legal Representative',
-  },
-  {
-    value: 'official_rep',
-    label: 'Official Representative',
-  },
-  {
-    value: 'contractor',
-    label: 'Contractor',
-  },
-  {
-    value: 'project_manager',
-    label: 'DEQ Dist Eng/Project Manager',
-  },
-  {
-    value: 'health_dept',
-    label: 'Local Health Department',
-  },
-  {
-    value: 'permit_writer',
-    label: 'Permit Writer',
-  },
-  {
-    value: 'developer',
-    label: 'Developer',
-  },
-  {
-    value: 'other',
-    label: 'Other',
-  },
-];
+import { contactTypes, valueToLabel } from '../../../data/lookups';
 
 const validContactTypes = ['legal_rep', 'facility_owner', 'owner_operator'];
-
-const valueToLabel = (value) => {
-  const item = contactType.find((x) => x.value === value);
-
-  return item?.label ?? value;
-};
 
 function AddSiteContacts() {
   const { siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
+  const [isOpen, { toggle }] = useOpenClosed();
   const { control, formState, handleSubmit, register, reset, trigger, unregister, watch } = useForm({
     resolver: yupResolver(schema),
     mode: 'onChange',
@@ -105,7 +51,7 @@ function AddSiteContacts() {
 
       queryClient.setQueryData(['contacts', siteId], (old) => ({
         ...old,
-        contacts: [...old.contacts, { ...contact, contactType: valueToLabel(contact.contactType) }],
+        contacts: [...old.contacts, { ...contact, contactType: valueToLabel(contactTypes, contact.contactType) }],
       }));
 
       return previousValue;
@@ -236,6 +182,18 @@ function AddSiteContacts() {
           disabled={!isDirty}
         >
           <FormGrid>
+            <ResponsiveGridColumn full={true}>
+              <div className="flex px-3 py-2 border border-blue-600 rounded-lg bg-blue-50/50">
+                <QuestionMarkCircleIcon className="w-12 h-12 text-blue-600" />
+                <div className="ml-4 font-medium grow">
+                  <ToggleSwitch
+                    label="Is this a Regulatory contact providing primary oversight for subsurface environmental remediation (SER) wells"
+                    value={isOpen}
+                    onChange={toggle}
+                  />
+                </div>
+              </div>
+            </ResponsiveGridColumn>
             <ResponsiveGridColumn full={true} half={true}>
               <TextInput id="firstName" control={control} register={register} errors={formState.errors} />
             </ResponsiveGridColumn>
@@ -261,7 +219,7 @@ function AddSiteContacts() {
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true} half={true}>
-              <SelectInput id="contactType" items={contactType} register={register} errors={formState.errors} />
+              <SelectInput id="contactType" items={contactTypes} register={register} errors={formState.errors} />
             </ResponsiveGridColumn>
 
             {watchContactType === 'other' && (
@@ -290,6 +248,36 @@ function AddSiteContacts() {
       </form>
       <BackButton />
     </Chrome>
+  );
+}
+
+function ToggleSwitch({ label, value, onChange }) {
+  return (
+    <Switch.Group className="flex items-center justify-around" as="div">
+      <Switch.Label className="max-w-md mr-4">{label}</Switch.Label>
+      <span className="sr-only">Toggle</span>
+      <Switch
+        checked={value}
+        onChange={onChange}
+        className={clsx(
+          {
+            'bg-indigo-600 focus:ring-indigo-500': value,
+            'bg-gray-300 focus:ring-gray-300': !value,
+          },
+          'shrink-0 relative inline-flex items-center h-8 rounded-full w-16 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
+        )}
+      >
+        <span
+          className={clsx(
+            {
+              'translate-x-8 border-indigo-700 bg-gray-100': value,
+              'translate-x-1 border-gray-400 bg-white': !value,
+            },
+            'inline-block w-7 h-7 border-2 border-gray-400 rounded-full transform transition-transform'
+          )}
+        />
+      </Switch>
+    </Switch.Group>
   );
 }
 
@@ -348,7 +336,7 @@ function ContactTable({ data }) {
           return (
             <>
               <div className="text-sm font-medium text-gray-900">{`${data.row.original.firstName} ${data.row.original.lastName}`}</div>
-              <div className="text-sm text-gray-500">{valueToLabel(data.row.original.contactType)}</div>
+              <div className="text-sm text-gray-500">{valueToLabel(contactTypes, data.row.original.contactType)}</div>
             </>
           );
         },
