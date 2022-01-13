@@ -17,6 +17,7 @@ namespace api.Features {
     public ContactTypes ContactType { get; set; }
     public int SiteFk { get; set; }
     public Site? Site { get; set; } = default!;
+    public bool SerContact { get; set; }
   }
 
   public enum ContactTypes {
