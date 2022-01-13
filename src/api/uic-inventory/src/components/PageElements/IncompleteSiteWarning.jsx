@@ -1,3 +1,5 @@
+import { BackButton } from '../PageElements';
+
 export function IncompleteSiteWarning() {
   return (
     <section>
@@ -12,6 +14,9 @@ export function IncompleteSiteWarning() {
           At least one of the contacts listed must be the owner, owner/operator, or legal representative of the site.
         </li>
       </ul>
+      <div className="flex justify-center mt-6">
+        <BackButton />
+      </div>
     </section>
   );
 }
