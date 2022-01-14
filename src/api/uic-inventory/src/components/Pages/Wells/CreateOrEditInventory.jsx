@@ -216,53 +216,45 @@ function CreateOrEditInventory() {
                     <Dialog.Title as="h3" className="mb-5 text-xl font-medium leading-6 text-gray-900">
                       UIC Inventory Form help
                     </Dialog.Title>
-
                     <ul className="list-decimal list-inside">
                       <li className="leading-loose">
-                        Go to{' '}
+                        Navigate to this website:{' '}
                         <a
                           meta="primary"
-                          href="https://secure.utah.gov/cart/dwq_cart/products.html"
+                          href="https://secure.utah.gov/cart/dwq_cart/details.html?productId=205"
                           target="_blank"
                           rel="noreferrer noopener"
                         >
-                          https://secure.utah.gov/cart/dwq_cart/products.html
+                          https://secure.utah.gov/cart/dwq_cart/details.html?productId=205
                         </a>
-                        , the Products Page.
+                        .
                       </li>
                       <li className="leading-loose">
-                        Click on{' '}
+                        In the{' '}
                         <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">
-                          Payment for UIC Inventory Review Fee
+                          Additional Information
                         </span>{' '}
-                        under the UIC Inventory Review heading.
+                        box, enter the Site Name. This should match the Site Name provided on the first page of the UIC
+                        information form.
                       </li>
                       <li className="leading-loose">
-                        On the Product Detail page, enter the number of facilities (not the number of injection wells)
-                        for which you are submitting the UIC Inventory Review Fee. Click on the{' '}
-                        <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">Add to cart</span> button.
+                        Enter the number of sites (not the number of injection wells) in the{' '}
+                        <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">Quantity</span> box for
+                        which you are submitting the UIC Inventory Review Fee.
                       </li>
                       <li className="leading-loose">
-                        On the Your Cart page, confirm the quantity and amount then click on the Checkout button.
+                        Click <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">Add to cart</span>{' '}
+                        and proceed to Checkout.
                       </li>
                       <li className="leading-loose">
-                        On the Enter Your Shipping Address page, enter the contact information for the owner / operator
-                        of the UIC facility listed on the first page of the UIC Inventory Information Form in the Please
-                        Enter Shipping Info block even though nothing will be shipped out.
+                        After completing the checkout process you will receive an order number. Return to this page and
+                        enter the order number as the{' '}
+                        <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">
+                          UIC inventory form order number
+                        </span>
+                        .
                       </li>
-                      <li className="leading-loose">
-                        In the Additional Information block at the bottom of the page, enter the same UIC Facility Name
-                        that you will enter on this UIC Inventory Information Form.
-                      </li>
-                      <li className="leading-loose">
-                        Click on{' '}
-                        <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">Proceed to Payment</span>{' '}
-                        button and complete the credit card information then click on the
-                        <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">Continue</span> button.
-                      </li>
-                      <li className="leading-loose">Enter your order number on this page.</li>
                     </ul>
-
                     <button type="button" meta="default" className="mt-4" onClick={close}>
                       Close
                     </button>
