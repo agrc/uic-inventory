@@ -35,7 +35,7 @@
     <PackageReference Update="Google.Cloud.Storage.V1" Version="3.6.0" />
 
     <!-- Email -->
-    <PackageReference Update="SendGrid" Version="9.25.1" />
+    <PackageReference Update="SendGrid" Version="9.25.2" />
     <PackageReference Update="SendGrid.Extensions.DependencyInjection" Version="1.0.1" />
   </ItemGroup>
 
