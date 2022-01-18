@@ -17,49 +17,7 @@ import {
 } from '../../FormElements';
 import { Chrome, onRequestError, toast, useHistory, useParams } from '../../PageElements';
 import { useOpenClosed } from '../../Hooks';
-
-const ownership = [
-  {
-    value: 'PB',
-    label: 'Private, For-Profit',
-  },
-  {
-    value: 'PN',
-    label: 'Private, Not-For-Profit',
-  },
-  {
-    value: 'PF',
-    label: 'Private, Farm',
-  },
-  {
-    value: 'PV',
-    label: 'Private, Other',
-  },
-  {
-    value: 'FG',
-    label: 'Federal Government',
-  },
-  {
-    value: 'SG',
-    label: 'State Government',
-  },
-  {
-    value: 'LG',
-    label: 'Local Government',
-  },
-  {
-    value: 'OT',
-    label: 'Tribal Government',
-  },
-  {
-    value: 'OI',
-    label: 'Individual/Household',
-  },
-  {
-    value: 'OR',
-    label: 'Other',
-  },
-];
+import { ownershipTypes } from '../../../data/lookups';
 
 function CreateOrEditSite() {
   const { siteId } = useParams();
@@ -172,7 +130,7 @@ function CreateOrEditSite() {
               <SelectInput
                 id="ownership"
                 text="Land ownership at site"
-                items={ownership}
+                items={ownershipTypes}
                 register={register}
                 errors={formState.errors}
               />

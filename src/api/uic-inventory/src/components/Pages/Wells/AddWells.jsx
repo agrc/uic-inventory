@@ -30,6 +30,7 @@ import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
 import { Tooltip } from '../../PageElements';
+import { remediationTypes, operatingStatusTypes } from '../../../data/lookups';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
@@ -68,25 +69,6 @@ SelectedWellsSymbol.data.primitiveOverrides = [
       returnType: 'Default',
     },
   },
-];
-
-const operatingStatus = [
-  { value: 'AC', label: 'Active' },
-  { value: 'PA', label: 'Abandoned ‐ Approved' },
-  { value: 'PR', label: 'Proposed Under Authorization By Rule' },
-  { value: 'OT', label: 'Other' },
-];
-
-const remediationType = [
-  { value: 1, label: 'Brownfield' },
-  { value: 2, label: 'LUST' },
-  { value: 3, label: 'NPL' },
-  { value: 4, label: 'RCRA' },
-  { value: 5, label: 'Superfund' },
-  { value: 6, label: 'TRI' },
-  { value: 7, label: 'VCP' },
-  { value: 8, label: 'DSHW' },
-  { value: 999, label: 'Other' },
 ];
 
 function AddWells() {
@@ -295,13 +277,13 @@ function AddWells() {
                 register={register}
                 errors={formState.errors}
               />
-              <SelectInput id="status" items={operatingStatus} register={register} errors={formState.errors} />
+              <SelectInput id="status" items={operatingStatusTypes} register={register} errors={formState.errors} />
               {watchStatus === 'OT' && <TextInput id="description" register={register} errors={formState.errors} />}
               {data?.subClass === 5002 && (
                 <>
                   <SelectInput
                     id="remediationType"
-                    items={remediationType}
+                    items={remediationTypes}
                     register={register}
                     errors={formState.errors}
                   />

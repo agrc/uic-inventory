@@ -24,9 +24,7 @@ import {
   TextInput,
 } from '../../FormElements';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
-import { contactTypes, valueToLabel } from '../../../data/lookups';
-
-const validContactTypes = ['legal_rep', 'facility_owner', 'owner_operator'];
+import { contactTypes, validSiteContactTypes, valueToLabel } from '../../../data/lookups';
 
 function AddSiteContacts() {
   const { siteId } = useParams();
@@ -154,7 +152,7 @@ function AddSiteContacts() {
                       </Link>
                     </div>
                   </div>
-                  {data?.contacts.filter((x) => validContactTypes.includes(x.contactType)).length === 0 && (
+                  {data?.contacts.filter((x) => validSiteContactTypes.includes(x.contactType)).length === 0 && (
                     <ErrorMessageTag>
                       One of these contact must be either an owner, owner/operator, or legal representative to complete
                       the UIC form submission
