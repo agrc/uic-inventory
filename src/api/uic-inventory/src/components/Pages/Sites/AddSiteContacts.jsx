@@ -12,7 +12,8 @@ import { useTable } from 'react-table';
 import { AuthContext } from '../../../AuthProvider';
 import { BackButton, Chrome, onRequestError, toast, useParams, Link } from '../../PageElements';
 import {
-  ContactSchema as schema,
+  ContactSchema,
+  SerContactSchema,
   ErrorMessage,
   ErrorMessageTag,
   FormGrid,
@@ -24,112 +25,14 @@ import {
   TextInput,
 } from '../../FormElements';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
-import { contactTypes, validSiteContactTypes, valueToLabel } from '../../../data/lookups';
+import { contactTypes, serDivisions, validSiteContactTypes, valueToLabel } from '../../../data/lookups';
 
 function AddSiteContacts() {
   const { siteId } = useParams();
-  const { authInfo } = useContext(AuthContext);
-  const [isOpen, { toggle }] = useOpenClosed();
-  const { control, formState, handleSubmit, register, reset, trigger, unregister, watch } = useForm({
-    resolver: yupResolver(schema),
-    mode: 'onChange',
-  });
-
-  const watchContactType = watch('contactType', '');
-
-  const queryClient = useQueryClient();
   const { status, error, data } = useQuery(['contacts', siteId], () => ky.get(`/api/site/${siteId}/contacts`).json(), {
     enabled: siteId ?? 0 > 0 ? true : false,
     onError: (error) => onRequestError(error, 'We had some trouble finding your contacts.'),
   });
-  const { mutate } = useMutation((json) => ky.post('/api/contact', { json }), {
-    onMutate: async (contact) => {
-      await queryClient.cancelQueries(['contacts', siteId]);
-      const previousValue = queryClient.getQueryData(['contacts', siteId]);
-
-      queryClient.setQueryData(['contacts', siteId], (old) => ({
-        ...old,
-        contacts: [...old.contacts, { ...contact, contactType: valueToLabel(contactTypes, contact.contactType) }],
-      }));
-
-      return previousValue;
-    },
-    onSuccess: () => {
-      toast.success('Contact created successfully!');
-
-      reset({});
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries(['contacts', siteId]);
-    },
-    onError: async (error, variables, previousValue) => {
-      queryClient.setQueryData(['contacts', siteId], previousValue);
-      onRequestError(error, 'We had some trouble creating this contact.');
-    },
-  });
-
-  //! pull value from form state to activate proxy
-  const { isDirty } = formState;
-
-  // set default fields to owner
-  useEffect(() => {
-    if (!data) {
-      return;
-    }
-
-    const skipFields = ['access', 'receiveNotifications', 'errors', 'id'];
-    const owner = data.owner;
-
-    //! contact already added do not pre-fill
-    if (data.contacts?.find((x) => x.email === owner.email)) {
-      return;
-    }
-
-    const defaults = Object.keys(owner).reduce((object, key) => {
-      if (skipFields.includes(key)) {
-        return object;
-      }
-
-      if (owner[key] === null) {
-        object[key] = '';
-
-        return object;
-      }
-
-      object[key] = owner[key];
-
-      return object;
-    }, {});
-
-    reset({ ...defaults, contactType: undefined });
-    trigger();
-  }, [data, reset, trigger]);
-
-  // handle conditional control registration
-  useEffect(() => {
-    if (watchContactType === 'other') {
-      register('description', { required: true });
-    } else {
-      unregister('description');
-    }
-  }, [watchContactType, register, unregister]);
-
-  const create = (formData) => {
-    if (!isDirty) {
-      return toast.info("We've got your most current information");
-    }
-
-    const input = {
-      siteId: parseInt(siteId),
-      accountId: parseInt(authInfo.id),
-    };
-
-    for (let key of Object.keys(formData)) {
-      input[key] = formData[key];
-    }
-
-    mutate(input);
-  };
 
   return (
     <Chrome loading={status === 'loading'}>
@@ -171,81 +74,259 @@ function AddSiteContacts() {
 
       <Separator />
 
-      <form onSubmit={handleSubmit(create)} className="mt-10 sm:mt-0">
-        <PageGrid
-          heading="Add Contact"
-          subtext="Use the form to add more contacts that are capable of providing reliable information about the operation of the site."
-          submit={true}
-          submitLabel="Add"
-          disabled={!isDirty}
-        >
-          <FormGrid>
-            <ResponsiveGridColumn full={true}>
-              <div className="flex px-3 py-2 border border-blue-600 rounded-lg bg-blue-50/50">
-                <QuestionMarkCircleIcon className="w-12 h-12 text-blue-600" />
-                <div className="ml-4 font-medium grow">
-                  <ToggleSwitch
-                    label="Is this a Regulatory contact providing primary oversight for subsurface environmental remediation (SER) wells"
-                    value={isOpen}
-                    onChange={toggle}
-                  />
-                </div>
-              </div>
-            </ResponsiveGridColumn>
-            <ResponsiveGridColumn full={true} half={true}>
-              <TextInput id="firstName" control={control} register={register} errors={formState.errors} />
-            </ResponsiveGridColumn>
+      <CreateContactForm data={data} />
 
-            <ResponsiveGridColumn full={true} half={true}>
-              <TextInput id="lastName" register={register} errors={formState.errors} />
-            </ResponsiveGridColumn>
-
-            <ResponsiveGridColumn full={true} half={true}>
-              <TextInput id="email" type="email" text="Email address" register={register} errors={formState.errors} />
-            </ResponsiveGridColumn>
-
-            <ResponsiveGridColumn full={true} half={true}>
-              <label htmlFor="phoneNumber" className="block font-medium text-gray-700">
-                Phone number
-              </label>
-              <PhoneInput name="phoneNumber" type="tel" country="US" control={control} rules={{ required: true }} />
-              <ErrorMessage name="phoneNumber" errors={formState.errors} as={ErrorMessageTag} />
-            </ResponsiveGridColumn>
-
-            <ResponsiveGridColumn full={true} half={true}>
-              <TextInput id="organization" register={register} errors={formState.errors} />
-            </ResponsiveGridColumn>
-
-            <ResponsiveGridColumn full={true} half={true}>
-              <SelectInput id="contactType" items={contactTypes} register={register} errors={formState.errors} />
-            </ResponsiveGridColumn>
-
-            {watchContactType === 'other' && (
-              <ResponsiveGridColumn full={true}>
-                <TextInput id="description" register={register} errors={formState.errors} />
-              </ResponsiveGridColumn>
-            )}
-
-            <ResponsiveGridColumn full={true}>
-              <TextInput id="mailingAddress" text="Street address" register={register} errors={formState.errors} />
-            </ResponsiveGridColumn>
-
-            <ResponsiveGridColumn full={true} third={true}>
-              <TextInput id="city" register={register} errors={formState.errors} />
-            </ResponsiveGridColumn>
-
-            <ResponsiveGridColumn full={true} half={true} third={true}>
-              <TextInput id="state" register={register} errors={formState.errors} />
-            </ResponsiveGridColumn>
-
-            <ResponsiveGridColumn full={true} half={true} third={true}>
-              <TextInput id="zipCode" text="ZIP" register={register} errors={formState.errors} />
-            </ResponsiveGridColumn>
-          </FormGrid>
-        </PageGrid>
-      </form>
       <BackButton />
     </Chrome>
+  );
+}
+
+function CreateContactForm({ data }) {
+  const { siteId } = useParams();
+  const { authInfo } = useContext(AuthContext);
+  const [isSerContact, { toggle }] = useOpenClosed();
+  const { control, formState, handleSubmit, register, reset, unregister, watch } = useForm({
+    resolver: yupResolver(isSerContact ? SerContactSchema : ContactSchema),
+  });
+
+  //* pull value from form state to activate proxy
+  const { isDirty, isSubmitSuccessful } = formState;
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation((json) => ky.post('/api/contact', { json }), {
+    onMutate: async (contact) => {
+      await queryClient.cancelQueries(['contacts', siteId]);
+      const previousValue = queryClient.getQueryData(['contacts', siteId]);
+
+      queryClient.setQueryData(['contacts', siteId], (old) => ({
+        ...old,
+        contacts: [...old.contacts, { ...contact, contactType: valueToLabel(contactTypes, contact.contactType) }],
+      }));
+
+      return previousValue;
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(['contacts', siteId]);
+    },
+    onError: async (error, _, previousValue) => {
+      queryClient.setQueryData(['contacts', siteId], previousValue);
+      onRequestError(error, 'We had some trouble creating this contact.');
+    },
+  });
+
+  // reset form on submit
+  useEffect(() => {
+    if (!isSubmitSuccessful) {
+      return;
+    }
+
+    toast.success('Contact created successfully!');
+
+    reset();
+  }, [isSubmitSuccessful, reset]);
+
+  useEffect(() => {
+    const contactFieldNames = ['contactType', 'mailingAddress', 'city', 'state', 'zipCode'];
+    if (isSerContact) {
+      unregister(contactFieldNames);
+    } else {
+      contactFieldNames.forEach(register);
+    }
+  }, [isSerContact, register, unregister]);
+
+  // set default fields to owner
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    const owner = data.owner;
+
+    //* contact already added do not pre-fill
+    if (data.contacts?.find((x) => x.email === owner.email)) {
+      return;
+    }
+
+    const skipFields = ['access', 'receiveNotifications', 'errors', 'id'];
+
+    const defaults = Object.keys(owner).reduce((object, key) => {
+      if (skipFields.includes(key)) {
+        return object;
+      }
+
+      if (owner[key] === null) {
+        object[key] = '';
+
+        return object;
+      }
+
+      object[key] = owner[key];
+
+      return object;
+    }, {});
+
+    reset({ ...defaults, contactType: undefined }, { keepDefaultValues: true });
+  }, [data, reset]);
+
+  const create = (formData) => {
+    if (!isDirty) {
+      return toast.info("We've got your most current information");
+    }
+
+    const input = {
+      siteId: parseInt(siteId),
+      accountId: parseInt(authInfo.id),
+      ...formData,
+    };
+
+    if (isSerContact) {
+      input.contactType = 'project_manager';
+      input.serContact = true;
+    }
+
+    mutate(input);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(create)} className="mt-10 sm:mt-0">
+      <PageGrid
+        heading="Add Contact"
+        subtext="Use the form to add more contacts that are capable of providing reliable information about the operation of the site."
+        submit={true}
+        submitLabel="Add"
+        disabled={!isDirty}
+      >
+        <FormGrid>
+          <ResponsiveGridColumn full={true}>
+            <div className="flex px-3 py-2 border border-blue-600 rounded-lg bg-blue-50/50">
+              <QuestionMarkCircleIcon className="self-center w-12 h-12 text-blue-600" />
+              <div className="ml-4 font-medium grow">
+                <ToggleSwitch
+                  label="Is this a Department of Environmental Quality contact providing primary regulatory oversight for subsurface environmental remediation?"
+                  value={isSerContact}
+                  onChange={toggle}
+                />
+              </div>
+            </div>
+          </ResponsiveGridColumn>
+          {isSerContact ? (
+            <SerContactFields control={control} register={register} formState={formState} />
+          ) : (
+            <ContactFields
+              control={control}
+              register={register}
+              unregister={unregister}
+              formState={formState}
+              watch={watch}
+            />
+          )}
+        </FormGrid>
+      </PageGrid>
+    </form>
+  );
+}
+
+function ContactFields({ control, register, unregister, formState, watch }) {
+  const watchContactType = watch('contactType', '');
+
+  // handle conditional control registration
+  useEffect(() => {
+    if (watchContactType === 'other') {
+      register('description', { required: true });
+    } else {
+      unregister('description');
+    }
+  }, [watchContactType, register, unregister]);
+
+  return (
+    <>
+      <ResponsiveGridColumn full={true} half={true}>
+        <TextInput id="firstName" control={control} register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true}>
+        <TextInput id="lastName" register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true}>
+        <TextInput id="email" type="email" text="Email address" register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true}>
+        <label htmlFor="phoneNumber" className="block font-medium text-gray-700">
+          Phone number
+        </label>
+        <PhoneInput name="phoneNumber" type="tel" country="US" control={control} rules={{ required: true }} />
+        <ErrorMessage name="phoneNumber" errors={formState.errors} as={ErrorMessageTag} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true}>
+        <TextInput id="organization" register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true}>
+        <SelectInput id="contactType" items={contactTypes} register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      {watchContactType === 'other' && (
+        <ResponsiveGridColumn full={true}>
+          <TextInput id="description" register={register} errors={formState.errors} />
+        </ResponsiveGridColumn>
+      )}
+
+      <ResponsiveGridColumn full={true}>
+        <TextInput id="mailingAddress" text="Street address" register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} third={true}>
+        <TextInput id="city" register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true} third={true}>
+        <TextInput id="state" register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true} third={true}>
+        <TextInput id="zipCode" text="ZIP" register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+    </>
+  );
+}
+
+function SerContactFields({ control, register, formState }) {
+  return (
+    <>
+      <ResponsiveGridColumn full={true} half={true}>
+        <TextInput id="firstName" control={control} register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true}>
+        <TextInput id="lastName" register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true}>
+        <TextInput id="email" type="email" text="Email address" register={register} errors={formState.errors} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true}>
+        <label htmlFor="phoneNumber" className="block font-medium text-gray-700">
+          Phone number
+        </label>
+        <PhoneInput name="phoneNumber" type="tel" country="US" control={control} rules={{ required: true }} />
+        <ErrorMessage name="phoneNumber" errors={formState.errors} as={ErrorMessageTag} />
+      </ResponsiveGridColumn>
+
+      <ResponsiveGridColumn full={true} half={true}>
+        <SelectInput
+          text="Oversight agency"
+          items={serDivisions}
+          id="organization"
+          register={register}
+          errors={formState.errors}
+        />
+      </ResponsiveGridColumn>
+    </>
   );
 }
 
@@ -316,11 +397,12 @@ function ContactTable({ data }) {
     onSettled: () => {
       queryClient.invalidateQueries(['contacts', siteId]);
     },
-    onError: (error, variables, previousValue) => {
+    onError: (error, _, previousValue) => {
       queryClient.setQueryData(['contacts', siteId], previousValue);
       onRequestError(error, 'We had some trouble deleting this contact.');
     },
   });
+
   const columns = useMemo(
     () => [
       {

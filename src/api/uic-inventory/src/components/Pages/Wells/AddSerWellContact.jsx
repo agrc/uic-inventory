@@ -91,11 +91,9 @@ function AddSerWellContact() {
       siteId: parseInt(siteId),
       accountId: parseInt(authInfo.id),
       contactType: 'project_manager',
+      serContact: true,
+      ...formData,
     };
-
-    for (let key of Object.keys(formData)) {
-      input[key] = formData[key];
-    }
 
     mutate(input);
   };
