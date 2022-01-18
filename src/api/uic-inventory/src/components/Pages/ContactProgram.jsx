@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from 'react-query';
@@ -10,16 +11,22 @@ export function ContactProgram() {
     resolver: yupResolver(schema),
   });
 
+  //* pull isDirty from form state to activate proxy
+  const { isDirty, isSubmitSuccessful } = formState;
+
   const { mutate, status } = useMutation((json) => ky.post('/api/notify/staff', { json }), {
-    onSuccess: () => {
-      reset();
-      toast.success('Your message has been sent');
-    },
     onError: (error) => onRequestError(error, 'We had some trouble updating your profile.'),
   });
 
-  //* pull isDirty from form state to activate proxy
-  const { isDirty } = formState;
+  useEffect(() => {
+    if (!isSubmitSuccessful) {
+      return;
+    }
+
+    toast.success('Your message has been sent');
+
+    reset();
+  }, [isSubmitSuccessful, reset]);
 
   const sendMessage = (data) => {
     mutate(data);

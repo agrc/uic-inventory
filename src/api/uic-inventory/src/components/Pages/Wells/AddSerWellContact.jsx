@@ -1,4 +1,4 @@
-import { Fragment, useContext, useMemo, useRef } from 'react';
+import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
 import clsx from 'clsx';
@@ -32,6 +32,9 @@ function AddSerWellContact() {
     resolver: yupResolver(schema),
   });
 
+  //* pull value from form state to activate proxy
+  const { isDirty, isSubmitSuccessful } = formState;
+
   const queryClient = useQueryClient();
   const { status, error, data } = useQuery(
     ['ser-contacts', siteId],
@@ -60,11 +63,6 @@ function AddSerWellContact() {
 
       return previousValue;
     },
-    onSuccess: () => {
-      toast.success('Contact created successfully!');
-
-      reset({});
-    },
     onSettled: () => {
       queryClient.invalidateQueries(['ser-contacts', siteId]);
     },
@@ -74,8 +72,15 @@ function AddSerWellContact() {
     },
   });
 
-  //! pull value from form state to activate proxy
-  const { isDirty } = formState;
+  useEffect(() => {
+    if (!isSubmitSuccessful) {
+      return;
+    }
+
+    toast.success('Contact created successfully!');
+
+    reset();
+  }, [isSubmitSuccessful, reset]);
 
   const create = (formData) => {
     if (!isDirty) {
