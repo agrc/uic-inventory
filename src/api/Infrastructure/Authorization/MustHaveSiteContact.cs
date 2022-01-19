@@ -26,13 +26,13 @@ namespace api.Infrastructure {
         CancellationToken token = default) {
         var site = await _context.Sites
           .Include(x => x.Contacts)
-          .SingleOrDefaultAsync(x => x.Id == requirement.SiteId, token);
+          .SingleOrDefaultAsync(x => x.Id == requirement.SiteId, token) ?? new();
 
         if (site.Contacts.Count < 1) {
           return AuthorizationResult.Fail("SC01:This site is missing a contact.");
         }
 
-        var contactTypes = site.Contacts.Select(x => x.ContactType).ToList();
+        var contactTypes = site.Contacts.Select(x => x.ContactType).ToList() ?? new();
 
         if (!RequiredContactTypes.Types.Any(x => contactTypes.Contains(x))) {
           return AuthorizationResult.Fail("SC02:This site is missing a contact of the type owner, operator or legal representative.");
