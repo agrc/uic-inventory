@@ -68,7 +68,7 @@ namespace api.Features {
     public bool WellDetailsComplete {
       get {
         if (SubClass == 5002) {
-          return !string.IsNullOrEmpty(ConstructionDetails) && !string.IsNullOrEmpty(InjectateCharacterization) && !string.IsNullOrEmpty(HydrogeologicCharacterization);
+          return !string.IsNullOrEmpty(ConstructionDetails) && !string.IsNullOrEmpty(InjectateCharacterization);
         }
 
         return !string.IsNullOrEmpty(ConstructionDetails);
