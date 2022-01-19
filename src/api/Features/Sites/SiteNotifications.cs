@@ -23,6 +23,17 @@ namespace api.Features {
       public EditNotificationHandler(IAppDbContext context) {
         _context = context;
       }
+      private static void UpdateAllSerInventoryContactStatus(Site entity) {
+        var inventories = entity.Inventories
+          .Where(x => x.SubClass == 5002)
+          .ToList();
+
+        var hasSerContact = entity.Contacts.Any(x => x.SerContact);
+
+        foreach (var inventory in inventories) {
+          inventory.ContactStatus = hasSerContact;
+        }
+      }
       private static bool GetContactStatus(ICollection<Contact> contacts) =>
         contacts.Any(x => RequiredContactTypes.Types.Contains(x.ContactType));
       private static bool GetLocationStatus(Site site) => site.Address is not null && site.Geometry is not null;
@@ -38,11 +49,16 @@ namespace api.Features {
       public async Task Handle(EditNotification notification, CancellationToken token) {
         var site = await _context.Sites
           .Include(x => x.Contacts)
+          .Include(x => x.Inventories)
           .SingleOrDefaultAsync(s => s.Id == notification.SiteId, token);
 
         site.LocationStatus = GetLocationStatus(site);
         site.DetailStatus = GetDetailStatus(site);
         site.ContactStatus = GetContactStatus(site.Contacts);
+
+        if (site.Inventories.Count > 0 && site.Inventories.Any(x => x.SubClass == 5002)) {
+          UpdateAllSerInventoryContactStatus(site);
+        }
 
         site.Status = GetSiteStatus(site);
 

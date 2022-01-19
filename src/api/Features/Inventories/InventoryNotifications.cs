@@ -43,12 +43,13 @@ namespace api.Features {
         _log = log;
       }
       private static bool GetWellContactStatus(Inventory entity) {
-        foreach (var well in entity.Wells) {
-          // if (well.)
+        if (entity.Wells.Any(x => x.SubClass == 5002)) {
+          return entity.Site?.Contacts.Any(x => x.SerContact) ?? false;
         }
 
-        return false;
+        return true;
       }
+
       private static bool GetPaymentStatus(Inventory entity) {
         IReadOnlyList<int> subClasses = new List<int> { -1, 5047, 5002, 5101, 5026 };
 
@@ -108,6 +109,8 @@ namespace api.Features {
 
         var entity = await _context.Inventories
           .Include(x => x.Wells)
+          .Include(x => x.Site)
+          .Include(x => x.Site.Contacts)
           .SingleOrDefaultAsync(s => s.Id == notification.Id, token);
 
         if (entity == null) {
@@ -222,6 +225,7 @@ namespace api.Features {
         }
       }
     }
+
     public class SendAdminSubmissionEmailHandler : INotificationHandler<SubmitNotification> {
       private readonly EmailService _client;
       private readonly ILogger _log;

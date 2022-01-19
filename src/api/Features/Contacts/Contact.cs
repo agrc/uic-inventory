@@ -49,6 +49,7 @@ namespace api.Features {
     public string? State { get; set; }
     public string? ZipCode { get; set; }
     public ContactTypes? ContactType { get; set; }
+    public bool SerContact { get; set; }
   }
 
   public static class ContactInputExtension {
@@ -93,6 +94,10 @@ namespace api.Features {
 
       if (input.ContactType != null) {
         output.ContactType = input.ContactType.Value;
+      }
+
+      if (input.SerContact != default) {
+        output.SerContact = input.SerContact;
       }
 
       return output;
