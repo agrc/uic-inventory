@@ -43,7 +43,7 @@ namespace api.Features {
         _log = log;
       }
       private static bool GetWellContactStatus(Inventory entity) {
-        if (entity.Wells.Any(x => x.SubClass == 5002)) {
+        if (entity.SubClass == 5002) {
           return entity.Site?.Contacts.Any(x => x.SerContact) ?? false;
         }
 
