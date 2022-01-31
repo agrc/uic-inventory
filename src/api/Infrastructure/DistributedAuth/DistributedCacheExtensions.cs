@@ -26,6 +26,7 @@ namespace api.Infrastructure {
           options.Cookie.Name = ".auth-ticket.auth";
           options.SessionStore = store;
           options.ExpireTimeSpan = TimeSpan.FromHours(1);
+          options.SlidingExpiration = true;
 
           options.ForwardChallenge = null; //OpenIdConnectDefaults.AuthenticationScheme;
           options.LoginPath = "/authentication/login";
