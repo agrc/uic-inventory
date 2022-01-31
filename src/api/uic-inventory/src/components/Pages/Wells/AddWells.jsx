@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTable } from 'react-table';
@@ -11,6 +11,7 @@ import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
 import Viewpoint from '@arcgis/core/Viewpoint';
+import throttle from 'lodash.throttle';
 import clsx from 'clsx';
 import Tippy from '@tippyjs/react/headless';
 import {
@@ -72,13 +73,34 @@ SelectedWellsSymbol.data.primitiveOverrides = [
 ];
 
 function AddWells() {
-  const { authInfo } = useContext(AuthContext);
   const { siteId, inventoryId } = useParams();
-  const queryClient = useQueryClient();
   const history = useHistory();
-  const mapDiv = useRef(null);
-  const drawingEvent = useRef();
-  const [activeTool, setActiveTool] = useState();
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'activate-tool': {
+        return { ...state, activeTool: action.payload };
+      }
+      case 'set-geometry-value': {
+        return { ...state, geometry: action.payload };
+      }
+      case 'set-wells': {
+        return { ...state, graphics: action.payload };
+      }
+      case 'set-hover-graphic': {
+        return { ...state, highlighted: action.payload };
+      }
+      default:
+        return state;
+    }
+  };
+
+  const [state, dispatch] = useReducer(reducer, {
+    graphics: [],
+    geometry: undefined,
+    activeTool: undefined,
+    highlighted: undefined,
+  });
 
   const { status, data } = useQuery(
     ['inventory', inventoryId],
@@ -88,12 +110,57 @@ function AddWells() {
       onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
     }
   );
+
+  return (
+    <main>
+      <Chrome loading={status === 'loading'}>
+        <div className="md:grid md:grid-cols-3 md:gap-6">
+          <GridHeading
+            text="Well Location"
+            subtext="Enter well information then click `Draw` to add a well location on the map. If there are more than 10 wells for a single Well Operating Status, place a single point in a representative location and specify the number of wells."
+            site={data?.site}
+          >
+            <p className="mb-3">Fill out the information below to activate drawing the well location on the map.</p>
+            <AddWellForm data={data} state={state} dispatch={dispatch} />
+          </GridHeading>
+          <div className="md:mt-0 md:col-span-2">
+            <div className="overflow-hidden shadow sm:rounded-md">
+              <div className="bg-white">
+                <div className="grid grid-cols-6">
+                  <div className="col-span-6">
+                    <WellMap site={data?.site} wells={data?.wells} state={state} dispatch={dispatch} />
+                    <WellTable wells={data?.wells} state={state} />
+                    <div className="flex justify-between px-4 py-3 text-right bg-gray-100 sm:px-6">
+                      <BackButton />
+                      <button
+                        type="submit"
+                        onClick={() => history.push(`/site/${siteId}/inventory/${inventoryId}/add-well-details`)}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Chrome>
+    </main>
+  );
+}
+
+function AddWellForm({ data, state, dispatch }) {
+  const { authInfo } = useContext(AuthContext);
+  const { siteId, inventoryId } = useParams();
+  const queryClient = useQueryClient();
+
   const { mutate: addWell } = useMutation((json) => ky.post('/api/well', { json }).json(), {
     onSuccess: () => {
       toast.success('Well added successfully!');
       queryClient.invalidateQueries(['inventory', inventoryId]);
 
-      setPointGraphic();
+      dispatch({ type: 'set-point-graphic', payload: null });
     },
     onError: (error) => onRequestError(error, 'We had some trouble adding your well.'),
   });
@@ -108,17 +175,6 @@ function AddWells() {
   const watchRemediationType = watch('remediationType');
   const watchGeometry = watch('geometry');
 
-  //! pull value from form state to activate proxy
-  const { isDirty, isValid } = formState;
-
-  const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
-  // zoom map on geocode
-  const { setViewPoint } = useViewPointZooming(mapView);
-  // manage graphics
-  const { graphic, setGraphic: setPolygonGraphic } = useGraphicManager(mapView);
-  const { graphic: existingGraphics, setGraphic: setExistingPointGraphics } = useGraphicManager(mapView);
-  const { setGraphic: setPointGraphic } = useGraphicManager(mapView);
-
   useEffect(() => {
     register('geometry');
   }, [register]);
@@ -131,48 +187,6 @@ function AddWells() {
 
     reset();
   }, [formState, register, reset, setValue]);
-
-  // place site polygon
-  useEffect(() => {
-    if (status !== 'success' || graphic) {
-      return;
-    }
-
-    const shape = JSON.parse(data.site.geometry);
-    const geometry = new Polygon({
-      type: 'polygon',
-      rings: shape.rings,
-      spatialReference: shape.spatialReference,
-    });
-
-    setPolygonGraphic(
-      new Graphic({
-        geometry: geometry,
-        attributes: {},
-        symbol: PolygonSymbol,
-      })
-    );
-
-    setViewPoint(geometry.extent.expand(3));
-  }, [data, status]);
-
-  // place site wells
-  useEffect(() => {
-    if (status !== 'success') {
-      return;
-    }
-
-    const wells = data.wells.map(
-      (well) =>
-        new Graphic({
-          geometry: new Point(JSON.parse(well.geometry)),
-          attributes: { id: well.id, selected: false, complete: false },
-          symbol: SelectedWellsSymbol,
-        })
-    );
-
-    setExistingPointGraphics(wells);
-  }, [data, status]);
 
   // handle conditional control registration
   useEffect(() => {
@@ -201,45 +215,11 @@ function AddWells() {
     }
   }, [watchRemediationType, register, unregister]);
 
-  // activate point clicking for selecting a well location
   useEffect(() => {
-    // if the tool was changed clear existing events
-    if (activeTool !== 'draw-well') {
-      drawingEvent.current?.remove();
-      drawingEvent.current = null;
-
-      return;
+    if (state.geometry) {
+      setValue('geometry', state.geometry, { shouldValidate: true });
     }
-
-    mapView.current.focus();
-
-    // enable clicking on the map to set the well location
-    drawingEvent.current = mapView.current.on('immediate-click', (event) => {
-      const graphic = new Graphic({
-        geometry: event.mapPoint,
-        attributes: {},
-        symbol: PinSymbol,
-      });
-
-      setPointGraphic(graphic);
-
-      if (mapView.current.scale > 20000) {
-        mapView.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
-      }
-
-      setValue('geometry', event.mapPoint.toJSON(), { shouldValidate: true });
-
-      drawingEvent.current?.remove();
-      drawingEvent.current = null;
-
-      setActiveTool(null);
-    });
-
-    return () => {
-      drawingEvent.current?.remove();
-      drawingEvent.current = null;
-    };
-  }, [activeTool, setValue, setPointGraphic]);
+  }, [state.geometry, setValue]);
 
   const addLocation = (formData) => {
     if (!isDirty) {
@@ -257,101 +237,181 @@ function AddWells() {
     addWell(input);
   };
 
+  //! pull value from form state to activate proxy
+  const { isDirty, isValid } = formState;
+
   return (
-    <main>
-      <Chrome>
-        <div className="md:grid md:grid-cols-3 md:gap-6">
-          <GridHeading
-            text="Well Location"
-            subtext="Enter well information then click `Draw` to add a well location on the map. If there are more than 10 wells for a single Well Operating Status, place a single point in a representative location and specify the number of wells."
-            site={data?.site}
-          >
-            <p className="mb-3">Fill out the information below to activate drawing the well location on the map.</p>
-            <form
-              className="grid gap-2 px-4 py-5 shadow sm:rounded-md"
-              onSubmit={handleSubmit((data) => addLocation(data))}
+    <form className="grid gap-2 px-4 py-5 shadow sm:rounded-md" onSubmit={handleSubmit((data) => addLocation(data))}>
+      <TextInput id="construction" text="Well Construction/Name" register={register} errors={formState.errors} />
+      <SelectInput id="status" items={operatingStatusTypes} register={register} errors={formState.errors} />
+      {watchStatus === 'OT' && <TextInput id="description" register={register} errors={formState.errors} />}
+      {data?.subClass === 5002 && (
+        <>
+          <SelectInput id="remediationType" items={remediationTypes} register={register} errors={formState.errors} />
+          {watchRemediationType === '999' && (
+            <TextInput id="remediationDescription" register={register} errors={formState.errors} />
+          )}
+          <TextInput id="remediationProjectId" register={register} errors={formState.errors} />
+        </>
+      )}
+      <TextInput id="quantity" type="number" register={register} errors={formState.errors} />
+      <div className="flex justify-between">
+        <Label id="wellLocation" />
+        <OkNotToggle classes="h-12" status={watchGeometry} />
+      </div>
+      <ErrorMessage errors={formState.errors} name="geometry.x" as={ErrorMessageTag} />
+      <div className="flex justify-between px-4 py-3">
+        <Tippy
+          render={(attrs) => (
+            <Tooltip {...attrs}>
+              Click to activate drawing, then click on the map to create or move well location.
+            </Tooltip>
+          )}
+        >
+          <div className="flex flex-col items-center space-y-2">
+            <button
+              type="button"
+              meta="default"
+              className={clsx({ 'bg-blue-800': state.activeTool === 'draw-well' })}
+              onClick={() => dispatch({ type: 'activate-tool', payload: 'draw-well' })}
             >
-              <TextInput
-                id="construction"
-                text="Well Construction/Name"
-                register={register}
-                errors={formState.errors}
-              />
-              <SelectInput id="status" items={operatingStatusTypes} register={register} errors={formState.errors} />
-              {watchStatus === 'OT' && <TextInput id="description" register={register} errors={formState.errors} />}
-              {data?.subClass === 5002 && (
-                <>
-                  <SelectInput
-                    id="remediationType"
-                    items={remediationTypes}
-                    register={register}
-                    errors={formState.errors}
-                  />
-                  {watchRemediationType === '999' && (
-                    <TextInput id="remediationDescription" register={register} errors={formState.errors} />
-                  )}
-                  <TextInput id="remediationProjectId" register={register} errors={formState.errors} />
-                </>
-              )}
-              <TextInput id="quantity" type="number" register={register} errors={formState.errors} />
-              <div className="flex justify-between">
-                <Label id="wellLocation" />
-                <OkNotToggle classes="h-12" status={watchGeometry} />
-              </div>
-              <ErrorMessage errors={formState.errors} name="geometry.x" as={ErrorMessageTag} />
-              <div className="flex justify-between px-4 py-3">
-                <Tippy
-                  render={(attrs) => (
-                    <Tooltip {...attrs}>
-                      Click to activate drawing, then click on the map to create or move well location.
-                    </Tooltip>
-                  )}
-                >
-                  <div className="flex flex-col items-center space-y-2">
-                    <button
-                      type="button"
-                      meta="default"
-                      className={clsx({ 'bg-blue-800': activeTool === 'draw-well' })}
-                      onClick={() => setActiveTool('draw-well')}
-                    >
-                      <PointIcon classes="h-6 text-white fill-current" />
-                    </button>
-                    <span className="block text-xs text-gray-500">Draw Well</span>
-                  </div>
-                </Tippy>
-                <div className="flex flex-col items-center space-y-2">
-                  <button type="submit" disabled={!isValid}>
-                    Add
-                  </button>
-                </div>
-              </div>
-            </form>
-          </GridHeading>
-          <div className="md:mt-0 md:col-span-2">
-            <div className="overflow-hidden shadow sm:rounded-md">
-              <div className="bg-white">
-                <div className="grid grid-cols-6">
-                  <div className="col-span-6">
-                    <div className="w-full h-96" ref={mapDiv}></div>
-                    <WellTable wells={data?.wells} graphics={existingGraphics} />
-                    <div className="flex justify-between px-4 py-3 text-right bg-gray-100 sm:px-6">
-                      <BackButton />
-                      <button
-                        type="submit"
-                        onClick={() => history.push(`/site/${siteId}/inventory/${inventoryId}/add-well-details`)}
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <PointIcon classes="h-6 text-white fill-current" />
+            </button>
+            <span className="block text-xs text-gray-500">Draw Well</span>
           </div>
+        </Tippy>
+        <div className="flex flex-col items-center space-y-2">
+          <button type="submit" disabled={!isValid}>
+            Add
+          </button>
         </div>
-      </Chrome>
-    </main>
+      </div>
+    </form>
   );
+}
+
+function WellMap({ site, wells, state, dispatch }) {
+  const mapDiv = useRef(null);
+  const drawingEvent = useRef();
+  const hoverEvent = useRef();
+
+  const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
+  const { setViewPoint } = useViewPointZooming(mapView);
+  // manage graphics
+  const { graphic, setGraphic: setPolygonGraphic } = useGraphicManager(mapView);
+  const { setGraphic: setExistingPointGraphics } = useGraphicManager(mapView);
+  const { setGraphic: setPointGraphic } = useGraphicManager(mapView);
+
+  // place site polygon
+  useEffect(() => {
+    if (!site || graphic) {
+      return;
+    }
+
+    const shape = JSON.parse(site.geometry);
+    const geometry = new Polygon({
+      type: 'polygon',
+      rings: shape.rings,
+      spatialReference: shape.spatialReference,
+    });
+
+    setPolygonGraphic(
+      new Graphic({
+        geometry: geometry,
+        attributes: {},
+        symbol: PolygonSymbol,
+      })
+    );
+
+    setViewPoint(geometry.extent.expand(3));
+  }, [graphic, site, setPolygonGraphic, setViewPoint]);
+
+  // place site wells
+  useEffect(() => {
+    if (!wells) {
+      return;
+    }
+
+    const wellGraphics = wells.map(
+      (well) =>
+        new Graphic({
+          geometry: new Point(JSON.parse(well.geometry)),
+          attributes: { id: well.id, selected: false, complete: false },
+          symbol: SelectedWellsSymbol,
+        })
+    );
+
+    dispatch({ type: 'set-wells', payload: wellGraphics });
+    setExistingPointGraphics(wellGraphics);
+  }, [wells, dispatch, setExistingPointGraphics]);
+
+  // activate point clicking for selecting a well location
+  useEffect(() => {
+    // if the tool was changed clear existing events
+    if (state.activeTool !== 'draw-well') {
+      drawingEvent.current?.remove();
+      drawingEvent.current = null;
+
+      return;
+    }
+
+    mapView.current.focus();
+
+    // enable clicking on the map to set the well location
+    drawingEvent.current = mapView.current.on('immediate-click', (event) => {
+      const graphic = new Graphic({
+        geometry: event.mapPoint,
+        attributes: { selected: false, complete: false },
+        symbol: PinSymbol,
+      });
+
+      if (mapView.current.scale > 20000) {
+        mapView.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
+      }
+
+      setPointGraphic(graphic);
+      dispatch({ type: 'set-geometry-value', payload: event.mapPoint.toJSON() });
+
+      drawingEvent.current?.remove();
+      drawingEvent.current = null;
+
+      dispatch({ type: 'activate-tool', payload: null });
+    });
+
+    return () => {
+      drawingEvent.current?.remove();
+      drawingEvent.current = null;
+    };
+  }, [state.activeTool, setPointGraphic, dispatch, mapView]);
+
+  // activate point hovering for viewing a well location in the table
+  useEffect(() => {
+    if (hoverEvent.current) {
+      return;
+    }
+
+    hoverEvent.current = mapView.current.on(
+      'pointer-move',
+      throttle((event) => {
+        const { x, y } = event;
+        mapView.current.hitTest({ x, y }).then(({ results }) => {
+          if (results?.length === 0) {
+            dispatch({ type: 'set-hover-graphic', payload: undefined });
+            return;
+          }
+
+          const id = results[0].graphic.attributes['id'];
+          dispatch({ type: 'set-hover-graphic', payload: id });
+        });
+      }, 100)
+    );
+
+    return () => {
+      hoverEvent.current?.remove();
+    };
+  }, [mapView, dispatch]);
+
+  return <div className="w-full h-96" ref={mapDiv}></div>;
 }
 
 const selectGraphic = (id, graphics, selected = undefined) => {
@@ -368,7 +428,7 @@ const selectGraphic = (id, graphics, selected = undefined) => {
   graphic.symbol = SelectedWellsSymbol.clone();
 };
 
-function WellTable({ graphics, wells = [] }) {
+function WellTable({ wells = [], state }) {
   const { inventoryId, siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
   const [isOpen, { open, close }] = useOpenClosed();
@@ -557,12 +617,17 @@ function WellTable({ graphics, wells = [] }) {
 
             return (
               <tr
-                className="hover:bg-blue-100"
+                className={clsx(
+                  {
+                    'bg-blue-100': row.original.id === state.highlighted,
+                  },
+                  'hover:bg-blue-100'
+                )}
                 key={`${row.index}`}
                 {...row.getRowProps()}
-                onMouseEnter={() => selectGraphic(row.original.id, graphics, true)}
-                onMouseLeave={() => selectGraphic(row.original.id, graphics, false)}
-                onClick={() => selectGraphic(row.original.id, graphics)}
+                onMouseEnter={() => selectGraphic(row.original.id, state.graphics, true)}
+                onMouseLeave={() => selectGraphic(row.original.id, state.graphics, false)}
+                onClick={() => selectGraphic(row.original.id, state.graphics)}
               >
                 {row.cells.map((cell) => (
                   <td
