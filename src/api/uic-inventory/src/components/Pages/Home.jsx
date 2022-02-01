@@ -128,7 +128,7 @@ function SiteList({ show, status, data }) {
 }
 
 const getStatusProps = (status) => {
-  const commonClasses = 'uppercase text-xs border px-2 py-1 w-24 text-center rounded font-bold text-white';
+  const commonClasses = 'uppercase text-xs border px-2 py-1 w-24 text-center rounded font-bold text-white select-none';
   switch (status) {
     case 'incomplete':
       return {
@@ -149,6 +149,17 @@ const getStatusProps = (status) => {
     }
   }
 };
+
+function InventoryStatus({ inventoryId, siteId, status }) {
+  const { isElevated } = useContext(AuthContext);
+  const statusProps = getStatusProps(status);
+
+  if (isElevated() && status === 'submitted') {
+    return <Link to={`/review/site/${siteId}/inventory/${inventoryId}`} {...statusProps} />;
+  }
+
+  return <span {...statusProps} />;
+}
 
 function SiteTable({ data }) {
   const [isSiteModalOpen, { open: openSiteModal, close: closeSiteModal }] = useOpenClosed();
@@ -189,12 +200,14 @@ function SiteTable({ data }) {
         Header: 'Type',
         accessor: 'naicsTitle',
         SubCell: ({ row }) => {
-          const statusProps = getStatusProps(row.original.status);
-
           return (
             <div className="flex items-center justify-between">
               <div>{wellTypes.find((item) => item.value === row.original.subClass).label}</div>
-              <span {...statusProps} />
+              <InventoryStatus
+                siteId={`${row.original.siteId}`}
+                inventoryId={row.original.id}
+                status={row.original.status}
+              />
             </div>
           );
         },
