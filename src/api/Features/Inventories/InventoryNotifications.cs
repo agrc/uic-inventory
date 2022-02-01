@@ -166,7 +166,7 @@ namespace api.Features {
             { "name", initials },
             { "inventoryId", notification.Inventory.Id },
           },
-          Url = $"/site/{notification.Site.Id}/inventory/{notification.Inventory.Id}/add-wells",
+          Url = $"/review/site/{notification.Site.Id}/inventory/{notification.Inventory.Id}",
           NotificationReceipts = recipients
         };
 
