@@ -25,7 +25,7 @@ namespace api.Infrastructure {
       var expiresUtc = ticket.Properties.ExpiresUtc;
 
       if (expiresUtc.HasValue) {
-        options.SetAbsoluteExpiration(expiresUtc.Value);
+        options.SetSlidingExpiration(TimeSpan.FromHours(4));
       }
 
       if (!ticket.Properties.Items.ContainsKey("key")) {

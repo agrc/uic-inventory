@@ -25,7 +25,7 @@ namespace api.Infrastructure {
         .Configure<ITicketStore>((options, store) => {
           options.Cookie.Name = ".auth-ticket.auth";
           options.SessionStore = store;
-          options.ExpireTimeSpan = TimeSpan.FromHours(1);
+          options.ExpireTimeSpan = TimeSpan.FromHours(4);
           options.SlidingExpiration = true;
 
           options.ForwardChallenge = null; //OpenIdConnectDefaults.AuthenticationScheme;
