@@ -5,6 +5,7 @@ import {
   Profile,
   Sites,
   GenericLandingPage,
+  Review,
   SitesAndInventory,
   Wells,
 } from './components/Pages';
@@ -12,22 +13,31 @@ import { AuthContext } from './AuthProvider';
 import { useContext } from 'react';
 
 function Routes() {
-  const { isAuthenticated, completeProfile } = useContext(AuthContext);
+  const { isAuthenticated, isElevated, completeProfile } = useContext(AuthContext);
 
   return (
     <Router>
       <Navigation />
       <Switch>
-        {isAuthenticated() ? <AuthenticatedRoutes completeProfile={completeProfile} /> : <UnauthenticatedRoutes />}
+        {isAuthenticated() ? (
+          <AuthenticatedRoutes elevated={isElevated()} completeProfile={completeProfile} />
+        ) : (
+          <UnauthenticatedRoutes />
+        )}
       </Switch>
       <ToastContainer theme="dark" />
     </Router>
   );
 }
 
-function AuthenticatedRoutes({ completeProfile }) {
+function AuthenticatedRoutes({ completeProfile, elevated }) {
   return (
     <Switch>
+      {elevated && (
+        <Route path="/review/site/:siteId/inventory/:inventoryId">
+          <Review />
+        </Route>
+      )}
       <Route path="/contact">
         <ContactProgram />
       </Route>
