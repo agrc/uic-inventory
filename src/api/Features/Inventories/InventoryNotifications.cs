@@ -153,7 +153,6 @@ namespace api.Features {
           });
         }
 
-        //! TODO: use admin url
         var initials = "ID";
         if (notification.Account?.FirstName != null && notification.Account?.LastName != null) {
           initials = string.Concat(notification.Account.FirstName.AsSpan(0, 1), notification.Account.LastName.AsSpan(0, 1));
