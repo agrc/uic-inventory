@@ -3,11 +3,13 @@ import { useQuery } from 'react-query';
 import ky from 'ky';
 import clsx from 'clsx';
 
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+
 import { AuthContext } from '../../../AuthProvider';
 import { FormGrid, ResponsiveGridColumn } from '../../FormElements';
 import { Chrome, useParams, onRequestError } from '../../PageElements';
 import { ownershipTypes, wellTypes, contactTypes, valueToLabel } from '../../../data/lookups';
-import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
+import { useWebMap, useSitePolygon, useInventoryWells } from '../../Hooks';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'numeric',
@@ -25,7 +27,7 @@ export default function Review() {
   return (
     <Chrome title="Inventory Review">
       <SiteAndInventoryDetails siteId={siteId} inventoryId={inventoryId} />
-      <LocationDetails />
+      <LocationDetails siteId={siteId} inventoryId={inventoryId} />
       <ContactDetails siteId={siteId} />
       <WellDetails siteId={siteId} inventoryId={inventoryId} />
       <Section>
@@ -238,12 +240,38 @@ function Address({ mailingAddress, city, state, zipCode }) {
 }
 
 const LocationDetails = ({ siteId, inventoryId }) => {
+  const { data } = useQuery(
+    ['inventory', inventoryId],
+    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    {
+      enabled: siteId > 0,
+      onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
+    }
+  );
+
   const mapDiv = useRef();
   const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
 
+  const gwpz = useRef(
+    new FeatureLayer({
+      url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/arcgis/rest/services/Drinking_Water_Source_Protection_Zones_-_DDW/FeatureServer/2',
+    })
+  );
+
+  mapView.current?.when(() => {
+    if (mapView.current.map.layers.includes(gwpz.current)) {
+      return;
+    }
+
+    mapView.current.map.add(gwpz.current);
+  });
+
+  useSitePolygon(mapView, data?.site);
+  useInventoryWells(mapView, data?.wells);
+
   return (
     <Section title="Location Details">
-      <div className="col-span-6 min-h-profile" ref={mapDiv}></div>
+      <div className="col-span-6 border rounded shadow h-72" ref={mapDiv}></div>
     </Section>
   );
 };
