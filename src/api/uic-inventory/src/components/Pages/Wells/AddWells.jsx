@@ -25,52 +25,15 @@ import {
   useHistory,
 } from '../../PageElements';
 import { Label, GridHeading, WellLocationSchema as schema, SelectInput, TextInput } from '../../FormElements';
-import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
+import { PinSymbol, SelectedWellsSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { AuthContext } from '../../../AuthProvider';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
-import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
+import { useOpenClosed } from '../../Hooks';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
 import { Tooltip } from '../../PageElements';
 import { remediationTypes, operatingStatusTypes } from '../../../data/lookups';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
-
-const SelectedWellsSymbol = PinSymbol.clone();
-SelectedWellsSymbol.data.primitiveOverrides = [
-  {
-    type: 'CIMPrimitiveOverride',
-    primitiveName: 'complete',
-    propertyName: 'Color',
-    valueExpressionInfo: {
-      type: 'CIMExpressionInfo',
-      title: 'Color of pin based on completeness',
-      expression: 'iif($feature.complete, [31, 41, 55, .25], [31, 41, 55, 1]);',
-      returnType: 'Default',
-    },
-  },
-  {
-    type: 'CIMPrimitiveOverride',
-    primitiveName: 'selected',
-    propertyName: 'Color',
-    valueExpressionInfo: {
-      type: 'CIMExpressionInfo',
-      title: 'Color of pin based on selected status',
-      expression: 'iif($feature.selected, [147, 197, 253, 1], [251, 251, 251, 1]);',
-      returnType: 'Default',
-    },
-  },
-  {
-    type: 'CIMPrimitiveOverride',
-    primitiveName: 'selected-stroke',
-    propertyName: 'Color',
-    valueExpressionInfo: {
-      type: 'CIMExpressionInfo',
-      title: 'Color of pin based on selected status',
-      expression: 'iif($feature.selected, [255, 255, 255, 1], [251, 191, 36, 1]);',
-      returnType: 'Default',
-    },
-  },
-];
 
 function AddWells() {
   const { siteId, inventoryId } = useParams();
@@ -123,14 +86,14 @@ function AddWells() {
             <p className="mb-3">Fill out the information below to activate drawing the well location on the map.</p>
             <AddWellForm data={data} state={state} dispatch={dispatch} />
           </GridHeading>
-          <div className="md:mt-0 md:col-span-2">
+          <div className="md:col-span-2 md:mt-0">
             <div className="overflow-hidden shadow sm:rounded-md">
               <div className="bg-white">
                 <div className="grid grid-cols-6">
                   <div className="col-span-6">
                     <WellMap site={data?.site} wells={data?.wells} state={state} dispatch={dispatch} />
                     <WellTable wells={data?.wells} state={state} />
-                    <div className="flex justify-between px-4 py-3 text-right bg-gray-100 sm:px-6">
+                    <div className="flex justify-between bg-gray-100 px-4 py-3 text-right sm:px-6">
                       <BackButton />
                       <button
                         type="submit"
@@ -411,7 +374,7 @@ function WellMap({ site, wells, state, dispatch }) {
     };
   }, [mapView, dispatch]);
 
-  return <div className="w-full h-96" ref={mapDiv}></div>;
+  return <div className="h-96 w-full" ref={mapDiv}></div>;
 }
 
 const selectGraphic = (id, graphics, selected = undefined) => {
@@ -485,7 +448,7 @@ function WellTable({ wells = [], state }) {
           return (
             <TrashIcon
               aria-label="delete site"
-              className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
+              className="ml-1 h-6 w-6 cursor-pointer text-red-600 hover:text-red-900"
               onClick={(event) => {
                 open();
 
@@ -520,10 +483,10 @@ function WellTable({ wells = [], state }) {
 
   return wells?.length < 1 ? (
     <div className="flex flex-col items-center">
-      <div className="px-5 py-4 m-6">
+      <div className="m-6 px-5 py-4">
         <h2 className="mb-1 text-xl font-medium">Create your first well</h2>
         <p className="text-gray-700">Get started by filling out the form to add your first well.</p>
-        <div className="mb-6 text-sm text-center text-gray-900"></div>
+        <div className="mb-6 text-center text-sm text-gray-900"></div>
       </div>
     </div>
   ) : (
@@ -564,7 +527,7 @@ function WellTable({ wells = [], state }) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="inline-block w-full max-w-md p-6 mx-auto my-48 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <div className="mx-auto my-48 inline-block w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
                   Well Deletion Confirmation
                 </Dialog.Title>
@@ -574,7 +537,7 @@ function WellTable({ wells = [], state }) {
                   Are you sure you want to delete this well? This action cannot be undone.
                 </p>
 
-                <div className="flex justify-around mt-6">
+                <div className="mt-6 flex justify-around">
                   <button type="button" meta="default" className="bg-indigo-900" onClick={remove}>
                     Yes
                   </button>
@@ -603,7 +566,7 @@ function WellTable({ wells = [], state }) {
                 <th
                   key={`${headerGroup.index}-${column.id}`}
                   {...column.getHeaderProps()}
-                  className="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                  className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                 >
                   {column.render('Header')}
                 </th>
@@ -611,7 +574,7 @@ function WellTable({ wells = [], state }) {
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
+        <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white">
           {rows.map((row) => {
             prepareRow(row);
 
@@ -635,7 +598,7 @@ function WellTable({ wells = [], state }) {
                     className={clsx(
                       {
                         'font-medium': ['action', 'id'].includes(cell.column.id),
-                        'text-right whitespace-nowrap': cell.column.id === 'action',
+                        'whitespace-nowrap text-right': cell.column.id === 'action',
                       },
                       'px-3 py-4'
                     )}

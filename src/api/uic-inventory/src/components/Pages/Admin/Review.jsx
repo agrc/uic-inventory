@@ -1,9 +1,13 @@
-import { useContext, useRef } from 'react';
+import { useContext, useMemo, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import ky from 'ky';
 import clsx from 'clsx';
+import { useTable } from 'react-table';
+import throttle from 'lodash.throttle';
+import { Code } from 'react-content-loader';
 
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 
 import { AuthContext } from '../../../AuthProvider';
 import { FormGrid, ResponsiveGridColumn } from '../../FormElements';
@@ -31,13 +35,13 @@ export default function Review() {
       <ContactDetails siteId={siteId} />
       <WellDetails siteId={siteId} inventoryId={inventoryId} />
       <Section>
-        <button className="inline-flex justify-center px-4 py-2 font-medium text-white bg-gray-800 border border-transparent rounded-md shadow-sm md:col-span-2 sm:col-span-6 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed">
+        <button className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 sm:col-span-6 md:col-span-2">
           Reject
         </button>
-        <button meta="primary" className="border rounded md:col-span-2 sm:col-span-6">
+        <button meta="primary" className="rounded border sm:col-span-6 md:col-span-2">
           Print
         </button>
-        <button meta="default" className="md:col-span-2 sm:col-span-6">
+        <button meta="default" className="sm:col-span-6 md:col-span-2">
           Approve
         </button>
       </Section>
@@ -47,19 +51,19 @@ export default function Review() {
 
 const Label = ({ children }) => <span className="block font-bold text-gray-700">{children}</span>;
 
-const Value = ({ children, className }) => <span className={clsx('block ml-2', className)}>{children}</span>;
+const Value = ({ children, className }) => <span className={clsx('ml-2 block', className)}>{children}</span>;
 
-const Section = ({ gray, children, title }) => (
+const Section = ({ gray, children, title, height = 'max-h-96' }) => (
   <>
     <h1 className="mb-2 text-xl font-medium">{title}</h1>
-    <div className="mb-3 ml-1 overflow-scroll border shadow sm:rounded-md max-h-96">
+    <div className={`mb-3 ml-1 overflow-scroll border shadow sm:rounded-md ${height}`}>
       <div
         className={clsx(
           {
             'bg-gray-50': gray,
             'bg-white': !gray,
           },
-          'px-4 py-5 sm:p-6'
+          'h-full px-4 py-5 sm:p-6'
         )}
       >
         <FormGrid>{children}</FormGrid>
@@ -69,7 +73,7 @@ const Section = ({ gray, children, title }) => (
 );
 
 const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
-  const { data } = useQuery(
+  const { status, data } = useQuery(
     ['inventory', inventoryId],
     () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
     {
@@ -77,6 +81,10 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
       onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
     }
   );
+
+  if (status === 'loading') {
+    return <Code />;
+  }
 
   return (
     <>
@@ -121,17 +129,21 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
 };
 
 const ContactDetails = ({ siteId }) => {
-  const { data } = useQuery(['contacts', siteId], () => ky.get(`/api/site/${siteId}/contacts`).json(), {
+  const { status, data } = useQuery(['contacts', siteId], () => ky.get(`/api/site/${siteId}/contacts`).json(), {
     enabled: siteId > 0,
     onError: (error) => onRequestError(error, 'We had some trouble finding the contacts.'),
   });
+
+  if (status === 'loading') {
+    return <Code />;
+  }
 
   return (
     <Section gray={true} title="Site Contacts">
       {data?.contacts.map((contact) => (
         <Panel key={contact.id}>
           <ResponsiveGridColumn full={true} half={true}>
-            <Value className="px-2 py-1 mb-3 -mx-3 font-bold text-center text-blue-700 bg-blue-200 border border-r-0 border-blue-500 shadow">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
               {valueToLabel(contactTypes, contact.contactType)}
             </Value>
           </ResponsiveGridColumn>
@@ -175,7 +187,7 @@ const handleLink = (text) => {
 };
 
 const WellDetails = ({ siteId, inventoryId }) => {
-  const { data } = useQuery(
+  const { status, data } = useQuery(
     ['inventory', inventoryId],
     () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
     {
@@ -184,6 +196,10 @@ const WellDetails = ({ siteId, inventoryId }) => {
     }
   );
 
+  if (status === 'loading') {
+    return <Code />;
+  }
+
   return (
     <>
       <Section gray={true} title="Construction Details">
@@ -191,11 +207,11 @@ const WellDetails = ({ siteId, inventoryId }) => {
           <Panel key={well.id}>
             <div
               title="Well count"
-              className="absolute inline-flex items-center justify-center w-8 h-8 text-xs font-bold text-gray-700 border border-gray-800 rounded-full bg-white/90 inset-1"
+              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700"
             >
               {well.count}
             </div>
-            <Value className="px-2 py-1 mb-3 -mx-3 font-bold text-center text-blue-700 bg-blue-200 border border-r-0 border-blue-500 shadow">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
               {well.status}
             </Value>
             <Label>Construction</Label>
@@ -208,11 +224,11 @@ const WellDetails = ({ siteId, inventoryId }) => {
           <Panel key={well.id}>
             <div
               title="Well count"
-              className="absolute inline-flex items-center justify-center w-8 h-8 text-xs font-bold text-gray-700 border border-gray-800 rounded-full bg-white/90 inset-1"
+              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700"
             >
               {well.count}
             </div>
-            <Value className="px-2 py-1 mb-3 -mx-3 font-bold text-center text-blue-700 bg-blue-200 border border-r-0 border-blue-500 shadow">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
               {well.status}
             </Value>
             <Label>Injectate Characterization</Label>
@@ -225,7 +241,7 @@ const WellDetails = ({ siteId, inventoryId }) => {
 };
 
 const Panel = ({ children }) => (
-  <div className="relative col-span-6 px-3 py-2 overflow-auto bg-white border rounded shadow max-h-72 md:col-span-2">
+  <div className="relative col-span-6 max-h-72 overflow-auto rounded border bg-white px-3 py-2 shadow md:col-span-2">
     {children}
   </div>
 );
@@ -240,7 +256,17 @@ function Address({ mailingAddress, city, state, zipCode }) {
 }
 
 const LocationDetails = ({ siteId, inventoryId }) => {
-  const { data } = useQuery(
+  const mapDiv = useRef();
+  const groundWaterProtectionZones = useRef(
+    new FeatureLayer({
+      url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/arcgis/rest/services/Drinking_Water_Source_Protection_Zones_-_DDW/FeatureServer/2',
+    })
+  );
+  const hoverEvent = useRef();
+
+  const [state, setState] = useState({ highlighted: undefined, graphics: [] });
+
+  const { status, data } = useQuery(
     ['inventory', inventoryId],
     () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
     {
@@ -249,29 +275,165 @@ const LocationDetails = ({ siteId, inventoryId }) => {
     }
   );
 
-  const mapDiv = useRef();
   const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
 
-  const gwpz = useRef(
-    new FeatureLayer({
-      url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/arcgis/rest/services/Drinking_Water_Source_Protection_Zones_-_DDW/FeatureServer/2',
-    })
-  );
-
   mapView.current?.when(() => {
-    if (mapView.current.map.layers.includes(gwpz.current)) {
+    if (mapView.current.map.layers.includes(groundWaterProtectionZones.current)) {
       return;
     }
 
-    mapView.current.map.add(gwpz.current);
+    mapView.current.map.add(groundWaterProtectionZones.current);
+  });
+
+  mapView.current?.when(() => {
+    if (hoverEvent.current) {
+      return;
+    }
+
+    hoverEvent.current = mapView.current.on(
+      'pointer-move',
+      throttle((event) => {
+        const { x, y } = event;
+        mapView.current.hitTest({ x, y }).then(({ results }) => {
+          if (results?.length === 0) {
+            setState({ ...state, highlighted: undefined });
+            return;
+          }
+
+          const id = results[0].graphic.attributes['id'];
+          setState({ ...state, highlighted: id });
+        });
+      }, 100)
+    );
   });
 
   useSitePolygon(mapView, data?.site);
-  useInventoryWells(mapView, data?.wells);
+  const wells = useInventoryWells(mapView, data?.wells);
+
+  if (state.graphics.length === 0 && wells?.length > 0) {
+    setState({ ...state, graphics: wells });
+  }
 
   return (
-    <Section title="Location Details">
-      <div className="col-span-6 border rounded shadow h-72" ref={mapDiv}></div>
+    <Section title="Location Details" height="h-screen">
+      <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
+        {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} />}
+        <div className="h-full rounded border shadow" ref={mapDiv}></div>
+      </div>
     </Section>
+  );
+};
+
+const selectGraphic = (id, graphics, selected = undefined) => {
+  graphics.map((x) => {
+    if (x.attributes.id !== id) {
+      x.attributes.selected = false;
+      x.symbol = SelectedWellsSymbol.clone();
+    }
+  });
+
+  const graphic = graphics.filter((x) => x.attributes.id === id)[0];
+
+  graphic.attributes.selected = selected === undefined ? !graphic.attributes.selected : selected;
+  graphic.symbol = SelectedWellsSymbol.clone();
+};
+
+const WellTable = ({ wells = [], state }) => {
+  const [highlighting, setHighlighting] = useState(false);
+  const columns = useMemo(
+    () => [
+      {
+        accessor: 'id',
+      },
+      {
+        accessor: 'wellName',
+        Header: 'Construction',
+      },
+      {
+        accessor: 'status',
+        Header: 'Operating Status',
+      },
+      {
+        Header: 'Count',
+        accessor: 'count',
+      },
+    ],
+    []
+  );
+
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+    columns,
+    data: wells,
+    initialState: {
+      hiddenColumns: ['id'],
+    },
+  });
+
+  return (
+    <table {...getTableProps()} className="divide-y divide-gray-200 overflow-auto border">
+      <thead className="bg-gray-50">
+        {headerGroups.map((headerGroup) => (
+          <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map((column) => (
+              <th
+                key={`${headerGroup.index}-${column.id}`}
+                {...column.getHeaderProps()}
+                className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+              >
+                {column.render('Header')}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white">
+        {rows.map((row) => {
+          prepareRow(row);
+
+          return (
+            <tr
+              className={clsx(
+                {
+                  'bg-blue-100': row.original.id === state.highlighted,
+                },
+                'hover:bg-blue-100'
+              )}
+              key={`${row.index}`}
+              {...row.getRowProps()}
+              onPointerEnter={() => {
+                setHighlighting(true);
+                selectGraphic(row.original.id, state.graphics, true);
+              }}
+              onPointerLeave={() => {
+                setHighlighting(false);
+                selectGraphic(row.original.id, state.graphics, false);
+              }}
+              onClick={() => {
+                if (highlighting) {
+                  return;
+                }
+                selectGraphic(row.original.id, state.graphics);
+              }}
+            >
+              {row.cells.map((cell) => (
+                <td
+                  key={`${row.index}-${cell.column.id}`}
+                  className={clsx(
+                    {
+                      'font-medium': ['action', 'id'].includes(cell.column.id),
+                      'whitespace-nowrap text-right': cell.column.id === 'action',
+                    },
+                    'px-3 py-2'
+                  )}
+                  {...cell.getCellProps()}
+                >
+                  <div className="text-sm text-gray-900">{cell.render('Cell')}</div>
+                </td>
+              ))}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 };

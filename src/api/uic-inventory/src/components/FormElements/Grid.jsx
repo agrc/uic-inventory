@@ -3,7 +3,7 @@ import { BackButton } from '../PageElements';
 import clsx from 'clsx';
 
 export function FormGrid({ children }) {
-  return <div className="grid grid-cols-6 gap-6">{children}</div>;
+  return <div className="grid h-full grid-cols-6 gap-6">{children}</div>;
 }
 
 export function PageGrid({
@@ -19,9 +19,9 @@ export function PageGrid({
   return (
     <div className="md:grid md:grid-cols-3 md:gap-6">
       <GridHeading text={heading} subtext={subtext} site={site} />
-      <div className="mt-5 md:mt-0 md:col-span-2">
+      <div className="mt-5 md:col-span-2 md:mt-0">
         <div className="overflow-hidden shadow sm:rounded-md">
-          <div className="px-4 py-5 bg-white sm:p-6">{children}</div>
+          <div className="bg-white px-4 py-5 sm:p-6">{children}</div>
           <Buttons submit={submit} submitLabel={submitLabel} back={back} disabled={disabled} />
         </div>
       </div>
@@ -32,7 +32,7 @@ export function PageGrid({
 const Buttons = ({ submit, submitLabel, back, disabled }) => {
   if (submit || back) {
     return (
-      <div className={clsx({ 'flex justify-between': back }, 'px-4 py-3 text-right bg-gray-100 sm:px-6')}>
+      <div className={clsx({ 'flex justify-between': back }, 'bg-gray-100 px-4 py-3 text-right sm:px-6')}>
         {back ? <BackButton /> : null}
         {submit ? (
           <button type="submit" disabled={disabled}>
