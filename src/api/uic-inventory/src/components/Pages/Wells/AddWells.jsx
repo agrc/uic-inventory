@@ -149,7 +149,8 @@ function AddWellForm({ data, state, dispatch }) {
     }
 
     reset();
-  }, [formState, register, reset, setValue]);
+    dispatch({ type: 'set-geometry-value', payload: null });
+  }, [formState, register, reset, dispatch, setValue]);
 
   // handle conditional control registration
   useEffect(() => {
