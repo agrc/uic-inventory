@@ -122,8 +122,6 @@ function AddWellForm({ data, state, dispatch }) {
     onSuccess: () => {
       toast.success('Well added successfully!');
       queryClient.invalidateQueries(['inventory', inventoryId]);
-
-      dispatch({ type: 'set-point-graphic', payload: null });
     },
     onError: (error) => onRequestError(error, 'We had some trouble adding your well.'),
   });
@@ -374,6 +372,15 @@ function WellMap({ site, wells, state, dispatch }) {
       hoverEvent.current?.remove();
     };
   }, [mapView, dispatch]);
+
+  // clear temp point graphic when geometry is saved
+  useEffect(() => {
+    if (state.geometry) {
+      return;
+    }
+
+    setPointGraphic(null);
+  }, [setPointGraphic, state.geometry]);
 
   return <div className="h-96 w-full" ref={mapDiv}></div>;
 }
