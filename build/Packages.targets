@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <!-- Proxy -->
-    <PackageReference Update="Microsoft.AspNetCore.SpaProxy" Version="6.0.1" />
+    <PackageReference Update="Microsoft.AspNetCore.SpaProxy" Version="6.0.2" />
 
     <!-- Mediatr -->
     <PackageReference Update="MediatR.Behaviors.Authorization" Version="10.0.0" />
@@ -11,14 +11,14 @@
 
     <!-- Authentication -->
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
-    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.1" />
-    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="6.0.1" />
-    <PackageReference Update="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.1" />
+    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.2" />
+    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="6.0.2" />
+    <PackageReference Update="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.2" />
 
     <!-- Database -->
     <PackageReference Update="Dapper" Version="2.0.123" />
     <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="6.0.1" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="6.0.2" />
     <PackageReference Update="EFCORE.NamingConventions" Version="6.0.0" />
 
     <!-- Logging -->
@@ -35,7 +35,7 @@
     <PackageReference Update="Google.Cloud.Storage.V1" Version="3.7.0" />
 
     <!-- Email -->
-    <PackageReference Update="SendGrid" Version="9.25.2" />
+    <PackageReference Update="SendGrid" Version="9.25.3" />
     <PackageReference Update="SendGrid.Extensions.DependencyInjection" Version="1.0.1" />
   </ItemGroup>
 
