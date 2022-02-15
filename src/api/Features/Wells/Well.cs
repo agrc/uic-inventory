@@ -26,6 +26,7 @@ namespace api.Features {
     public string? ConstructionDetails { get; set; }
     public string? InjectateCharacterization { get; set; }
     public string? HydrogeologicCharacterization { get; set; }
+    public string? SurfaceWaterProtection { get; set; }
   }
   public class WellCreationPayload : WellPayload {
     public WellCreationPayload(UnauthorizedException error) : base(error) {
