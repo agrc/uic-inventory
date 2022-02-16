@@ -34,7 +34,8 @@
     "upsert",
     "vite",
     "vitejs",
-    "wkid"
+    "wkid",
+    "Xunit"
   ],
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
