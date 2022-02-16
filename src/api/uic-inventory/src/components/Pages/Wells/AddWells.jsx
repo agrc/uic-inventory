@@ -388,14 +388,15 @@ function WellMap({ site, wells, state, dispatch }) {
 const selectGraphic = (id, graphics, selected = undefined) => {
   graphics.map((x) => {
     if (x.attributes.id !== id) {
-      x.attributes.selected = false;
+      graphic.setAttribute('selected', false);
       x.symbol = SelectedWellsSymbol.clone();
     }
   });
 
   const graphic = graphics.filter((x) => x.attributes.id === id)[0];
 
-  graphic.attributes.selected = selected === undefined ? !graphic.attributes.selected : selected;
+  const currentValue = graphic.getAttribute('selected');
+  graphic.setAttribute('selected', selected === undefined ? !currentValue : selected);
   graphic.symbol = SelectedWellsSymbol.clone();
 };
 
