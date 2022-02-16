@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -17,6 +18,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Http;
+using Polly;
 using SendGrid.Extensions.DependencyInjection;
 
 namespace api {
@@ -65,6 +68,12 @@ namespace api {
             policy.RequireClaim(ClaimTypes.NameIdentifier);
           });
       });
+
+      var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(10);
+      services.AddHttpClient("esri")
+        .AddPolicyHandler(timeoutPolicy)
+        .AddTransientHttpErrorPolicy(policyBuilder =>
+          policyBuilder.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600)));
 
       services.AddSendGrid(options => options.ApiKey = Configuration["sendgrid-key"]);
 

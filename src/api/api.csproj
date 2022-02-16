@@ -13,6 +13,8 @@
     <PackageReference Include="ExcelDataReader" />
     <PackageReference Include="MediatR" />
     <PackageReference Include="MediatR.Behaviors.Authorization" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
@@ -24,6 +26,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+    <PackageReference Include="Polly" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Settings.Configuration" />

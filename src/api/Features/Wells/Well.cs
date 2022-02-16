@@ -156,4 +156,27 @@ namespace api.Features {
       return original;
     }
   }
+
+
+  public class RestEndpointError {
+    public int Code { get; set; }
+    public string? Message { get; set; }
+    public IReadOnlyCollection<object> Details { get; set; } = Array.Empty<object>();
+  }
+  public abstract class RestErrorable {
+    public virtual RestEndpointError Error { get; set; } = default!;
+    public virtual bool IsSuccessful => Error == null;
+  }
+  public class EsriQueryResponse : RestErrorable {
+    public int Count { get; set; }
+  }
+  public class EsriPoint {
+    public EsriPoint(double x, double y) {
+      X = x;
+      Y = y;
+    }
+
+    public double X { get; }
+    public double Y { get; }
+  }
 }
