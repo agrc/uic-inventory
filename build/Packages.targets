@@ -40,7 +40,6 @@
 
     <!-- Http -->
     <PackageReference Update="Polly" Version="7.2.3+24" />
-    <PackageReference Update="Microsoft.Extensions.Http" Version="6.0.2" />
     <PackageReference Update="Microsoft.Extensions.Http.Polly" Version="6.0.2" />
   </ItemGroup>
 
