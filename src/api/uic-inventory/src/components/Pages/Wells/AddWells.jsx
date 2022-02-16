@@ -51,6 +51,10 @@ function AddWells() {
         return { ...state, graphics: action.payload };
       }
       case 'set-hover-graphic': {
+        if (action?.meta === 'toggle') {
+          action.payload == state.highlighted ? null : action.payload;
+        }
+
         return { ...state, highlighted: action.payload };
       }
       default:
@@ -92,7 +96,7 @@ function AddWells() {
                 <div className="grid grid-cols-6">
                   <div className="col-span-6">
                     <WellMap site={data?.site} wells={data?.wells} state={state} dispatch={dispatch} />
-                    <WellTable wells={data?.wells} state={state} />
+                    <WellTable wells={data?.wells} state={state} dispatch={dispatch} />
                     <div className="flex justify-between bg-gray-100 px-4 py-3 text-right sm:px-6">
                       <BackButton />
                       <button
@@ -382,27 +386,29 @@ function WellMap({ site, wells, state, dispatch }) {
     setPointGraphic(null);
   }, [setPointGraphic, state.geometry]);
 
+  // manage point highlighting
+  useEffect(() => {
+    if (!wells) {
+      return;
+    }
+
+    const wellGraphics = wells.map(
+      (well) =>
+        new Graphic({
+          geometry: new Point(JSON.parse(well.geometry)),
+          attributes: { id: well.id, selected: state.highlighted === well.id, complete: false },
+          symbol: SelectedWellsSymbol,
+        })
+    );
+
+    dispatch({ type: 'set-wells', payload: wellGraphics });
+    setExistingPointGraphics(wellGraphics);
+  }, [wells, dispatch, setExistingPointGraphics, state.highlighted]);
+
   return <div className="h-96 w-full" ref={mapDiv}></div>;
 }
 
-const selectGraphic = (id, graphics, selected = undefined) => {
-  graphics.map((x) => {
-    if (x.attributes.id !== id) {
-      graphic.setAttribute('selected', false);
-      x.symbol = SelectedWellsSymbol.clone();
-    }
-  });
-
-  const graphic = graphics.filter((x) => x.attributes.id === id)[0];
-
-  const currentValue = graphic.getAttribute('selected');
-  graphic.setAttribute('selected', selected === undefined ? !currentValue : selected);
-  setTimeout(() => {
-    graphic.symbol = SelectedWellsSymbol.clone();
-  }, 100);
-};
-
-function WellTable({ wells = [], state }) {
+function WellTable({ wells = [], state, dispatch }) {
   const { inventoryId, siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
   const [isOpen, { open, close }] = useOpenClosed();
@@ -599,9 +605,9 @@ function WellTable({ wells = [], state }) {
                 )}
                 key={`${row.index}`}
                 {...row.getRowProps()}
-                onMouseEnter={() => selectGraphic(row.original.id, state.graphics, true)}
-                onMouseLeave={() => selectGraphic(row.original.id, state.graphics, false)}
-                onClick={() => selectGraphic(row.original.id, state.graphics)}
+                onMouseEnter={() => dispatch({ type: 'set-hover-graphic', payload: row.original.id })}
+                onMouseLeave={() => dispatch({ type: 'set-hover-graphic', payload: null })}
+                onClick={() => dispatch({ type: 'set-hover-graphic', payload: row.original.id, meta: 'toggle' })}
               >
                 {row.cells.map((cell) => (
                   <td
