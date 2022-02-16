@@ -338,6 +338,16 @@ const selectGraphic = (id, graphics, selected = undefined) => {
   graphic.symbol = SelectedWellsSymbol.clone();
 };
 
+const Pill = ({ children, status }) => {
+  const classes = clsx('text-xs font-medium mx-1 rounded-lg border border-gray-400 shadow-md px-2 py-1', {
+    'bg-red-200': status === false,
+    'bg-green-200': status === true,
+    'bg-gray-100': status === undefined,
+  });
+
+  return <span className={classes}>{children}</span>;
+};
+
 const WellTable = ({ wells = [], state }) => {
   const [highlighting, setHighlighting] = useState(false);
   const columns = useMemo(
@@ -346,16 +356,63 @@ const WellTable = ({ wells = [], state }) => {
         accessor: 'id',
       },
       {
-        accessor: 'wellName',
         Header: 'Construction',
+        accessor: 'wellName',
+        Cell: function id({ row }) {
+          return (
+            <div className="relative">
+              <span
+                title="Well count"
+                className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-gray-800 text-xs font-bold text-gray-700"
+              >
+                {row.original.count}
+              </span>
+              {row.original.wellName}
+            </div>
+          );
+        },
       },
       {
-        accessor: 'status',
         Header: 'Operating Status',
+        accessor: 'status',
       },
       {
-        Header: 'Count',
-        accessor: 'count',
+        Header: 'Ground Water',
+        accessor: 'surfaceWaterProtection',
+        Cell: function id({ row }) {
+          switch (row.original.surfaceWaterProtection) {
+            case 'Y': {
+              return (
+                <>
+                  <Pill status={true}>GWZ</Pill>
+                  <Pill status={undefined}>ARDA</Pill>
+                  <span>(Y)</span>
+                </>
+              );
+            }
+            case 'S': {
+              return (
+                <>
+                  <Pill status={false}>GWZ</Pill>
+                  <Pill status={true}>ARDA</Pill>
+                  <span>(S)</span>
+                </>
+              );
+            }
+            case 'N': {
+              return (
+                <>
+                  <Pill status={false}>GWZ</Pill>
+                  <Pill status={false}>ARDA</Pill>
+                  <span>(N)</span>
+                </>
+              );
+            }
+            default: {
+              return 'Unknown';
+            }
+          }
+        },
       },
     ],
     []
