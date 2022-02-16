@@ -397,7 +397,9 @@ const selectGraphic = (id, graphics, selected = undefined) => {
 
   const currentValue = graphic.getAttribute('selected');
   graphic.setAttribute('selected', selected === undefined ? !currentValue : selected);
-  graphic.symbol = SelectedWellsSymbol.clone();
+  setTimeout(() => {
+    graphic.symbol = SelectedWellsSymbol.clone();
+  }, 100);
 };
 
 function WellTable({ wells = [], state }) {
