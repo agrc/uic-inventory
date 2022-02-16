@@ -55,6 +55,7 @@ namespace api.Features {
       ConstructionDetails = well.ConstructionDetails;
       InjectateCharacterization = well.InjectateCharacterization;
       HydrogeologicCharacterization = well.HydrogeologicCharacterization;
+      SurfaceWaterProtection = well.SurfaceWaterProtection;
     }
 
     public int Id { get; }
@@ -66,6 +67,7 @@ namespace api.Features {
     public string? ConstructionDetails { get; }
     public string? InjectateCharacterization { get; }
     public string? HydrogeologicCharacterization { get; }
+    public string? SurfaceWaterProtection { get; set; }
     public bool WellDetailsComplete {
       get {
         if (SubClass == 5002) {
