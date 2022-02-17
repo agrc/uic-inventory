@@ -40,6 +40,7 @@ function AddWells() {
   const history = useHistory();
 
   const reducer = (state, action) => {
+    console.log('add wells reducer', state, action);
     switch (action.type) {
       case 'activate-tool': {
         return { ...state, activeTool: action.payload };
@@ -54,6 +55,8 @@ function AddWells() {
         if (action?.meta === 'toggle') {
           action.payload == state.highlighted ? null : action.payload;
         }
+
+        console.log('set-hover-graphic', action.payload);
 
         return { ...state, highlighted: action.payload };
       }
@@ -307,6 +310,8 @@ function WellMap({ site, wells, state, dispatch }) {
         })
     );
 
+    console.log('setting initial graphics', wellGraphics);
+
     dispatch({ type: 'set-wells', payload: wellGraphics });
     setExistingPointGraphics(wellGraphics);
   }, [wells, dispatch, setExistingPointGraphics]);
@@ -383,6 +388,7 @@ function WellMap({ site, wells, state, dispatch }) {
       return;
     }
 
+    console.log('clearing temp point graphic');
     setPointGraphic(null);
   }, [setPointGraphic, state.geometry]);
 
@@ -401,7 +407,9 @@ function WellMap({ site, wells, state, dispatch }) {
         })
     );
 
+    console.log('dispatch set-wells', wellGraphics);
     dispatch({ type: 'set-wells', payload: wellGraphics });
+    console.log('existing point graphics', wellGraphics);
     setExistingPointGraphics(wellGraphics);
   }, [wells, dispatch, setExistingPointGraphics, state.highlighted]);
 
