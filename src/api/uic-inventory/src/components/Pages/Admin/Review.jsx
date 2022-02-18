@@ -1,19 +1,21 @@
-import { useContext, useMemo, useRef, useState } from 'react';
-import { useQuery } from 'react-query';
+import { Fragment, useContext, useMemo, useRef, useState } from 'react';
+import { useQuery, useQueryClient, useMutation } from 'react-query';
 import ky from 'ky';
 import clsx from 'clsx';
 import { useTable } from 'react-table';
 import throttle from 'lodash.throttle';
 import { Code } from 'react-content-loader';
+import { Listbox, Transition } from '@headlessui/react';
+import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 
 import { AuthContext } from '../../../AuthProvider';
 import { FormGrid, ResponsiveGridColumn } from '../../FormElements';
-import { Chrome, useParams, onRequestError } from '../../PageElements';
-import { ownershipTypes, wellTypes, contactTypes, valueToLabel } from '../../../data/lookups';
-import { useWebMap, useSitePolygon, useInventoryWells } from '../../Hooks';
+import { Chrome, useParams, onRequestError, toast } from '../../PageElements';
+import { ownershipTypes, wellTypes, contactTypes, subClassTypes, valueToLabel } from '../../../data/lookups';
+import { useOpenClosed, useWebMap, useSitePolygon, useInventoryWells } from '../../Hooks';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'numeric',
@@ -26,7 +28,6 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 
 export default function Review() {
   const { inventoryId, siteId } = useParams();
-  const { authInfo } = useContext(AuthContext);
 
   return (
     <Chrome title="Inventory Review">
@@ -73,6 +74,8 @@ const Section = ({ gray, children, title, height = 'max-h-96' }) => (
 );
 
 const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
+  const { authInfo } = useContext(AuthContext);
+
   const { status, data } = useQuery(
     ['inventory', inventoryId],
     () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
@@ -81,6 +84,42 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
       onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
     }
   );
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation((json) => ky.put('/api/inventory', { json }), {
+    onMutate: async (inventory) => {
+      await queryClient.cancelQueries(['inventory', inventoryId]);
+      const previousValue = queryClient.getQueryData(['inventory', inventoryId]);
+
+      queryClient.setQueryData(['inventory', inventoryId], (old) => ({
+        ...old,
+        subClass: inventory.subClass,
+        site: { ...old.site },
+        wells: [...old.wells],
+      }));
+
+      return previousValue;
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries(['inventory', inventoryId]);
+    },
+    onSuccess: () => {
+      toast.success('Inventory updated successfully!');
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble updating this inventory.'),
+  });
+
+  const update = (newSubClass) => {
+    const input = {
+      accountId: parseInt(authInfo.id),
+      inventoryId: parseInt(inventoryId),
+      siteId: parseInt(siteId),
+      subClass: newSubClass.value,
+    };
+
+    mutate(input);
+  };
 
   if (status === 'loading') {
     return <Code />;
@@ -107,10 +146,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
         </ResponsiveGridColumn>
       </Section>
       <Section title="Inventory Details">
-        <ResponsiveGridColumn full={true} half={true}>
-          <Label>Inventory Class</Label>
-          <Value>{valueToLabel(wellTypes, data?.subClass)}</Value>
-        </ResponsiveGridColumn>
+        <EditableText field="Inventory Class" value={valueToLabel(wellTypes, data?.subClass)} onMutate={update} />
         <ResponsiveGridColumn full={true} half={true}>
           <Label>Order Number</Label>
           <Value>{data?.orderNumber}</Value>
@@ -125,6 +161,89 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
         </ResponsiveGridColumn>
       </Section>
     </>
+  );
+};
+
+const EditableText = ({ field, value, onMutate }) => {
+  const [active, { toggle }] = useOpenClosed();
+  const [selected, setSelected] = useState(subClassTypes[0]);
+
+  const handleChange = () => {
+    if (active) {
+      onMutate(selected);
+    }
+
+    toggle();
+  };
+
+  return (
+    <ResponsiveGridColumn full={true} half={true}>
+      <Label>
+        {field}{' '}
+        <button
+          onClick={handleChange}
+          className="rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white"
+        >
+          {active ? 'save' : 'modify'}
+        </button>
+        {active && (
+          <button
+            onClick={toggle}
+            className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-red-800 hover:text-white"
+          >
+            cancel
+          </button>
+        )}
+      </Label>
+      {!active ? <Value>{value}</Value> : <MyListbox selected={selected} setSelected={setSelected} />}
+    </ResponsiveGridColumn>
+  );
+};
+
+const MyListbox = ({ selected, setSelected }) => {
+  return (
+    <div className="w-72">
+      <Listbox value={selected} onChange={setSelected}>
+        <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+          <span className="block truncate">{selected.label}</span>
+          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+            <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          </span>
+        </Listbox.Button>
+        <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
+          <Listbox.Options className="absolute z-10 mt-1 max-h-60 max-w-min overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            {subClassTypes.map((subclass) => (
+              <Listbox.Option
+                key={subclass.value}
+                className={({ active }) =>
+                  clsx('relative cursor-default select-none py-2 pl-10 pr-4', {
+                    'bg-gray-700 text-white': active,
+                  })
+                }
+                value={subclass}
+              >
+                {({ selected, active }) => (
+                  <>
+                    <span className={`${selected ? 'font-medium' : 'font-normal'} block truncate`}>
+                      {subclass.label}
+                    </span>
+                    {selected ? (
+                      <span
+                        className={clsx('absolute inset-y-0 left-0 flex items-center pl-3', {
+                          'text-white': active,
+                        })}
+                      >
+                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                      </span>
+                    ) : null}
+                  </>
+                )}
+              </Listbox.Option>
+            ))}
+          </Listbox.Options>
+        </Transition>
+      </Listbox>
+    </div>
   );
 };
 
@@ -148,7 +267,7 @@ const ContactDetails = ({ siteId }) => {
             </Value>
           </ResponsiveGridColumn>
           <ResponsiveGridColumn full={true} half={true}>
-            <Label>Name</Label>
+            <Label>label</Label>
             <Value>
               {contact.firstName} {contact.LastName}
             </Value>
