@@ -106,6 +106,10 @@ namespace api.Features {
   public class InventoryDeletionInput : InventoryInput {
     public int InventoryId { get; set; }
   }
+  public class InventoryMutationInput : InventoryInput {
+    public int SubClass { get; set; }
+    public int InventoryId { get; set; }
+  }
   public class InventorySubmissionInput : InventoryInput {
     public int InventoryId { get; set; }
     public string Signature { get; set; } = default!;

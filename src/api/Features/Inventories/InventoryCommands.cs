@@ -55,6 +55,44 @@ namespace api.Features {
       }
     }
   }
+  public static class UpdateInventory {
+    public class Command : IRequest<Inventory> {
+      public Command(InventoryMutationInput input) {
+        AccountId = input.AccountId;
+        SiteId = input.SiteId;
+        SubClass = input.SubClass;
+        InventoryId = input.InventoryId;
+      }
+
+      public int AccountId { get; init; }
+      public int SiteId { get; init; }
+      public int InventoryId { get; init; }
+      public int SubClass { get; init; }
+    }
+    public class Handler : IRequestHandler<Command, Inventory> {
+      private readonly IAppDbContext _context;
+      private readonly ILogger _log;
+      public Handler(IAppDbContext context, ILogger log) {
+        _context = context;
+        _log = log;
+      }
+
+      public async Task<Inventory> Handle(Command request, CancellationToken cancellationToken) {
+        _log.ForContext("input", request)
+          .Debug("updating inventory");
+
+        var inventory = await _context.Inventories
+          .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
+
+        inventory.SubClass = request.SubClass;
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return inventory;
+      }
+    }
+  }
+
   public static class SubmitInventory {
     public class Command : IRequest {
       public Command(InventorySubmissionInput input) {

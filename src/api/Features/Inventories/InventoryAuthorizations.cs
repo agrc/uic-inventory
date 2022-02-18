@@ -47,6 +47,19 @@ namespace api.Features {
     }
   }
 
+  public class UpdateInventoryAuthorizer : AbstractRequestAuthorizer<UpdateInventory.Command> {
+    private readonly IHttpContextAccessor _context;
+
+    public UpdateInventoryAuthorizer(IHttpContextAccessor context) {
+      _context = context;
+    }
+    public override void BuildPolicy(UpdateInventory.Command request) {
+      UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+      UseRequirement(new MustHaveCompleteProfile());
+      UseRequirement(new MustBeElevatedUser());
+    }
+  }
+
   public class SubmitInventoryAuthorizer : AbstractRequestAuthorizer<SubmitInventory.Command> {
     private readonly IHttpContextAccessor _context;
 

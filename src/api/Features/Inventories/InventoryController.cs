@@ -79,16 +79,39 @@ namespace api.Features {
       try {
         var result = await _mediator.Send(new CreateInventory.Command(input), token);
 
-        return Created($"api/Inventory/{result.Id}", new InventoryPayload(result, _requestMetadata.Site));
+        return Created($"api/inventory/{result.Id}", new InventoryPayload(result, _requestMetadata.Site));
       } catch (UnauthorizedException ex) {
-        _log.ForContext("endpoint", "POST:api/Inventory")
+        _log.ForContext("endpoint", "POST:api/inventory")
           .ForContext("input", input)
           .ForContext("requirement", ex.Message)
           .Warning("CreateInventoryAsync requirements failure");
 
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {
-        _log.ForContext("endpoint", "POST:api/Inventory")
+        _log.ForContext("endpoint", "POST:api/inventory")
+          .ForContext("input", input)
+          .Fatal(ex, "unhandled exception");
+
+        return StatusCode(500, new InventoryPayload(ex));
+      }
+    }
+
+    [HttpPut("/api/inventory")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<InventoryPayload>> UpdateInventoryAsync(InventoryMutationInput input, CancellationToken token) {
+      try {
+        var result = await _mediator.Send(new UpdateInventory.Command(input), token);
+
+        return NoContent();
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "PUT:api/inventory")
+          .ForContext("input", input)
+          .ForContext("requirement", ex.Message)
+          .Warning("UpdateInventoryAsync requirements failure");
+
+        return Unauthorized(new InventoryPayload(ex));
+      } catch (Exception ex) {
+        _log.ForContext("endpoint", "PUT:api/inventory")
           .ForContext("input", input)
           .Fatal(ex, "unhandled exception");
 
