@@ -369,7 +369,8 @@ namespace api.Features {
       }
 
       public static string DetermineCode(Protections has) => has switch {
-        Protections { GroundWater: true } => "Y",
+        (Aquifers: true, GroundWater: true) => "Y+",
+        (Aquifers: false, GroundWater: true) => "Y-",
         (Aquifers: true, GroundWater: false) => "S",
         (Aquifers: false, GroundWater: false) => "N",
         _ => "U",
