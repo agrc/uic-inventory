@@ -503,11 +503,20 @@ const WellTable = ({ wells = [], state }) => {
         accessor: 'surfaceWaterProtection',
         Cell: function id({ row }) {
           switch (row.original.surfaceWaterProtection) {
-            case 'Y': {
+            case 'Y+': {
               return (
                 <>
                   <Pill status={true}>GWZ</Pill>
-                  <Pill status={undefined}>ARDA</Pill>
+                  <Pill status={true}>ARDA</Pill>
+                  <span>(Y)</span>
+                </>
+              );
+            }
+            case 'Y-': {
+              return (
+                <>
+                  <Pill status={true}>GWZ</Pill>
+                  <Pill status={false}>ARDA</Pill>
                   <span>(Y)</span>
                 </>
               );
