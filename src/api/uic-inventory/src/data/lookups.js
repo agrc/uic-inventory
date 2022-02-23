@@ -4,30 +4,6 @@ export const valueToLabel = (list = [], value) => {
   return item?.label ?? value;
 };
 
-export const wellTypes = [
-  {
-    value: -1,
-    label: 'General',
-  },
-  {
-    value: 5047,
-    label: 'Storm water drainage wells',
-  },
-  {
-    value: 5002,
-    label: 'Subsurface environmental remediation wells',
-  },
-  {
-    value: 5101,
-    label: 'UIC - Regulated large underground wastewater disposal system',
-    extra: '(LUWDS) => 5000 gdp',
-  },
-  {
-    value: 5026,
-    label: 'Veterinary, kennel, or pet grooming wastewater disposal system',
-  },
-];
-
 export const contactTypes = [
   {
     value: 'owner_operator',
@@ -158,9 +134,11 @@ export const remediationTypes = [
   { value: 999, label: 'Other' },
 ];
 
-export const subClassTypes = [
+export const wellTypes = [
+  { value: -1, label: 'General', primary: true },
   { value: 5000, label: 'Agricultural Drainage' },
   { value: 5001, label: 'Aquifer Recharge' },
+  { value: 5002, label: 'Subsurface environmental remediation wells', primary: true },
   { value: 5050, label: 'Aquifer Storage and Recovery' },
   { value: 5100, label: 'CessPools/Untreated Sewage Waste Disposal' },
   { value: 5003, label: 'Direct Heat Re-Injection' },
@@ -191,17 +169,22 @@ export const subClassTypes = [
   { value: 5024, label: 'Industrial Process -  Photographic Processing' },
   { value: 5025, label: 'Industrial Process -  Printing' },
   { value: 5032, label: 'Industrial Process -  Small Engine' },
-  { value: 5026, label: 'Industrial Process -  Veterinary/Kennel/Grooming' },
+  { value: 5026, label: 'Veterinary, kennel, or pet grooming wastewater disposal system', primary: true },
   { value: 5011, label: 'Industrial Process -  Water and Waste (General)' },
   { value: 5020, label: 'Industrial Process -  Wood/Furniture Finishing' },
   { value: 5035, label: 'In-Situ Fossil Fuel Recovery' },
   { value: 5037, label: 'Mining Sand Or Other Backfill' },
   { value: 5038, label: 'Motor Vehicle Waste Disposal (BANNED)' },
   { value: 5040, label: 'Saline Water Intrusion Barrier' },
-  { value: 5101, label: 'Septic Systems' },
+  {
+    value: 5101,
+    label: 'UIC - Regulated large underground wastewater disposal system',
+    extra: '(LUWDS) => 5000 gdp',
+    primary: true,
+  },
   { value: 5044, label: 'Solution Mining' },
   { value: 5046, label: 'Spent-Brine Return Flow' },
-  { value: 5047, label: 'Storm Water Drainage' },
+  { value: 5047, label: 'Storm water drainage wells', primary: true },
   { value: 5048, label: 'Subsidence Control Wells' },
   { value: 5002, label: 'Subsurface Environmental Remediation' },
   { value: 5045, label: 'Other Drainage' },

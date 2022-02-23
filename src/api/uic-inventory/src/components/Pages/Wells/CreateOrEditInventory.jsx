@@ -112,55 +112,57 @@ function CreateOrEditInventory() {
             >
               <FormGrid>
                 <ResponsiveGridColumn full={true}>
-                  <span className="block mb-4 font-medium text-gray-700">Well Subclass</span>
+                  <span className="mb-4 block font-medium text-gray-700">Well Subclass</span>
                   <Controller
                     name="subClass"
                     control={control}
                     render={({ field }) => (
                       <RadioGroup id="wellType" onChange={field.onChange} value={field.value}>
                         <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-                          {wellTypes.map((well) => (
-                            <RadioGroup.Option
-                              key={well.value}
-                              value={well.value}
-                              className={({ active, checked }) =>
-                                clsx(
-                                  {
-                                    'ring-2 ring-offset-2 ring-offset-blue-800 ring-white ring-opacity-60': active,
-                                    'bg-gray-800 text-white': checked,
-                                    'bg-white': !checked,
-                                  },
-                                  'relative rounded-lg shadow-md px-5 py-4 cursor-pointer flex focus:outline-none border'
-                                )
-                              }
-                            >
-                              {({ checked }) => (
-                                <div className="flex items-center justify-between w-full">
-                                  <div className="flex items-center">
-                                    <div>
-                                      <RadioGroup.Label
-                                        as="p"
-                                        className={`font-medium ${checked ? 'text-white' : 'text-gray-900'}`}
-                                      >
-                                        {well.label}
-                                      </RadioGroup.Label>
-                                      <RadioGroup.Description
-                                        as="span"
-                                        className={`inline ${checked ? 'text-blue-100' : 'text-gray-500'}`}
-                                      >
-                                        <span className="text-sm">{well?.extra}</span>
-                                      </RadioGroup.Description>
+                          {wellTypes
+                            .filter((well) => well.primary)
+                            .map((well) => (
+                              <RadioGroup.Option
+                                key={well.value}
+                                value={well.value}
+                                className={({ active, checked }) =>
+                                  clsx(
+                                    {
+                                      'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-800': active,
+                                      'bg-gray-800 text-white': checked,
+                                      'bg-white': !checked,
+                                    },
+                                    'relative flex cursor-pointer rounded-lg border px-5 py-4 shadow-md focus:outline-none'
+                                  )
+                                }
+                              >
+                                {({ checked }) => (
+                                  <div className="flex w-full items-center justify-between">
+                                    <div className="flex items-center">
+                                      <div>
+                                        <RadioGroup.Label
+                                          as="p"
+                                          className={`font-medium ${checked ? 'text-white' : 'text-gray-900'}`}
+                                        >
+                                          {well.label}
+                                        </RadioGroup.Label>
+                                        <RadioGroup.Description
+                                          as="span"
+                                          className={`inline ${checked ? 'text-blue-100' : 'text-gray-500'}`}
+                                        >
+                                          <span className="text-sm">{well?.extra}</span>
+                                        </RadioGroup.Description>
+                                      </div>
                                     </div>
+                                    {checked && (
+                                      <div className="shrink-0 ">
+                                        <CheckIcon className="h-6 w-6 text-blue-300" />
+                                      </div>
+                                    )}
                                   </div>
-                                  {checked && (
-                                    <div className="shrink-0 ">
-                                      <CheckIcon className="w-6 h-6 text-blue-300" />
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </RadioGroup.Option>
-                          ))}
+                                )}
+                              </RadioGroup.Option>
+                            ))}
                         </div>
                       </RadioGroup>
                     )}
@@ -177,7 +179,7 @@ function CreateOrEditInventory() {
                   />
                 </ResponsiveGridColumn>
                 <ResponsiveGridColumn full={true} half={true}>
-                  <p className="italic text-center text-gray-500 md:text-left">
+                  <p className="text-center italic text-gray-500 md:text-left">
                     To submit a UIC Inventory Form you must have a valid Inventory Review Fee order number or receipt.{' '}
                     <button meta="primary" onClick={open}>
                       Click for instructions
@@ -190,7 +192,7 @@ function CreateOrEditInventory() {
           </form>
           <Transition appear show={show} as={Fragment}>
             <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" open={show} onClose={close}>
-              <div className="flex items-center justify-center min-h-screen">
+              <div className="min-h-screen flex items-center justify-center">
                 <Transition.Child
                   as={Fragment}
                   enter="ease-out duration-300"
@@ -212,11 +214,11 @@ function CreateOrEditInventory() {
                   leaveFrom="opacity-100 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  <div className="inline-block w-full max-w-3xl p-6 text-left align-middle transition-all transform bg-white shadow-xl md:my-8 md:rounded-2xl">
+                  <div className="inline-block w-full max-w-3xl transform bg-white p-6 text-left align-middle shadow-xl transition-all md:my-8 md:rounded-2xl">
                     <Dialog.Title as="h3" className="mb-5 text-xl font-medium leading-6 text-gray-900">
                       UIC Inventory Form help
                     </Dialog.Title>
-                    <ul className="list-decimal list-inside">
+                    <ul className="list-inside list-decimal">
                       <li className="leading-loose">
                         Navigate to this website:{' '}
                         <a
@@ -231,7 +233,7 @@ function CreateOrEditInventory() {
                       </li>
                       <li className="leading-loose">
                         In the{' '}
-                        <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">
+                        <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">
                           Additional Information
                         </span>{' '}
                         box, enter the Site Name. This should match the Site Name provided on the first page of the UIC
@@ -239,17 +241,17 @@ function CreateOrEditInventory() {
                       </li>
                       <li className="leading-loose">
                         Enter the number of sites (not the number of injection wells) in the{' '}
-                        <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">Quantity</span> box for
+                        <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">Quantity</span> box for
                         which you are submitting the UIC Inventory Review Fee.
                       </li>
                       <li className="leading-loose">
-                        Click <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">Add to cart</span>{' '}
+                        Click <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">Add to cart</span>{' '}
                         and proceed to Checkout.
                       </li>
                       <li className="leading-loose">
                         After completing the checkout process you will receive an order number. Return to this page and
                         enter the order number as the{' '}
-                        <span className="px-2 py-1 font-mono bg-gray-100 border rounded-full">
+                        <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">
                           UIC inventory form order number
                         </span>
                         .

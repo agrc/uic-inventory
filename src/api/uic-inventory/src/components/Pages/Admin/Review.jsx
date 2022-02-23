@@ -14,7 +14,7 @@ import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 import { AuthContext } from '../../../AuthProvider';
 import { FormGrid, ResponsiveGridColumn } from '../../FormElements';
 import { Chrome, useParams, onRequestError, toast } from '../../PageElements';
-import { ownershipTypes, wellTypes, contactTypes, subClassTypes, valueToLabel } from '../../../data/lookups';
+import { ownershipTypes, wellTypes, contactTypes, valueToLabel } from '../../../data/lookups';
 import { useOpenClosed, useWebMap, useSitePolygon, useInventoryWells } from '../../Hooks';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -166,7 +166,10 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
 
 const EditableText = ({ field, value, onMutate }) => {
   const [active, { toggle }] = useOpenClosed();
-  const [selected, setSelected] = useState(subClassTypes[0]);
+  const [selected, setSelected] = useState(() => {
+    const items = wellTypes.filter((type) => type.label === value);
+    return items.length === 1 ? items[0] : wellTypes[0];
+  });
 
   const handleChange = () => {
     if (active) {
@@ -212,7 +215,7 @@ const MyListbox = ({ selected, setSelected }) => {
         </Listbox.Button>
         <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
           <Listbox.Options className="absolute z-10 mt-1 max-h-60 max-w-min overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-            {subClassTypes.map((subclass) => (
+            {wellTypes.map((subclass) => (
               <Listbox.Option
                 key={subclass.value}
                 className={({ active }) =>
