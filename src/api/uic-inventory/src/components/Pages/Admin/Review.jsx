@@ -92,12 +92,23 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
       await queryClient.cancelQueries(['inventory', inventoryId]);
       const previousValue = queryClient.getQueryData(['inventory', inventoryId]);
 
-      queryClient.setQueryData(['inventory', inventoryId], (old) => ({
-        ...old,
-        subClass: inventory.subClass,
-        site: { ...old.site },
-        wells: [...old.wells],
-      }));
+      queryClient.setQueryData(['inventory', inventoryId], (old) => {
+        const updated = {
+          ...old,
+          site: { ...old.site },
+          wells: [...old.wells],
+        };
+
+        if (inventory.subClass) {
+          updated.subClass = inventory.subClass;
+        }
+
+        if (inventory.edocs) {
+          updated.edocs = inventory.edocs;
+        }
+
+        return updated;
+      });
 
       return previousValue;
     },
@@ -110,12 +121,23 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
     onError: (error) => onRequestError(error, 'We had some trouble updating this inventory.'),
   });
 
-  const update = (newSubClass) => {
+  const updateSubClass = (newSubClass) => {
     const input = {
       accountId: parseInt(authInfo.id),
       inventoryId: parseInt(inventoryId),
       siteId: parseInt(siteId),
       subClass: newSubClass.value,
+    };
+
+    mutate(input);
+  };
+
+  const updateEdocs = (edocs) => {
+    const input = {
+      accountId: parseInt(authInfo.id),
+      inventoryId: parseInt(inventoryId),
+      siteId: parseInt(siteId),
+      edocs,
     };
 
     mutate(input);
@@ -144,9 +166,15 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
           <Label>NAICS</Label>
           <Value>{`${data?.site.naicsPrimary} - ${data?.site.naicsTitle}`}</Value>
         </ResponsiveGridColumn>
+        <EditableText field="Edocs #" initialValue={data?.edocs} onMutate={updateEdocs} />
       </Section>
       <Section title="Inventory Details">
-        <EditableText field="Inventory Class" value={valueToLabel(wellTypes, data?.subClass)} onMutate={update} />
+        <EditableList
+          field="Inventory Class"
+          items={wellTypes}
+          initialValue={valueToLabel(wellTypes, data?.subClass)}
+          onMutate={updateSubClass}
+        />
         <ResponsiveGridColumn full={true} half={true}>
           <Label>Order Number</Label>
           <Value>{data?.orderNumber}</Value>
@@ -164,11 +192,51 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
   );
 };
 
-const EditableText = ({ field, value, onMutate }) => {
+const EditableText = ({ field, initialValue, onMutate }) => {
+  const [active, { toggle }] = useOpenClosed();
+  const [value, setValue] = useState(initialValue ?? '');
+
+  const handleChange = () => {
+    if (active) {
+      onMutate(value);
+    }
+
+    toggle();
+  };
+
+  return (
+    <ResponsiveGridColumn full={true} half={true} third={true}>
+      <Label>
+        {field}
+        <button
+          onClick={handleChange}
+          className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white"
+        >
+          {active ? 'save' : 'modify'}
+        </button>
+        {active && (
+          <button
+            onClick={toggle}
+            className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-red-800 hover:text-white"
+          >
+            cancel
+          </button>
+        )}
+      </Label>
+      {!active ? (
+        <Value>{value === '' ? '-' : value}</Value>
+      ) : (
+        <input type="text" value={value} onChange={(event) => setValue(event.target.value)} />
+      )}
+    </ResponsiveGridColumn>
+  );
+};
+
+const EditableList = ({ field, initialValue, onMutate, items }) => {
   const [active, { toggle }] = useOpenClosed();
   const [selected, setSelected] = useState(() => {
-    const items = wellTypes.filter((type) => type.label === value);
-    return items.length === 1 ? items[0] : wellTypes[0];
+    const results = items.filter((type) => type.label === initialValue);
+    return results.length === 1 ? results[0] : results[0];
   });
 
   const handleChange = () => {
@@ -182,10 +250,10 @@ const EditableText = ({ field, value, onMutate }) => {
   return (
     <ResponsiveGridColumn full={true} half={true}>
       <Label>
-        {field}{' '}
+        {field}
         <button
           onClick={handleChange}
-          className="rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white"
+          className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white"
         >
           {active ? 'save' : 'modify'}
         </button>
@@ -198,7 +266,7 @@ const EditableText = ({ field, value, onMutate }) => {
           </button>
         )}
       </Label>
-      {!active ? <Value>{value}</Value> : <MyListbox selected={selected} setSelected={setSelected} />}
+      {!active ? <Value>{initialValue}</Value> : <MyListbox selected={selected} setSelected={setSelected} />}
     </ResponsiveGridColumn>
   );
 };
