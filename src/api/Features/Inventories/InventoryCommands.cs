@@ -61,13 +61,15 @@ namespace api.Features {
         AccountId = input.AccountId;
         SiteId = input.SiteId;
         SubClass = input.SubClass;
+        Edocs = input.Edocs;
         InventoryId = input.InventoryId;
       }
 
       public int AccountId { get; init; }
       public int SiteId { get; init; }
       public int InventoryId { get; init; }
-      public int SubClass { get; init; }
+      public int? SubClass { get; init; }
+      public string? Edocs { get; set; }
     }
     public class Handler : IRequestHandler<Command, Inventory> {
       private readonly IAppDbContext _context;
@@ -84,7 +86,15 @@ namespace api.Features {
         var inventory = await _context.Inventories
           .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
 
-        inventory.SubClass = request.SubClass;
+        if (request.SubClass.HasValue) {
+          inventory.SubClass = request.SubClass.Value;
+        }
+        if (request.Edocs != null) {
+          inventory.Edocs = request.Edocs;
+        }
+        if (request.Edocs?.Length == 0) {
+          inventory.Edocs = null;
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
 
