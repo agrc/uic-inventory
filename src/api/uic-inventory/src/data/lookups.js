@@ -186,7 +186,6 @@ export const wellTypes = [
   { value: 5046, label: 'Spent-Brine Return Flow' },
   { value: 5047, label: 'Storm water drainage wells', primary: true },
   { value: 5048, label: 'Subsidence Control Wells' },
-  { value: 5002, label: 'Subsurface Environmental Remediation' },
   { value: 5045, label: 'Other Drainage' },
   { value: 5999, label: 'Other (Class V)' },
 ];
