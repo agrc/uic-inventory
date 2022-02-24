@@ -9,6 +9,7 @@
     "clsx",
     "combobox",
     "Dropzone",
+    "edocs",
     "esbuild",
     "esrijson",
     "gcloud",
