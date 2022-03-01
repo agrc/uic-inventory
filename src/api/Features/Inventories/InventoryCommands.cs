@@ -63,6 +63,7 @@ namespace api.Features {
         SubClass = input.SubClass;
         Edocs = input.Edocs;
         InventoryId = input.InventoryId;
+        Flagged = input.Flagged;
       }
 
       public int AccountId { get; init; }
@@ -70,6 +71,7 @@ namespace api.Features {
       public int InventoryId { get; init; }
       public int? SubClass { get; init; }
       public string? Edocs { get; set; }
+      public string? Flagged { get; set; }
     }
     public class Handler : IRequestHandler<Command, Inventory> {
       private readonly IAppDbContext _context;
@@ -84,16 +86,27 @@ namespace api.Features {
           .Debug("updating inventory");
 
         var inventory = await _context.Inventories
+          .Include(i => i.Account)
           .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
 
         if (request.SubClass.HasValue) {
           inventory.SubClass = request.SubClass.Value;
         }
+
         if (request.Edocs != null) {
           inventory.Edocs = request.Edocs;
         }
+
         if (request.Edocs?.Length == 0) {
           inventory.Edocs = null;
+        }
+
+        if (request.Flagged != null) {
+          inventory.Flagged = $"Flagged by: {inventory?.Account?.FirstName ?? "Unknown"} {inventory?.Account?.LastName ?? "Actor"} {request.Flagged}";
+        }
+
+        if (request.Flagged?.Length == 0) {
+          inventory.Flagged = null;
         }
 
         await _context.SaveChangesAsync(cancellationToken);

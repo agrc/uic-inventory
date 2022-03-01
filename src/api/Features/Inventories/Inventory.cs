@@ -18,6 +18,7 @@ namespace api.Features {
     public bool PaymentStatus { get; set; }
     public bool SignatureStatus { get; set; }
     public string? Edocs { get; set; }
+    public string? Flagged { get; set; }
     public DateTime? CreatedOn { get; set; }
     public DateTime? SubmittedOn { get; set; }
     public Account? Account { get; set; }
@@ -44,6 +45,7 @@ namespace api.Features {
       PaymentStatus = inventory.PaymentStatus;
       SignatureStatus = inventory.SignatureStatus;
       Edocs = inventory.Edocs;
+      Flagged = inventory.Flagged;
       Wells = inventory.Wells.Select(x => new WellPayload(x)).ToList();
     }
     public int Id { get; set; }
@@ -58,6 +60,7 @@ namespace api.Features {
     public bool PaymentStatus { get; set; }
     public bool SignatureStatus { get; set; }
     public string? Edocs { get; set; }
+    public string? Flagged { get; set; }
     public SitePayload? Site { get; set; }
     public IReadOnlyCollection<WellPayload> Wells { get; set; } = Array.Empty<WellPayload>();
   }
@@ -113,6 +116,7 @@ namespace api.Features {
     public int? SubClass { get; set; }
     public string? Edocs { get; set; }
     public int InventoryId { get; set; }
+    public string? Flagged { get; set; }
   }
   public class InventorySubmissionInput : InventoryInput {
     public int InventoryId { get; set; }
