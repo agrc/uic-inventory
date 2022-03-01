@@ -13,7 +13,7 @@ import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 
 import { AuthContext } from '../../../AuthProvider';
 import { FormGrid, ResponsiveGridColumn } from '../../FormElements';
-import { Chrome, useParams, onRequestError, toast } from '../../PageElements';
+import { Chrome, Flagged, useParams, onRequestError, toast } from '../../PageElements';
 import { ownershipTypes, wellTypes, contactTypes, valueToLabel } from '../../../data/lookups';
 import { useOpenClosed, useWebMap, useSitePolygon, useInventoryWells } from '../../Hooks';
 
@@ -149,6 +149,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
 
   return (
     <>
+      <Flagged reason={data?.flagged} siteId={siteId} inventoryId={inventoryId} />
       <Section title="Site Details">
         <ResponsiveGridColumn full={true} half={true} third={true}>
           <Label>Name</Label>
