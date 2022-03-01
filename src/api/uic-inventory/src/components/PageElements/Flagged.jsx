@@ -34,8 +34,13 @@ export default function Flagged({ reason, siteId, inventoryId }) {
     onSettled: () => {
       queryClient.invalidateQueries(['inventory', inventoryId]);
     },
-    onSuccess: () => {
-      toast.success('Flag applied successfully!');
+    onSuccess: (_, variables) => {
+      if (variables.flagged?.length > 0) {
+        toast.success('Flag applied successfully!');
+      } else {
+        toast.success('Flag resolved successfully!');
+      }
+
       setText('');
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating this inventory.'),
