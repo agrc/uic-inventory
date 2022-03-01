@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { useTable } from 'react-table';
 import throttle from 'lodash.throttle';
 import { Code } from 'react-content-loader';
-import { Listbox, Transition } from '@headlessui/react';
+import { Dialog, Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
@@ -13,7 +13,7 @@ import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 
 import { AuthContext } from '../../../AuthProvider';
 import { FormGrid, ResponsiveGridColumn } from '../../FormElements';
-import { Chrome, Flagged, useParams, onRequestError, toast } from '../../PageElements';
+import { ConfirmationModal, Chrome, Flagged, useParams, onRequestError, toast, useHistory } from '../../PageElements';
 import { ownershipTypes, wellTypes, contactTypes, valueToLabel } from '../../../data/lookups';
 import { useOpenClosed, useWebMap, useSitePolygon, useInventoryWells } from '../../Hooks';
 
@@ -27,26 +27,68 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 });
 
 export default function Review() {
+  const { authInfo } = useContext(AuthContext);
+  const history = useHistory();
   const { inventoryId, siteId } = useParams();
+  const queryClient = useQueryClient();
+  const [isOpen, { open, close }] = useOpenClosed();
+
+  const { mutate } = useMutation((json) => ky.delete('/api/inventory/reject', { json }), {
+    onSettled: () => {
+      queryClient.invalidateQueries('sites');
+      queryClient.invalidateQueries(['inventory', inventoryId]);
+      queryClient.invalidateQueries(['site-inventories', inventoryId]);
+    },
+    onSuccess: () => {
+      toast.success('Inventory rejected successfully!');
+      history.replace('/');
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble rejecting this inventory.'),
+  });
+
+  const reject = () => {
+    const input = {
+      accountId: parseInt(authInfo.id),
+      siteId: parseInt(siteId),
+      inventoryId: parseInt(inventoryId),
+    };
+
+    mutate(input);
+  };
 
   return (
-    <Chrome title="Inventory Review">
-      <SiteAndInventoryDetails siteId={siteId} inventoryId={inventoryId} />
-      <LocationDetails siteId={siteId} inventoryId={inventoryId} />
-      <ContactDetails siteId={siteId} />
-      <WellDetails siteId={siteId} inventoryId={inventoryId} />
-      <Section>
-        <button className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 sm:col-span-6 md:col-span-2">
-          Reject
-        </button>
-        <button meta="primary" className="rounded border sm:col-span-6 md:col-span-2">
-          Print
-        </button>
-        <button meta="default" className="sm:col-span-6 md:col-span-2">
-          Approve
-        </button>
-      </Section>
-    </Chrome>
+    <>
+      <ConfirmationModal isOpen={isOpen} onClose={close} onYes={reject}>
+        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+          Reject Submission Confirmation
+        </Dialog.Title>
+        <Dialog.Description className="mt-1">This inventory will be permanently deleted</Dialog.Description>
+
+        <p className="mt-1 text-sm text-gray-500">
+          Are you sure you want to reject this submission? This action cannot be undone..
+        </p>
+      </ConfirmationModal>
+      <Chrome title="Inventory Review">
+        <SiteAndInventoryDetails siteId={siteId} inventoryId={inventoryId} />
+        <LocationDetails siteId={siteId} inventoryId={inventoryId} />
+        <ContactDetails siteId={siteId} />
+        <WellDetails siteId={siteId} inventoryId={inventoryId} />
+        <Section>
+          <button
+            onClick={open}
+            className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 sm:col-span-6 md:col-span-2"
+          >
+            Reject
+          </button>
+          <button meta="primary" className="rounded border sm:col-span-6 md:col-span-2">
+            Print
+          </button>
+          <button meta="default" className="sm:col-span-6 md:col-span-2">
+            Approve
+          </button>
+        </Section>
+      </Chrome>
+    </>
   );
 }
 
