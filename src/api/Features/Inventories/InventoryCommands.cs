@@ -75,10 +75,12 @@ namespace api.Features {
     }
     public class Handler : IRequestHandler<Command, Inventory> {
       private readonly IAppDbContext _context;
+      private readonly HasRequestMetadata _metadata;
       private readonly ILogger _log;
-      public Handler(IAppDbContext context, ILogger log) {
+      public Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) {
         _context = context;
         _log = log;
+        _metadata = metadata;
       }
 
       public async Task<Inventory> Handle(Command request, CancellationToken cancellationToken) {
@@ -86,7 +88,6 @@ namespace api.Features {
           .Debug("updating inventory");
 
         var inventory = await _context.Inventories
-          .Include(i => i.Account)
           .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
 
         if (request.SubClass.HasValue) {
@@ -102,7 +103,7 @@ namespace api.Features {
         }
 
         if (request.Flagged != null) {
-          inventory.Flagged = $"Flagged by: {inventory?.Account?.FirstName ?? "Unknown"} {inventory?.Account?.LastName ?? "Actor"} {request.Flagged}";
+          inventory.Flagged = $"Flagged by: {_metadata?.Account?.FirstName ?? "Unknown"} {_metadata?.Account?.LastName ?? "Actor"} {request.Flagged}";
         }
 
         if (request.Flagged?.Length == 0) {
