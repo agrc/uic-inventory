@@ -117,7 +117,6 @@ namespace api.Features {
       }
     }
   }
-
   public static class SubmitInventory {
     public class Command : IRequest {
       public Command(InventorySubmissionInput input) {
@@ -206,7 +205,12 @@ namespace api.Features {
 
         _context.Inventories.Remove(inventory);
 
-        //! TODO: create requirement that inventory cannot be deleted when authorized status
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Unit.Value;
+      }
+    }
+  }
   public static class RejectInventory {
     public class Command : IRequest {
       public Command(InventoryDeletionInput input) {

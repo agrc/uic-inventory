@@ -84,8 +84,12 @@ namespace api.Features {
     public override void BuildPolicy(DeleteInventory.Command request) {
       UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
       UseRequirement(new MustOwnSite(request.SiteId));
+      UseRequirement(new MustOwnInventory(request.InventoryId));
       UseRequirement(new MustHaveCompleteProfile());
       UseRequirement(new MustHaveEditableSiteStatus());
+      UseRequirement(new MustHaveEditableInventoryStatus());
+    }
+  }
     }
   }
 }
