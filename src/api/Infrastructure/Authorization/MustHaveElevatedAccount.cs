@@ -5,15 +5,15 @@ using MediatR.Behaviors.Authorization;
 using Serilog;
 
 namespace api.Infrastructure {
-  public class MustBeElevatedUser : IAuthorizationRequirement {
-    private class Handler : IAuthorizationHandler<MustBeElevatedUser> {
+  public class MustHaveElevatedAccount : IAuthorizationRequirement {
+    private class Handler : IAuthorizationHandler<MustHaveElevatedAccount> {
       private readonly ILogger _log;
       private readonly HasRequestMetadata _metadata;
       public Handler(HasRequestMetadata metadata, ILogger log) {
         _metadata = metadata;
         _log = log;
       }
-      public async Task<AuthorizationResult> Handle(MustBeElevatedUser requirement, CancellationToken token = default) {
+      public async Task<AuthorizationResult> Handle(MustHaveElevatedAccount requirement, CancellationToken token = default) {
         if (_metadata.Account.Access == AccessLevels.elevated) {
           return AuthorizationResult.Succeed();
         }

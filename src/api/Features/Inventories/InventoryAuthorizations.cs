@@ -56,7 +56,7 @@ namespace api.Features {
     public override void BuildPolicy(UpdateInventory.Command request) {
       UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
       UseRequirement(new MustHaveCompleteProfile());
-      UseRequirement(new MustBeElevatedUser());
+      UseRequirement(new MustHaveElevatedAccount());
     }
   }
 
