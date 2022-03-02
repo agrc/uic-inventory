@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
@@ -206,8 +207,70 @@ namespace api.Features {
         _context.Inventories.Remove(inventory);
 
         //! TODO: create requirement that inventory cannot be deleted when authorized status
+  public static class RejectInventory {
+    public class Command : IRequest {
+      public Command(InventoryDeletionInput input) {
+        AccountId = input.AccountId;
+        SiteId = input.SiteId;
+        InventoryId = input.InventoryId;
+      }
+
+      public int AccountId { get; set; }
+      public int SiteId { get; set; }
+      public int InventoryId { get; set; }
+    }
+
+    public class Handler : IRequestHandler<Command> {
+      private readonly IAppDbContext _context;
+      private readonly IPublisher _publisher;
+      private readonly ILogger _log;
+      private readonly HasRequestMetadata _metadata;
+
+      public Handler(IAppDbContext context,
+              IPublisher publisher,
+              HasRequestMetadata metadata,
+              ILogger log) {
+        _context = context;
+        _publisher = publisher;
+        _log = log;
+        _metadata = metadata;
+      }
+
+      async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+        _log.ForContext("input", request)
+          .Debug("rejecting inventory");
+
+        var inventory = await _context.Inventories
+          .Include(i => i.Wells)
+          .FirstOrDefaultAsync(s => s.Id == request.InventoryId, cancellationToken);
+
+        if (inventory == null) {
+          throw new Exception("R01:Inventory not found");
+        }
+
+        _context.Inventories.Remove(inventory);
+
+        var site = await _context.Sites
+          .Include(s => s.Inventories)
+          .Include(s => s.Contacts)
+          .FirstAsync(s => s.Id == request.SiteId, cancellationToken);
+
+        var contacts = site.Contacts.Select(x => x.Email)
+          .Distinct()
+          .ToList();
+
+        var documents = inventory.Wells.SelectMany(x => new[] { x.ConstructionDetails, x.InjectateCharacterization })
+          .Where(x => (x ?? string.Empty).StartsWith("file::"))
+          .Distinct()
+          .ToList();
+
+        if ((site.Inventories.Count - 1) == 0) {
+          _context.Sites.Remove(site);
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _publisher.Publish(new InventoryNotifications.RejectNotification(site, inventory, _metadata.Account, contacts, documents), cancellationToken);
 
         return Unit.Value;
       }

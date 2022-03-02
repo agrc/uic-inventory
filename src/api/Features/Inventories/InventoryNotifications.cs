@@ -37,6 +37,23 @@ namespace api.Features {
       public NotificationTypes NotificationType { get; } = NotificationTypes.inventory_submission;
     }
 
+    public class RejectNotification : INotification {
+      public RejectNotification(Site site, Inventory inventory, Account account, IEnumerable<string?> contacts, IEnumerable<string?> files) {
+        Inventory = inventory;
+        Site = site;
+        Account = account;
+        Contacts = contacts?.Where(x => !string.IsNullOrEmpty(x))
+          .Select(c => new EmailAddress(c)).ToList() ?? new List<EmailAddress>(0);
+        Files = files ?? Array.Empty<string?>();
+      }
+
+      public Inventory Inventory { get; }
+      public Site Site { get; set; }
+      public Account Account { get; set; }
+      public List<EmailAddress> Contacts { get; }
+      public IEnumerable<string?> Files { get; }
+    }
+
     public class EditNotificationHandler : INotificationHandler<EditNotification> {
       private readonly IAppDbContext _context;
       private readonly ILogger _log;
