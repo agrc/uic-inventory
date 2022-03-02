@@ -90,6 +90,16 @@ namespace api.Features {
       UseRequirement(new MustHaveEditableInventoryStatus());
     }
   }
+
+  public class RejectInventoryAuthorizer : AbstractRequestAuthorizer<DeleteInventory.Command> {
+    private readonly IHttpContextAccessor _context;
+
+    public RejectInventoryAuthorizer(IHttpContextAccessor context) {
+      _context = context;
+    }
+    public override void BuildPolicy(DeleteInventory.Command request) {
+      UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+      UseRequirement(new MustHaveElevatedAccount());
     }
   }
 }
