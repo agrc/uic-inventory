@@ -6,6 +6,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Storage.V1;
 using MediatR;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -336,6 +338,47 @@ namespace api.Features {
         }
       }
     }
+
+    public class RemoveCloudStorageHandler : INotificationHandler<RejectNotification> {
+      private readonly ILogger _log;
+      private readonly string _serviceAccount;
+
+      public RemoveCloudStorageHandler(IConfiguration configuration, ILogger log) {
+        _log = log;
+        _serviceAccount = configuration["cloud-storage-sa"];
+      }
+
+      public async Task Handle(RejectNotification notification, CancellationToken token) {
+        _log.ForContext("notification", notification)
+          .Debug("Handling inventory rejection cloud storage removal");
+
+        var client = await StorageClient.CreateAsync(GoogleCredential.FromJson(_serviceAccount));
+        // TODO: move this to config
+        const string bucket = "ut-dts-agrc-uic-inventory-dev-documents";
+        var success = true;
+        try {
+          await Task.WhenAll(notification.Files.Select(name => {
+            if (string.IsNullOrEmpty(name)) {
+              return Task.CompletedTask;
+            }
+
+            return client.DeleteObjectAsync(bucket, name.Replace("file::", string.Empty), cancellationToken: token);
+          }));
+        } catch (Exception ex) {
+          success = false;
+
+          _log.ForContext("notification", notification)
+            .ForContext("exception", ex)
+            .Error("Failed to remove inventory cloud storage files");
+        }
+
+        if (success) {
+          _log.ForContext("notification", notification)
+            .Debug("Removed inventory cloud storage files");
+        }
+      }
+    }
+
     public class GroundWaterProtectionsHandler : INotificationHandler<SubmitNotification> {
       public record ProtectionResult(int WellId, string Service, bool Intersects);
       public record ProtectionQuery(int WellId, string Service, string Url);
