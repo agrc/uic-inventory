@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -117,6 +116,7 @@ namespace api.Features {
             if (_acceptableFileTypes.Contains(fileType)) {
               try {
                 var constructionFile = $"site_{request.Wells.SiteId}_inventory_{request.Wells.InventoryId}_user_{request.Wells.AccountId}_construction.{fileType}";
+                // TODO: move this to config
                 await client.UploadObjectAsync("ut-dts-agrc-uic-inventory-dev-documents",
                   constructionFile,
                   request.Wells.ConstructionDetailsFile.ContentType,

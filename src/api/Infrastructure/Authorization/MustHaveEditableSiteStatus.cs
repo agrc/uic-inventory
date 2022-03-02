@@ -16,6 +16,7 @@ namespace api.Infrastructure {
         MustHaveEditableSiteStatus requirement,
         CancellationToken token = default) =>
           Task.FromResult(AuthorizationResult.Succeed());
+      //! TODO: implement
       // Task.FromResult(AuthorizationResult.Fail("S05:This site has been approved and can no longer be edited."));
     }
   }
