@@ -191,7 +191,8 @@ namespace api.Features {
           NotificationReceipts = recipients
         };
 
-        await _context.Notifications.AddAsync(item, token);
+        _context.Notifications.Add(item);
+
         await _context.SaveChangesAsync(token);
       }
     }
