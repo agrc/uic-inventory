@@ -294,6 +294,48 @@ namespace api.Features {
       }
     }
 
+    public class SendSubmissionRejectionEmailHandler : INotificationHandler<RejectNotification> {
+      private readonly EmailService _client;
+      private readonly ILogger _log;
+      public readonly string _email;
+
+      public SendSubmissionRejectionEmailHandler(EmailService client, IConfiguration configuration, ILogger log) {
+        _client = client;
+        _log = log;
+        _email = configuration.GetSection("App")["AdminEmail"];
+      }
+
+      public async Task Handle(RejectNotification notification, CancellationToken token) {
+        _log.ForContext("notification", notification)
+          .Debug("Handling inventory rejection email");
+
+        var message = new SendGridMessage {
+          From = new EmailAddress(_email, "UIC Administrators"),
+          Subject = $"UIC Class V Inventory Submittal Rejected - {notification.Site.Name}",
+        };
+        message.AddContent(
+          MimeType.Html,
+          $@"<h1>The submission for {notification.Site.Name} has been rejected</h1>
+          <p>The UIC Class V inventory submittal with the Utah Division of Water Quality has been rejected.</p>
+          <h2>Contact us</h2>
+          <p>If you have any questions please contact Brianna Ariotti at (801) 536-4351.</p>"
+        );
+
+        message.AddTos(notification.Contacts);
+
+        var response = await _client.SendEmailAsync(message, token);
+
+        if (!response.IsSuccessStatusCode) {
+          _log.ForContext("message", message)
+          .ForContext("response", response)
+            .Error("Failed to send inventory rejection email");
+        } else {
+          _log.ForContext("message", message)
+            .ForContext("response", response)
+            .Debug("Sent inventory rejection email");
+        }
+      }
+    }
     public class GroundWaterProtectionsHandler : INotificationHandler<SubmitNotification> {
       public record ProtectionResult(int WellId, string Service, bool Intersects);
       public record ProtectionQuery(int WellId, string Service, string Url);
