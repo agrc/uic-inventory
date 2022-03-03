@@ -360,8 +360,16 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-docker-compose.override.yaml
-.DS_Store
-src/api/uic-inventory/.eslintcache
 
+# Docker
+docker-compose.override.yaml
+
+# MacOS trash
+.DS_Store
+
+# Javascript
+.eslintcache
+
+# Secrets
+appsettings.*.json
 secrets/

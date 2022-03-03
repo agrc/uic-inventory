@@ -75,7 +75,7 @@ namespace api {
         .AddTransientHttpErrorPolicy(policyBuilder =>
           policyBuilder.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600)));
 
-      services.AddSendGrid(options => options.ApiKey = Configuration["sendgrid-key"]);
+      services.AddSendGrid(options => options.ApiKey = Configuration["Sendgrid:Key"]);
 
       services.AddControllers().AddJsonOptions(options => {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));

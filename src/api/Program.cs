@@ -12,12 +12,16 @@ namespace api {
       .UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration))
       .ConfigureAppConfiguration((hostingContext, config) => {
         var path = Path.DirectorySeparatorChar.ToString();
+        var env = hostingContext.HostingEnvironment.EnvironmentName;
 
-        if (hostingContext.HostingEnvironment.EnvironmentName == "Development") {
+        if (env == "Development") {
           path = Directory.GetCurrentDirectory();
+        } else {
+          config.AddJsonFile(Path.Combine(path, "secrets", "dotnet", $"appsettings.{env}.json"), optional: false, reloadOnChange: true);
         }
 
-        foreach (var secret in new[] { "storage", "email" }) {
+
+        foreach (var secret in new[] { "storage" }) {
           config.AddKeyPerFile(Path.Combine(path, "secrets", secret), false, true);
         }
       })

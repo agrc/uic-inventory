@@ -21,11 +21,11 @@ jobs:
 
     steps:
       - name: ⬇️ Set up code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - id: auth
         name: 🗝️ Authenticate to Google Cloud
-        uses: google-github-actions/auth@v0.4.1
+        uses: google-github-actions/auth@v0
         with:
           create_credentials_file: true
           token_format: access_token
@@ -57,8 +57,23 @@ jobs:
 
       - name: 🚀 Deploy to Cloud Run
         id: deploy
-        uses: google-github-actions/deploy-cloudrun@v0.6.0
+        uses: google-github-actions/deploy-cloudrun@v0
         with:
           service: uic-inventory-api
           image: gcr.io/${{ secrets.PROJECT_ID }}/api
           region: us-central1
+          flags: |
+            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+            --set-cloudsql-instances=${{ secrets.CLOUD_SQL }}
+            --vpc-connector=${{ secrets.VPC }}
+            --vpc-egress=private-ranges-only
+            --max-instances=5
+            --concurrency=250
+            --cpu=1
+            --memory=512Mi
+            --timeout=5m
+          env_vars: >
+            ASPNETCORE_URLS=http://+:8080,
+            ASPNETCORE_ENVIRONMENT=Production
+          secrets: |
+            /secrets/dotnet/appsettings.Production.json=dotnet-appsettings:latest
