@@ -14,15 +14,8 @@ namespace api {
         var path = Path.DirectorySeparatorChar.ToString();
         var env = hostingContext.HostingEnvironment.EnvironmentName;
 
-        if (env == "Development") {
-          path = Directory.GetCurrentDirectory();
-        } else {
+        if (env != "Development") {
           config.AddJsonFile(Path.Combine(path, "secrets", "dotnet", $"appsettings.{env}.json"), optional: false, reloadOnChange: true);
-        }
-
-
-        foreach (var secret in new[] { "storage" }) {
-          config.AddKeyPerFile(Path.Combine(path, "secrets", secret), false, true);
         }
       })
       .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>().UseWebRoot("uic-inventory/dist"));

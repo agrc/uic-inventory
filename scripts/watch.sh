@@ -4,9 +4,10 @@ cd "$(dirname "$0")/.."
 docker compose down
 echo "starting databases"
 docker compose --file docker-compose.yaml --file docker-compose.override.yaml up --detach db cache
-echo "starting front end"
-cd src/api/uic-inventory
-npm run dev &
+
+echo "authenticating with GCP"
+gcloud auth application-default login
+
 echo "starting api"
-cd ..
+cd src/api
 dotnet watch

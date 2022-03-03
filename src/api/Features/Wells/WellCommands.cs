@@ -82,20 +82,14 @@ namespace api.Features {
       private readonly IAppDbContext _context;
       private readonly IPublisher _publisher;
       private readonly ILogger _log;
-      private readonly HasRequestMetadata _metadata;
-      private readonly string _serviceAccount;
 
       public Handler(
         IAppDbContext context,
         IPublisher publisher,
-        IConfiguration configuration,
-        HasRequestMetadata metadata,
         ILogger log) {
         _context = context;
         _publisher = publisher;
         _log = log;
-        _metadata = metadata;
-        _serviceAccount = configuration["cloud-storage-sa"];
       }
       public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
@@ -108,7 +102,7 @@ namespace api.Features {
           .ToListAsync(cancellationToken);
 
         if (request.Wells.ConstructionDetailsFile != null || request.Wells.InjectateCharacterizationFile != null) {
-          var client = await StorageClient.CreateAsync(GoogleCredential.FromJson(_serviceAccount));
+          var client = await StorageClient.CreateAsync();
 
           if (request.Wells.ConstructionDetailsFile != null) {
             var fileType = request.Wells.ConstructionDetailsFile.FileName.Split('.').Last().ToLower();

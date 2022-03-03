@@ -342,18 +342,16 @@ namespace api.Features {
 
     public class RemoveCloudStorageHandler : INotificationHandler<RejectNotification> {
       private readonly ILogger _log;
-      private readonly string _serviceAccount;
 
-      public RemoveCloudStorageHandler(IConfiguration configuration, ILogger log) {
+      public RemoveCloudStorageHandler(ILogger log) {
         _log = log;
-        _serviceAccount = configuration["cloud-storage-sa"];
       }
 
       public async Task Handle(RejectNotification notification, CancellationToken token) {
         _log.ForContext("notification", notification)
           .Debug("Handling inventory rejection cloud storage removal");
 
-        var client = await StorageClient.CreateAsync(GoogleCredential.FromJson(_serviceAccount));
+        var client = await StorageClient.CreateAsync();
         // TODO: move this to config
         const string bucket = "ut-dts-agrc-uic-inventory-dev-documents";
         var success = true;
