@@ -31,4 +31,5 @@ dotnet user-secrets set "CloudSql:Username" "postgres"
 dotnet user-secrets set "CloudSql:Password" "what password"
 
 dotnet user-secrets set "App:AdminEmail" "you@email.com"
+dotnet user-secrets set "SendGrid:Key" "yor send grid api key"
 ```
