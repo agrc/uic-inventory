@@ -384,7 +384,7 @@ namespace api.Features {
       public record Protections(bool Aquifers, bool GroundWater);
 
       private const string _aquiferRechargeDistchargeAreas = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Aquifer_RechargeDischargeAreas/FeatureServer/0";
-      private const string _groundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Drinking_Water_Source_Protection_Zones_-_DDW/FeatureServer/2";
+      private const string _groundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0";
       private readonly HttpClient _client;
       private readonly IAppDbContext _context;
       private readonly ILogger _log;
