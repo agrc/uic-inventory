@@ -92,7 +92,7 @@ namespace api.Features {
         _context = context;
         _publisher = publisher;
         _log = log;
-        _bucket = configuration["STORAGE_BUCKET"];
+        _bucket = configuration["UPLOAD_BUCKET"];
       }
       public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)

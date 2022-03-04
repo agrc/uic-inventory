@@ -78,6 +78,7 @@ jobs:
           env_vars: >
             ASPNETCORE_URLS=http://+:8080,
             ASPNETCORE_ENVIRONMENT=Production,
+            UPLOAD_BUCKET=${{ secrets.PROJECT_ID }}-unscanned,
             STORAGE_BUCKET=${{ secrets.PROJECT_ID }}-documents
           secrets: |
             /secrets/dotnet/appsettings.Production.json=dotnet-appsettings:latest
