@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - dev
+    paths:
+      - "src/**"
+      - ".github/workflows/dotnet.yml"
 
 concurrency:
   group: "${{ github.head_ref || github.ref }}"
