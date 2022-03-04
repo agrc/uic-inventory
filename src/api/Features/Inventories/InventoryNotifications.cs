@@ -342,9 +342,11 @@ namespace api.Features {
 
     public class RemoveCloudStorageHandler : INotificationHandler<RejectNotification> {
       private readonly ILogger _log;
+      private readonly string _bucket;
 
-      public RemoveCloudStorageHandler(ILogger log) {
+      public RemoveCloudStorageHandler(IConfiguration configuration, ILogger log) {
         _log = log;
+        _bucket = configuration["STORAGE_BUCKET"];
       }
 
       public async Task Handle(RejectNotification notification, CancellationToken token) {
@@ -352,8 +354,6 @@ namespace api.Features {
           .Debug("Handling inventory rejection cloud storage removal");
 
         var client = await StorageClient.CreateAsync();
-        // TODO: move this to config
-        const string bucket = "ut-dts-agrc-uic-inventory-dev-documents";
         var success = true;
         try {
           await Task.WhenAll(notification.Files.Select(name => {
@@ -361,7 +361,7 @@ namespace api.Features {
               return Task.CompletedTask;
             }
 
-            return client.DeleteObjectAsync(bucket, name.Replace("file::", string.Empty), cancellationToken: token);
+            return client.DeleteObjectAsync(_bucket, name.Replace("file::", string.Empty), cancellationToken: token);
           }));
         } catch (Exception ex) {
           success = false;

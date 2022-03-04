@@ -372,4 +372,3 @@ docker-compose.override.yaml
 
 # Secrets
 appsettings.*.json
-secrets/

@@ -82,14 +82,17 @@ namespace api.Features {
       private readonly IAppDbContext _context;
       private readonly IPublisher _publisher;
       private readonly ILogger _log;
+      private readonly string _bucket;
 
       public Handler(
         IAppDbContext context,
         IPublisher publisher,
+        IConfiguration configuration,
         ILogger log) {
         _context = context;
         _publisher = publisher;
         _log = log;
+        _bucket = configuration["STORAGE_BUCKET"];
       }
       public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
@@ -110,8 +113,7 @@ namespace api.Features {
             if (_acceptableFileTypes.Contains(fileType)) {
               try {
                 var constructionFile = $"site_{request.Wells.SiteId}_inventory_{request.Wells.InventoryId}_user_{request.Wells.AccountId}_construction.{fileType}";
-                // TODO: move this to config
-                await client.UploadObjectAsync("ut-dts-agrc-uic-inventory-dev-documents",
+                await client.UploadObjectAsync(_bucket,
                   constructionFile,
                   request.Wells.ConstructionDetailsFile.ContentType,
                   request.Wells.ConstructionDetailsFile.OpenReadStream(), cancellationToken: cancellationToken);
@@ -139,7 +141,7 @@ namespace api.Features {
             if (_acceptableFileTypes.Contains(fileType)) {
               try {
                 var injectateFile = $"site_{request.Wells.SiteId}_inventory_{request.Wells.InventoryId}_user_{request.Wells.AccountId}_injectate.{fileType}";
-                await client.UploadObjectAsync("ut-dts-agrc-uic-inventory-dev-documents",
+                await client.UploadObjectAsync(_bucket,
                   injectateFile,
                   request.Wells.InjectateCharacterizationFile.ContentType,
                   request.Wells.InjectateCharacterizationFile.OpenReadStream(), cancellationToken: cancellationToken);
