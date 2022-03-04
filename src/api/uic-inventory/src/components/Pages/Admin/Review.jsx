@@ -492,7 +492,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
   const mapDiv = useRef();
   const groundWaterProtectionZones = useRef(
     new FeatureLayer({
-      url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/arcgis/rest/services/Drinking_Water_Source_Protection_Zones_-_DDW/FeatureServer/2',
+      url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0',
     })
   );
   const hoverEvent = useRef();
