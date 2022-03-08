@@ -76,6 +76,8 @@ namespace api.Features {
       public bool ContactStatus { get; set; }
       public bool LocationStatus { get; set; }
       public bool SignatureStatus { get; set; }
+      public bool Flagged { get; set; }
+      public string? EdocsNumber { get; set; }
       public Payload(Inventory inventory, Site site) {
         SiteId = site.Id;
         Id = inventory.Id;
@@ -86,6 +88,8 @@ namespace api.Features {
         ContactStatus = inventory.ContactStatus;
         LocationStatus = inventory.LocationStatus;
         SignatureStatus = inventory.SignatureStatus;
+        Flagged = !string.IsNullOrEmpty(inventory.Flagged);
+        EdocsNumber = inventory.Edocs;
       }
     }
     public InventoriesForSitePayload(UnauthorizedException error) : base(error.Message) { }
