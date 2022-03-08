@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
-using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -83,15 +82,18 @@ namespace api.Features {
       private readonly IPublisher _publisher;
       private readonly ILogger _log;
       private readonly string _bucket;
+      private readonly ICloudFileNamer _fileNamerService;
 
       public Handler(
         IAppDbContext context,
         IPublisher publisher,
         IConfiguration configuration,
+        ICloudFileNamer fileNamer,
         ILogger log) {
         _context = context;
         _publisher = publisher;
         _log = log;
+        _fileNamerService = fileNamer;
         _bucket = configuration["UPLOAD_BUCKET"];
       }
       public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
@@ -112,7 +114,7 @@ namespace api.Features {
 
             if (_acceptableFileTypes.Contains(fileType)) {
               try {
-                var constructionFile = $"site_{request.Wells.SiteId}_inventory_{request.Wells.InventoryId}_user_{request.Wells.AccountId}_construction.{fileType}";
+                var constructionFile = $"{_fileNamerService.GenerateFileName(request.Wells)}_construction.{fileType}";
                 await client.UploadObjectAsync(_bucket,
                   constructionFile,
                   request.Wells.ConstructionDetailsFile.ContentType,
@@ -140,7 +142,7 @@ namespace api.Features {
 
             if (_acceptableFileTypes.Contains(fileType)) {
               try {
-                var injectateFile = $"site_{request.Wells.SiteId}_inventory_{request.Wells.InventoryId}_user_{request.Wells.AccountId}_injectate.{fileType}";
+                var injectateFile = $"{_fileNamerService.GenerateFileName(request.Wells)}_injectate.{fileType}";
                 await client.UploadObjectAsync(_bucket,
                   injectateFile,
                   request.Wells.InjectateCharacterizationFile.ContentType,

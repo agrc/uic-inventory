@@ -46,6 +46,7 @@ namespace api {
       services.AddSingleton(new Lazy<NaicsProvider>(() => new NaicsProvider()));
       services.AddSingleton<EmailService>();
       services.AddScoped<HasRequestMetadata>();
+      services.AddSingleton<ICloudFileNamer, FileNamingService>();
 
       var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
 

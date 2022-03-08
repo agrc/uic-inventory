@@ -159,7 +159,6 @@ namespace api.Features {
     }
   }
 
-
   public class RestEndpointError {
     public int Code { get; set; }
     public string? Message { get; set; }
