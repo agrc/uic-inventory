@@ -30,10 +30,10 @@ export function SitesAndInventory({ completeProfile }) {
 
   return (
     <main>
-      <div className="py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
         <Header>
           {completeProfile() ? (
-            <div className="flex justify-end mr-2 sm:mr-0">
+            <div className="mr-2 flex justify-end sm:mr-0">
               <SiteCreationButton className="m-0" access={!completeProfile()} />
             </div>
           ) : (
@@ -70,7 +70,7 @@ export function GenericLandingPage() {
           to register with Utah ID and then return to this page to login and complete your profile. If you already have
           a Utah ID account you may login using the link above. Once you have an account you will be able to:
         </p>
-        <ul className="mt-3 ml-8 list-disc list-inside">
+        <ul className="mt-3 ml-8 list-inside list-disc">
           <li>Submit Class V UIC inventory information forms</li>
           <li>Check inventory form status</li>
           <li>Update well operating status</li>
@@ -86,7 +86,7 @@ function CreationButton({ access, url = '/site/create', label = 'Create item', c
   return (
     <Link to={url} type="button" meta="default" disabled={access} className={className}>
       <div className="flex">
-        <PlusIcon className="self-center w-5 h-5 mr-2" />
+        <PlusIcon className="mr-2 h-5 w-5 self-center" />
         <span>{label}</span>
       </div>
     </Link>
@@ -127,7 +127,7 @@ function SiteList({ show, status, data }) {
   );
 }
 
-const getStatusProps = (status) => {
+const getStatusProps = (status, row) => {
   const commonClasses = 'uppercase text-xs border px-2 py-1 w-24 text-center rounded font-bold text-white select-none';
   switch (status) {
     case 'incomplete':
@@ -136,9 +136,21 @@ const getStatusProps = (status) => {
         className: clsx(commonClasses, 'bg-gray-500 border-gray-700'),
       };
     case 'submitted': {
+      const { flagged, edocsNumber } = row;
+      let label = 'submitted';
+      if (flagged) {
+        label = 'flagged';
+      } else if (edocsNumber) {
+        label = edocsNumber;
+      }
+
       return {
-        children: 'submitted',
-        className: clsx(commonClasses, 'bg-blue-500 border-blue-700'),
+        children: label,
+        className: clsx(commonClasses, {
+          'bg-blue-500 border-blue-700': label === 'submitted',
+          'bg-red-500 border-red-700': label === 'flagged',
+          'bg-cyan-500 border-cyan-700': label === edocsNumber,
+        }),
       };
     }
     case 'authorized': {
@@ -150,9 +162,9 @@ const getStatusProps = (status) => {
   }
 };
 
-function InventoryStatus({ inventoryId, siteId, status }) {
+function InventoryStatus({ inventoryId, siteId, status, row }) {
   const { isElevated } = useContext(AuthContext);
-  const statusProps = getStatusProps(status);
+  const statusProps = getStatusProps(status, row);
 
   if (isElevated() && status === 'submitted') {
     return <Link to={`/review/site/${siteId}/inventory/${inventoryId}`} {...statusProps} />;
@@ -176,17 +188,17 @@ function SiteTable({ data }) {
           return (
             <div className="flex justify-between">
               {row.isExpanded ? (
-                <ChevronDownIcon className="inline w-4 h-4 -ml-2" />
+                <ChevronDownIcon className="-ml-2 inline h-4 w-4" />
               ) : (
-                <ChevronRightIcon className="inline w-4 h-4 -ml-2" />
+                <ChevronRightIcon className="-ml-2 inline h-4 w-4" />
               )}
               {row.original.id}
             </div>
           );
         },
         SubCell: () => (
-          <div className="flex items-center content-center justify-between h-full">
-            <div className="w-full h-full mr-2 bg-gray-200 border-r border-gray-500"></div>
+          <div className="flex h-full content-center items-center justify-between">
+            <div className="mr-2 h-full w-full border-r border-gray-500 bg-gray-200"></div>
           </div>
         ),
       },
@@ -207,6 +219,7 @@ function SiteTable({ data }) {
                 siteId={`${row.original.siteId}`}
                 inventoryId={row.original.id}
                 status={row.original.status}
+                row={row.original}
               />
             </div>
           );
@@ -221,48 +234,48 @@ function SiteTable({ data }) {
               <Tippy content="Site details" singleton={target}>
                 <Link
                   to={`/site/${data.row.original.id}/add-details`}
-                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                  className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
-                  <DocumentTextIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site details" />
+                  <DocumentTextIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site details" />
                   {data.row.original.detailStatus ? (
                     <CheckIcon
-                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
                   )}
                 </Link>
               </Tippy>
               <Tippy content="Site contacts" singleton={target}>
                 <Link
                   to={`/site/${data.row.original.id}/add-contacts`}
-                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                  className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
-                  <UsersIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site contacts" />
+                  <UsersIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site contacts" />
                   {data.row.original.contactStatus ? (
                     <CheckIcon
-                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
                   )}
                 </Link>
               </Tippy>
               <Tippy content="Site location" singleton={target}>
                 <Link
                   to={`/site/${data.row.original.id}/add-location`}
-                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                  className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
-                  <LocationMarkerIcon className="absolute w-6 h-6 m-auto top-2" aria-label="site location" />
+                  <LocationMarkerIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site location" />
                   {data.row.original.locationStatus ? (
                     <CheckIcon
-                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
                   )}
                 </Link>
               </Tippy>
@@ -276,17 +289,17 @@ function SiteTable({ data }) {
                 <Tippy content="regulatory contact" singleton={target}>
                   <Link
                     to={`/site/${row.original.siteId}/inventory/${row.original.id}/regulatory-contact`}
-                    className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                    className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                   >
-                    <UsersIcon className="absolute w-6 h-6 m-auto top-2" aria-label="regulatory contacts" />
+                    <UsersIcon className="absolute top-2 m-auto h-6 w-6" aria-label="regulatory contacts" />
                     {row.original.contactStatus ? (
                       <CheckIcon
-                        className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                        className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                         aria-label="yes"
                       />
                     ) : (
                       <XIcon
-                        className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3"
+                        className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500"
                         aria-label="no"
                       />
                     )}
@@ -296,48 +309,48 @@ function SiteTable({ data }) {
               <Tippy content="well locations" singleton={target}>
                 <Link
                   to={`/site/${row.original.siteId}/inventory/${row.original.id}/add-wells`}
-                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                  className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
-                  <LocationMarkerIcon className="absolute w-6 h-6 m-auto top-2" aria-label="well locations" />
+                  <LocationMarkerIcon className="absolute top-2 m-auto h-6 w-6" aria-label="well locations" />
                   {row.original.locationStatus ? (
                     <CheckIcon
-                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
                   )}
                 </Link>
               </Tippy>
               <Tippy content="well details" singleton={target}>
                 <Link
                   to={`/site/${row.original.siteId}/inventory/${row.original.id}/add-well-details`}
-                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                  className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
-                  <DocumentTextIcon className="absolute w-6 h-6 m-auto top-2" aria-label="well details" />
+                  <DocumentTextIcon className="absolute top-2 m-auto h-6 w-6" aria-label="well details" />
                   {row.original.detailStatus ? (
                     <CheckIcon
-                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
                   )}
                 </Link>
               </Tippy>
               <Tippy content="sign and submit" singleton={target}>
                 <Link
                   to={`/site/${row.original.siteId}/inventory/${row.original.id}/submit`}
-                  className="relative inline-block w-6 h-6 text-gray-500 hover:text-blue-800"
+                  className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
-                  <PencilAltIcon className="absolute w-6 h-6 m-auto top-2" aria-label="signature status" />
+                  <PencilAltIcon className="absolute top-2 m-auto h-6 w-6" aria-label="signature status" />
                   {row.original.signatureStatus ? (
                     <CheckIcon
-                      className="absolute w-6 h-6 m-auto stroke-current text-emerald-500 bottom-3"
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute w-6 h-6 m-auto text-pink-500 stroke-current bottom-3" aria-label="no" />
+                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
                   )}
                 </Link>
               </Tippy>
@@ -352,7 +365,7 @@ function SiteTable({ data }) {
           return (
             <TrashIcon
               aria-label="delete site"
-              className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
+              className="ml-1 h-6 w-6 cursor-pointer text-red-600 hover:text-red-900"
               onClick={(event) => {
                 event.stopPropagation();
 
@@ -367,7 +380,7 @@ function SiteTable({ data }) {
           return (
             <TrashIcon
               aria-label="delete inventory"
-              className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
+              className="ml-1 h-6 w-6 cursor-pointer text-red-600 hover:text-red-900"
               onClick={(event) => {
                 event.stopPropagation();
 
@@ -444,10 +457,10 @@ function SiteTable({ data }) {
   return data?.length < 1 ? (
     <div className="flex flex-col items-center">
       <Tippy singleton={source} delay={25} render={(attrs, content) => <Tooltip {...attrs}>{content}</Tooltip>} />
-      <div className="px-5 py-4 m-6 border rounded-lg shadow-sm bg-gray-50">
+      <div className="m-6 rounded-lg border bg-gray-50 px-5 py-4 shadow-sm">
         <h2 className="mb-1 text-xl font-medium">Create your first site</h2>
         <p className="text-gray-700">Get started by clicking the button below to start creating your first site.</p>
-        <div className="mb-6 text-sm text-center text-gray-900"></div>
+        <div className="mb-6 text-center text-sm text-gray-900"></div>
         <div className="flex justify-center">
           <SiteCreationButton className="m-0" />
         </div>
@@ -505,14 +518,14 @@ function SiteTable({ data }) {
                         <th
                           {...column.getHeaderProps(column.getSortByToggleProps())}
                           key={`${headerGroup.index}-${column.id}`}
-                          className="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                          className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                         >
                           {column.render('Header')}
                           {column.isSorted ? (
                             column.isSortedDesc ? (
-                              <ChevronUpIcon className="inline w-5 h-5 ml-2" />
+                              <ChevronUpIcon className="ml-2 inline h-5 w-5" />
                             ) : (
-                              <ChevronDownIcon className="inline w-5 h-5 ml-2" />
+                              <ChevronDownIcon className="ml-2 inline h-5 w-5" />
                             )
                           ) : null}
                         </th>
@@ -520,7 +533,7 @@ function SiteTable({ data }) {
                     </tr>
                   ))}
                 </thead>
-                <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
+                <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white">
                   {rows.map((row) => {
                     prepareRow(row);
                     const rowProps = row.getRowProps();
@@ -535,7 +548,7 @@ function SiteTable({ data }) {
                               className={clsx(
                                 {
                                   'font-medium': ['action', 'id'].includes(cell.column.id),
-                                  'text-right whitespace-nowrap': cell.column.id === 'action',
+                                  'whitespace-nowrap text-right': cell.column.id === 'action',
                                 },
                                 'px-3 pt-4 pb-2'
                               )}
@@ -584,12 +597,12 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
         <td />
         <td colSpan={visibleColumns.length - 1}>
           <div className="flex flex-col items-center">
-            <div className="px-5 py-4 m-6 border rounded-lg shadow-sm bg-gray-50">
+            <div className="m-6 rounded-lg border bg-gray-50 px-5 py-4 shadow-sm">
               <h2 className="mb-1 text-xl font-medium">Create your first inventory</h2>
               <p className="text-gray-700">
                 Get started by clicking the button below to start creating your first inventory.
               </p>
-              <div className="mb-6 text-sm text-center text-gray-900"></div>
+              <div className="mb-6 text-center text-sm text-gray-900"></div>
               <div className="flex justify-center">
                 <InventoryCreationButton site={row.original.id} className="m-0" />
               </div>
