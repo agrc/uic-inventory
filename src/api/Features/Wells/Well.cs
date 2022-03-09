@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Http;
 
@@ -78,6 +79,13 @@ namespace api.Features {
       }
     }
   }
+  public class WellFilePayload : ResponseContract {
+    public WellFilePayload(UnauthorizedException error) : base(error.Message) { }
+    public WellFilePayload(FileNotFoundException error) : base($"DL01:{error.Message}") { }
+    public WellFilePayload(ArgumentNullException error) : base($"DL02:{error.Message}") { }
+    public WellFilePayload(string error) : base($"DL03:{error}") { }
+    public WellFilePayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+  }
   public class WellInput {
     public int WellId { get; set; }
     public int SiteId { get; set; }
@@ -95,6 +103,12 @@ namespace api.Features {
     public string? ConstructionDetails { get; set; }
     public string? InjectateCharacterization { get; set; }
     public string? HydrogeologicCharacterization { get; set; }
+  }
+  public class WellFileInput {
+    public string WellIdRange { get; set; } = default!;
+    public int SiteId { get; set; }
+    public int InventoryId { get; set; }
+    public string File { get; set; } = default!;
   }
 
   public class WellDetailInput : WellInput {

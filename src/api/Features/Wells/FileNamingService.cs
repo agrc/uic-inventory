@@ -3,20 +3,9 @@ using System.Text;
 
 namespace api.Features {
   public interface ICloudFileNamer {
-    string GenerateFileName(WellDetailInput wells);
     string CreateRangeFromArray(int[] items);
   }
   public class FileNamingService : ICloudFileNamer {
-    public string GenerateFileName(WellDetailInput wells) {
-      var site = wells.SiteId;
-      var inventory = wells.InventoryId;
-      var uploader = wells.AccountId;
-
-      var wellIds = CreateRangeFromArray(wells.SelectedWells);
-
-      return $"site({site})_inventory({inventory})_wells({wellIds})_uploadedBy({uploader})";
-    }
-
     public string CreateRangeFromArray(int[] items) {
       var length = items.Length;
 

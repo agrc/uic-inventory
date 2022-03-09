@@ -74,4 +74,18 @@ namespace api.Features {
       UseRequirement(new MustOwnWell(request.WellId));
     }
   }
+
+  public class GetWellFilesAuthorizer : AbstractRequestAuthorizer<GetWellFiles.Command> {
+    private readonly IHttpContextAccessor _context;
+
+    public GetWellFilesAuthorizer(IHttpContextAccessor context) {
+      _context = context;
+    }
+    public override void BuildPolicy(GetWellFiles.Command request) {
+      UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+      UseRequirement(new MustOwnSite(request.SiteId));
+      UseRequirement(new MustHaveCompleteProfile());
+      UseRequirement(new MustOwnInventory(request.InventoryId));
+    }
+  }
 }
