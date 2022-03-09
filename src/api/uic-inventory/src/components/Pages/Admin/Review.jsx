@@ -402,12 +402,12 @@ const ContactDetails = ({ siteId }) => {
   );
 };
 
-const handleLink = (text) => {
+const handleLink = (text, siteId, inventoryId) => {
   if (text?.startsWith('file::')) {
     return (
       <a
         meta="primary"
-        href={text.replace('file::', '/api/file/').replaceAll('_', '/')}
+        href={text.replace('file::', `/api/site/${siteId}/inventory/${inventoryId}/well/`).replaceAll('_', '/')}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -448,7 +448,7 @@ const WellDetails = ({ siteId, inventoryId }) => {
               {well.status}
             </Value>
             <Label>Construction</Label>
-            <Value>{handleLink(well.constructionDetails)}</Value>
+            <Value>{handleLink(well.constructionDetails, siteId, inventoryId)}</Value>
           </Panel>
         ))}
       </Section>
@@ -465,7 +465,7 @@ const WellDetails = ({ siteId, inventoryId }) => {
               {well.status}
             </Value>
             <Label>Injectate Characterization</Label>
-            <Value>{handleLink(well.injectateCharacterization)}</Value>
+            <Value>{handleLink(well.injectateCharacterization, siteId, inventoryId)}</Value>
           </Panel>
         ))}
       </Section>
