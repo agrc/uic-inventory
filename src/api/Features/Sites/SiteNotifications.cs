@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using api.Infrastructure;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 
 namespace api.Features {
   public static class SiteNotifications {
@@ -16,12 +18,21 @@ namespace api.Features {
 
       public int SiteId { get; }
     }
+    public class DeleteNotification : INotification {
+      public DeleteNotification(int siteId) {
+        SiteId = siteId;
+      }
 
-    public class EditNotificationHandler : INotificationHandler<EditNotification> {
+      public int SiteId { get; }
+    }
+
+    public class UpdateSiteStatusHandler : INotificationHandler<EditNotification> {
       private readonly IAppDbContext _context;
+      private readonly ILogger _log;
 
-      public EditNotificationHandler(IAppDbContext context) {
+      public UpdateSiteStatusHandler(IAppDbContext context, ILogger log) {
         _context = context;
+        _log = log;
       }
       private static void UpdateAllSerInventoryContactStatus(Site entity) {
         var inventories = entity.Inventories
@@ -47,6 +58,9 @@ namespace api.Features {
           SiteStatus.Complete :
           SiteStatus.Incomplete;
       public async Task Handle(EditNotification notification, CancellationToken token) {
+        _log.ForContext("notification", notification)
+          .Debug("Handling site status update");
+
         var site = await _context.Sites
           .Include(x => x.Contacts)
           .Include(x => x.Inventories)
@@ -63,6 +77,24 @@ namespace api.Features {
         site.Status = GetSiteStatus(site);
 
         await _context.SaveChangesAsync(token);
+      }
+    }
+    public class RemoveCloudStorageHandler : INotificationHandler<DeleteNotification> {
+      private readonly ILogger _log;
+      private readonly CloudStorageService _client;
+      private readonly string _bucket;
+
+      public RemoveCloudStorageHandler(CloudStorageService cloud, IConfiguration configuration, ILogger log) {
+        _log = log;
+        _bucket = configuration["STORAGE_BUCKET"];
+        _client = cloud;
+      }
+
+      public async Task Handle(DeleteNotification notification, CancellationToken token) {
+        _log.ForContext("notification", notification)
+          .Debug("Handling site deletion cloud storage removal");
+
+        await _client.RemoveObjectsAsync(_bucket, $"site_{notification.SiteId}/", token);
       }
     }
   }

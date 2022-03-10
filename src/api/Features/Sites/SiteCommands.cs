@@ -113,9 +113,12 @@ namespace api.Features {
     public class Handler : IRequestHandler<Command> {
       private readonly IAppDbContext _context;
       private readonly ILogger _log;
+      private readonly IPublisher _publisher;
 
-      public Handler(IAppDbContext context, ILogger log) {
+
+      public Handler(IAppDbContext context, IPublisher publisher, ILogger log) {
         _context = context;
+        _publisher = publisher;
         _log = log;
       }
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
@@ -133,6 +136,7 @@ namespace api.Features {
         //! TODO: create requirement that site cannot be deleted when authorized status
 
         await _context.SaveChangesAsync(cancellationToken);
+        await _publisher.Publish(new SiteNotifications.DeleteNotification(request.SiteId), cancellationToken);
 
         return Unit.Value;
       }
