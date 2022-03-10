@@ -38,7 +38,7 @@ namespace api.Features {
       }
       public async Task<Well> Handle(Command message, CancellationToken cancellationToken) {
         _log.ForContext("input", message)
-          .Debug("creating well");
+          .Debug("Creating well");
 
         var well = new Well {
           AccountFk = message.Input.AccountId,
@@ -84,22 +84,25 @@ namespace api.Features {
       private readonly ILogger _log;
       private readonly string _bucket;
       private readonly ICloudFileNamer _fileNamerService;
+      private readonly CloudStorageService _client;
 
       public Handler(
         IAppDbContext context,
         IPublisher publisher,
         IConfiguration configuration,
         ICloudFileNamer fileNamer,
+        CloudStorageService cloudService,
         ILogger log) {
         _context = context;
         _publisher = publisher;
         _log = log;
         _fileNamerService = fileNamer;
+        _client = cloudService;
         _bucket = configuration["UPLOAD_BUCKET"];
       }
       public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
-          .Debug("updating well");
+          .Debug("Updating well");
 
         var errors = new List<string>(2);
 
@@ -112,8 +115,6 @@ namespace api.Features {
         var uploader = request.Wells.AccountId;
 
         if (request.Wells.ConstructionDetailsFile != null || request.Wells.InjectateCharacterizationFile != null) {
-          var client = await StorageClient.CreateAsync();
-
           if (request.Wells.ConstructionDetailsFile != null) {
             var fileType = request.Wells.ConstructionDetailsFile.FileName.Split('.').Last().ToLower();
 
@@ -123,10 +124,12 @@ namespace api.Features {
 
                 var constructionFile = $"site_{site}/inventory_{inventory}/well_{wellRange}/construction_{uploader}.{fileType}";
 
-                await client.UploadObjectAsync(_bucket,
+                await _client.AddObjectAsync(_bucket,
                   constructionFile,
                   request.Wells.ConstructionDetailsFile.ContentType,
-                  request.Wells.ConstructionDetailsFile.OpenReadStream(), cancellationToken: cancellationToken);
+                  request.Wells.ConstructionDetailsFile.OpenReadStream(),
+                  cancellationToken
+                );
 
                 request.Wells.ConstructionDetails = $"file::{wellRange}_construction.{fileType}";
               } catch (Exception e) {
@@ -154,10 +157,12 @@ namespace api.Features {
 
                 var injectateFile = $"site_{site}/inventory_{inventory}/well_{wellRange}/injectate_{uploader}.{fileType}";
 
-                await client.UploadObjectAsync(_bucket,
+                await _client.AddObjectAsync(_bucket,
                   injectateFile,
                   request.Wells.InjectateCharacterizationFile.ContentType,
-                  request.Wells.InjectateCharacterizationFile.OpenReadStream(), cancellationToken: cancellationToken);
+                  request.Wells.InjectateCharacterizationFile.OpenReadStream(),
+                  cancellationToken
+                );
 
                 request.Wells.InjectateCharacterization = $"file::{wellRange}_injectate.{fileType}";
               } catch (Exception e) {
@@ -221,7 +226,7 @@ namespace api.Features {
       }
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
-          .Debug("deleting well");
+          .Debug("Deleting well");
 
         var well = await _context.Wells
           .FirstAsync(s => s.Id == request.WellId, cancellationToken);
@@ -257,45 +262,34 @@ namespace api.Features {
     public class Handler : IRequestHandler<Command, Stream> {
       private readonly string _bucket;
       private readonly ILogger _log;
+      private readonly CloudStorageService _client;
 
-      public Handler(IConfiguration configuration, ILogger log) {
+      public Handler(IConfiguration configuration, CloudStorageService service, ILogger log) {
         _log = log;
         _bucket = configuration["STORAGE_BUCKET"];
+        _client = service;
       }
       async Task<Stream> IRequestHandler<Command, Stream>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
-          .Debug("fetching well files");
+          .Debug("Fetching well files");
 
         if (string.IsNullOrEmpty(request.File)) {
           throw new ArgumentNullException(request.File, "Invalid url");
         }
 
-        var client = await StorageClient.CreateAsync();
-
         var prefix = $"site_{request.SiteId}/inventory_{request.InventoryId}/well_{request.WellIdRange}";
         var parts = request.File.Split('.');
         var type = parts[0].ToLower();
+        var match = $"{prefix}/{type}";
 
-        await foreach (var file in client.ListObjectsAsync(_bucket, prefix)) {
-          var match = $"{prefix}/{type}";
-
-          if (!file.Name.Contains(match)) {
-            continue;
-          }
-
-          var stream = new MemoryStream();
-
-          await client.DownloadObjectAsync(_bucket, file.Name, stream);
-
-          await stream.FlushAsync(cancellationToken);
-          stream.Seek(0, SeekOrigin.Begin);
-
-          return stream;
+        var stream = await _client.DownloadObjectAsync(_bucket, prefix, match, cancellationToken);
+        if (stream == null) {
+          throw new FileNotFoundException("If this file was just uploaded it is being scanned for malware. " +
+            "Please try again in a few moments. Otherwise, the upload was either flagged as malware and removed " +
+            "or something went terribly wrong.");
         }
 
-        throw new FileNotFoundException("If this file was just uploaded it is being scanned for malware. " +
-          "Please try again in a few moments. Otherwise, the upload was either flagged as malware and removed " +
-          "or something went terribly wrong.");
+        return stream;
       }
     }
   }
