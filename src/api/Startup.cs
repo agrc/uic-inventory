@@ -46,6 +46,7 @@ namespace api {
       services.AddSingleton<EmailService>();
       services.AddScoped<HasRequestMetadata>();
       services.AddSingleton<ICloudFileNamer, FileNamingService>();
+      services.AddScoped<CloudStorageService>();
 
       var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
 

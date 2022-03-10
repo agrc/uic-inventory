@@ -25,7 +25,6 @@ namespace api.Features {
 
       public int Id { get; }
     }
-
     public class SubmitNotification : INotification {
       public SubmitNotification(Site site, Inventory inventory, Account account) {
         Inventory = inventory;
@@ -38,22 +37,28 @@ namespace api.Features {
       public Account Account { get; set; }
       public NotificationTypes NotificationType { get; } = NotificationTypes.inventory_submission;
     }
-
     public class RejectNotification : INotification {
-      public RejectNotification(Site site, Inventory inventory, Account account, IEnumerable<string?> contacts, IEnumerable<string?> files) {
+      public RejectNotification(Site site, Inventory inventory, Account account, IEnumerable<string?> contacts) {
         Inventory = inventory;
         Site = site;
         Account = account;
         Contacts = contacts?.Where(x => !string.IsNullOrEmpty(x))
           .Select(c => new EmailAddress(c)).ToList() ?? new List<EmailAddress>(0);
-        Files = files ?? Array.Empty<string?>();
       }
 
       public Inventory Inventory { get; }
       public Site Site { get; set; }
       public Account Account { get; set; }
       public List<EmailAddress> Contacts { get; }
-      public IEnumerable<string?> Files { get; }
+    }
+    public class DeleteNotification : INotification {
+      public DeleteNotification(Inventory inventory) {
+        InventoryId = inventory.Id;
+        SiteId = inventory.SiteFk;
+      }
+
+      public int InventoryId { get; }
+      public int SiteId { get; set; }
     }
 
     public class EditNotificationHandler : INotificationHandler<EditNotification> {
@@ -153,7 +158,6 @@ namespace api.Features {
         await _context.SaveChangesAsync(token);
       }
     }
-
     public class CreateSubmissionNotificationHandler : INotificationHandler<SubmitNotification> {
       private readonly IAppDbContext _context;
       private readonly ILogger _log;
@@ -196,7 +200,6 @@ namespace api.Features {
         await _context.SaveChangesAsync(token);
       }
     }
-
     public class SendRegulatorySubmissionEmailHandler : INotificationHandler<SubmitNotification> {
       private readonly EmailService _client;
       private readonly ILogger _log;
@@ -247,7 +250,6 @@ namespace api.Features {
         }
       }
     }
-
     public class SendAdminSubmissionEmailHandler : INotificationHandler<SubmitNotification> {
       private readonly EmailService _client;
       private readonly ILogger _log;
@@ -296,7 +298,6 @@ namespace api.Features {
         }
       }
     }
-
     public class SendSubmissionRejectionEmailHandler : INotificationHandler<RejectNotification> {
       private readonly EmailService _client;
       private readonly ILogger _log;
@@ -339,45 +340,24 @@ namespace api.Features {
         }
       }
     }
-
-    public class RemoveCloudStorageHandler : INotificationHandler<RejectNotification> {
+    public class RemoveCloudStorageHandler : INotificationHandler<DeleteNotification> {
       private readonly ILogger _log;
       private readonly string _bucket;
+      private readonly CloudStorageService _client;
 
-      public RemoveCloudStorageHandler(IConfiguration configuration, ILogger log) {
+      public RemoveCloudStorageHandler(CloudStorageService cloud, IConfiguration configuration, ILogger log) {
         _log = log;
         _bucket = configuration["STORAGE_BUCKET"];
+        _client = cloud;
       }
 
-      public async Task Handle(RejectNotification notification, CancellationToken token) {
+      public async Task Handle(DeleteNotification notification, CancellationToken token) {
         _log.ForContext("notification", notification)
-          .Debug("Handling inventory rejection cloud storage removal");
+          .Debug("Handling inventory deletion cloud storage removal");
 
-        var client = await StorageClient.CreateAsync();
-        var success = true;
-        try {
-          await Task.WhenAll(notification.Files.Select(name => {
-            if (string.IsNullOrEmpty(name)) {
-              return Task.CompletedTask;
-            }
-
-            return client.DeleteObjectAsync(_bucket, name.Replace("file::", string.Empty), cancellationToken: token);
-          }));
-        } catch (Exception ex) {
-          success = false;
-
-          _log.ForContext("notification", notification)
-            .ForContext("exception", ex)
-            .Error("Failed to remove inventory cloud storage files");
-        }
-
-        if (success) {
-          _log.ForContext("notification", notification)
-            .Debug("Removed inventory cloud storage files");
-        }
+        await _client.RemoveObjectsAsync(_bucket, $"site_{notification.SiteId}/inventory_{notification.InventoryId}/", token);
       }
     }
-
     public class GroundWaterProtectionsHandler : INotificationHandler<SubmitNotification> {
       public record ProtectionResult(int WellId, string Service, bool Intersects);
       public record ProtectionQuery(int WellId, string Service, string Url);
