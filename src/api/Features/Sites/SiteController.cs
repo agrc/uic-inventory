@@ -78,7 +78,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "POST:api/site")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new SitePayload(ex));
       }
@@ -101,7 +101,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "PUT:api/site")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new SitePayload(ex));
       }
@@ -124,7 +124,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "DELETE:api/site")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new SitePayload(ex));
       }

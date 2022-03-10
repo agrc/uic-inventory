@@ -47,7 +47,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "POST:api/well")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new WellPayload(ex));
       }
@@ -71,13 +71,13 @@ namespace api.Features {
       } catch (InvalidOperationException ex) {
         _log.ForContext("endpoint", "PUT:api/well")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new WellPayload(ex.Message));
       } catch (Exception ex) {
         _log.ForContext("endpoint", "PUT:api/well")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new WellPayload(ex));
       }
@@ -100,7 +100,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "DELETE:api/well")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new WellPayload(ex));
       }
@@ -141,7 +141,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "GET:api/well/file")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new WellFilePayload(ex));
       }

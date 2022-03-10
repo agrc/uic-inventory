@@ -37,7 +37,7 @@ namespace api.Features {
         return Unauthorized(new InventoriesForSitePayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", $"GET:api/site/{siteId}/inventories")
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new InventoriesForSitePayload(ex));
       }
@@ -67,7 +67,7 @@ namespace api.Features {
         return Unauthorized(new InventoryPayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", $"GET:api/site/{siteId}/Inventory/{inventoryId}")
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new InventoryPayload(ex));
       }
@@ -90,7 +90,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "POST:api/inventory")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new InventoryPayload(ex));
       }
@@ -113,7 +113,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "PUT:api/inventory")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new InventoryPayload(ex));
       }
@@ -136,7 +136,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "POST:api/inventory/submit")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new InventoryPayload(ex));
       }
@@ -159,7 +159,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "DELETE:api/inventory")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new InventoryPayload(ex));
       }
@@ -182,7 +182,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "DELETE:api/inventory/reject")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new InventoryPayload(ex));
       }

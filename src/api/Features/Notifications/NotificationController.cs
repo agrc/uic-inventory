@@ -28,7 +28,7 @@ namespace api.Features {
         return Ok(notifications);
       } catch (UnauthorizedAccessException ex) {
         _log.ForContext("endpoint", "GET:api/notifications/mine")
-          .Warning(ex, "unauthorized access");
+          .Warning(ex, "Unauthorized access");
 
         return Unauthorized(new ProfileNotificationPayload(ex));
       } catch (UnauthorizedException ex) {
@@ -39,7 +39,7 @@ namespace api.Features {
         return Unauthorized(new NotificationMutationPayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", "GET:api/notifications/mine")
-          .Error(ex, "error getting notifications");
+          .Error(ex, "Error getting notifications");
 
         return StatusCode(500, new ProfileNotificationPayload(ex));
       }
@@ -62,7 +62,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "PUT:api/site")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new ProfileNotificationPayload(ex));
       }

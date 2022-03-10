@@ -29,7 +29,7 @@ namespace api.Features {
 
         public async Task<EmailPayload> Handle(Command request, CancellationToken token) {
           _log.ForContext("content", request)
-            .Debug("sending email");
+            .Debug("Sending email");
 
           if (string.IsNullOrEmpty(request.Message)) {
             throw new ArgumentNullException(nameof(request));

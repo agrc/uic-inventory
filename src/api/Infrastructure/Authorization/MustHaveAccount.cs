@@ -31,7 +31,7 @@ namespace api.Infrastructure {
 
         if (!requirement.User.HasClaim(x => x.Type == ClaimTypes.NameIdentifier)) {
           _log.ForContext("claims", requirement.User.Claims)
-             .Warning("user is missing name identifier claim");
+             .Warning("User is missing name identifier claim");
 
           return AuthorizationResult.Fail("A02:Your account is missing required UtahID information.");
         }
@@ -39,7 +39,7 @@ namespace api.Infrastructure {
         var utahIdClaim = requirement.User.FindFirst(ClaimTypes.NameIdentifier);
         if (utahIdClaim is null) {
           _log.ForContext("claims", requirement.User.Claims)
-            .Warning("name identifier claim is empty");
+            .Warning("Name identifier claim is empty");
 
           return AuthorizationResult.Fail("A02:Your account is missing required UtahID information.");
         }
@@ -48,7 +48,7 @@ namespace api.Infrastructure {
 
         if (account is null) {
           _log.ForContext("claims", requirement.User.Claims)
-            .Warning("account does not exist for request");
+            .Warning("Account does not exist for request");
 
           return AuthorizationResult.Fail("A03:There is no UIC account for this UtahID account.");
         }

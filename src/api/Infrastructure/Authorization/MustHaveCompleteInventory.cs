@@ -48,7 +48,7 @@ namespace api.Infrastructure {
 
         if (!status.All(x => x)) {
           _log.ForContext("inventory", _metadata.Inventory)
-            .Warning("cannot submit to incomplete inventory");
+            .Warning("Cannot submit to incomplete inventory");
 
           return AuthorizationResult.Fail("I03:You must complete your inventory before submitting.");
         }

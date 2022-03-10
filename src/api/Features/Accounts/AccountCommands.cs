@@ -28,7 +28,7 @@ namespace api.Features {
       }
       public async Task<Account> Handle(Command request, CancellationToken token) {
         _log.ForContext("input", request)
-          .Debug("updating account");
+          .Debug("Updating account");
 
         var account = await _context.Accounts.SingleOrDefaultAsync(a => a.Id == request.Input.Id, token);
 

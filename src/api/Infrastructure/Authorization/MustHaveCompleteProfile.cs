@@ -17,7 +17,7 @@ namespace api.Infrastructure {
         CancellationToken token = default) {
         if (!_metadata.Account.ProfileComplete) {
           _log.ForContext("account", _metadata.Account)
-            .Warning("account has incomplete profile");
+            .Warning("Account has incomplete profile");
 
           return Task.FromResult(AuthorizationResult.Fail("P01:You must complete your profile before submitting a site."));
         }

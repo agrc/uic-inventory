@@ -30,14 +30,14 @@ namespace api.Infrastructure {
           if (_metadata.Account.Access == AccessLevels.elevated) {
             _log.ForContext("accountId", requirement.AccountId)
                 .ForContext("account", account)
-                .Information("elevated access to external item");
+                .Information("Elevated access to external item");
 
             return AuthorizationResult.Succeed();
           }
 
           _log.ForContext("accessed account", account)
               .ForContext("accessed by", _metadata.Account)
-              .Warning("access to external item not permitted");
+              .Warning("Access to external item not permitted");
 
           return AuthorizationResult.Fail("A04:You cannot access resources you do not own.");
         }

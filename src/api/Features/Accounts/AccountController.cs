@@ -34,7 +34,7 @@ namespace api.Features {
         return Unauthorized(new AuthPayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", "GET:api/me")
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new AuthPayload(ex));
       }
@@ -55,7 +55,7 @@ namespace api.Features {
         return Unauthorized(new AccountPayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", $"GET:api/account/{id}")
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new AccountPayload(ex));
       }
@@ -71,7 +71,7 @@ namespace api.Features {
       } catch (UnauthorizedAccessException ex) {
         _log.ForContext("endpoint", "PUT:api/account")
           .ForContext("input", input)
-          .Warning(ex, "unauthorized access");
+          .Warning(ex, "Unauthorized access");
 
         return Unauthorized(new AccountPayload(ex));
       } catch (UnauthorizedException ex) {
@@ -83,12 +83,12 @@ namespace api.Features {
       } catch (ArgumentNullException ex) {
         _log.ForContext("endpoint", "PUT:api/account")
           .ForContext("input", input)
-          .Warning(ex, "account not found");
+          .Warning(ex, "Account not found");
 
         return NotFound(new AccountPayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", "PUT:api/account")
-          .Error(ex, "unhandled excpetion");
+          .Error(ex, "Unhandled excpetion");
 
         return StatusCode(500, new AccountPayload(ex));
       }

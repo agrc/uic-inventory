@@ -35,7 +35,7 @@ namespace api.Features {
       }
       public async Task<Inventory> Handle(Command message, CancellationToken cancellationToken) {
         _log.ForContext("input", message)
-          .Debug("creating inventory");
+          .Debug("Creating inventory");
 
         var inventory = new Inventory {
           AccountFk = message.AccountId,
@@ -86,7 +86,7 @@ namespace api.Features {
 
       public async Task<Inventory> Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
-          .Debug("updating inventory");
+          .Debug("Updating inventory");
 
         var inventory = await _context.Inventories
           .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
@@ -190,14 +190,16 @@ namespace api.Features {
     public class Handler : IRequestHandler<Command> {
       private readonly IAppDbContext _context;
       private readonly ILogger _log;
+      private readonly IPublisher _publisher;
 
-      public Handler(IAppDbContext context, ILogger log) {
+      public Handler(IAppDbContext context, ILogger log, IPublisher publisher) {
         _context = context;
+        _publisher = publisher;
         _log = log;
       }
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
-          .Debug("deleting inventory");
+          .Debug("Deleting inventory");
 
         var inventory = await _context.Inventories
           .Include(w => w.Wells)
@@ -206,6 +208,8 @@ namespace api.Features {
         _context.Inventories.Remove(inventory);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _publisher.Publish(new InventoryNotifications.DeleteNotification(inventory), cancellationToken);
 
         return Unit.Value;
       }
@@ -242,7 +246,7 @@ namespace api.Features {
 
       async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
-          .Debug("rejecting inventory");
+          .Debug("Rejecting inventory");
 
         var inventory = await _context.Inventories
           .Include(i => i.Wells)
@@ -263,18 +267,14 @@ namespace api.Features {
           .Distinct()
           .ToList();
 
-        var documents = inventory.Wells.SelectMany(x => new[] { x.ConstructionDetails, x.InjectateCharacterization })
-          .Where(x => (x ?? string.Empty).StartsWith("file::"))
-          .Distinct()
-          .ToList();
-
         if ((site.Inventories.Count - 1) == 0) {
           _context.Sites.Remove(site);
         }
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        await _publisher.Publish(new InventoryNotifications.RejectNotification(site, inventory, _metadata.Account, contacts, documents), cancellationToken);
+        await _publisher.Publish(new InventoryNotifications.RejectNotification(site, inventory, _metadata.Account, contacts), cancellationToken);
+        await _publisher.Publish(new InventoryNotifications.DeleteNotification(inventory), cancellationToken);
 
         return Unit.Value;
       }

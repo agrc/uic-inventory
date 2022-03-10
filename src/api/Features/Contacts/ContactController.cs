@@ -34,7 +34,7 @@ namespace api.Features {
         return Unauthorized(new SiteContactPayload(ex));
       } catch (Exception ex) {
         _log.ForContext("endpoint", $"GET:api/site/{siteId}/contacts")
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new SiteContactPayload(ex));
       }
@@ -57,7 +57,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "POST:api/site/contact")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new ContactPayload(ex));
       }
@@ -80,7 +80,7 @@ namespace api.Features {
       } catch (Exception ex) {
         _log.ForContext("endpoint", "DELETE:api/contact")
           .ForContext("input", input)
-          .Fatal(ex, "unhandled exception");
+          .Fatal(ex, "Unhandled exception");
 
         return StatusCode(500, new ContactPayload(ex));
       }

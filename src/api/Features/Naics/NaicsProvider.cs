@@ -94,7 +94,7 @@ namespace api.Features {
         }
       }
 
-      Log.Information("finding codes between {start} and {end}", start, end);
+      Log.Information("Finding codes between {start} and {end}", start, end);
 
       if (depth == 6) {
         if (code == -1) {

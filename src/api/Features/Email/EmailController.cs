@@ -30,7 +30,7 @@ namespace api.Features {
         return Accepted(payload);
       } catch (UnauthorizedAccessException ex) {
         _log.ForContext("endpoint", "POST:/api/notify/staff")
-          .Warning(ex, "unauthorized access");
+          .Warning(ex, "Unauthorized access");
 
         return Unauthorized(new EmailPayload(ex));
       } catch (UnauthorizedException ex) {
