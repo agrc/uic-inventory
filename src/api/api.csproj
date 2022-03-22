@@ -25,6 +25,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" />
     <PackageReference Include="Polly" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
