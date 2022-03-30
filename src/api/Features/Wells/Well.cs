@@ -24,6 +24,7 @@ namespace api.Features {
     public Account? Account { get; set; }
     public Site? Site { get; set; }
     public Inventory? Inventory { get; set; }
+    public IList<WaterSystemContacts>? WaterSystemContacts { get; set; }
     public string? ConstructionDetails { get; set; }
     public string? InjectateCharacterization { get; set; }
     public string? HydrogeologicCharacterization { get; set; }

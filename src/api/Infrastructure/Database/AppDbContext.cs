@@ -22,6 +22,7 @@ namespace api.Infrastructure {
     public virtual DbSet<Site> Sites { get; set; } = default!;
     public virtual DbSet<Inventory> Inventories { get; set; } = default!;
     public virtual DbSet<Well> Wells { get; set; } = default!;
+    public virtual DbSet<WaterSystemContacts> WaterSystemContacts { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
       modelBuilder.HasDefaultSchema("public").HasPostgresEnum("access_level", new[] { "elevated", "standard" })

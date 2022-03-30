@@ -9,6 +9,7 @@ namespace api.Infrastructure {
     DbSet<Site> Sites { get; set; }
     DbSet<Inventory> Inventories { get; set; }
     DbSet<Well> Wells { get; set; }
+    DbSet<WaterSystemContacts> WaterSystemContacts { get; set; }
     DbSet<Contact> Contacts { get; set; }
     DbSet<Notification> Notifications { get; set; }
     DbSet<NotificationReceipt> NotificationReceipts { get; set; }
