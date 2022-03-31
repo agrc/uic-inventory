@@ -17,7 +17,7 @@ services:
       dockerfile: ./data/CloudSql.Dockerfile
 
   cache:
-    image: "redis:5-buster"
+    image: "redis:6"
 
 volumes:
   pgdata:
