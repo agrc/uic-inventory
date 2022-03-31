@@ -13,9 +13,13 @@ namespace api.Infrastructure {
     }
 
     public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next) {
-      _logger.Information($"Handling {typeof(TRequest).Name}");
+      var requestType = typeof(TRequest);
+
+      _logger.Information("Handling {request}", requestType);
       var response = await next();
-      _logger.Information($"Handled {typeof(TResponse).Name}");
+      _logger
+        .ForContext("response", typeof(TResponse))
+        .Information("Handled {request}", requestType);
 
       return response;
     }
