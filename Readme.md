@@ -31,6 +31,11 @@ dotnet user-secrets set "CloudSql:Username" "postgres"
 dotnet user-secrets set "CloudSql:Password" "what password"
 
 dotnet user-secrets set "App:AdminEmail" "you@email.com"
+
 dotnet user-secrets set "SendGrid:Key" "your send grid api key"
-dotnet user-secrets set "STORAGE_BUCKET" "yor send grid api key"
+
+dotnet user-secrets set "UPLOAD_BUCKET" "the gcp storage bucket where uploaded files are processed"
+dotnet user-secrets set "STORAGE_BUCKET" "the gcp bucket where scanned files are stored"
+
+dotnet user-secrets set "GroundWaterContacts:Connection" "the connection string for the ground water contacts database"
 ```
