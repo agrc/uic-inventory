@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
+using System.Linq;
 using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Http;
 
@@ -43,6 +44,17 @@ namespace api.Features {
 
     public SitePayload Site { get; }
   }
+  public class WaterSystemContactPayload {
+    public WaterSystemContactPayload(WaterSystemContacts contact) {
+      Email = contact.Email;
+      Name = contact.Name;
+      System = contact.System;
+    }
+
+    public string? Email { get; set; }
+    public string? Name { get; set; }
+    public string? System { get; set; }
+  }
   public class WellPayload : ResponseContract {
     public WellPayload(UnauthorizedAccessException error) : base(error.Message) { }
     public WellPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
@@ -58,6 +70,7 @@ namespace api.Features {
       InjectateCharacterization = well.InjectateCharacterization;
       HydrogeologicCharacterization = well.HydrogeologicCharacterization;
       SurfaceWaterProtection = well.SurfaceWaterProtection;
+      WaterSystemContacts = well.WaterSystemContacts?.Select(x => new WaterSystemContactPayload(x)) ?? Array.Empty<WaterSystemContactPayload>();
     }
 
     public int Id { get; }
@@ -70,6 +83,7 @@ namespace api.Features {
     public string? InjectateCharacterization { get; }
     public string? HydrogeologicCharacterization { get; }
     public string? SurfaceWaterProtection { get; set; }
+    public IEnumerable<WaterSystemContactPayload> WaterSystemContacts { get; set; }
     public bool WellDetailsComplete {
       get {
         if (SubClass == 5002) {
@@ -183,8 +197,11 @@ namespace api.Features {
     public virtual RestEndpointError Error { get; set; } = default!;
     public virtual bool IsSuccessful => Error == null;
   }
+  public record Feature(Attributes Attributes);
+  public record Attributes(string SysNumber);
   public class EsriQueryResponse : RestErrorable {
     public int Count { get; set; }
+    public IReadOnlyList<Feature> Features { get; set; } = Array.Empty<Feature>();
   }
   public class EsriPoint {
     public EsriPoint(double x, double y) {

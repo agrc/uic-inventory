@@ -15,4 +15,5 @@ namespace api.Features {
     [ForeignKey("WellFk")] public Well Well { get; set; } = default!;
     [ForeignKey("InventoryFk")] public Inventory Inventory { get; set; } = default!;
   }
+  public record WaterSystemContact(string Name, string Email, string System);
 }
