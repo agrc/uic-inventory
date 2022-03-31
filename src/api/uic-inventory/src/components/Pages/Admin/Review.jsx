@@ -550,7 +550,10 @@ const LocationDetails = ({ siteId, inventoryId }) => {
   return (
     <Section title="Location Details" height="h-screen">
       <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
-        {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} />}
+        <div>
+          {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} />}
+          <WaterSystemContacts wells={data?.wells} />
+        </div>
         <div className="h-full rounded border shadow" ref={mapDiv}></div>
       </div>
     </Section>
@@ -669,7 +672,7 @@ const WellTable = ({ wells = [], state }) => {
   });
 
   return (
-    <table {...getTableProps()} className="divide-y divide-gray-200 overflow-auto border">
+    <table {...getTableProps()} className="w-full divide-y divide-gray-200 overflow-auto border">
       <thead className="bg-gray-50">
         {headerGroups.map((headerGroup) => (
           <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
@@ -734,5 +737,47 @@ const WellTable = ({ wells = [], state }) => {
         })}
       </tbody>
     </table>
+  );
+};
+
+const WaterSystemContacts = ({ wells = [] }) => {
+  if (wells.length === 0) {
+    return null;
+  }
+
+  const contacts = wells.reduce((a, b) => {
+    return a.concat(b.waterSystemContacts);
+  }, []);
+
+  if (contacts.length === 0) {
+    return null;
+  }
+
+  return (
+    <section>
+      <h2 className="my-3 text-lg font-medium">Water System Information</h2>
+      <div className="flex flex-wrap justify-between gap-2 text-sm">
+        {contacts.map((contact) => (
+          <WaterSystemContact key={contact.system + contact.email} contact={contact} />
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const titleCase = (value) =>
+  value
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+const WaterSystemContact = ({ contact }) => {
+  return (
+    <div className="grid grid-cols-[1fr,3fr] rounded-lg border px-3 py-1 leading-snug">
+      <span className="text-right font-bold">Contact:</span> <span className="pl-1">{titleCase(contact.name)}</span>
+      <span className="text-right font-bold">Email:</span> <span className="pl-1">{contact.email.toLowerCase()}</span>
+      <span className="text-right font-bold">Name:</span> <span className="pl-1">{titleCase(contact.system)}</span>
+    </div>
   );
 };
