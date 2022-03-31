@@ -26,13 +26,11 @@ namespace api.Features {
         _context = context;
         _log = log;
       }
-      public async Task<Inventory?> Handle(Query message, CancellationToken cancellationToken) {
-        var result = await _context.Inventories
+      public async Task<Inventory?> Handle(Query message, CancellationToken cancellationToken) =>
+        await _context.Inventories
           .Include(x => x.Wells)
+          .ThenInclude(x => x.WaterSystemContacts)
           .SingleOrDefaultAsync(x => x.Id == message.InventoryId, cancellationToken);
-
-        return result;
-      }
     }
   }
   public static class GetInventoriesBySite {
