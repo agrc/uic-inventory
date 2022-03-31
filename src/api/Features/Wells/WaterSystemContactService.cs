@@ -28,7 +28,7 @@ namespace api.Features {
       try {
         await conn.OpenAsync(cancellationToken);
         using var cmd = conn.CreateCommand();
-        cmd.CommandTimeout = 10;
+        cmd.CommandTimeout = 30;
 
         cmd.CommandText = "SELECT AC_NAME AS name, AC_EMAIL AS email, SYSTEM_NAME as system " +
                           "FROM UTAHDDW.VW_WATER_SYSTEM_ADMIN_CONTACTS " +
