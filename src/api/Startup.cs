@@ -42,11 +42,13 @@ namespace api {
       services.AddScoped(typeof(IPipelineBehavior<,>), typeof(PerformanceLogger<,>));
       services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
+      services.AddScoped<HasRequestMetadata>();
+      services.AddScoped<IWaterSystemContactService, WaterSystemContactService>();
+      services.AddScoped<CloudStorageService>();
+
       services.AddSingleton(new Lazy<NaicsProvider>(() => new NaicsProvider()));
       services.AddSingleton<EmailService>();
-      services.AddScoped<HasRequestMetadata>();
       services.AddSingleton<ICloudFileNamer, FileNamingService>();
-      services.AddScoped<CloudStorageService>();
 
       var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
 
