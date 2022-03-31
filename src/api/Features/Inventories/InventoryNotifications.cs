@@ -6,8 +6,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
-using Google.Apis.Auth.OAuth2;
-using Google.Cloud.Storage.V1;
 using MediatR;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -359,19 +357,21 @@ namespace api.Features {
       }
     }
     public class GroundWaterProtectionsHandler : INotificationHandler<SubmitNotification> {
-      public record ProtectionResult(int WellId, string Service, bool Intersects);
+      public record ProtectionResult(int WellId, string Service, bool Intersects, IReadOnlyList<Feature> Features);
       public record ProtectionQuery(int WellId, string Service, string Url);
       public record Protections(bool Aquifers, bool GroundWater);
 
       private const string _aquiferRechargeDistchargeAreas = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Aquifer_RechargeDischargeAreas/FeatureServer/0";
       private const string _groundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0";
       private readonly HttpClient _client;
+      private readonly IWaterSystemContactService _service;
       private readonly IAppDbContext _context;
       private readonly ILogger _log;
 
-      public GroundWaterProtectionsHandler(IHttpClientFactory clientFactory, IAppDbContext context, ILogger log) {
+      public GroundWaterProtectionsHandler(IHttpClientFactory clientFactory, IAppDbContext context, IWaterSystemContactService service, ILogger log) {
         _client = clientFactory.CreateClient("esri");
         _context = context;
+        _service = service;
         _log = log;
       }
 
@@ -398,8 +398,28 @@ namespace api.Features {
             { "f", "json" }
           };
 
-          urls.Add(new ProtectionQuery(well.Id, "Aquifer Recharge/Discharge Areas", $"{_aquiferRechargeDistchargeAreas}/query?{queryString}"));
-          urls.Add(new ProtectionQuery(well.Id, "Ground Water", $"{_groundWaterFeatureServiceUrl}/query?{queryString}"));
+          var gwzQueryString = new QueryBuilder {
+            { "where", string.Empty },
+            { "geometry", well.Geometry },
+            { "geometryType", "esriGeometryPoint" },
+            { "spatialRel", "esriSpatialRelIntersects" },
+            { "returnGeometry", false.ToString() },
+            { "outFields", "SYSNUMBER" },
+            { "f", "json" }
+          };
+
+          urls.Add(new ProtectionQuery(
+            well.Id,
+            "Aquifer Recharge/Discharge Areas",
+            $"{_aquiferRechargeDistchargeAreas}/query?{queryString}")
+          );
+
+          urls.Add(new ProtectionQuery(
+            well.Id,
+            "Ground Water",
+            $"{_groundWaterFeatureServiceUrl}/query?{gwzQueryString}")
+          );
+
           queryResults[well.Id] = new List<ProtectionResult>();
         }
 
@@ -413,7 +433,7 @@ namespace api.Features {
 
           var queryResult = await JsonSerializer.DeserializeAsync<EsriQueryResponse>(content, options, cancellationToken: token);
 
-          if (queryResult?.IsSuccessful != true) {
+          if (queryResult is null || queryResult?.IsSuccessful != true) {
             _log.ForContext("queryResult", queryResult)
               .Error("Failed to query {id} for water protection intersections", item.WellId);
 
@@ -422,8 +442,12 @@ namespace api.Features {
 
           _log.Debug("Got {@queryResult} result for {wellId}", queryResult, item.WellId);
 
-          queryResults[item.WellId].Add(new ProtectionResult(item.WellId, item.Service, queryResult?.Count > 0));
+          var success = queryResult.Count > 0 || queryResult.Features.Count > 0;
+
+          queryResults[item.WellId].Add(new ProtectionResult(item.WellId, item.Service, success, queryResult.Features));
         }));
+
+        var groundWaterCodes = new[] { "Y+", "Y-" };
 
         foreach (var item in queryResults) {
           _log.Debug("Choosing code for {@item}", item);
@@ -433,8 +457,6 @@ namespace api.Features {
             item.Value.Any(x => x.Service == "Ground Water" && x.Intersects)
           );
 
-          var code = DetermineCode(has);
-
           var well = notification.Inventory.Wells.SingleOrDefault(x => x.Id == item.Key);
 
           if (well == null) {
@@ -442,7 +464,40 @@ namespace api.Features {
             continue;
           }
 
-          well.SurfaceWaterProtection = code;
+          well.SurfaceWaterProtection = DetermineCode(has);
+
+          if (groundWaterCodes.Contains(well.SurfaceWaterProtection)) {
+            _log.Debug("Intersects GWZ, fetching contacts");
+
+            var systemNumbers = item.Value.
+              SelectMany(x => x.Features.Select(x => x.Attributes.SysNumber))
+              .Distinct() ?? Enumerable.Empty<string>();
+
+            var pwdIds = systemNumbers.Select(x => $"UTAH{x}").ToList();
+
+            var contacts = await _service.GetContactsAsync(pwdIds, token);
+
+            foreach (var contact in contacts) {
+              var name = contact.Name;
+
+              if (name.Contains(',')) {
+                var parts = name.Split(',');
+
+                name = $"{parts[1].Trim()} {parts[0].Trim()}";
+              }
+
+              _context.WaterSystemContacts.Add(new WaterSystemContacts {
+                SiteFk = well.SiteFk,
+                InventoryFk = well.InventoryFk,
+                WellFk = well.Id,
+                AccountFk = well.AccountFk,
+                Name = name,
+                Email = contact.Email,
+                System = contact.System
+              });
+            }
+          }
+
           _context.Wells.Update(well);
         }
 
