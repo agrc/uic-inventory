@@ -87,7 +87,7 @@ const CreateFlag = ({ text, update, onSubmit }) => {
   const [isOpen, { toggle }] = useOpenClosed();
 
   return (
-    <div className="sticky top-4 right-4 z-10 flex justify-end">
+    <div className="sticky top-4 right-4 z-10 flex justify-end print:hidden">
       {isOpen && <Reason reason={text} update={update} />}
       {isOpen ? (
         <>

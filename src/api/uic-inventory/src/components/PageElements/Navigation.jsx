@@ -50,19 +50,19 @@ function Navigation() {
   });
 
   return (
-    <div>
+    <div className="print:hidden">
       <Disclosure as="nav" className="bg-gray-800">
         {({ open }) => (
           <>
-            <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-              <div className="flex items-center justify-between h-16">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="flex h-16 items-center justify-between">
                 <div className="flex items-center">
                   <div className="shrink-0">
-                    <img className="hidden w-auto h-12 sm:block" src="/logo-alternate.svg" alt="Workflow" />
-                    <img className="w-auto h-12 sm:hidden" src="/logo.svg" alt="Workflow" />
+                    <img className="hidden h-12 w-auto sm:block" src="/logo-alternate.svg" alt="Workflow" />
+                    <img className="h-12 w-auto sm:hidden" src="/logo.svg" alt="Workflow" />
                   </div>
                   <div className="hidden md:block">
-                    <div className="flex items-baseline ml-10 space-x-4">
+                    <div className="ml-10 flex items-baseline space-x-4">
                       <Links links={navigation} isAuthenticated={isAuthenticated} />
                     </div>
                   </div>
@@ -71,12 +71,12 @@ function Navigation() {
                 {isAuthenticated() ? (
                   <>
                     <div className="hidden md:block">
-                      <div className="flex items-center ml-4 md:ml-6">
+                      <div className="ml-4 flex items-center md:ml-6">
                         {receiveNotifications() ? (
                           <Popover className="relative ml-3">
                             {({ open }) => (
                               <>
-                                <Popover.Button className="flex p-1 text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                                <Popover.Button className="flex rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                   <NotificationBell items={data?.notifications} status={status} error={error} />
                                 </Popover.Button>
                                 <Transition
@@ -91,7 +91,7 @@ function Navigation() {
                                 >
                                   <Popover.Panel
                                     static
-                                    className="absolute right-0 py-1 mt-2 overflow-scroll origin-top-right bg-white rounded-md shadow-lg w-96 ring-1 ring-black ring-opacity-5 focus:outline-none max-h-64"
+                                    className="absolute right-0 mt-2 max-h-64 w-96 origin-top-right overflow-scroll rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                   >
                                     <Notifications
                                       notifications={data?.notifications}
@@ -110,9 +110,9 @@ function Navigation() {
                           {({ open }) => (
                             <>
                               <div>
-                                <Menu.Button className="flex items-center max-w-xs text-sm bg-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                                <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                   <span className="sr-only">Open user menu</span>
-                                  <p className="w-8 h-8 text-2xl font-black tracking-tighter text-gray-400 uppercase rounded-full">
+                                  <p className="h-8 w-8 rounded-full text-2xl font-black uppercase tracking-tighter text-gray-400">
                                     {getInitials(data)}
                                   </p>
                                 </Menu.Button>
@@ -129,7 +129,7 @@ function Navigation() {
                               >
                                 <Menu.Items
                                   static
-                                  className="absolute right-0 w-48 py-1 mt-2 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                  className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                 >
                                   {profile.map((item) => (
                                     <Menu.Item key={item.key}>
@@ -161,27 +161,27 @@ function Navigation() {
                         </Menu>
                       </div>
                     </div>
-                    <div className="flex -mr-2 md:hidden">
+                    <div className="-mr-2 flex md:hidden">
                       {/* Mobile menu button */}
-                      <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-400 bg-gray-800 rounded-md hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                      <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="sr-only">Open main menu</span>
                         {open ? (
-                          <XIcon className="block w-6 h-6" aria-hidden="true" />
+                          <XIcon className="block h-6 w-6" aria-hidden="true" />
                         ) : (
-                          <MenuIcon className="block w-6 h-6" aria-hidden="true" />
+                          <MenuIcon className="block h-6 w-6" aria-hidden="true" />
                         )}
                       </Disclosure.Button>
                     </div>
                   </>
                 ) : (
-                  <div className="flex -mr-2 md:hidden">
+                  <div className="-mr-2 flex md:hidden">
                     {/* Mobile menu button */}
-                    <Disclosure.Button className="inline-flex items-center justify-center p-2 text-gray-400 bg-gray-800 rounded-md hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                    <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="sr-only">Open main menu</span>
                       {open ? (
-                        <XIcon className="block w-6 h-6" aria-hidden="true" />
+                        <XIcon className="block h-6 w-6" aria-hidden="true" />
                       ) : (
-                        <MenuIcon className="block w-6 h-6" aria-hidden="true" />
+                        <MenuIcon className="block h-6 w-6" aria-hidden="true" />
                       )}
                     </Disclosure.Button>
                   </div>
@@ -190,15 +190,15 @@ function Navigation() {
             </div>
 
             <Disclosure.Panel className="md:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
                 <Links links={navigation} isAuthenticated={isAuthenticated} />
               </div>
               {isAuthenticated() ? (
-                <div className="pt-4 pb-3 border-t border-gray-700">
+                <div className="border-t border-gray-700 pt-4 pb-3">
                   <Popover>
                     <div className="flex items-center px-5">
                       <div className="shrink-0">
-                        <p className="w-10 h-10 text-3xl font-black tracking-tighter text-gray-300 uppercase rounded-full">
+                        <p className="h-10 w-10 rounded-full text-3xl font-black uppercase tracking-tighter text-gray-300">
                           {`${data?.firstName[0]}${data?.lastName[0]}`}
                         </p>
                       </div>
@@ -208,7 +208,7 @@ function Navigation() {
                         </div>
                         <div className="text-sm font-medium leading-none text-gray-400">{data?.email}</div>
                       </div>
-                      <div className="shrink-0 p-1 ml-auto text-gray-400 bg-gray-800 rounded-full hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                      <div className="ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         {receiveNotifications() ? (
                           <Popover.Button>
                             <NotificationBell items={data?.notifications} status={status} error={error} />
@@ -216,8 +216,8 @@ function Navigation() {
                         ) : null}
                       </div>
                     </div>
-                    <div className="px-2 mt-3 space-y-1">
-                      <Popover.Panel className="overflow-scroll bg-white rounded-sm max-h-36">
+                    <div className="mt-3 space-y-1 px-2">
+                      <Popover.Panel className="max-h-36 overflow-scroll rounded-sm bg-white">
                         <Notifications
                           notifications={data?.notifications}
                           status={status}
@@ -226,12 +226,12 @@ function Navigation() {
                         />
                       </Popover.Panel>
                     </div>
-                    <div className="px-2 mt-3 space-y-1">
+                    <div className="mt-3 space-y-1 px-2">
                       {profile.map((item) => (
                         <Link
                           key={item.key}
                           to={item.to}
-                          className="block px-3 py-2 text-base font-medium text-gray-400 rounded-md hover:text-white hover:bg-gray-700"
+                          className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
                         >
                           {item.text}
                         </Link>
@@ -253,7 +253,7 @@ function NotificationBell({ status, error, items }) {
     <>
       <span className="sr-only">View notifications</span>
       <BellIcon
-        className={clsx('w-6 h-6', {
+        className={clsx('h-6 w-6', {
           'text-amber-400': status !== 'loading' && !error && items?.filter((x) => !x.read).length > 0,
           'text-gray-300': status === 'loading',
           'text-red-400': error,
@@ -269,7 +269,7 @@ function Links({ links, isAuthenticated }) {
     return (
       <a
         href="/api/login"
-        className="px-3 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
+        className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
       >
         Login
       </a>
@@ -280,7 +280,7 @@ function Links({ links, isAuthenticated }) {
     <Link
       key={item.key}
       to={item.to}
-      className="px-3 py-2 text-sm font-medium text-gray-300 rounded-md hover:bg-gray-700 hover:text-white"
+      className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
     >
       {item.text}
     </Link>
@@ -374,25 +374,25 @@ function Notifications({ status, error, notifications }) {
       <span>{formatNotification(notification)}</span>
       <span>
         <Link to={notification.url}>
-          <LinkIcon className="inline-block w-5 h-5 ml-1 text-blue-400" />
+          <LinkIcon className="ml-1 inline-block h-5 w-5 text-blue-400" />
         </Link>
         {notification.read ? (
           <span
             alt={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
             title={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
           >
-            <MailOpenIcon className="inline-block w-5 h-5 ml-1 text-gray-400" />
+            <MailOpenIcon className="ml-1 inline-block h-5 w-5 text-gray-400" />
           </span>
         ) : (
           <span>
             <MailIcon
-              className="inline-block w-5 h-5 ml-1 text-blue-400 cursor-pointer"
+              className="ml-1 inline-block h-5 w-5 cursor-pointer text-blue-400"
               onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'read' })}
             />
           </span>
         )}
         <TrashIcon
-          className="inline-block w-5 h-5 ml-1 text-red-300 cursor-pointer"
+          className="ml-1 inline-block h-5 w-5 cursor-pointer text-red-300"
           onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'deleted' })}
         />
       </span>
@@ -402,7 +402,7 @@ function Notifications({ status, error, notifications }) {
 
 function NotificationMessage({ title, text }) {
   return (
-    <div className="flex flex-col items-center justify-center h-16 text-gray-500">
+    <div className="flex h-16 flex-col items-center justify-center text-gray-500">
       <h3 className="text-xl font-bold">{title}</h3>
       <p className="text-sm">{text}</p>
     </div>

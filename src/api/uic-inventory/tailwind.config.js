@@ -5,6 +5,9 @@ module.exports = {
       profile: '36em',
     },
     extend: {
+      screens: {
+        print: { raw: 'print' },
+      },
       blur: {
         xs: '1px',
       },

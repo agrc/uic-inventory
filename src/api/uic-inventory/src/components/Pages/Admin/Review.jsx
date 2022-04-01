@@ -73,7 +73,7 @@ export default function Review() {
         <LocationDetails siteId={siteId} inventoryId={inventoryId} />
         <ContactDetails siteId={siteId} />
         <WellDetails siteId={siteId} inventoryId={inventoryId} />
-        <Section>
+        <Section className="print:hidden">
           <button
             onClick={open}
             className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 sm:col-span-6 md:col-span-2"
@@ -96,14 +96,19 @@ const Label = ({ children }) => <span className="block font-bold text-gray-700">
 
 const Value = ({ children, className }) => <span className={clsx('ml-2 block', className)}>{children}</span>;
 
-const Section = ({ gray, children, title, height = 'max-h-96' }) => (
-  <>
+const Section = ({ gray, children, title, height = 'max-h-96', className }) => (
+  <div className={className}>
     <h1 className="mb-2 text-xl font-medium">{title}</h1>
-    <div className={`mb-3 ml-1 overflow-scroll border shadow sm:rounded-md ${height}`}>
+    <div
+      className={clsx(
+        'mb-3 ml-1 overflow-scroll border shadow sm:rounded-md print:max-h-full print:shadow-none',
+        height
+      )}
+    >
       <div
         className={clsx(
           {
-            'bg-gray-50': gray,
+            'bg-gray-50 print:bg-white': gray,
             'bg-white': !gray,
           },
           'h-full px-4 py-5 sm:p-6'
@@ -112,7 +117,7 @@ const Section = ({ gray, children, title, height = 'max-h-96' }) => (
         <FormGrid>{children}</FormGrid>
       </div>
     </div>
-  </>
+  </div>
 );
 
 const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
@@ -253,7 +258,7 @@ const EditableText = ({ field, initialValue, onMutate }) => {
         {field}
         <button
           onClick={handleChange}
-          className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white"
+          className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white print:hidden"
         >
           {active ? 'save' : 'modify'}
         </button>
@@ -296,7 +301,7 @@ const EditableList = ({ field, initialValue, onMutate, items }) => {
         {field}
         <button
           onClick={handleChange}
-          className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white"
+          className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white print:hidden"
         >
           {active ? 'save' : 'modify'}
         </button>
@@ -376,7 +381,7 @@ const ContactDetails = ({ siteId }) => {
       {data?.contacts.map((contact) => (
         <Panel key={contact.id}>
           <ResponsiveGridColumn full={true} half={true}>
-            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
               {valueToLabel(contactTypes, contact.contactType)}
             </Value>
           </ResponsiveGridColumn>
@@ -440,11 +445,11 @@ const WellDetails = ({ siteId, inventoryId }) => {
           <Panel key={well.id}>
             <div
               title="Well count"
-              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700"
+              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700 print:block print:border-0 print:bg-transparent"
             >
               {well.count}
             </div>
-            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
               {well.status}
             </Value>
             <Label>Construction</Label>
@@ -457,11 +462,11 @@ const WellDetails = ({ siteId, inventoryId }) => {
           <Panel key={well.id}>
             <div
               title="Well count"
-              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700"
+              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700 print:block print:border-0 print:bg-transparent"
             >
               {well.count}
             </div>
-            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
               {well.status}
             </Value>
             <Label>Injectate Characterization</Label>
@@ -474,7 +479,7 @@ const WellDetails = ({ siteId, inventoryId }) => {
 };
 
 const Panel = ({ children }) => (
-  <div className="relative col-span-6 max-h-72 overflow-auto rounded border bg-white px-3 py-2 shadow md:col-span-2">
+  <div className="relative col-span-6 max-h-72 overflow-auto rounded border bg-white px-3 py-2 shadow md:col-span-2 print:col-span-6 print:max-h-full print:shadow-none">
     {children}
   </div>
 );
@@ -554,7 +559,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
           {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} />}
           <WaterSystemContacts wells={data?.wells} />
         </div>
-        <div className="h-full rounded border shadow" ref={mapDiv}></div>
+        <div className="h-full rounded border shadow print:w-full" ref={mapDiv}></div>
       </div>
     </Section>
   );
@@ -774,7 +779,7 @@ const titleCase = (value) =>
 
 const WaterSystemContact = ({ contact }) => {
   return (
-    <div className="grid grid-cols-[1fr,3fr] rounded-lg border px-3 py-1 leading-snug">
+    <div className="grid grid-cols-[1fr,3fr] rounded-lg border px-3 py-1 leading-snug print:border-none">
       <span className="text-right font-bold">Contact:</span> <span className="pl-1">{titleCase(contact.name)}</span>
       <span className="text-right font-bold">Email:</span> <span className="pl-1">{contact.email.toLowerCase()}</span>
       <span className="text-right font-bold">Name:</span> <span className="pl-1">{titleCase(contact.system)}</span>
