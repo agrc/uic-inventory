@@ -185,4 +185,19 @@ namespace api.Features {
     public int Id { get; set; }
     public Extra UserData { get; set; }
   }
+
+  public class MinimalAccountPayload : ResponseContract {
+    public MinimalAccountPayload(UnauthorizedAccessException _) : base("A01:You are not allowed to access this resource.") { }
+    public MinimalAccountPayload(UnauthorizedException error) : base(error.Message) { }
+    public MinimalAccountPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public record MinimalAccount(int Id, string FirstName, string LastName, string Email, AccessLevels Access);
+    public IList<MinimalAccount> Accounts { get; set; }
+    public MinimalAccountPayload(IEnumerable<Account> input) {
+      Accounts = new List<MinimalAccount>();
+
+      foreach (var account in input) {
+        Accounts.Add(new MinimalAccount(account.Id, account?.FirstName ?? "Unknown", account?.LastName ?? "Unknown", account?.Email ?? "Unknown", account?.Access ?? AccessLevels.standard));
+      }
+    }
+  }
 }

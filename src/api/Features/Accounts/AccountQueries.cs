@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,6 +48,21 @@ namespace api.Features {
 
         public async Task<Account> Handle(Query request, CancellationToken cancellationToken) =>
           await _context.Accounts.SingleOrDefaultAsync(x => x.Id == request.AccountId, cancellationToken);
+      }
+    }
+  }
+
+  public static class GetAllAccounts {
+    public class Query : IRequest<IReadOnlyList<Account>> {
+      public class Handler : IRequestHandler<Query, IReadOnlyList<Account>> {
+        private readonly IAppDbContext _context;
+
+        public Handler(IAppDbContext context) {
+          _context = context;
+        }
+
+        public async Task<IReadOnlyList<Account>> Handle(Query request, CancellationToken cancellationToken) =>
+          await _context.Accounts.OrderBy(x => x.FirstName).ToListAsync(cancellationToken);
       }
     }
   }

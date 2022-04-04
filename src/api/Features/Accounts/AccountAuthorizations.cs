@@ -38,4 +38,16 @@ namespace api.Features {
       UseRequirement(new MustOwnAccount(request.AccountId));
     }
   }
+
+  public class GetAllAccountsAuthorizer : AbstractRequestAuthorizer<GetAccountById.Query> {
+    private readonly IHttpContextAccessor _context;
+
+    public GetAllAccountsAuthorizer(IHttpContextAccessor context) {
+      _context = context;
+    }
+    public override void BuildPolicy(GetAccountById.Query request) {
+      UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+      UseRequirement(new MustHaveElevatedAccount());
+    }
+  }
 }

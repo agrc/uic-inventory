@@ -61,6 +61,27 @@ namespace api.Features {
       }
     }
 
+    [HttpGet("/api/accounts")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<AuthPayload>> GetAccountsAsync(CancellationToken token) {
+      try {
+        var payload = await _mediator.Send(new GetAllAccounts.Query(), token);
+
+        return Ok(new MinimalAccountPayload(payload));
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "GET:api/accounts")
+          .ForContext("requirement", ex.Message)
+          .Warning("GetMeAsync requirements failure");
+
+        return Unauthorized(new MinimalAccountPayload(ex));
+      } catch (Exception ex) {
+        _log.ForContext("endpoint", "GET:api/accounts")
+          .Fatal(ex, "Unhandled exception");
+
+        return StatusCode(500, new MinimalAccountPayload(ex));
+      }
+    }
+
     [HttpPut("/api/account")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<AccountPayload>> UpdateAccountAsync(AccountInput input, CancellationToken token) {
