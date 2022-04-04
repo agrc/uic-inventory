@@ -20,12 +20,20 @@ const navigation = [
   {
     text: 'Sites',
     to: '/',
+    level: 0,
     key: 1,
   },
   {
     text: 'Contact us',
     to: '/contact',
+    level: 0,
     key: 2,
+  },
+  {
+    text: 'Accounts',
+    to: '/admin/accounts',
+    level: 1,
+    key: 3,
   },
 ];
 
@@ -43,7 +51,7 @@ const getInitials = (account) => {
 };
 
 function Navigation() {
-  const { authInfo, isAuthenticated, receiveNotifications } = useContext(AuthContext);
+  const { authInfo, isAuthenticated, receiveNotifications, isElevated } = useContext(AuthContext);
   const { status, data, error, refetch } = useQuery('notifications', () => ky.get(`/api/notifications/mine`).json(), {
     enabled: authInfo?.id ? true : false,
     refetchInterval: 1000 * 60 * 10,
@@ -63,7 +71,7 @@ function Navigation() {
                   </div>
                   <div className="hidden md:block">
                     <div className="ml-10 flex items-baseline space-x-4">
-                      <Links links={navigation} isAuthenticated={isAuthenticated} />
+                      <Links links={navigation} isAuthenticated={isAuthenticated} isElevated={isElevated} />
                     </div>
                   </div>
                 </div>
@@ -191,7 +199,7 @@ function Navigation() {
 
             <Disclosure.Panel className="md:hidden">
               <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-                <Links links={navigation} isAuthenticated={isAuthenticated} />
+                <Links links={navigation} isAuthenticated={isAuthenticated} isElevated={isElevated} />
               </div>
               {isAuthenticated() ? (
                 <div className="border-t border-gray-700 pt-4 pb-3">
@@ -264,7 +272,7 @@ function NotificationBell({ status, error, items }) {
   );
 }
 
-function Links({ links, isAuthenticated }) {
+function Links({ links, isAuthenticated, isElevated }) {
   if (!isAuthenticated()) {
     return (
       <a
@@ -276,7 +284,14 @@ function Links({ links, isAuthenticated }) {
     );
   }
 
-  return links.map((item) => (
+  let level = 0;
+  if (isElevated()) {
+    level = 1;
+  }
+
+  return links
+    .filter(x => level >= x.level)
+    .map((item) => (
     <Link
       key={item.key}
       to={item.to}
