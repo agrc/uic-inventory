@@ -13,9 +13,10 @@ import AddSiteLocation from './Sites/AddSiteLocation';
 
 import NotFound from './NotFound';
 import Review from './Admin/Review';
+import UserManagement from './Admin/UserManagement';
 
 const Sites = { CreateOrEditSite, AddSiteContacts, AddSiteLocation };
 const Wells = { CreateOrEditInventory, AddWells, AddWellDetails, AddSerWellContact, SubmitInventory };
 
 export { SitesAndInventory, GenericLandingPage } from './Home';
-export { ContactProgram, Profile, Sites, Wells, NotFound, Review };
+export { ContactProgram, Profile, Sites, Wells, NotFound, Review, UserManagement };

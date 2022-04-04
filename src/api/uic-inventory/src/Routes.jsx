@@ -7,6 +7,7 @@ import {
   GenericLandingPage,
   Review,
   SitesAndInventory,
+  UserManagement,
   Wells,
 } from './components/Pages';
 import { AuthContext } from './AuthProvider';
@@ -36,6 +37,11 @@ function AuthenticatedRoutes({ completeProfile, elevated }) {
       {elevated && (
         <Route path="/review/site/:siteId/inventory/:inventoryId">
           <Review />
+        </Route>
+      )}
+      {elevated && (
+        <Route path="/admin/accounts">
+          <UserManagement />
         </Route>
       )}
       <Route path="/contact">
