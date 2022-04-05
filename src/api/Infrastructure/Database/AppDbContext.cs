@@ -25,7 +25,7 @@ namespace api.Infrastructure {
     public virtual DbSet<WaterSystemContacts> WaterSystemContacts { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
-      modelBuilder.HasDefaultSchema("public").HasPostgresEnum("access_level", new[] { "elevated", "standard" })
+      modelBuilder.HasDefaultSchema("public").HasPostgresEnum("access_levels", new[] { "elevated", "standard" })
                 .HasPostgresEnum("contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager" })
           .HasPostgresEnum("notification_types", new[] { "new_user_account_registration" })
           .HasAnnotation("Relational:Collation", "en_US.utf8");
@@ -90,7 +90,7 @@ namespace api.Infrastructure {
         entity.Property(e => e.ProfileComplete)
           .HasColumnName("complete_profile")
           .HasComputedColumnSql("\nCASE\n    WHEN ((length((organization)::text) > 0) AND (length((email)::text) > 0) AND (length((phone)::text) > 0) AND (length((mailing_address)::text) > 0) AND (length((city)::text) > 0) AND (length((state)::text) > 0) AND (length((zip_code)::text) > 0)) THEN true\n    ELSE false\nEND", true);
-      }).HasPostgresEnum<AccessLevels>("public", "access_level");
+      }).HasPostgresEnum<AccessLevels>("public", "access_levels");
 
       modelBuilder.Entity<Contact>(entity => {
         entity.ToTable("contacts");

@@ -1,5 +1,5 @@
 -- Custom Types
-CREATE TYPE public.access_level AS ENUM ('elevated', 'standard');
+CREATE TYPE public.access_levels AS ENUM ('elevated', 'standard');
 
 CREATE TYPE public.notification_types AS ENUM ('new_user_account_registration', 'facility_contact_modified');
 
@@ -21,7 +21,7 @@ CREATE TABLE public.accounts (
   state varchar(128),
   zip_code varchar(64),
   receive_notifications boolean NOT NULL DEFAULT FALSE,
-  account_access access_level NOT NULL DEFAULT 'standard' :: access_level,
+  account_access access_levels NOT NULL DEFAULT 'standard' :: access_levels,
   complete_profile boolean GENERATED ALWAYS AS (CASE WHEN
     LENGTH(organization) > 0 AND
     LENGTH(email) > 0 AND
