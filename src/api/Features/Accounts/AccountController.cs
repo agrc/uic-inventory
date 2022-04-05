@@ -114,5 +114,38 @@ namespace api.Features {
         return StatusCode(500, new AccountPayload(ex));
       }
     }
+
+    [HttpPatch("/api/admin/account")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<AccountPayload>> AdminUpdateAccountAsync(AdminAccountInput input, CancellationToken token) {
+      try {
+        var payload = await _mediator.Send(new AdminUpdateAccount.Command(input), token);
+
+        return Accepted(new AccountPayload(payload));
+      } catch (UnauthorizedAccessException ex) {
+        _log.ForContext("endpoint", "PATCH:/api/admin/account")
+          .ForContext("input", input)
+          .Warning(ex, "Unauthorized access");
+
+        return Unauthorized(new AccountPayload(ex));
+      } catch (UnauthorizedException ex) {
+        _log.ForContext("endpoint", "Patch:/api/admin/account")
+          .ForContext("requirement", ex.Message)
+          .Warning("UpdateAccountAsync requirements failure");
+
+        return Unauthorized(new AccountPayload(ex));
+      } catch (ArgumentNullException ex) {
+        _log.ForContext("endpoint", "PATCH:/api/admin/account")
+          .ForContext("input", input)
+          .Warning(ex, "Account not found");
+
+        return NotFound(new AccountPayload(ex));
+      } catch (Exception ex) {
+        _log.ForContext("endpoint", "PATCH:/api/admin/account")
+          .Error(ex, "Unhandled excpetion");
+
+        return StatusCode(500, new AccountPayload(ex));
+      }
+    }
   }
 }

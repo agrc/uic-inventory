@@ -39,13 +39,25 @@ namespace api.Features {
     }
   }
 
-  public class GetAllAccountsAuthorizer : AbstractRequestAuthorizer<GetAccountById.Query> {
+  public class GetAllAccountsAuthorizer : AbstractRequestAuthorizer<GetAllAccounts.Query> {
     private readonly IHttpContextAccessor _context;
 
     public GetAllAccountsAuthorizer(IHttpContextAccessor context) {
       _context = context;
     }
-    public override void BuildPolicy(GetAccountById.Query request) {
+    public override void BuildPolicy(GetAllAccounts.Query request) {
+      UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+      UseRequirement(new MustHaveElevatedAccount());
+    }
+  }
+
+  public class AdminUpdateAccountAuthorizer : AbstractRequestAuthorizer<AdminUpdateAccount.Command> {
+    private readonly IHttpContextAccessor _context;
+
+    public AdminUpdateAccountAuthorizer(IHttpContextAccessor context) {
+      _context = context;
+    }
+    public override void BuildPolicy(AdminUpdateAccount.Command request) {
       UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
       UseRequirement(new MustHaveElevatedAccount());
     }

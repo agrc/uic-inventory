@@ -40,8 +40,6 @@ namespace api.Features {
     public string? City { get; set; }
     public string? State { get; set; }
     public string? ZipCode { get; set; }
-    public bool? ReceiveNotifications { get; set; }
-    public AccessLevels? Access { get; set; }
   }
 
   public static class AccountInputExtension {
@@ -82,8 +80,27 @@ namespace api.Features {
         account.ZipCode = input.ZipCode;
       }
 
+      return account;
+    }
+  }
+  public class AdminAccountInput {
+    public int Id { get; set; }
+    public bool? ReceiveNotifications { get; set; }
+    public AccessLevels? Access { get; set; }
+  }
+
+  public static class AdminAccountInputExtension {
+    public static Account UpdateAccount(this AdminAccountInput input, Account account) {
+      if (input.Access.HasValue) {
+        account.Access = input.Access.Value;
+      }
+
       if (input.ReceiveNotifications != null) {
         account.ReceiveNotifications = input.ReceiveNotifications;
+      }
+
+      if (account.Access == AccessLevels.standard) {
+        account.ReceiveNotifications = false;
       }
 
       return account;
