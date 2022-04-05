@@ -290,16 +290,16 @@ function Links({ links, isAuthenticated, isElevated }) {
   }
 
   return links
-    .filter(x => level >= x.level)
+    .filter((x) => level >= x.level)
     .map((item) => (
-    <Link
-      key={item.key}
-      to={item.to}
-      className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-    >
-      {item.text}
-    </Link>
-  ));
+      <Link
+        key={item.key}
+        to={item.to}
+        className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
+      >
+        {item.text}
+      </Link>
+    ));
 }
 
 function Notifications({ status, error, notifications }) {
@@ -371,6 +371,8 @@ function Notifications({ status, error, notifications }) {
     switch (notification.event) {
       case 'new_user_account_registration':
         return `${notification.additionalData.name} signed up`;
+      case 'admin_promotion':
+        return `${notification.additionalData.name} is now an administrator`;
       case 'inventory_submission':
         return `${notification.additionalData.name} submitted inventory ${notification.additionalData.inventoryId}`;
       default:
