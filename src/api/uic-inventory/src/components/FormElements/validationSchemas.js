@@ -1,9 +1,9 @@
 import * as yup from 'yup';
 
-const firstName = yup.string().max(128).required().label('First name');
-const lastName = yup.string().max(128).required().label('Last name');
-const email = yup.string().email().max(512).required().label('Email');
-const organization = yup.string().max(512).required().label('Organization');
+const firstName = yup.string().ensure().max(128).required().label('First name');
+const lastName = yup.string().ensure().max(128).required().label('Last name');
+const email = yup.string().ensure().email().max(512).required().label('Email');
+const organization = yup.string().ensure().max(512).required().label('Organization');
 const phoneNumber = yup
   .string()
   .ensure()
@@ -11,10 +11,10 @@ const phoneNumber = yup
   .required()
   .matches(/^[+]\d{11}$/, 'The phone number format is incorrect')
   .label('Phone');
-const mailingAddress = yup.string().max(512).required().label('Address');
-const city = yup.string().max(128).required().label('City');
-const state = yup.string().max(2).required().label('State');
-const zipCode = yup.string().max(64).required().label('Zip');
+const mailingAddress = yup.string().ensure().max(512).required().label('Address');
+const city = yup.string().ensure().max(128).required().label('City');
+const state = yup.string().ensure().max(2).required().label('State');
+const zipCode = yup.string().ensure().max(64).required().label('Zip');
 
 export const ProfileSchema = yup.object().shape({
   firstName,
