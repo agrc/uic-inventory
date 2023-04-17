@@ -1,11 +1,14 @@
 import { StrictMode } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import App from './App';
 import './styles/tailwind.css';
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+
+root.render(
   <QueryClientProvider
     client={
       new QueryClient({
@@ -21,6 +24,5 @@ ReactDOM.render(
       <App />
       <ReactQueryDevtools initialIsOpen />
     </StrictMode>
-  </QueryClientProvider>,
-  document.getElementById('root')
+  </QueryClientProvider>
 );
