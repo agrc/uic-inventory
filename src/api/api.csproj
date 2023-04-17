@@ -14,7 +14,6 @@
     <PackageReference Include="MediatR" />
     <PackageReference Include="MediatR.Behaviors.Authorization" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" />

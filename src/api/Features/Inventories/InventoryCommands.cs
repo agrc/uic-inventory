@@ -147,7 +147,7 @@ namespace api.Features {
         _log = log;
         _metadata = metadata;
       }
-      async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+      async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
           .Debug("Submitting Inventory");
 
@@ -170,7 +170,7 @@ namespace api.Features {
         await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
         await _publisher.Publish(new InventoryNotifications.SubmitNotification(_metadata.Site, _metadata.Inventory, _metadata.Account), cancellationToken);
 
-        return Unit.Value;
+        return;
       }
     }
   }
@@ -197,7 +197,7 @@ namespace api.Features {
         _publisher = publisher;
         _log = log;
       }
-      async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+      async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
           .Debug("Deleting inventory");
 
@@ -211,7 +211,7 @@ namespace api.Features {
 
         await _publisher.Publish(new InventoryNotifications.DeleteNotification(inventory), cancellationToken);
 
-        return Unit.Value;
+        return;
       }
     }
   }
@@ -244,7 +244,7 @@ namespace api.Features {
         _metadata = metadata;
       }
 
-      async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+      async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
           .Debug("Rejecting inventory");
 
@@ -276,7 +276,7 @@ namespace api.Features {
         await _publisher.Publish(new InventoryNotifications.RejectNotification(site, inventory, _metadata.Account, contacts), cancellationToken);
         await _publisher.Publish(new InventoryNotifications.DeleteNotification(inventory), cancellationToken);
 
-        return Unit.Value;
+        return;
       }
     }
   }

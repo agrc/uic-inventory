@@ -111,7 +111,7 @@ namespace api.Features {
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<SitePayload>> DeleteSiteAsync(SiteInput input, CancellationToken token) {
       try {
-        var result = await _mediator.Send(new DeleteSite.Command(input), token);
+        await _mediator.Send(new DeleteSite.Command(input), token);
 
         return Accepted();
       } catch (UnauthorizedException ex) {

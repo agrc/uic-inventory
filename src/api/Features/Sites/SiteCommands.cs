@@ -121,7 +121,7 @@ namespace api.Features {
         _publisher = publisher;
         _log = log;
       }
-      async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+      async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
           .Debug("Deleting site");
 
@@ -138,7 +138,7 @@ namespace api.Features {
         await _context.SaveChangesAsync(cancellationToken);
         await _publisher.Publish(new SiteNotifications.DeleteNotification(request.SiteId), cancellationToken);
 
-        return Unit.Value;
+        return;
       }
     }
   }

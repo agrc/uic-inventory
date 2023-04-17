@@ -12,7 +12,7 @@ namespace api.Infrastructure {
       _logger = logger;
     }
 
-    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next) {
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken) {
       var requestType = typeof(TRequest);
 
       _logger.Information("Handling {request}", requestType);

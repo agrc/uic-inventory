@@ -224,7 +224,7 @@ namespace api.Features {
         _publisher = publisher;
         _log = log;
       }
-      async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+      async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
         _log.ForContext("input", request)
           .Debug("Deleting well");
 
@@ -239,7 +239,7 @@ namespace api.Features {
 
         await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
 
-        return Unit.Value;
+        return;
       }
     }
   }

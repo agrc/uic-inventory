@@ -123,7 +123,7 @@ namespace api.Features {
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<InventoryPayload>> SubmitInventoryAsync(InventorySubmissionInput input, CancellationToken token) {
       try {
-        var result = await _mediator.Send(new SubmitInventory.Command(input), token);
+        await _mediator.Send(new SubmitInventory.Command(input), token);
 
         return Accepted();
       } catch (UnauthorizedException ex) {
@@ -146,7 +146,7 @@ namespace api.Features {
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<InventoryPayload>> DeleteInventoryAsync(InventoryDeletionInput input, CancellationToken token) {
       try {
-        var result = await _mediator.Send(new DeleteInventory.Command(input), token);
+        await _mediator.Send(new DeleteInventory.Command(input), token);
 
         return Accepted();
       } catch (UnauthorizedException ex) {
@@ -169,7 +169,7 @@ namespace api.Features {
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<InventoryPayload>> RejectInventoryAsync(InventoryDeletionInput input, CancellationToken token) {
       try {
-        var result = await _mediator.Send(new RejectInventory.Command(input), token);
+        await _mediator.Send(new RejectInventory.Command(input), token);
 
         return Accepted();
       } catch (UnauthorizedException ex) {

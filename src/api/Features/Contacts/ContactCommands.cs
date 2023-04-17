@@ -62,7 +62,7 @@ namespace api.Features {
           _log = log;
         }
 
-        async Task<Unit> IRequestHandler<Command, Unit>.Handle(Command request, CancellationToken cancellationToken) {
+        async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
           _log.ForContext("input", request)
             .Debug("Deleting contact");
 
@@ -77,7 +77,7 @@ namespace api.Features {
 
           await _publisher.Publish(new SiteNotifications.EditNotification(request.Input.SiteId), cancellationToken);
 
-          return Unit.Value;
+          return;
         }
       }
     }

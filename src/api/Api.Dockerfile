@@ -1,6 +1,6 @@
 FROM node:16-alpine AS nodejs
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS dotnet
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS dotnet-sdk
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS dotnet
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS dotnet-sdk
 
 FROM nodejs as vite-build
 WORKDIR /build
@@ -21,7 +21,7 @@ RUN dotnet build -c Release -o /app
 
 FROM api-build as api-publish
 
-RUN dotnet publish -c Release -o /app -r linux-x64 -p:PublishSingleFile=true --no-self-contained -p:DebugType=embedded -p:PublishReadyToRun=true
+RUN dotnet publish -c Release -o ./app -r linux-x64 -p:PublishSingleFile=true --no-self-contained -p:DebugType=embedded -p:PublishReadyToRun=true
 
 FROM dotnet AS final
 WORKDIR /app

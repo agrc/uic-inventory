@@ -67,7 +67,7 @@ namespace api.Features {
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<ContactPayload>> DeleteContactAsync(ContactInput input, CancellationToken token) {
       try {
-        var result = await _mediator.Send(new DeleteContact.Command(input), token);
+        await _mediator.Send(new DeleteContact.Command(input), token);
 
         return Accepted();
       } catch (UnauthorizedException ex) {

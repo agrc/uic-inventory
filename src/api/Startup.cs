@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -35,7 +36,7 @@ namespace api {
       services.AddCors()
         .AddHttpContextAccessor();
 
-      services.AddMediatR(typeof(Startup));
+      services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
       services.AddMediatorAuthorization(typeof(Startup).Assembly);
       services.AddAuthorizersFromAssembly(typeof(Startup).Assembly);
 
