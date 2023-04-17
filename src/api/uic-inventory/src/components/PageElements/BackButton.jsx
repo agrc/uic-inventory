@@ -4,7 +4,7 @@ export default function BackButton() {
   const history = useHistory();
 
   return (
-    <button type="button" meta="default" onClick={() => history.goBack()}>
+    <button type="button" data-meta="default" onClick={() => history.goBack()}>
       Back
     </button>
   );

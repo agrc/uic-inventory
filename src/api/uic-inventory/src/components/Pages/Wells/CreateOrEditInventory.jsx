@@ -181,7 +181,7 @@ function CreateOrEditInventory() {
                 <ResponsiveGridColumn full={true} half={true}>
                   <p className="text-center italic text-gray-500 md:text-left">
                     To submit a UIC Inventory Form you must have a valid Inventory Review Fee order number or receipt.{' '}
-                    <button meta="primary" onClick={open}>
+                    <button data-meta="primary" onClick={open}>
                       Click for instructions
                     </button>{' '}
                     to pay the UIC Inventory Fee online.
@@ -222,7 +222,7 @@ function CreateOrEditInventory() {
                       <li className="leading-loose">
                         Navigate to this website:{' '}
                         <a
-                          meta="primary"
+                          data-meta="primary"
                           href="https://secure.utah.gov/cart/dwq_cart/details.html?productId=205"
                           target="_blank"
                           rel="noreferrer noopener"
@@ -257,7 +257,7 @@ function CreateOrEditInventory() {
                         .
                       </li>
                     </ul>
-                    <button type="button" meta="default" className="mt-4" onClick={close}>
+                    <button type="button" data-meta="default" className="mt-4" onClick={close}>
                       Close
                     </button>
                   </div>

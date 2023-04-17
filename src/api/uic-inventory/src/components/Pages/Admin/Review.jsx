@@ -80,10 +80,10 @@ export default function Review() {
           >
             Reject
           </button>
-          <button meta="primary" className="rounded border sm:col-span-6 md:col-span-2">
+          <button data-meta="primary" className="rounded border sm:col-span-6 md:col-span-2">
             Print
           </button>
-          <button meta="default" className="sm:col-span-6 md:col-span-2">
+          <button data-meta="default" className="sm:col-span-6 md:col-span-2">
             Approve
           </button>
         </Section>
@@ -411,7 +411,7 @@ const handleLink = (text, siteId, inventoryId) => {
   if (text?.startsWith('file::')) {
     return (
       <a
-        meta="primary"
+        data-meta="primary"
         href={text.replace('file::', `/api/site/${siteId}/inventory/${inventoryId}/well/`).replaceAll('_', '/')}
         target="_blank"
         rel="noopener noreferrer"

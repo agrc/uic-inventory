@@ -17,8 +17,13 @@ const SiteInformation = ({ site }) => {
   const [show, setShow] = useState(true);
 
   return site && show ? (
-    <div className="relative grid gap-1 px-4 py-3 mt-4 text-white bg-gray-800 rounded-lg shadow md:mt-12 auto-cols-auto">
-      <button type="button" meta="default" className="absolute top-0 right-0 px-3 py-1" onClick={() => setShow(false)}>
+    <div className="relative mt-4 grid auto-cols-auto gap-1 rounded-lg bg-gray-800 px-4 py-3 text-white shadow md:mt-12">
+      <button
+        type="button"
+        data-meta="default"
+        className="absolute right-0 top-0 px-3 py-1"
+        onClick={() => setShow(false)}
+      >
         x
       </button>
       <div className="col-span-2 text-lg font-medium ">Site Information</div>

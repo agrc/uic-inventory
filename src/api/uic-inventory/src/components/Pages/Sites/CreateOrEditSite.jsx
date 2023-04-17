@@ -137,13 +137,13 @@ function CreateOrEditSite() {
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true}>
-              <p className="italic text-center text-gray-500">
+              <p className="text-center italic text-gray-500">
                 Select NAICS code and title for the primary business activity at the site
               </p>
             </ResponsiveGridColumn>
 
             <ResponsiveGridColumn full={true} className="self-center text-center sm:col-span-2 sm:row-span-3">
-              <button type="button" meta="default" className="w-full sm:items-center sm:h-24" onClick={open}>
+              <button type="button" data-meta="default" className="w-full sm:h-24 sm:items-center" onClick={open}>
                 NAICS Code Helper
               </button>
             </ResponsiveGridColumn>
@@ -200,7 +200,7 @@ function CreateOrEditSite() {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="inline-block w-full p-6 my-8 text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <div className="my-8 inline-block w-full transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                   NAICS Code Helper
                 </Dialog.Title>
@@ -212,7 +212,7 @@ function CreateOrEditSite() {
                   }}
                 />
 
-                <button type="button" meta="default" className="mt-4" onClick={close}>
+                <button type="button" data-meta="default" className="mt-4" onClick={close}>
                   Select
                 </button>
               </div>

@@ -240,7 +240,7 @@ function AddWellForm({ data, state, dispatch }) {
           <div className="flex flex-col items-center space-y-2">
             <button
               type="button"
-              meta="default"
+              data-meta="default"
               className={clsx({ 'bg-blue-800': state.activeTool === 'draw-well' })}
               onClick={() => dispatch({ type: 'activate-tool', payload: 'draw-well' })}
             >
@@ -563,12 +563,12 @@ function WellTable({ wells = [], state, dispatch }) {
                 </p>
 
                 <div className="mt-6 flex justify-around">
-                  <button type="button" meta="default" className="bg-indigo-900" onClick={remove}>
+                  <button type="button" data-meta="default" className="bg-indigo-900" onClick={remove}>
                     Yes
                   </button>
                   <button
                     type="button"
-                    meta="default"
+                    data-meta="default"
                     onClick={() => {
                       close();
                       deleteWell.current = null;

@@ -50,7 +50,7 @@ function AddSiteContacts() {
                   <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
                     <ContactTable data={data?.contacts} />
                     <div className="bg-gray-100 px-4 py-3 text-right sm:px-6">
-                      <Link type="button" meta="default" to={`/site/${siteId}/add-location`}>
+                      <Link type="button" data-meta="default" to={`/site/${siteId}/add-location`}>
                         Next
                       </Link>
                     </div>
@@ -532,12 +532,12 @@ function ContactTable({ data }) {
                 </p>
 
                 <div className="mt-6 flex justify-around">
-                  <button type="button" meta="default" className="bg-indigo-900" onClick={remove}>
+                  <button type="button" data-meta="default" className="bg-indigo-900" onClick={remove}>
                     Yes
                   </button>
                   <button
                     type="button"
-                    meta="default"
+                    data-meta="default"
                     onClick={() => {
                       close();
                       deleteContact.current = null;

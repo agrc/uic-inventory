@@ -98,7 +98,7 @@ namespace api {
       var redirectUrl = "/";
       if (env.IsDevelopment()) {
         app.UseDeveloperExceptionPage();
-        redirectUrl = "http://localhost:3000";
+        redirectUrl = "http://localhost:5173";
       }
 
       app.UseForwardedHeaders();

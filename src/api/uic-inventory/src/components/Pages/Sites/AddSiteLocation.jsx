@@ -328,13 +328,13 @@ function AddSiteLocation() {
           <GridHeading text="Site Location" subtext="Set the address and polygon for your site" site={data}>
             <p className="mb-3">
               First, find your site location by it&apos;s address. If you don&apos;t have an address{' '}
-              <button meta="primary" onClick={() => dispatch({ type: 'skip-geocoding', payload: null })}>
+              <button data-meta="primary" onClick={() => dispatch({ type: 'skip-geocoding', payload: null })}>
                 skip
               </button>{' '}
               this step.
             </p>
             <div
-              className={clsx('px-4 py-5 ml-4 border rounded transition hover:opacity-100', {
+              className={clsx('ml-4 rounded border px-4 py-5 transition hover:opacity-100', {
                 'opacity-25': state.formStatus === 'allow-site-address-from-click' || state.address,
               })}
             >
@@ -351,13 +351,13 @@ function AddSiteLocation() {
                   The site address was not found, select a point for the site instead with the tool below.
                 </p>
                 <div
-                  className={clsx('px-4 py-5 ml-4 border flex justify-center rounded transition hover:opacity-100', {
+                  className={clsx('ml-4 flex justify-center rounded border px-4 py-5 transition hover:opacity-100', {
                     'opacity-25': state.formStatus !== 'allow-site-address-from-click',
                   })}
                 >
                   <button
                     type="button"
-                    meta="default"
+                    data-meta="default"
                     className={clsx({ 'bg-blue-800': state.activeTool === 'site-address-click' })}
                     onClick={() => dispatch({ type: 'activate-site-address-from-click', payload: '' })}
                   >
@@ -371,11 +371,11 @@ function AddSiteLocation() {
                 <p className="my-3">
                   Next, click a tool below to either select a parcel on the map as the site area, or draw the site area.
                 </p>
-                <div className="flex justify-around px-4 py-5 ml-4 border rounded">
+                <div className="ml-4 flex justify-around rounded border px-4 py-5">
                   <div className="flex flex-col items-center space-y-2">
                     <button
                       type="button"
-                      meta="default"
+                      data-meta="default"
                       className={clsx({ 'bg-blue-800': state.activeTool === 'selecting-a-parcel' })}
                       onClick={() => dispatch({ type: 'select-site-from-parcel', payload: '' })}
                     >
@@ -386,7 +386,7 @@ function AddSiteLocation() {
                   <div className="flex flex-col items-center space-y-2">
                     <button
                       type="button"
-                      meta="default"
+                      data-meta="default"
                       className={clsx({ 'bg-blue-800': state.activeTool === 'freehand-polygon-drawing' })}
                       onClick={() => dispatch({ type: 'draw-site-boundary', payload: '' })}
                     >
@@ -398,12 +398,12 @@ function AddSiteLocation() {
               </>
             ) : null}
           </GridHeading>
-          <div className="md:mt-0 md:col-span-2">
+          <div className="md:col-span-2 md:mt-0">
             <div className="mt-6 overflow-hidden shadow sm:rounded-md">
               <div className="bg-white">
                 <div className="grid grid-cols-6">
                   <div className="col-span-6">
-                    <div className="w-full h-96" ref={mapDiv}></div>
+                    <div className="h-96 w-full" ref={mapDiv}></div>
                     <form
                       className="border-t-2 border-gray-50"
                       onSubmit={handleSubmit((data) => addSiteLocation(data))}
@@ -420,7 +420,7 @@ function AddSiteLocation() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex justify-between px-4 py-3 text-right bg-gray-100 sm:px-6">
+                      <div className="flex justify-between bg-gray-100 px-4 py-3 text-right sm:px-6">
                         <BackButton />
                         <button type="submit" disabled={!state.formStatus === 'complete'}>
                           Next

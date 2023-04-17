@@ -31,14 +31,14 @@ export default function ConfirmationModal({ isOpen, onClose, onYes, children }) 
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <div className="inline-block w-full max-w-md p-6 mx-auto my-48 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+            <div className="mx-auto my-48 inline-block w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
               {children}
 
-              <div className="flex justify-around mt-6">
-                <button type="button" meta="default" className="bg-indigo-900" onClick={onYes}>
+              <div className="mt-6 flex justify-around">
+                <button type="button" data-meta="default" className="bg-indigo-900" onClick={onYes}>
                   Yes
                 </button>
-                <button type="button" meta="default" onClick={onClose}>
+                <button type="button" data-meta="default" onClick={onClose}>
                   No
                 </button>
               </div>

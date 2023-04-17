@@ -1,11 +1,10 @@
 import { defineConfig } from 'vite';
-import reactRefresh from '@vitejs/plugin-react-refresh';
-import reactJsx from 'vite-react-jsx';
-import eslintPlugin from '@nabla/vite-plugin-eslint';
+import react from '@vitejs/plugin-react-swc';
+import eslintPlugin from 'vite-plugin-eslint';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [reactRefresh(), reactJsx(), eslintPlugin()],
+  plugins: [react(), eslintPlugin()],
   server: {
     proxy: {
       '/api': {
@@ -13,7 +12,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         protocolRewrite: 'https',
-        cookieDomainRewrite: 'localhost:3000',
+        cookieDomainRewrite: 'localhost:5173',
       },
     },
   },

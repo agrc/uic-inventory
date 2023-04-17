@@ -246,7 +246,7 @@ function AddWellDetails() {
                       'text-red-700': wellsRemaining !== 0,
                       'text-emerald-500': wellsRemaining === 0,
                     },
-                    'inline-flex items-center justify-center w-32 h-32 text-5xl font-extrabold border-4 border-gray-200 rounded-full'
+                    'inline-flex h-32 w-32 items-center justify-center rounded-full border-4 border-gray-200 text-5xl font-extrabold'
                   )}
                 >
                   {wellsRemaining}
@@ -254,13 +254,13 @@ function AddWellDetails() {
               </div>
             </div>
           </GridHeading>
-          <div className="md:mt-0 md:col-span-2">
+          <div className="md:col-span-2 md:mt-0">
             <form onSubmit={handleSubmit(updateWells)}>
               <div className="overflow-hidden shadow sm:rounded-md">
                 <div className="bg-white">
                   <div className="grid grid-cols-6">
                     <div className="col-span-6">
-                      <div className="w-full border-b-2 h-96 border-gray-50" ref={mapDiv}></div>
+                      <div className="h-96 w-full border-b-2 border-gray-50" ref={mapDiv}></div>
                       <section className="flex flex-col gap-2 px-4 py-5">
                         <span
                           className={clsx(
@@ -339,14 +339,14 @@ function AddWellDetails() {
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-around px-4 py-3 text-right bg-gray-100 sm:px-6">
+                <div className="flex justify-around bg-gray-100 px-4 py-3 text-right sm:px-6">
                   <BackButton />
                   <button type="submit" disabled={(selectedWells?.length ?? 0) === 0}>
                     Update
                   </button>
                   <button
                     type="button"
-                    meta="default"
+                    data-meta="default"
                     onClick={() => history.push(`/site/${siteId}/inventory/${inventoryId}/submit`)}
                     disabled={wellsRemaining > 0}
                   >
