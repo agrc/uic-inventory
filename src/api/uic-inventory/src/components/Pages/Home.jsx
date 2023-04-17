@@ -5,7 +5,7 @@ import { Dialog } from '@headlessui/react';
 import { useExpanded, useSortBy, useTable } from 'react-table';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import ky from 'ky';
-import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/outline';
+import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/24/outline';
 import {
   CheckIcon,
   DocumentTextIcon,
@@ -14,7 +14,7 @@ import {
   PlusIcon,
   UsersIcon,
   XIcon,
-} from '@heroicons/react/solid';
+} from '@heroicons/react/20/solid';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import { AuthContext } from '../../AuthProvider';
 import { ConfirmationModal, Chrome, Header, Link, onRequestError, toast, Tooltip } from '../PageElements';
@@ -70,7 +70,7 @@ export function GenericLandingPage() {
           to register with Utah ID and then return to this page to login and complete your profile. If you already have
           a Utah ID account you may login using the link above. Once you have an account you will be able to:
         </p>
-        <ul className="mt-3 ml-8 list-inside list-disc">
+        <ul className="ml-8 mt-3 list-inside list-disc">
           <li>Submit Class V UIC inventory information forms</li>
           <li>Check inventory form status</li>
           <li>Update well operating status</li>
@@ -550,7 +550,7 @@ function SiteTable({ data }) {
                                   'font-medium': ['action', 'id'].includes(cell.column.id),
                                   'whitespace-nowrap text-right': cell.column.id === 'action',
                                 },
-                                'px-3 pt-4 pb-2'
+                                'px-3 pb-2 pt-4'
                               )}
                               {...cell.getCellProps()}
                             >
@@ -622,7 +622,7 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
               return (
                 <td
                   className={clsx('text-sm text-gray-900', {
-                    'px-3 pt-2 pb-1': cell.column.id.toLowerCase() !== 'id',
+                    'px-3 pb-1 pt-2': cell.column.id.toLowerCase() !== 'id',
                   })}
                   key={`${row.index}-expanded-${cell.column.id}`}
                   {...cell.getCellProps()}

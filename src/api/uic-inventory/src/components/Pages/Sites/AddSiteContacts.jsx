@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import clsx from 'clsx';
 import { BulletList } from 'react-content-loader';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { TrashIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline';
+import { TrashIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { Switch } from '@headlessui/react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import ky from 'ky';
@@ -41,7 +41,7 @@ function AddSiteContacts() {
         subtext="At least one of the contacts listed must be the owner, owner/operator, or legal representative of the injection well system for which the UIC Well Inventory is being submitted. The owner, owner/operator, or legal representative must be the signatory of the form."
         site={data}
       >
-        <div className="min-h-screen mt-5 md:mt-0 md:col-span-2">
+        <div className="min-h-screen mt-5 md:col-span-2 md:mt-0">
           {status === 'loading' && <BulletList style={{ height: '20em' }} />}
           {status !== 'loading' && !error && (
             <div className="flex flex-col">
@@ -49,7 +49,7 @@ function AddSiteContacts() {
                 <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                   <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
                     <ContactTable data={data?.contacts} />
-                    <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
+                    <div className="bg-gray-100 px-4 py-3 text-right sm:px-6">
                       <Link type="button" meta="default" to={`/site/${siteId}/add-location`}>
                         Next
                       </Link>
@@ -199,9 +199,9 @@ function CreateContactForm({ data }) {
       >
         <FormGrid>
           <ResponsiveGridColumn full={true}>
-            <div className="flex px-3 py-2 border border-blue-600 rounded-lg bg-blue-50/50">
-              <QuestionMarkCircleIcon className="self-center w-12 h-12 text-blue-600" />
-              <div className="ml-4 font-medium grow">
+            <div className="flex rounded-lg border border-blue-600 bg-blue-50/50 px-3 py-2">
+              <QuestionMarkCircleIcon className="h-12 w-12 self-center text-blue-600" />
+              <div className="ml-4 grow font-medium">
                 <ToggleSwitch
                   label="Is this a Department of Environmental Quality contact providing primary regulatory oversight for subsurface environmental remediation?"
                   value={isSerContact}
@@ -333,7 +333,7 @@ function SerContactFields({ control, register, formState }) {
 function ToggleSwitch({ label, value, onChange }) {
   return (
     <Switch.Group className="flex items-center justify-around" as="div">
-      <Switch.Label className="max-w-md mr-4">{label}</Switch.Label>
+      <Switch.Label className="mr-4 max-w-md">{label}</Switch.Label>
       <span className="sr-only">Toggle</span>
       <Switch
         checked={value}
@@ -343,7 +343,7 @@ function ToggleSwitch({ label, value, onChange }) {
             'bg-indigo-600 focus:ring-indigo-500': value,
             'bg-gray-300 focus:ring-gray-300': !value,
           },
-          'shrink-0 relative inline-flex items-center h-8 rounded-full w-16 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
+          'relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
         )}
       >
         <span
@@ -352,7 +352,7 @@ function ToggleSwitch({ label, value, onChange }) {
               'translate-x-8 border-indigo-700 bg-gray-100': value,
               'translate-x-1 border-gray-400 bg-white': !value,
             },
-            'inline-block w-7 h-7 border-2 border-gray-400 rounded-full transform transition-transform'
+            'inline-block h-7 w-7 transform rounded-full border-2 border-gray-400 transition-transform'
           )}
         />
       </Switch>
@@ -451,7 +451,7 @@ function ContactTable({ data }) {
           return (
             <TrashIcon
               aria-label="delete site"
-              className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
+              className="ml-1 h-6 w-6 cursor-pointer text-red-600 hover:text-red-900"
               onClick={() => {
                 open();
                 deleteContact.current = data.row.original.id;
@@ -477,10 +477,10 @@ function ContactTable({ data }) {
 
   return data?.length < 1 ? (
     <div className="flex flex-col items-center">
-      <div className="px-5 py-4 m-6">
+      <div className="m-6 px-5 py-4">
         <h2 className="mb-1 text-xl font-medium">Create your first contact</h2>
         <p className="text-gray-700">Get started by filling out the form below to add your first site contact.</p>
-        <div className="mb-6 text-sm text-center text-gray-900"></div>
+        <div className="mb-6 text-center text-sm text-gray-900"></div>
       </div>
     </div>
   ) : (
@@ -521,7 +521,7 @@ function ContactTable({ data }) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="inline-block w-full max-w-md p-6 mx-auto my-48 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <div className="mx-auto my-48 inline-block w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
                   Contact Deletion Confirmation
                 </Dialog.Title>
@@ -531,7 +531,7 @@ function ContactTable({ data }) {
                   Are you sure you want to delete this contact? This action cannot be undone.
                 </p>
 
-                <div className="flex justify-around mt-6">
+                <div className="mt-6 flex justify-around">
                   <button type="button" meta="default" className="bg-indigo-900" onClick={remove}>
                     Yes
                   </button>
@@ -559,7 +559,7 @@ function ContactTable({ data }) {
                 <th
                   key={`${headerGroup.index}-${column.id}`}
                   {...column.getHeaderProps()}
-                  className="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                  className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                 >
                   {column.render('Header')}
                 </th>
@@ -567,7 +567,7 @@ function ContactTable({ data }) {
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
+        <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white">
           {rows.map((row) => {
             prepareRow(row);
 
@@ -579,7 +579,7 @@ function ContactTable({ data }) {
                     className={clsx(
                       {
                         'font-medium': ['action', 'id'].includes(cell.column.id),
-                        'text-right whitespace-nowrap': cell.column.id === 'action',
+                        'whitespace-nowrap text-right': cell.column.id === 'action',
                       },
                       'px-3 py-4'
                     )}

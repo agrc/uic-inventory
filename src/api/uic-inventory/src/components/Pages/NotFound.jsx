@@ -1,4 +1,4 @@
-import { SearchIcon } from '@heroicons/react/outline';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Chrome, Link } from '../PageElements';
 
 export default function NotFound() {
@@ -6,8 +6,8 @@ export default function NotFound() {
     <main>
       <Chrome>
         <section className="flex flex-col items-center py-6 text-5xl font-black text-gray-800">
-          <h1 className="block mb-6">How did you get here?</h1>
-          <SearchIcon className="block w-24 h-24" />
+          <h1 className="mb-6 block">How did you get here?</h1>
+          <MagnifyingGlassIcon className="block h-24 w-24" />
         </section>
         <section className="mx-auto max-w-prose">
           <p>
@@ -19,7 +19,7 @@ export default function NotFound() {
             link and let us know what happened. Otherwise, please go back to the main page and navigate to your item of
             interest.
           </p>
-          <p className="mt-4 text-lg text-center">
+          <p className="mt-4 text-center text-lg">
             <Link type="button" meta="default" to="/">
               Sites
             </Link>

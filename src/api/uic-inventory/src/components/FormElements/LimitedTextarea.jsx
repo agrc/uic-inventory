@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ErrorMessage } from '@hookform/error-message';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { CloudUploadIcon, XIcon, CheckIcon } from '@heroicons/react/outline';
+import { CloudArrowUpIcon, XIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 import ErrorMessageTag from './ErrorMessage';
@@ -21,7 +21,7 @@ export const LimitedTextarea = ({ rows, placeholder, value, maxLength, field, er
         defaultValue={value}
         maxLength={limit}
         placeholder={placeholder}
-        className={clsx('px-2 rounded', className)}
+        className={clsx('rounded px-2', className)}
         {...field}
       ></textarea>
       <CharactersRemaining limit={limit} remaining={remaining} />
@@ -88,12 +88,12 @@ export const DropzoneMessaging = ({ isDragActive, files = [], reset = () => {} }
     return (
       <div>
         <div className="flex flex-row">
-          <CheckIcon className="w-8 h-8 mx-2 text-emerald-500" />
-          <span className="self-center overflow-hidden lowercase truncate whitespace-nowrap">{files[0].name}</span>
+          <CheckIcon className="mx-2 h-8 w-8 text-emerald-500" />
+          <span className="self-center overflow-hidden truncate whitespace-nowrap lowercase">{files[0].name}</span>
         </div>
-        <button type="button" meta="default" className="w-full mt-4" onClick={reset}>
-          <XIcon className="w-6 h-6 mx-2 text-pink-500" />
-          <span className="self-center justify-between">Clear</span>
+        <button type="button" meta="default" className="mt-4 w-full" onClick={reset}>
+          <XIcon className="mx-2 h-6 w-6 text-pink-500" />
+          <span className="justify-between self-center">Clear</span>
         </button>
       </div>
     );
@@ -114,7 +114,7 @@ export const CharactersRemaining = ({ remaining, limit }) => {
       className={clsx('absolute bottom-0 right-3', {
         'text-xs text-gray-500': percentage >= 0 && percentage < 0.8,
         'text-xs text-amber-600': percentage >= 0.8 && percentage < 0.9,
-        'text-red-600 font-black text-lg bg-white p-2 border border-red-600': percentage >= 0.9,
+        'border border-red-600 bg-white p-2 text-lg font-black text-red-600': percentage >= 0.9,
       })}
     >
       {remaining} characters left
@@ -149,7 +149,7 @@ export const LimitedDropzone = ({ textarea, forms }) => {
   }, [forms.formState.isSubmitSuccessful]);
 
   return (
-    <section className="grid content-start grid-cols-2" {...getRootProps()}>
+    <section className="grid grid-cols-2 content-start" {...getRootProps()}>
       <Label className="col-span-2" id={textarea.id} />
       <section
         className={clsx('relative', {
@@ -177,22 +177,22 @@ export const LimitedDropzone = ({ textarea, forms }) => {
           <button
             type="button"
             meta="default"
-            className="w-full mt-4"
+            className="mt-4 w-full"
             onClick={() => forms.reset({ ...forms.getValues(), [textarea.id]: '' }, { keepDefaultValues: true })}
           >
-            <XIcon className="w-6 h-6 mx-2 text-pink-500" />
-            <span className="self-center justify-between">Clear</span>
+            <XIcon className="mx-2 h-6 w-6 text-pink-500" />
+            <span className="justify-between self-center">Clear</span>
           </button>
         )}
       </section>
       <section
         className={clsx('flex p-2', {
-          'bg-gray-50 border-gray-400 border-t border-b border-r rounded-r border-dashed': files.length === 0,
-          'bg-white col-span-2': files.length > 0,
+          'rounded-r border-b border-r border-t border-dashed border-gray-400 bg-gray-50': files.length === 0,
+          'col-span-2 bg-white': files.length > 0,
           hidden: remaining < limit,
         })}
       >
-        <div className={clsx('flex flex-col justify-around grow px-2')}>
+        <div className={clsx('flex grow flex-col justify-around px-2')}>
           <input
             {...(files.length > 0 ? forms.field : {})}
             {...getInputProps({
@@ -213,7 +213,7 @@ export const LimitedDropzone = ({ textarea, forms }) => {
           {files.length === 0 && (
             <>
               <button className="items-center pl-0" type="button" meta="default" onClick={open}>
-                <CloudUploadIcon className="w-6 h-6 mx-2 text-white" />
+                <CloudArrowUpIcon className="mx-2 h-6 w-6 text-white" />
                 Pick a file
               </button>
               <div className="self-center text-sm text-gray-600">(pdf, doc, docx, jpg, jpeg, png)</div>

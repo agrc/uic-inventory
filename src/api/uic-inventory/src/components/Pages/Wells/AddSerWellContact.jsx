@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import clsx from 'clsx';
 import { BulletList } from 'react-content-loader';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { TrashIcon } from '@heroicons/react/outline';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import ky from 'ky';
 import { useTable } from 'react-table';
@@ -105,7 +105,7 @@ function AddSerWellContact() {
         subtext="Add contacts that are providing primary oversight in this remediation"
         site={data}
       >
-        <div className="min-h-screen mt-5 md:mt-0 md:col-span-2">
+        <div className="min-h-screen mt-5 md:col-span-2 md:mt-0">
           {status === 'loading' && <BulletList style={{ height: '20em' }} />}
           {status !== 'loading' && !error && (
             <div className="flex flex-col">
@@ -113,7 +113,7 @@ function AddSerWellContact() {
                 <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                   <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
                     <ContactTable data={data?.contacts} />
-                    <div className="px-4 py-3 text-right bg-gray-100 sm:px-6">
+                    <div className="bg-gray-100 px-4 py-3 text-right sm:px-6">
                       <Link type="button" meta="default" to={`/site/${siteId}/inventory/${inventoryId}/add-wells`}>
                         Next
                       </Link>
@@ -254,7 +254,7 @@ function ContactTable({ data }) {
           return (
             <TrashIcon
               aria-label="delete site"
-              className="w-6 h-6 ml-1 text-red-600 cursor-pointer hover:text-red-900"
+              className="ml-1 h-6 w-6 cursor-pointer text-red-600 hover:text-red-900"
               onClick={() => {
                 open();
                 deleteContact.current = data.row.original.id;
@@ -280,10 +280,10 @@ function ContactTable({ data }) {
 
   return data?.length < 1 ? (
     <div className="flex flex-col items-center">
-      <div className="px-5 py-4 m-6">
+      <div className="m-6 px-5 py-4">
         <h2 className="mb-1 text-xl font-medium">Create your first contact</h2>
         <p className="text-gray-700">Get started by filling out the form below to add your first site contact.</p>
-        <div className="mb-6 text-sm text-center text-gray-900"></div>
+        <div className="mb-6 text-center text-sm text-gray-900"></div>
       </div>
     </div>
   ) : (
@@ -324,7 +324,7 @@ function ContactTable({ data }) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <div className="inline-block w-full max-w-md p-6 mx-auto my-48 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <div className="mx-auto my-48 inline-block w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
                   Contact Deletion Confirmation
                 </Dialog.Title>
@@ -334,7 +334,7 @@ function ContactTable({ data }) {
                   Are you sure you want to delete this contact? This action cannot be undone.
                 </p>
 
-                <div className="flex justify-around mt-6">
+                <div className="mt-6 flex justify-around">
                   <button type="button" meta="default" className="bg-indigo-900" onClick={remove}>
                     Yes
                   </button>
@@ -362,7 +362,7 @@ function ContactTable({ data }) {
                 <th
                   key={`${headerGroup.index}-${column.id}`}
                   {...column.getHeaderProps()}
-                  className="px-3 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+                  className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                 >
                   {column.render('Header')}
                 </th>
@@ -370,7 +370,7 @@ function ContactTable({ data }) {
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()} className="bg-white divide-y divide-gray-200">
+        <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white">
           {rows.map((row) => {
             prepareRow(row);
 
@@ -382,7 +382,7 @@ function ContactTable({ data }) {
                     className={clsx(
                       {
                         'font-medium': ['action', 'id'].includes(cell.column.id),
-                        'text-right whitespace-nowrap': cell.column.id === 'action',
+                        'whitespace-nowrap text-right': cell.column.id === 'action',
                       },
                       'px-3 py-4'
                     )}

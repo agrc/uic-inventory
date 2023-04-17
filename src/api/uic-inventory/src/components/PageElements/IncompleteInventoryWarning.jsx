@@ -1,4 +1,4 @@
-import { CheckIcon, XIcon } from '@heroicons/react/solid';
+import { CheckIcon, XIcon } from '@heroicons/react/20/solid';
 import { Link } from '../PageElements';
 
 export default function IncompleteInventoryWarning({ siteId, inventoryId, inventoryStatus }) {

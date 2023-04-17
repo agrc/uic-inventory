@@ -6,7 +6,7 @@ import { useQuery, useQueryClient, useMutation } from 'react-query';
 import ky from 'ky';
 import { ErrorMessage } from '@hookform/error-message';
 import { Dialog, Transition } from '@headlessui/react';
-import { TrashIcon } from '@heroicons/react/outline';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';

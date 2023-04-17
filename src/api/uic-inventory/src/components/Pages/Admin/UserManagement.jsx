@@ -2,10 +2,9 @@ import { useContext, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import ky from 'ky';
 import { useTable, useSortBy } from 'react-table';
-import { ChevronDownIcon, ChevronUpIcon, UserCircleIcon } from '@heroicons/react/outline';
+import { ChevronDownIcon, ChevronUpIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '../../../AuthProvider';
 import { Chrome, onRequestError, useHistory } from '../../PageElements';
-
 
 export default function UserManagement() {
   const { authInfo } = useContext(AuthContext);
@@ -25,7 +24,7 @@ export default function UserManagement() {
 }
 
 const UserTable = ({ accounts = [] }) => {
-    const history = useHistory();
+  const history = useHistory();
 
   const columns = useMemo(
     () => [
@@ -64,18 +63,20 @@ const UserTable = ({ accounts = [] }) => {
             />
           );
         },
-      }
-    ], [history]
+      },
+    ],
+    [history]
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
+    {
       columns,
       data: accounts,
       initialState: {
         hiddenColumns: ['id'],
       },
     },
-    useSortBy,
+    useSortBy
   );
 
   return (
@@ -107,16 +108,9 @@ const UserTable = ({ accounts = [] }) => {
           prepareRow(row);
 
           return (
-            <tr
-              className='hover:bg-blue-100 cursor-default'
-              key={`${row.index}`}
-              {...row.getRowProps()}
-            >
+            <tr className="cursor-default hover:bg-blue-100" key={`${row.index}`} {...row.getRowProps()}>
               {row.cells.map((cell) => (
-                <td
-                  key={`${row.index}-${cell.column.id}`}
-                  {...cell.getCellProps()}
-                >
+                <td key={`${row.index}-${cell.column.id}`} {...cell.getCellProps()}>
                   <div className="px-3 py-2">{cell.render('Cell')}</div>
                 </td>
               ))}

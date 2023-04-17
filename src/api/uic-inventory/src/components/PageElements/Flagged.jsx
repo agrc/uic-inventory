@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { ExclamationIcon } from '@heroicons/react/outline';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { useMutation, useQueryClient } from 'react-query';
 import ky from 'ky';
@@ -87,7 +87,7 @@ const CreateFlag = ({ text, update, onSubmit }) => {
   const [isOpen, { toggle }] = useOpenClosed();
 
   return (
-    <div className="sticky top-4 right-4 z-10 flex justify-end print:hidden">
+    <div className="sticky right-4 top-4 z-10 flex justify-end print:hidden">
       {isOpen && <Reason reason={text} update={update} />}
       {isOpen ? (
         <>
@@ -138,7 +138,7 @@ const HasFlag = ({ reason, onResolve }) => {
         </p>
       </ConfirmationModal>
       <div className="relative mb-3 ml-1 max-h-96 overflow-scroll border border-red-800 text-lg font-semibold text-white shadow sm:rounded-md">
-        <ExclamationIcon className="absolute top-1 left-1 h-10 w-10 text-red-800" />
+        <ExclamationTriangleIcon className="absolute left-1 top-1 h-10 w-10 text-red-800" />
         <div className="flex h-full grow justify-between gap-4 bg-red-400 px-4 py-5 sm:p-6">
           <div className="ml-8">{reason}</div>
           <div className="items-end">

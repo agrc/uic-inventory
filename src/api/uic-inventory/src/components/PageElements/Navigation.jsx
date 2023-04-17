@@ -1,6 +1,14 @@
 import { Fragment, useContext } from 'react';
 import clsx from 'clsx';
-import { BellIcon, LinkIcon, MailOpenIcon, MailIcon, MenuIcon, TrashIcon, XIcon } from '@heroicons/react/outline';
+import {
+  BellIcon,
+  LinkIcon,
+  EnvelopeOpenIcon,
+  EnvelopeIcon,
+  Bars3Icon,
+  TrashIcon,
+  XIcon,
+} from '@heroicons/react/24/outline';
 import { Disclosure, Menu, Popover, Transition } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import { Facebook } from 'react-content-loader';
@@ -176,7 +184,7 @@ function Navigation() {
                         {open ? (
                           <XIcon className="block h-6 w-6" aria-hidden="true" />
                         ) : (
-                          <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                          <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                         )}
                       </Disclosure.Button>
                     </div>
@@ -189,7 +197,7 @@ function Navigation() {
                       {open ? (
                         <XIcon className="block h-6 w-6" aria-hidden="true" />
                       ) : (
-                        <MenuIcon className="block h-6 w-6" aria-hidden="true" />
+                        <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                       )}
                     </Disclosure.Button>
                   </div>
@@ -198,11 +206,11 @@ function Navigation() {
             </div>
 
             <Disclosure.Panel className="md:hidden">
-              <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
+              <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
                 <Links links={navigation} isAuthenticated={isAuthenticated} isElevated={isElevated} />
               </div>
               {isAuthenticated() ? (
-                <div className="border-t border-gray-700 pt-4 pb-3">
+                <div className="border-t border-gray-700 pb-3 pt-4">
                   <Popover>
                     <div className="flex items-center px-5">
                       <div className="shrink-0">
@@ -398,11 +406,11 @@ function Notifications({ status, error, notifications }) {
             alt={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
             title={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
           >
-            <MailOpenIcon className="ml-1 inline-block h-5 w-5 text-gray-400" />
+            <EnvelopeOpenIcon className="ml-1 inline-block h-5 w-5 text-gray-400" />
           </span>
         ) : (
           <span>
-            <MailIcon
+            <EnvelopeIcon
               className="ml-1 inline-block h-5 w-5 cursor-pointer text-blue-400"
               onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'read' })}
             />

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useNaicsCodes from './useNaicsCodes';
-import { ChevronLeftIcon } from '@heroicons/react/solid';
+import { ChevronLeftIcon } from '@heroicons/react/20/solid';
 import clsx from 'clsx';
 
 const getCodeLevel = (code) => {
@@ -73,30 +73,30 @@ export default function NaicsPicker({ updateWith }) {
         </a>
         .
       </p>
-      <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
-        <div className="flex items-center justify-between flex-1">
+      <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+        <div className="flex flex-1 items-center justify-between">
           <div>
             <nav className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
               <button
-                className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50"
+                className="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-500 hover:bg-gray-50"
                 onClick={() => back()}
                 disabled={history.length === 0}
               >
                 <span className="sr-only">Previous</span>
-                <ChevronLeftIcon className="w-5 h-5" aria-hidden="true" />
+                <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
               </button>
               <span
                 className={clsx(
-                  'relative inline-flex items-center px-4 py-2 text-sm font-medium bg-white border border-gray-300 hover:bg-gray-50',
-                  code?.toString().length === 6 ? 'text-emerald-500 font-semibold' : 'text-gray-700'
+                  'relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50',
+                  code?.toString().length === 6 ? 'font-semibold text-emerald-500' : 'text-gray-700'
                 )}
               >
                 {getCodeLevel(code)}
               </span>
               <span
                 className={clsx(
-                  'relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50',
-                  code?.toString().length === 6 ? 'text-emerald-500 font-semibold' : 'text-gray-700'
+                  'relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50',
+                  code?.toString().length === 6 ? 'font-semibold text-emerald-500' : 'text-gray-700'
                 )}
               >
                 {code || '?'}
@@ -105,11 +105,11 @@ export default function NaicsPicker({ updateWith }) {
           </div>
         </div>
       </div>
-      <div className="grid items-stretch grid-cols-2 gap-4 overflow-auto sm:grid-cols-3 md:grid-cols-5">
+      <div className="grid grid-cols-2 items-stretch gap-4 overflow-auto sm:grid-cols-3 md:grid-cols-5">
         {codes?.map((item) => (
           <button
             key={item.code + item.value}
-            className={clsx(classes, { 'bg-blue-100 border-blue-500': item.code + item.value === selectedItem })}
+            className={clsx(classes, { 'border-blue-500 bg-blue-100': item.code + item.value === selectedItem })}
             disabled={isPreviousData}
             onClick={() => select(item)}
           >

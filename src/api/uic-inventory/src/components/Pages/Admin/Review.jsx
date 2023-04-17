@@ -6,7 +6,7 @@ import { useTable } from 'react-table';
 import throttle from 'lodash.throttle';
 import { Code } from 'react-content-loader';
 import { Dialog, Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
@@ -326,7 +326,7 @@ const MyListbox = ({ selected, setSelected }) => {
         <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
           <span className="block truncate">{selected.label}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-            <SelectorIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
           </span>
         </Listbox.Button>
         <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
