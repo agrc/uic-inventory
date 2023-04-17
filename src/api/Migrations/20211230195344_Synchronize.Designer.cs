@@ -23,10 +23,10 @@ namespace api.Migrations {
           .HasAnnotation("ProductVersion", "6.0.1")
           .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-      NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "access_levels", new[] { "elevated", "standard" });
+      NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "access_level", new[] { "elevated", "standard" });
       NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager" });
       NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "notification_types", new[] { "new_user_account_registration" });
-      NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "access_levels", new[] { "standard", "elevated" });
+      NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "access_level", new[] { "standard", "elevated" });
       NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "project_manager", "health_dept", "permit_writer", "developer", "other" });
       NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "notification_types", new[] { "new_user_account_registration", "facility_contact_modified" });
       NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -41,7 +41,7 @@ namespace api.Migrations {
 
         b.Property<AccessLevels>("Access")
             .ValueGeneratedOnAdd()
-            .HasColumnType("access_levels")
+            .HasColumnType("access_level")
             .HasDefaultValue(AccessLevels.standard)
             .HasColumnName("account_access");
 

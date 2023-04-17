@@ -21,7 +21,7 @@ namespace api.Migrations
             modelBuilder
                 .HasDefaultSchema("public")
                 .UseCollation("en_US.utf8")
-                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("ProductVersion", "6.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "access_levels", new[] { "elevated", "standard" });
@@ -29,7 +29,7 @@ namespace api.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "notification_types", new[] { "new_user_account_registration" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "access_levels", new[] { "standard", "elevated" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "project_manager", "health_dept", "permit_writer", "developer", "other" });
-            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "notification_types", new[] { "new_user_account_registration", "admin_promotion", "inventory_submission", "facility_contact_modified" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "notification_types", new[] { "new_user_account_registration", "inventory_submission", "facility_contact_modified" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("api.Features.Account", b =>
@@ -223,14 +223,6 @@ namespace api.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("detail_status");
 
-                    b.Property<string>("Edocs")
-                        .HasColumnType("text")
-                        .HasColumnName("edocs");
-
-                    b.Property<string>("Flagged")
-                        .HasColumnType("text")
-                        .HasColumnName("flagged");
-
                     b.Property<bool>("LocationStatus")
                         .HasColumnType("boolean")
                         .HasColumnName("location_status");
@@ -421,61 +413,6 @@ namespace api.Migrations
                     b.ToTable("sites", "public");
                 });
 
-            modelBuilder.Entity("api.Features.WaterSystemContacts", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AccountFk")
-                        .HasColumnType("integer")
-                        .HasColumnName("account_fk");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("email");
-
-                    b.Property<int>("InventoryFk")
-                        .HasColumnType("integer")
-                        .HasColumnName("inventory_fk");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("SiteFk")
-                        .HasColumnType("integer")
-                        .HasColumnName("site_fk");
-
-                    b.Property<string>("System")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)")
-                        .HasColumnName("system");
-
-                    b.Property<int>("WellFk")
-                        .HasColumnType("integer")
-                        .HasColumnName("well_fk");
-
-                    b.HasKey("Id")
-                        .HasName("pk_water_system_contacts");
-
-                    b.HasIndex("InventoryFk")
-                        .HasDatabaseName("ix_water_system_contacts_inventory_fk");
-
-                    b.HasIndex("WellFk")
-                        .HasDatabaseName("ix_water_system_contacts_well_fk");
-
-                    b.ToTable("water_system_contacts", "public");
-                });
-
             modelBuilder.Entity("api.Features.Well", b =>
                 {
                     b.Property<int>("Id")
@@ -637,27 +574,6 @@ namespace api.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("api.Features.WaterSystemContacts", b =>
-                {
-                    b.HasOne("api.Features.Inventory", "Inventory")
-                        .WithMany()
-                        .HasForeignKey("InventoryFk")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_water_system_contacts_inventories_inventory_fk");
-
-                    b.HasOne("api.Features.Well", "Well")
-                        .WithMany("WaterSystemContacts")
-                        .HasForeignKey("WellFk")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_water_system_contacts_wells_well_fk");
-
-                    b.Navigation("Inventory");
-
-                    b.Navigation("Well");
-                });
-
             modelBuilder.Entity("api.Features.Well", b =>
                 {
                     b.HasOne("api.Features.Account", "Account")
@@ -714,11 +630,6 @@ namespace api.Migrations
                     b.Navigation("Inventories");
 
                     b.Navigation("Wells");
-                });
-
-            modelBuilder.Entity("api.Features.Well", b =>
-                {
-                    b.Navigation("WaterSystemContacts");
                 });
 #pragma warning restore 612, 618
         }

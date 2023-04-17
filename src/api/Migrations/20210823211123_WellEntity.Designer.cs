@@ -17,10 +17,10 @@ namespace api.Migrations {
 #pragma warning disable 612, 618
       modelBuilder
           .HasDefaultSchema("public")
-          .HasPostgresEnum(null, "access_levels", new[] { "elevated", "standard" })
+          .HasPostgresEnum(null, "access_level", new[] { "elevated", "standard" })
           .HasPostgresEnum(null, "contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager" })
           .HasPostgresEnum(null, "notification_types", new[] { "new_user_account_registration" })
-          .HasPostgresEnum("access_levels", new[] { "standard", "elevated" })
+          .HasPostgresEnum("access_level", new[] { "standard", "elevated" })
           .HasPostgresEnum("contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager" })
           .HasPostgresEnum("notification_types", new[] { "new_user_account_registration", "facility_contact_modified" })
           .HasAnnotation("Relational:Collation", "en_US.utf8")
@@ -37,7 +37,7 @@ namespace api.Migrations {
 
         b.Property<AccessLevels>("Access")
             .ValueGeneratedOnAdd()
-            .HasColumnType("access_levels")
+            .HasColumnType("access_level")
             .HasDefaultValue(AccessLevels.standard)
             .HasColumnName("account_access");
 

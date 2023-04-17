@@ -1,22 +1,24 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using api.Features;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace api.Migrations {
   public partial class DbCreation : Migration {
+    private void SafelyCreateEnum(string name, string[] values, MigrationBuilder migrationBuilder) =>
+    migrationBuilder.Sql(@$"DO $$ BEGIN
+    CREATE TYPE {name} AS ENUM ({values.Select(v => $"'{v}'").Aggregate((a, b) => $"{a}, {b}")});
+      EXCEPTION
+          WHEN duplicate_object THEN null;
+      END $$;");
     protected override void Up(MigrationBuilder migrationBuilder) {
-      migrationBuilder.EnsureSchema(
-          name: "public");
+      migrationBuilder.EnsureSchema(name: "public");
 
-      migrationBuilder.AlterDatabase()
-          .Annotation("Npgsql:Enum:access_levels", "elevated,standard")
-          .Annotation("Npgsql:Enum:contact_types", "owner_operator,facility_owner,facility_operator,facility_manager,legal_rep,official_rep,contractor,health_dept,permit_writer,developer,other,project_manager")
-          .Annotation("Npgsql:Enum:notification_types", "new_user_account_registration")
-          .Annotation("Npgsql:Enum:public.access_levels", "standard,elevated")
-          .Annotation("Npgsql:Enum:public.contact_types", "owner_operator,facility_owner,facility_operator,facility_manager,legal_rep,official_rep,contractor,health_dept,permit_writer,developer,other,project_manager")
-          .Annotation("Npgsql:Enum:public.notification_types", "new_user_account_registration,facility_contact_modified");
+      SafelyCreateEnum("public.\"access_level\"", new[] { "standard", "elevated" }, migrationBuilder);
+      SafelyCreateEnum("public.contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager" }, migrationBuilder);
+      SafelyCreateEnum("public.notification_types", new[] { "new_user_account_registration", "facility_contact_modified" }, migrationBuilder);
 
       migrationBuilder.CreateTable(
           name: "accounts",
@@ -36,7 +38,7 @@ namespace api.Migrations {
             zip_code = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
             receive_notifications = table.Column<bool>(type: "boolean", nullable: true, defaultValueSql: "false"),
             complete_profile = table.Column<bool>(type: "boolean", nullable: false, computedColumnSql: "\nCASE\n    WHEN ((length((organization)::text) > 0) AND (length((email)::text) > 0) AND (length((phone)::text) > 0) AND (length((mailing_address)::text) > 0) AND (length((city)::text) > 0) AND (length((state)::text) > 0) AND (length((zip_code)::text) > 0)) THEN true\n    ELSE false\nEND", stored: true),
-            account_access = table.Column<AccessLevels>(type: "access_levels", nullable: false, defaultValue: AccessLevels.standard)
+            account_access = table.Column<AccessLevels>(type: "access_level", nullable: false, defaultValue: AccessLevels.standard)
           },
           constraints: table => {
             table.PrimaryKey("pk_accounts", x => x.id);
@@ -190,6 +192,10 @@ namespace api.Migrations {
       migrationBuilder.DropTable(
           name: "accounts",
           schema: "public");
+
+      migrationBuilder.Sql("DROP TYPE IF EXISTS public.\"access_level\";");
+      migrationBuilder.Sql("DROP TYPE IF EXISTS public.contact_types;");
+      migrationBuilder.Sql("DROP TYPE IF EXISTS public.notification_types;");
     }
   }
 }

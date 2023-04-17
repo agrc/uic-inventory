@@ -1,7 +1,7 @@
 set -e
 cd "$(dirname "$0")/.."
 
-echo "rebuilding database with pgdata.sql"
+echo "rebuilding database"
 
-docker-compose down --volumes
-docker-compose build --no-cache db
+podman-compose down --volumes
+podman-compose build --no-cache db
