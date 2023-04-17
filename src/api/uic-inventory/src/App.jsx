@@ -1,11 +1,11 @@
 import { AuthProvider } from './AuthProvider';
 import 'react-toastify/dist/ReactToastify.css';
-import Routes from './Routes';
+import ApplicationRoutes from './Routes';
 
 function App() {
   return (
     <AuthProvider>
-      <Routes />
+      <ApplicationRoutes />
     </AuthProvider>
   );
 }

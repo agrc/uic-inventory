@@ -1,10 +1,10 @@
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function BackButton() {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
-    <button type="button" data-meta="default" onClick={() => history.goBack()}>
+    <button type="button" data-meta="default" onClick={() => navigate(-1)}>
       Back
     </button>
   );

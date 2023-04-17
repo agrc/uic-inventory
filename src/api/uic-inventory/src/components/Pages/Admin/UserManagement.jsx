@@ -4,7 +4,7 @@ import ky from 'ky';
 import { useTable, useSortBy } from 'react-table';
 import { ChevronDownIcon, ChevronUpIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '../../../AuthProvider';
-import { Chrome, onRequestError, useHistory } from '../../PageElements';
+import { Chrome, onRequestError, useNavigate } from '../../PageElements';
 
 export default function UserManagement() {
   const { authInfo } = useContext(AuthContext);
@@ -24,7 +24,7 @@ export default function UserManagement() {
 }
 
 const UserTable = ({ accounts = [] }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const columns = useMemo(
     () => [
@@ -58,14 +58,14 @@ const UserTable = ({ accounts = [] }) => {
               onClick={(event) => {
                 event.stopPropagation();
 
-                history.push(`/account/${row.original.id}/profile`);
+                navigate(`/account/${row.original.id}/profile`);
               }}
             />
           );
         },
       },
     ],
-    [history]
+    [navigate]
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(

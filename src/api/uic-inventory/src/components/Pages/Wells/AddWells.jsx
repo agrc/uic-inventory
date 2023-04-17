@@ -22,7 +22,7 @@ import {
   OkNotToggle,
   onRequestError,
   PointIcon,
-  useHistory,
+  useNavigate,
 } from '../../PageElements';
 import { Label, GridHeading, WellLocationSchema as schema, SelectInput, TextInput } from '../../FormElements';
 import { PinSymbol, SelectedWellsSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
@@ -37,7 +37,7 @@ import '@arcgis/core/assets/esri/themes/light/main.css';
 
 function AddWells() {
   const { siteId, inventoryId } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const reducer = (state, action) => {
     console.log('add wells reducer', state, action);
@@ -104,7 +104,7 @@ function AddWells() {
                       <BackButton />
                       <button
                         type="submit"
-                        onClick={() => history.push(`/site/${siteId}/inventory/${inventoryId}/add-well-details`)}
+                        onClick={() => navigate(`/site/${siteId}/inventory/${inventoryId}/add-well-details`)}
                       >
                         Next
                       </button>

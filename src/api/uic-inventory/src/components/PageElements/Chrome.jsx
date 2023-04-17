@@ -1,15 +1,15 @@
 import { ErrorBoundary } from 'react-error-boundary';
-import { Link, useHistory } from '../PageElements';
+import { Link, useNavigate } from '../PageElements';
 
 const RouterErrorPage = ({ error }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <section>
       <h2 className="mb-1 text-2xl font-medium text-gray-700">This is a little embarrassing...</h2>
       <p>
         We are really sorry. There was an error in the application that caused it to crash. You may now{' '}
-        <button data-meta="primary" onClick={history.goBack}>
+        <button data-meta="primary" onClick={() => navigate(-1)}>
           go back
         </button>{' '}
         to the previous page and try again or{' '}

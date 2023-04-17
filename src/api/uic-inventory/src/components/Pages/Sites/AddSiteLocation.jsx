@@ -9,7 +9,7 @@ import {
   onRequestError,
   PointIcon,
   SelectPolygonIcon,
-  useHistory,
+  useNavigate,
 } from '../../PageElements';
 import { GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
 import { useForm } from 'react-hook-form';
@@ -30,7 +30,7 @@ import ky from 'ky';
 function AddSiteLocation() {
   const { authInfo } = useContext(AuthContext);
   const { siteId } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const mapDiv = useRef(null);
   const isDirty = useRef(false);
   const pointAddressClickEvent = useRef(null);
@@ -43,7 +43,7 @@ function AddSiteLocation() {
   const { mutate } = useMutation((input) => ky.put('/api/site', { json: input }).json(), {
     onSuccess: () => {
       toast.success('Site location updated successfully!');
-      history.push(`/site/${siteId}/inventory/create`);
+      navigate(`/site/${siteId}/inventory/create`);
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating your site location.'),
   });
@@ -306,7 +306,7 @@ function AddSiteLocation() {
 
   const addSiteLocation = async (formData) => {
     if (!isDirty.current) {
-      history.goForward() || history.push(`/site/${siteId}/inventory/create`);
+      navigate(1) || navigate(`/site/${siteId}/inventory/create`);
 
       return;
     }

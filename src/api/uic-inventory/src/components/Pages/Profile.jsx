@@ -6,7 +6,7 @@ import ky from 'ky';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Facebook } from 'react-content-loader';
 import { Switch } from '@headlessui/react';
-import { Chrome, onRequestError, toast, useHistory, useParams } from '../PageElements';
+import { Chrome, onRequestError, toast, useNavigate, useParams } from '../PageElements';
 import { AuthContext } from '../../AuthProvider';
 import {
   ErrorMessage,
@@ -47,14 +47,13 @@ export function Profile() {
 }
 
 const ProfileForm = ({ id, data }) => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutate } = useMutation((data) => ky.put('/api/account', { json: { ...data, id } }).json(), {
     onSuccess: () => {
       queryClient.invalidateQueries('auth');
       queryClient.invalidateQueries('all-accounts');
-
-      history.goBack();
+      navigate(-1);
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating your profile.'),
   });

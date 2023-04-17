@@ -15,7 +15,7 @@ import {
   SelectInput,
   SiteSchema as schema,
 } from '../../FormElements';
-import { Chrome, onRequestError, toast, useHistory, useParams } from '../../PageElements';
+import { Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { useOpenClosed } from '../../Hooks';
 import { ownershipTypes } from '../../../data/lookups';
 
@@ -39,7 +39,7 @@ function CreateOrEditSite() {
   const { mutate } = useMutation((data) => ky.post('/api/site', { json: { ...data, id: authInfo.id } }).json(), {
     onSuccess: (data) => {
       toast.success('Site created successfully!');
-      history.replace(`/site/${data.id}/add-contacts`);
+      navigate(`/site/${data.id}/add-contacts`, { replace: true });
       queryClient.invalidateQueries(['site', siteId]);
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this site.'),
@@ -47,7 +47,7 @@ function CreateOrEditSite() {
   const { mutate: update } = useMutation((data) => ky.put('/api/site', { json: data }).json(), {
     onSuccess: (data) => {
       toast.success('Your site was updated.');
-      history.push(`/site/${data.id}/add-contacts`);
+      navigate(`/site/${data.id}/add-contacts`);
       queryClient.invalidateQueries(['site', siteId]);
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating this site.'),
@@ -64,7 +64,7 @@ function CreateOrEditSite() {
 
   //! pull isDirty from form state to activate proxy
   const { isDirty } = formState;
-  const history = useHistory();
+  const navigate = useNavigate();
   const [status, { open, close }] = useOpenClosed(false);
 
   // set existing form values
@@ -85,7 +85,7 @@ function CreateOrEditSite() {
 
   const createOrUpdateSite = (data) => {
     if (!isDirty) {
-      return history.goForward() || history.push(`/site/${data.id}/add-contacts`);
+      return navigate(1) || navigate(`/site/${data.id}/add-contacts`);
     }
 
     if (siteId) {

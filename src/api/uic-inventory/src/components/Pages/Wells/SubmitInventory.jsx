@@ -10,7 +10,7 @@ import { Switch } from '@headlessui/react';
 
 import clsx from 'clsx';
 import { AuthContext } from '../../../AuthProvider';
-import { Chrome, onRequestError, IncompleteInventoryWarning, toast, useHistory, useParams } from '../../PageElements';
+import { Chrome, onRequestError, IncompleteInventoryWarning, toast, useNavigate, useParams } from '../../PageElements';
 import {
   FormGrid,
   PageGrid,
@@ -98,7 +98,7 @@ const PageStatus = ({ status, data, error }) => {
 const SubmissionForm = ({ data }) => {
   const { authInfo } = useContext(AuthContext);
   const { siteId, inventoryId } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { control, formState, handleSubmit, register } = useForm({
     resolver: yupResolver(schema),
@@ -111,7 +111,7 @@ const SubmissionForm = ({ data }) => {
     {
       onSuccess: () => {
         toast.success('Inventory submitted successfully!');
-        history.push('/');
+        navigate('/');
         queryClient.invalidateQueries(['inventory', inventoryId]);
       },
       onError: (error) => onRequestError(error, 'We had some trouble submitting this inventory.'),
@@ -155,7 +155,7 @@ const SubmissionForm = ({ data }) => {
                         'bg-indigo-600 focus:ring-indigo-500': value,
                         'bg-gray-300 focus:ring-gray-300': !value,
                       },
-                      'relative inline-flex items-center h-8 rounded-full w-16 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
+                      'relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
                     )}
                   >
                     <span
@@ -164,7 +164,7 @@ const SubmissionForm = ({ data }) => {
                           'translate-x-8 border-indigo-700 bg-gray-100': value,
                           'translate-x-1 border-gray-400 bg-white': !value,
                         },
-                        'inline-block w-7 h-7 border-2 border-gray-400 rounded-full transform transition-transform'
+                        'inline-block h-7 w-7 transform rounded-full border-2 border-gray-400 transition-transform'
                       )}
                     />
                   </Switch>
@@ -199,7 +199,7 @@ const AlreadySubmitted = ({ data }) => {
       submit={false}
       back={true}
     >
-      <h2 className="mb-6 text-xl font-semibold text-center">This inventory has been submitted</h2>
+      <h2 className="mb-6 text-center text-xl font-semibold">This inventory has been submitted</h2>
       <h3 className="mb-2 text-lg font-medium">
         Inventory status: <span className="text-xl font-black text-blue-700">{data.status}</span>
       </h3>

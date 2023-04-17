@@ -8,7 +8,7 @@ import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
 import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
-import { BackButton, Chrome, onRequestError, toast, useHistory, useParams } from '../../PageElements';
+import { BackButton, Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { GridHeading, LimitedTextarea, LimitedDropzone, Label, WellDetailSchema as schema } from '../../FormElements';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { AuthContext } from '../../../AuthProvider';
@@ -61,7 +61,7 @@ function AddWellDetails() {
   const hoverEvent = useRef(null);
   const [selectedWells, setSelectedWells] = useState([]);
   const [wellsRemaining, setWellsRemaining] = useState(0);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // get site and inventory data
   const { status, data } = useQuery(
@@ -347,7 +347,7 @@ function AddWellDetails() {
                   <button
                     type="button"
                     data-meta="default"
-                    onClick={() => history.push(`/site/${siteId}/inventory/${inventoryId}/submit`)}
+                    onClick={() => navigate(`/site/${siteId}/inventory/${inventoryId}/submit`)}
                     disabled={wellsRemaining > 0}
                   >
                     Next

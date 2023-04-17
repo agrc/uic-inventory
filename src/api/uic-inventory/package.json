@@ -35,7 +35,7 @@
     "react-hook-form": "^7.43.9",
     "react-phone-number-input": "^3.2.19",
     "react-query": "^3.39.3",
-    "react-router-dom": "^5.3.4",
+    "react-router-dom": "^6.10.0",
     "react-table": "^7.8.0",
     "react-toastify": "^9.1.2",
     "yup": "^1.1.1"

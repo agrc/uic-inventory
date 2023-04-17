@@ -15,7 +15,7 @@ import {
   TextInput,
   WellSchema as schema,
 } from '../../FormElements';
-import { Chrome, toast, IncompleteSiteWarning, onRequestError, useParams, useHistory } from '../../PageElements';
+import { Chrome, toast, IncompleteSiteWarning, onRequestError, useParams, useNavigate } from '../../PageElements';
 import { useOpenClosed } from '../../Hooks';
 import { wellTypes } from '../../../data/lookups';
 
@@ -36,9 +36,9 @@ function CreateOrEditInventory() {
       toast.success('Inventory created successfully!');
 
       if (response.subClass === 5002) {
-        history.replace(`/site/${siteId}/inventory/${response.id}/regulatory-contact`);
+        navigate(`/site/${siteId}/inventory/${response.id}/regulatory-contact`, { replace: true });
       } else {
-        history.replace(`/site/${siteId}/inventory/${response.id}/add-wells`);
+        navigate(`/site/${siteId}/inventory/${response.id}/add-wells`, { replace: true });
       }
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this inventory.'),
@@ -48,7 +48,7 @@ function CreateOrEditInventory() {
     resolver: yupResolver(schema),
   });
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const [show, { open, close }] = useOpenClosed();
 
   //* pull isDirty from form state to activate proxy

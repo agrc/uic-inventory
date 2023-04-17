@@ -13,7 +13,7 @@ import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 
 import { AuthContext } from '../../../AuthProvider';
 import { FormGrid, ResponsiveGridColumn } from '../../FormElements';
-import { ConfirmationModal, Chrome, Flagged, useParams, onRequestError, toast, useHistory } from '../../PageElements';
+import { ConfirmationModal, Chrome, Flagged, useParams, onRequestError, toast, useNavigate } from '../../PageElements';
 import { ownershipTypes, wellTypes, contactTypes, valueToLabel } from '../../../data/lookups';
 import { useOpenClosed, useWebMap, useSitePolygon, useInventoryWells } from '../../Hooks';
 
@@ -28,7 +28,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 
 export default function Review() {
   const { authInfo } = useContext(AuthContext);
-  const history = useHistory();
+  const navigate = useNavigate();
   const { inventoryId, siteId } = useParams();
   const queryClient = useQueryClient();
   const [isOpen, { open, close }] = useOpenClosed();
@@ -41,7 +41,7 @@ export default function Review() {
     },
     onSuccess: () => {
       toast.success('Inventory rejected successfully!');
-      history.replace('/');
+      navigate('/', { replace: true });
     },
     onError: (error) => onRequestError(error, 'We had some trouble rejecting this inventory.'),
   });
