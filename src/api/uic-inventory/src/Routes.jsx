@@ -53,9 +53,10 @@ function AuthenticatedRoutes({ completeProfile, elevated }) {
         path="/site/:siteId/inventory/:inventoryId"
         render={() => <Navigate to="/site/:siteId/inventory/:inventoryId/details" />}
       />
-      <Route exact strict path="/site/:siteId" render={() => <Navigate to="/site/:siteId/add-details" />} />
-      <Route exact strict path="/site/:siteId/inventory" render={() => <Navigate to="/" />} />
-      <Route exact strict path="/site" render={() => <Navigate to="/" />} />
+      <Route exact strict path="/site/:siteId" element={<Navigate to="/site/:siteId/add-details" />} />
+      <Route exact strict path="/site/:siteId/inventory" element={<Navigate to="/" />} />
+      <Route exact strict path="/site" element={<Navigate to="/" />} />
+      <Route exact strict path="/signin-oidc" element={<Navigate to="/" />} />
       <Route exact path="/" element={<SitesAndInventory completeProfile={completeProfile} />} />
       <Route element={<NotFound />} />
     </Routes>
