@@ -301,11 +301,9 @@ function AddSiteLocation() {
 
   const geocodeError = () => dispatch({ type: 'skip-geocoding', payload: false });
 
-  const addSiteLocation = async (formData) => {
+  const addSiteLocation = (formData) => {
     if (!isDirty.current) {
-      navigate(1) || navigate(`/site/${siteId}/inventory/create`);
-
-      return;
+      return navigate(1) || navigate(`/site/${siteId}/inventory/create`);
     }
 
     const input = {
@@ -315,7 +313,7 @@ function AddSiteLocation() {
       geometry: JSON.stringify(formData.geometry),
     };
 
-    await mutate(input);
+    mutate(input);
   };
 
   return (
