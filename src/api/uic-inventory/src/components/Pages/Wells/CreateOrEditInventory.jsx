@@ -117,7 +117,7 @@ function CreateOrEditInventory() {
                     name="subClass"
                     control={control}
                     render={({ field }) => (
-                      <RadioGroup id="wellType" onChange={field.onChange} value={field.value}>
+                      <RadioGroup id="wellType" onChange={field.onChange} defaultValue={field.value}>
                         <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
                           {wellTypes
                             .filter((well) => well.primary)
