@@ -60,10 +60,17 @@ namespace api {
       services.AddScoped<IAppDbContext, AppDbContext>();
 
       var redis = Configuration.GetSection("Redis").Get<RedisOptions>();
+
+      ArgumentException.ThrowIfNullOrEmpty(redis?.Configuration, "UtahId:Redis:Configuration");
+
       services.AddDistributedAuthentication(redis);
 
       var utahId = Configuration.GetSection("UtahId").Get<OAuthOptions>();
-      services.AddUtahIdAuthentication(utahId);
+
+      ArgumentException.ThrowIfNullOrEmpty(utahId?.ClientSecret, "UtahId:ClientSecret");
+      ArgumentException.ThrowIfNullOrEmpty(utahId?.ClientId, "UtahId:ClientId");
+
+      services.AddUtahIdAuthentication(utahId, new[] { "openid", "profile", "email" });
 
       services.AddAuthorization(options => {
         options.AddPolicy(CookieAuthenticationDefaults.AuthenticationScheme,
@@ -98,7 +105,7 @@ namespace api {
       var redirectUrl = "/";
       if (env.IsDevelopment()) {
         app.UseDeveloperExceptionPage();
-        redirectUrl = "http://localhost:5173";
+        redirectUrl = "http://localhost:5173/signin-oidc";
       }
 
       app.UseForwardedHeaders();
