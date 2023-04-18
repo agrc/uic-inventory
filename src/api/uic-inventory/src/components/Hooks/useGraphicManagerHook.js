@@ -30,16 +30,16 @@ export function useGraphicManager(mapView) {
     previousGraphic.current = graphic;
 
     if (Array.isArray(graphic)) {
-      return mapView.current?.when(() => {
+      mapView.current?.when(() => {
         console.log('addMany', graphic);
         mapView.current.graphics.addMany(graphic);
       });
+    } else {
+      mapView.current?.when(() => {
+        console.log('add', graphic);
+        mapView.current.graphics.add(graphic);
+      });
     }
-
-    mapView.current?.when(() => {
-      console.log('add', graphic);
-      mapView.current.graphics.add(graphic);
-    });
   }, [graphic, removeGraphics, mapView]);
 
   return { graphic, setGraphic };
