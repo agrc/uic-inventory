@@ -228,16 +228,16 @@ function SiteTable({ data }) {
       {
         id: 'status',
         Header: 'Completeness',
-        Cell: function status(data) {
+        Cell: function status({ row }) {
           return (
             <div className="stroke-2">
               <Tippy content="Site details" singleton={target}>
                 <Link
-                  to={`/site/${data.row.original.id}/add-details`}
+                  to={`/site/${row.original.id}/add-details`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
                   <DocumentTextIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site details" />
-                  {data.row.original.detailStatus ? (
+                  {row.original.detailStatus ? (
                     <CheckIcon
                       className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
@@ -252,11 +252,11 @@ function SiteTable({ data }) {
               </Tippy>
               <Tippy content="Site contacts" singleton={target}>
                 <Link
-                  to={`/site/${data.row.original.id}/add-contacts`}
+                  to={`/site/${row.original.id}/add-contacts`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
                   <UsersIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site contacts" />
-                  {data.row.original.contactStatus ? (
+                  {row.original.contactStatus ? (
                     <CheckIcon
                       className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
@@ -271,7 +271,7 @@ function SiteTable({ data }) {
               </Tippy>
               <Tippy content="Site location" singleton={target}>
                 <Link
-                  to={`/site/${data.row.original.id}/add-location`}
+                  to={`/site/${row.original.id}/add-location`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
                   <MapPinIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site location" />
