@@ -1,4 +1,4 @@
-FROM node:16-alpine AS nodejs
+FROM node:lts-alpine AS nodejs
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS dotnet
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS dotnet-sdk
 
