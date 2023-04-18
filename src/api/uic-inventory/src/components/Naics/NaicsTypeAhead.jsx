@@ -16,7 +16,7 @@ function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
     onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),
   });
 
-  const { isOpen, getMenuProps, getInputProps, getComboboxProps, highlightedIndex, getItemProps } = useCombobox({
+  const { isOpen, getMenuProps, getInputProps, highlightedIndex, getItemProps } = useCombobox({
     items: codes,
     onSelectedItemChange: (selectedItem) => {
       setNaicsCode(selectedItem.inputValue);
@@ -46,7 +46,7 @@ function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
   return (
     <div>
       <Label id={id} text="6-digit NAICS code" />
-      <div {...getComboboxProps()}>
+      <div>
         <input id={id} type="text" {...getInputProps({ ...field })} />
       </div>
       <div {...getMenuProps()}>
