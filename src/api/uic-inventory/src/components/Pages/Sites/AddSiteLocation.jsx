@@ -11,7 +11,7 @@ import {
   SelectPolygonIcon,
   useNavigate,
 } from '../../PageElements';
-import { GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
+import { ErrorMessage, ErrorMessageTag, GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Graphic from '@arcgis/core/Graphic';
@@ -47,10 +47,7 @@ function AddSiteLocation() {
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating your site location.'),
   });
-  const { handleSubmit, setValue } = useForm({
-    resolver: yupResolver(schema),
-  });
-
+  const { formState, handleSubmit, setValue } = useForm({ resolver: yupResolver(schema) });
   const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
   // zoom map on geocode
   const { setViewPoint } = useViewPointZooming(mapView);
@@ -410,10 +407,12 @@ function AddSiteLocation() {
                           <div className="flex flex-col justify-items-center">
                             <Label id="address" />
                             <OkNotToggle classes="h-12" status={state.address} />
+                            <ErrorMessage name="address" errors={formState.errors} as={ErrorMessageTag} />
                           </div>
                           <div className="flex flex-col justify-items-center">
                             <Label id="site" text="Site Location" />
                             <OkNotToggle classes="h-12" status={state.geometry} />
+                            <ErrorMessage name="geometry" errors={formState.errors} as={ErrorMessageTag} />
                           </div>
                         </div>
                       </div>
