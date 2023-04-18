@@ -9,11 +9,11 @@ import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@he
 import {
   CheckIcon,
   DocumentTextIcon,
-  LocationMarkerIcon,
+  MapPinIcon,
   PencilAltIcon,
   PlusIcon,
   UsersIcon,
-  XIcon,
+  XMarkIcon,
 } from '@heroicons/react/20/solid';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import { AuthContext } from '../../AuthProvider';
@@ -243,7 +243,10 @@ function SiteTable({ data }) {
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
+                    <XMarkIcon
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500"
+                      aria-label="no"
+                    />
                   )}
                 </Link>
               </Tippy>
@@ -259,7 +262,10 @@ function SiteTable({ data }) {
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
+                    <XMarkIcon
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500"
+                      aria-label="no"
+                    />
                   )}
                 </Link>
               </Tippy>
@@ -268,14 +274,17 @@ function SiteTable({ data }) {
                   to={`/site/${data.row.original.id}/add-location`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
-                  <LocationMarkerIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site location" />
-                  {data.row.original.locationStatus ? (
+                  <MapPinIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site location" />
+                  {row.original.locationStatus ? (
                     <CheckIcon
                       className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
+                    <XMarkIcon
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500"
+                      aria-label="no"
+                    />
                   )}
                 </Link>
               </Tippy>
@@ -298,7 +307,7 @@ function SiteTable({ data }) {
                         aria-label="yes"
                       />
                     ) : (
-                      <XIcon
+                      <XMarkIcon
                         className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500"
                         aria-label="no"
                       />
@@ -311,14 +320,17 @@ function SiteTable({ data }) {
                   to={`/site/${row.original.siteId}/inventory/${row.original.id}/add-wells`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
-                  <LocationMarkerIcon className="absolute top-2 m-auto h-6 w-6" aria-label="well locations" />
+                  <MapPinIcon className="absolute top-2 m-auto h-6 w-6" aria-label="well locations" />
                   {row.original.locationStatus ? (
                     <CheckIcon
                       className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
+                    <XMarkIcon
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500"
+                      aria-label="no"
+                    />
                   )}
                 </Link>
               </Tippy>
@@ -334,7 +346,10 @@ function SiteTable({ data }) {
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
+                    <XMarkIcon
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500"
+                      aria-label="no"
+                    />
                   )}
                 </Link>
               </Tippy>
@@ -350,7 +365,10 @@ function SiteTable({ data }) {
                       aria-label="yes"
                     />
                   ) : (
-                    <XIcon className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500" aria-label="no" />
+                    <XMarkIcon
+                      className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-pink-500"
+                      aria-label="no"
+                    />
                   )}
                 </Link>
               </Tippy>

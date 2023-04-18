@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ErrorMessage } from '@hookform/error-message';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { CloudArrowUpIcon, XIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { CloudArrowUpIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 import ErrorMessageTag from './ErrorMessage';
@@ -92,7 +92,7 @@ export const DropzoneMessaging = ({ isDragActive, files = [], reset = () => {} }
           <span className="self-center overflow-hidden truncate whitespace-nowrap lowercase">{files[0].name}</span>
         </div>
         <button type="button" data-meta="default" className="mt-4 w-full" onClick={reset}>
-          <XIcon className="mx-2 h-6 w-6 text-pink-500" />
+          <XMarkIcon className="mx-2 h-6 w-6 text-pink-500" />
           <span className="justify-between self-center">Clear</span>
         </button>
       </div>
@@ -180,7 +180,7 @@ export const LimitedDropzone = ({ textarea, forms }) => {
             className="mt-4 w-full"
             onClick={() => forms.reset({ ...forms.getValues(), [textarea.id]: '' }, { keepDefaultValues: true })}
           >
-            <XIcon className="mx-2 h-6 w-6 text-pink-500" />
+            <XMarkIcon className="mx-2 h-6 w-6 text-pink-500" />
             <span className="justify-between self-center">Clear</span>
           </button>
         )}

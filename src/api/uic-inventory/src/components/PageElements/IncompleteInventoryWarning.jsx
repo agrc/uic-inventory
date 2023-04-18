@@ -1,4 +1,4 @@
-import { CheckIcon, XIcon } from '@heroicons/react/20/solid';
+import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { Link } from '../PageElements';
 
 export default function IncompleteInventoryWarning({ siteId, inventoryId, inventoryStatus }) {
@@ -16,7 +16,7 @@ export default function IncompleteInventoryWarning({ siteId, inventoryId, invent
             <CheckIcon className="mr-4 inline h-6 w-6 stroke-current text-emerald-500" aria-label="yes" />
           ) : (
             <Link to={`/site/${siteId}/inventory/${inventoryId}/add-wells`}>
-              <XIcon className="mr-4 inline h-6 w-6 stroke-current text-pink-500" aria-label="no" />
+              <XMarkIcon className="mr-4 inline h-6 w-6 stroke-current text-pink-500" aria-label="no" />
             </Link>
           )}
           The inventory must have at least one well with a location and
@@ -26,7 +26,7 @@ export default function IncompleteInventoryWarning({ siteId, inventoryId, invent
             <CheckIcon className="mr-4 inline h-6 w-6 stroke-current text-emerald-500" aria-label="yes" />
           ) : (
             <Link to={`/site/${siteId}/inventory/${inventoryId}/add-well-details`}>
-              <XIcon className="mr-4 inline h-6 w-6 stroke-current text-pink-500" aria-label="no" />
+              <XMarkIcon className="mr-4 inline h-6 w-6 stroke-current text-pink-500" aria-label="no" />
             </Link>
           )}
           The well construction types, operating statuses, and well counts must have values{' '}
@@ -38,7 +38,7 @@ export default function IncompleteInventoryWarning({ siteId, inventoryId, invent
               <CheckIcon className="mr-4 inline h-6 w-6 stroke-current text-emerald-500" aria-label="yes" />
             ) : (
               <Link to={`/site/${siteId}/inventory/${inventoryId}/regulatory-contact`}>
-                <XIcon className="mr-4 inline h-6 w-6 stroke-current text-pink-500" aria-label="no" />
+                <XMarkIcon className="mr-4 inline h-6 w-6 stroke-current text-pink-500" aria-label="no" />
               </Link>
             )}
             A regulatory contact must be added.
