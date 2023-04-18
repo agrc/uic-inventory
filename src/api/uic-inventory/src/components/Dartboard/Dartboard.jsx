@@ -97,26 +97,26 @@ const TailwindDartboard = (props) => {
         <label {...getFirstLabelProps()} />
         <input
           {...getFirstInputProps()}
-          className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
+          className="mb-2 mt-1 block w-full rounded border border-gray-400 bg-white px-3 py-2 text-base text-gray-700 focus:border-indigo-500 focus:outline-none"
         />
         {!isFirstInputValid ? (
-          <small {...getFirstHelpProps()} className="block -mt-2 text-xs text-red-600"></small>
+          <small {...getFirstHelpProps()} className="-mt-2 block text-xs text-red-600"></small>
         ) : null}
       </div>
       <div className="group">
         <label {...getSecondLabelProps()} />
         <input
           {...getSecondInputProps()}
-          className="block w-full px-3 py-2 mt-1 mb-2 text-base text-gray-700 bg-white border border-gray-400 rounded focus:outline-none focus:border-indigo-500"
+          className="mb-2 mt-1 block w-full rounded border border-gray-400 bg-white px-3 py-2 text-base text-gray-700 focus:border-indigo-500 focus:outline-none"
         />
         {!isSecondInputValid ? (
-          <small {...getSecondHelpProps()} className="block -mt-2 text-xs text-red-600"></small>
+          <small {...getSecondHelpProps()} className="-mt-2 block text-xs text-red-600"></small>
         ) : null}
       </div>
       <div className="group">
         <button
           {...getButtonProps()}
-          className="px-3 py-1 mt-4 text-lg text-black transition duration-200 bg-white border border-gray-800 rounded focus:outline-none hover:bg-gray-800 hover:text-white"
+          className="mt-4 rounded border border-gray-800 bg-white px-3 py-1 text-lg text-black transition duration-200 hover:bg-gray-800 hover:text-white focus:outline-none"
         >
           Find
         </button>

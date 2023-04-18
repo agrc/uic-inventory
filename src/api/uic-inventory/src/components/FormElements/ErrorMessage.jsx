@@ -1,5 +1,5 @@
 const ErrorMessageTag = ({ children }) => (
-  <p className="w-3/4 py-1 m-auto font-semibold text-center text-gray-600 border-2 border-t-0 border-red-300 rounded rounded-t-none shadow bg-gray-50">
+  <p className="m-auto w-3/4 rounded rounded-t-none border-2 border-t-0 border-red-300 bg-gray-50 py-1 text-center font-semibold text-gray-600 shadow">
     {children}
   </p>
 );

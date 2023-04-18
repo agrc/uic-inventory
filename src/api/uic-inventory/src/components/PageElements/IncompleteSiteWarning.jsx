@@ -3,7 +3,7 @@ import { BackButton } from '../PageElements';
 export function IncompleteSiteWarning() {
   return (
     <section>
-      <h2 className="mb-6 text-xl font-semibold text-center">
+      <h2 className="mb-6 text-center text-xl font-semibold">
         The site you are working on is incomplete. You must complete the site before adding wells.
       </h2>
       <h3 className="mb-2 text-lg font-medium">Site completeness includes</h3>
@@ -14,7 +14,7 @@ export function IncompleteSiteWarning() {
           At least one of the contacts listed must be the owner, owner/operator, or legal representative of the site.
         </li>
       </ul>
-      <div className="flex justify-center mt-6">
+      <div className="mt-6 flex justify-center">
         <BackButton />
       </div>
     </section>

@@ -51,7 +51,7 @@ function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
       </div>
       <div {...getMenuProps()}>
         {isOpen ? (
-          <div className="absolute z-10 w-56 mt-2 overflow-scroll origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg max-h-56 ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <div className="absolute z-10 mt-2 max-h-56 w-56 origin-top-right divide-y divide-gray-100 overflow-scroll rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             {codes.length > 0 ? (
               codes.map((item, index) => (
                 <div
@@ -62,7 +62,7 @@ function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
                   {...getItemProps({ item, index })}
                 >
                   <button
-                    className={clsx('flex items-center w-full px-2 py-2 text-sm text-gray-900 rounded-md group', {
+                    className={clsx('group flex w-full items-center rounded-md px-2 py-2 text-sm text-gray-900', {
                       'bg-blue-800 text-white': highlightedIndex === index,
                     })}
                   >
@@ -72,7 +72,7 @@ function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
               ))
             ) : (
               <div className="px-1 py-1" role="none">
-                <span className="flex items-center w-56 px-2 py-2 text-sm text-gray-900 rounded-md group">
+                <span className="group flex w-56 items-center rounded-md px-2 py-2 text-sm text-gray-900">
                   A valid NAICS code is required. Use the Helper Tool to find a code.
                 </span>
               </div>

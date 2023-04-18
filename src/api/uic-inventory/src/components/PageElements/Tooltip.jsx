@@ -1,13 +1,13 @@
 export default function Tooltip({ children, attrs }) {
   return (
     <div
-      className="z-20 max-w-[10rem] px-3 py-1 text-sm text-white lowercase bg-gray-800 rounded-lg shadow-xl pointer-events-none"
+      className="pointer-events-none z-20 max-w-[10rem] rounded-lg bg-gray-800 px-3 py-1 text-sm lowercase text-white shadow-xl"
       tabIndex={-1}
       {...attrs}
     >
       {children}
       <svg
-        className="absolute left-0 w-full h-2 text-black top-full"
+        className="absolute left-0 top-full h-2 w-full text-black"
         x="0px"
         y="0px"
         viewBox="0 0 255 255"
