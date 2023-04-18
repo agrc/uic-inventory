@@ -112,7 +112,7 @@ function CreateOrEditSite() {
 
   return (
     <Chrome className="relative">
-      <form onSubmit={handleSubmit((data) => createOrUpdateSite(data))}>
+      <form onSubmit={handleSubmit(createOrUpdateSite)}>
         <PageGrid
           heading="Site Details"
           subtext="Provide some basic information about the site"

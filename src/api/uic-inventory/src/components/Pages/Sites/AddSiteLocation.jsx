@@ -404,10 +404,7 @@ function AddSiteLocation() {
                 <div className="grid grid-cols-6">
                   <div className="col-span-6">
                     <div className="h-96 w-full" ref={mapDiv}></div>
-                    <form
-                      className="border-t-2 border-gray-50"
-                      onSubmit={handleSubmit((data) => addSiteLocation(data))}
-                    >
+                    <form className="border-t-2 border-gray-50" onSubmit={handleSubmit(addSiteLocation)}>
                       <div className="px-4 py-3">
                         <div className="flex justify-around">
                           <div className="flex flex-col justify-items-center">

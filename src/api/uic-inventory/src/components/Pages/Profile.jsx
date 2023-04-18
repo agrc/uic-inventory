@@ -206,7 +206,7 @@ const NotificationForm = ({ id, data }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit((data) => updateNotifications(data))} className="mt-10 sm:mt-0">
+    <form onSubmit={handleSubmit(updateNotifications)} className="mt-10 sm:mt-0">
       <Separator />
 
       <PageGrid heading="Notifications" subtext="Manage your notifications" submit={true} disabled={!isDirty}>
@@ -297,7 +297,7 @@ const AccessForm = ({ profileData }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit((data) => updateAccess(data))} className="mt-10 sm:mt-0">
+    <form onSubmit={handleSubmit(updateAccess)} className="mt-10 sm:mt-0">
       <Separator />
 
       <PageGrid

@@ -35,7 +35,7 @@ export function ContactProgram() {
   return (
     <main>
       <Chrome>
-        <form onSubmit={handleSubmit((data) => sendMessage(data))}>
+        <form onSubmit={handleSubmit(sendMessage)}>
           <PageGrid
             heading="Contact the UIC Program"
             subtext="Provide a clear and concise message for the staff"

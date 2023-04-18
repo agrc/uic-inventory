@@ -100,7 +100,7 @@ function CreateOrEditInventory() {
         <IncompleteSiteWarning />
       ) : (
         <>
-          <form onSubmit={handleSubmit((data) => create(data))}>
+          <form onSubmit={handleSubmit(create)}>
             <PageGrid
               heading="Well Inventory"
               subtext="All wells in this inventory must be of the same subclass. A separate inventory is needed for each subclass of wells. For example, all storm water drainage wells for a property/site can be included in the same inventory. However, if the site also contains a large underground wastewater disposal system, those wells must be submitted as a separate well inventory."

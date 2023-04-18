@@ -123,7 +123,7 @@ const SubmissionForm = ({ data }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit((data) => submitInventory(data))}>
+    <form onSubmit={handleSubmit(submitInventory)}>
       <PageGrid
         heading="Sign and Submit Inventory"
         subtext="In keeping with the requirement of Section R317-7-6.4(C) of the Utah Administrative Rules for the Underground Injection Control Program that the owner or operator must submit inventory information, the UIC Inventory Form must be signed by the owner or operator (or his/her legal representative) of the injection well(s) for which the inventory information is being submitted."

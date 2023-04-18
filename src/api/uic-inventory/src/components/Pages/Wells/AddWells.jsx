@@ -210,7 +210,7 @@ function AddWellForm({ data, state, dispatch }) {
   const { isDirty, isValid } = formState;
 
   return (
-    <form className="grid gap-2 px-4 py-5 shadow sm:rounded-md" onSubmit={handleSubmit((data) => addLocation(data))}>
+    <form className="grid gap-2 px-4 py-5 shadow sm:rounded-md" onSubmit={handleSubmit(addLocation)}>
       <TextInput id="construction" text="Well Construction/Name" register={register} errors={formState.errors} />
       <SelectInput id="status" items={operatingStatusTypes} register={register} errors={formState.errors} />
       {watchStatus === 'OT' && <TextInput id="description" register={register} errors={formState.errors} />}
