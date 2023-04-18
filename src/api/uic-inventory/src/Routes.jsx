@@ -1,4 +1,5 @@
 import { Navigation, Navigate, Route, Router, Routes, ToastContainer } from './components/PageElements';
+import { Outlet } from 'react-router-dom';
 import {
   ContactProgram,
   NotFound,
@@ -37,28 +38,32 @@ function AuthenticatedRoutes({ completeProfile, elevated }) {
       <Route path="/contact" element={<ContactProgram />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/account/:id/profile" element={<Profile />} />
-      <Route path="/site/create" element={<Sites.CreateOrEditSite />} />
-      <Route path="/site/:siteId/add-details" element={<Sites.CreateOrEditSite />} />
-      <Route path="/site/:siteId/add-contacts" element={<Sites.AddSiteContacts />} />
-      <Route path="/site/:siteId/add-location" element={<Sites.AddSiteLocation />} />
-      <Route path="/site/:siteId/inventory/create" element={<Wells.CreateOrEditInventory />} />
-      <Route path="/site/:siteId/inventory/:inventoryId/details" element={<Wells.CreateOrEditInventory />} />
-      <Route path="/site/:siteId/inventory/:inventoryId/regulatory-contact" element={<Wells.AddSerWellContact />} />
-      <Route path="/site/:siteId/inventory/:inventoryId/add-wells" element={<Wells.AddWells />} />
-      <Route path="/site/:siteId/inventory/:inventoryId/add-well-details" element={<Wells.AddWellDetails />} />
-      <Route path="/site/:siteId/inventory/:inventoryId/submit" element={<Wells.SubmitInventory />} />
-      <Route
-        exact
-        strict
-        path="/site/:siteId/inventory/:inventoryId"
-        render={() => <Navigate to="/site/:siteId/inventory/:inventoryId/details" />}
-      />
-      <Route exact strict path="/site/:siteId" element={<Navigate to="/site/:siteId/add-details" />} />
-      <Route exact strict path="/site/:siteId/inventory" element={<Navigate to="/" />} />
-      <Route exact strict path="/site" element={<Navigate to="/" />} />
+      <Route path="/site" element={<Outlet />}>
+        <Route path="" element={<Navigate to="/" />}></Route>
+        <Route path="create" element={<Sites.CreateOrEditSite />} />
+        <Route path=":siteId" element={<Outlet />}>
+          <Route path="" element={<Sites.CreateOrEditSite />} />
+          <Route path="add-details" element={<Sites.CreateOrEditSite />} />
+          <Route path="add-contacts" element={<Sites.AddSiteContacts />} />
+          <Route path="add-location" element={<Sites.AddSiteLocation />} />
+          <Route path="inventory" element={<Outlet />}>
+            <Route path="" element={<Navigate to="/" />}></Route>
+            <Route path="create" element={<Wells.CreateOrEditInventory />} />
+            <Route path=":inventoryId" element={<Outlet />}>
+              <Route path="" element={<Navigate to="/" />}></Route>
+              <Route path="details" element={<Wells.CreateOrEditInventory />} />
+              <Route path="regulatory-contact" element={<Wells.AddSerWellContact />} />
+              <Route path="add-wells" element={<Wells.AddWells />} />
+              <Route path="add-well-details" element={<Wells.AddWellDetails />} />
+              <Route path="submit" element={<Wells.SubmitInventory />} />
+            </Route>
+          </Route>
+        </Route>
+      </Route>
+
       <Route exact strict path="/signin-oidc" element={<Navigate to="/" />} />
       <Route exact path="/" element={<SitesAndInventory completeProfile={completeProfile} />} />
-      <Route element={<NotFound />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }
