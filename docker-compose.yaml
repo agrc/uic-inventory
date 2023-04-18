@@ -10,11 +10,8 @@ services:
       - ${HOME}/.aspnet/https:/https/
 
   db:
-    image: uic-inventory/db
+    image: postgres:13
     restart: always
-    build:
-      context: .
-      dockerfile: ./data/CloudSql.Dockerfile
 
   cache:
     image: "redis:6"
