@@ -149,8 +149,9 @@ function AddSiteLocation() {
           return { ...state, geometry: null };
         }
 
-        const geometry = JSON.stringify(action.payload.geometry.toJSON());
+        const geometry = action.payload.geometry.toJSON();
         setValue('geometry', geometry);
+
         isDirty.current = true;
 
         setPolygonGraphic(action.payload);
