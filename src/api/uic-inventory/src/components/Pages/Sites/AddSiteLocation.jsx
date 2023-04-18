@@ -176,17 +176,15 @@ function AddSiteLocation() {
 
   // hydrate form with existing data
   useEffect(() => {
-    if (status !== 'success') {
-      return;
+    if (status === 'success') {
+      dispatch({
+        type: 'initial-load',
+        payload: {
+          geometry: data?.geometry,
+          address: data?.address,
+        },
+      });
     }
-
-    dispatch({
-      type: 'initial-load',
-      payload: {
-        geometry: data?.geometry,
-        address: data?.address,
-      },
-    });
   }, [data, status]);
 
   // activate point clicking for selecting an address
@@ -195,28 +193,26 @@ function AddSiteLocation() {
     if (state.activeTool !== 'site-address-click') {
       pointAddressClickEvent.current?.remove();
       pointAddressClickEvent.current = null;
+    } else {
+      mapView.current.focus();
 
-      return;
-    }
+      // enable clicking on the map to set the address
+      pointAddressClickEvent.current = mapView.current.on('immediate-click', (event) => {
+        const graphic = new Graphic({
+          geometry: event.mapPoint,
+          attributes: {},
+          symbol: PinSymbol,
+        });
 
-    mapView.current.focus();
-
-    // enable clicking on the map to set the address
-    pointAddressClickEvent.current = mapView.current.on('immediate-click', (event) => {
-      const graphic = new Graphic({
-        geometry: event.mapPoint,
-        attributes: {},
-        symbol: PinSymbol,
+        dispatch({ type: 'address-clicked', payload: graphic });
       });
-
-      dispatch({ type: 'address-clicked', payload: graphic });
-    });
+    }
 
     return () => {
       pointAddressClickEvent.current?.remove();
       pointAddressClickEvent.current = null;
     };
-  }, [state.activeTool]);
+  }, [state.activeTool, mapView]);
 
   // activate parcel hit test clicking
   useEffect(() => {
@@ -224,39 +220,37 @@ function AddSiteLocation() {
     if (state.activeTool !== 'selecting-a-parcel') {
       parcelClickEvent.current?.remove();
       parcelClickEvent.current = null;
+    } else {
+      mapView.current.focus();
 
-      return;
+      parcelClickEvent.current = mapView.current.on('click', (event) => {
+        //! stop popup from displaying
+        event.preventDefault();
+
+        const parcelLayerIndex = mapView.current.map.layers.items[0];
+
+        mapView.current
+          .hitTest(event, {
+            include: parcelLayerIndex,
+          })
+          .then((test) => {
+            if (test.results.length < 1) {
+              return dispatch({ type: 'set-site-boundary', payload: null, meta: 'selecting-a-parcel' });
+            }
+
+            const graphic = test.results[0].graphic;
+            graphic.symbol = PolygonSymbol;
+
+            dispatch({ type: 'set-site-boundary', payload: graphic, meta: 'selecting-a-parcel' });
+          });
+      });
     }
-
-    mapView.current.focus();
-
-    parcelClickEvent.current = mapView.current.on('click', (event) => {
-      //! stop popup from displaying
-      event.preventDefault();
-
-      const parcelLayerIndex = mapView.current.map.layers.items[0];
-
-      mapView.current
-        .hitTest(event, {
-          include: parcelLayerIndex,
-        })
-        .then((test) => {
-          if (test.results.length < 1) {
-            return dispatch({ type: 'set-site-boundary', payload: null, meta: 'selecting-a-parcel' });
-          }
-
-          const graphic = test.results[0].graphic;
-          graphic.symbol = PolygonSymbol;
-
-          dispatch({ type: 'set-site-boundary', payload: graphic, meta: 'selecting-a-parcel' });
-        });
-    });
 
     return () => {
       parcelClickEvent.current?.remove();
       parcelClickEvent.current = null;
     };
-  }, [state.activeTool]);
+  }, [state.activeTool, mapView]);
 
   // activate polygon site drawing
   useEffect(() => {
@@ -268,29 +262,27 @@ function AddSiteLocation() {
       }
 
       siteDrawingEvents.current = null;
+    } else {
+      const [drawAction, drawingEvent] = enablePolygonDrawing(mapView.current, setPolygonGraphic);
 
-      return;
-    }
-
-    const [drawAction, drawingEvent] = enablePolygonDrawing(mapView.current, setPolygonGraphic);
-
-    const finishEvent = drawAction.on(['draw-complete'], (event) => {
-      dispatch({
-        type: 'set-site-boundary',
-        payload: new Graphic({
-          geometry: new Polygon({
-            type: 'polygon',
-            rings: event.vertices,
-            spatialReference: mapView.current.spatialReference,
+      const finishEvent = drawAction.on(['draw-complete'], (event) => {
+        dispatch({
+          type: 'set-site-boundary',
+          payload: new Graphic({
+            geometry: new Polygon({
+              type: 'polygon',
+              rings: event.vertices,
+              spatialReference: mapView.current.spatialReference,
+            }),
+            symbol: PolygonSymbol,
           }),
-          symbol: PolygonSymbol,
-        }),
-        meta: 'freehand-polygon-drawing',
+          meta: 'freehand-polygon-drawing',
+        });
       });
-    });
 
-    siteDrawingEvents.current = [drawingEvent, finishEvent];
-  }, [state.activeTool, setPolygonGraphic]);
+      siteDrawingEvents.current = [drawingEvent, finishEvent];
+    }
+  }, [state.activeTool, setPolygonGraphic, mapView]);
 
   const geocode = (result) => {
     if (!result) {
