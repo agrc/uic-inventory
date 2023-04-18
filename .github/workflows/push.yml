@@ -14,7 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy-dev:
+    name: Deploy to dev
     runs-on: ubuntu-latest
     permissions:
       id-token: write
