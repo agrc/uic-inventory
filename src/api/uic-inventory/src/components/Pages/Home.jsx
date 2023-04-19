@@ -10,7 +10,7 @@ import {
   CheckIcon,
   DocumentTextIcon,
   MapPinIcon,
-  PencilAltIcon,
+  PencilSquareIcon,
   PlusIcon,
   UsersIcon,
   XMarkIcon,
@@ -358,7 +358,7 @@ function SiteTable({ data }) {
                   to={`/site/${row.original.siteId}/inventory/${row.original.id}/submit`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                 >
-                  <PencilAltIcon className="absolute top-2 m-auto h-6 w-6" aria-label="signature status" />
+                  <PencilSquareIcon className="absolute top-2 m-auto h-6 w-6" aria-label="signature status" />
                   {row.original.signatureStatus ? (
                     <CheckIcon
                       className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
