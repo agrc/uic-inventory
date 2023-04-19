@@ -59,10 +59,11 @@ function AddSiteLocation() {
     switch (action.type) {
       case 'initial-load': {
         if (action.payload.geometry) {
-          setValue('geometry', action.payload.geometry);
-          state = { ...state, geometry: action.payload.geometry };
-
           const shape = JSON.parse(action.payload.geometry);
+
+          setValue('geometry', shape);
+          state = { ...state, geometry: shape };
+
           const geometry = new Polygon({
             type: 'polygon',
             rings: shape.rings,
