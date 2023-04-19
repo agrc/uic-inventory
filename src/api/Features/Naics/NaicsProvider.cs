@@ -24,8 +24,8 @@ namespace api.Features {
       };
 
     public NaicsProvider() {
-      _twoDigitCodesPath = Path.Combine(Directory.GetCurrentDirectory(), "Features", "Naics", "data", "2-6 digit_2017_Codes.xlsx");
-      _allNaicsPath = Path.Combine(Directory.GetCurrentDirectory(), "Features", "Naics", "data", "2017_NAICS_Index_File.xlsx");
+      _twoDigitCodesPath = Path.Combine(Directory.GetCurrentDirectory(), "Features", "Naics", "data", "2-6.digit_2022_Codes.xlsx");
+      _allNaicsPath = Path.Combine(Directory.GetCurrentDirectory(), "Features", "Naics", "data", "2022_NAICS_Index_File.xlsx");
 
       Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -88,8 +88,8 @@ namespace api.Features {
       } else {
         depth = 2;
 
-        if (Exceptions.ContainsKey(naicsCode)) {
-          start = Exceptions[naicsCode][0] * Math.Pow(10, depth - 1);
+        if (Exceptions.TryGetValue(naicsCode, out var value)) {
+          start = value[0] * Math.Pow(10, depth - 1);
           end = (Exceptions[naicsCode][^1] * Math.Pow(10, depth - 1)) + 9;
         }
       }
