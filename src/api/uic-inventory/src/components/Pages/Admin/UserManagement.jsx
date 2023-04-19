@@ -5,11 +5,12 @@ import { useTable, useSortBy } from 'react-table';
 import { ChevronDownIcon, ChevronUpIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { AuthContext } from '../../../AuthProvider';
 import { Chrome, onRequestError, useNavigate } from '../../PageElements';
+import { BulletList } from 'react-content-loader';
 
 export default function UserManagement() {
   const { authInfo } = useContext(AuthContext);
 
-  const { data } = useQuery('all-accounts', () => ky.get('/api/accounts').json(), {
+  const { data, status } = useQuery('all-accounts', () => ky.get('/api/accounts').json(), {
     enabled: authInfo?.id ? true : false,
     onError: (error) => onRequestError(error, 'We had trouble fetching your sites.'),
   });
@@ -17,7 +18,7 @@ export default function UserManagement() {
   return (
     <>
       <Chrome title="Inventory Review">
-        <UserTable accounts={data?.accounts} />
+        {status === 'loading' ? <BulletList height={240} /> : <UserTable accounts={data?.accounts} />}
       </Chrome>
     </>
   );
@@ -83,11 +84,12 @@ const UserTable = ({ accounts = [] }) => {
     <table {...getTableProps()} className="w-full divide-y divide-gray-200 overflow-auto border">
       <thead className="bg-gray-50">
         {headerGroups.map((headerGroup) => (
-          <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
+          // eslint-disable-next-line react/jsx-key
+          <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
+              // eslint-disable-next-line react/jsx-key
               <th
                 {...column.getHeaderProps(column.getSortByToggleProps())}
-                key={`${headerGroup.index}-${column.id}`}
                 className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
               >
                 {column.render('Header')}
@@ -108,9 +110,11 @@ const UserTable = ({ accounts = [] }) => {
           prepareRow(row);
 
           return (
-            <tr className="cursor-default hover:bg-blue-100" key={`${row.index}`} {...row.getRowProps()}>
+            // eslint-disable-next-line react/jsx-key
+            <tr className="cursor-default hover:bg-blue-100" {...row.getRowProps()}>
               {row.cells.map((cell) => (
-                <td key={`${row.index}-${cell.column.id}`} {...cell.getCellProps()}>
+                // eslint-disable-next-line react/jsx-key
+                <td {...cell.getCellProps()}>
                   <div className="px-3 py-2">{cell.render('Cell')}</div>
                 </td>
               ))}
