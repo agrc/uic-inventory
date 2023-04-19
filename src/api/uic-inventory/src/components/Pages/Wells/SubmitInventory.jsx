@@ -147,7 +147,7 @@ const SubmissionForm = ({ data }) => {
                 name="verification"
                 render={({ field: { onChange, value, name } }) => (
                   <Switch
-                    checked={value}
+                    defaultChecked={value}
                     id={name}
                     onChange={onChange}
                     className={clsx(
