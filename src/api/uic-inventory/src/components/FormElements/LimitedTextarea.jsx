@@ -122,8 +122,6 @@ export const CharactersRemaining = ({ remaining, limit }) => {
   );
 };
 
-const acceptableFileTypes = ['.pdf', '.doc', '.docx', '.jpeg', '.jpg', '.png'];
-
 export const LimitedDropzone = ({ textarea, forms }) => {
   const [files, setFiles] = useState([]);
   const { limit, remaining } = useMaxLength({ value: forms.field.value, limit: textarea.limit });
@@ -132,7 +130,12 @@ export const LimitedDropzone = ({ textarea, forms }) => {
     noKeyboard: true,
     multiple: false,
     maxFiles: 1,
-    accept: acceptableFileTypes.join(),
+    accept: {
+      'image/*': ['.jpg', '.jpeg', '.png'],
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+    },
     onDropRejected: () => {
       toast.error('File type not accepted');
     },
