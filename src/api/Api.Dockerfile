@@ -21,7 +21,7 @@ RUN dotnet build -c Release -o /app
 
 FROM api-build as api-publish
 
-RUN dotnet publish -c Release -o ./app -r linux-x64 -p:PublishSingleFile=true --no-self-contained -p:DebugType=embedded -p:PublishReadyToRun=true
+RUN dotnet publish -c Release -o /app -r linux-x64 -p:PublishSingleFile=true --no-self-contained -p:DebugType=embedded -p:PublishReadyToRun=true
 
 FROM dotnet AS final
 WORKDIR /app
