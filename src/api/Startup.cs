@@ -125,7 +125,7 @@ namespace api {
       app.UseEndpoints(endpoints => {
         endpoints.MapGet("/api/logout", async context => {
           await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-          context.Response.Redirect(redirectUrl);
+          context.Response.Redirect("/");
         }).RequireAuthorization();
 
         endpoints.MapGet("/api/login", context => {
