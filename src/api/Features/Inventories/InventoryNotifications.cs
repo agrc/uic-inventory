@@ -320,7 +320,7 @@ namespace api.Features {
           $@"<h1>The submission for {notification.Site.Name} has been rejected</h1>
           <p>The UIC Class V inventory submittal with the Utah Division of Water Quality has been rejected.</p>
           <h2>Contact us</h2>
-          <p>If you have any questions please contact Brianna Ariotti at (801) 536-4351.</p>"
+          <p>If you have any questions please reply to this email ({_email}).</p>"
         );
 
         message.AddTos(notification.Contacts);
