@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using api.Features;
 using Microsoft.EntityFrameworkCore;
 
-namespace api.Infrastructure {
-  public interface IAppDbContext {
+namespace api.Infrastructure;
+public interface IAppDbContext {
     DbSet<Account> Accounts { get; set; }
     DbSet<Site> Sites { get; set; }
     DbSet<Inventory> Inventories { get; set; }
@@ -14,5 +14,4 @@ namespace api.Infrastructure {
     DbSet<Notification> Notifications { get; set; }
     DbSet<NotificationReceipt> NotificationReceipts { get; set; }
     Task<int> SaveChangesAsync(CancellationToken token);
-  }
 }

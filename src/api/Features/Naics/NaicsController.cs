@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace api.Features {
-  [ApiController]
-  public class NaicsController : ControllerBase {
+namespace api.Features;
+[ApiController]
+public class NaicsController : ControllerBase {
     private readonly Lazy<NaicsProvider> _naicsProvider;
 
     public NaicsController(Lazy<NaicsProvider> naicsProvider) {
-      _naicsProvider = naicsProvider;
+        _naicsProvider = naicsProvider;
     }
 
     [HttpGet("/api/naics/{naicsCode}")]
@@ -33,5 +33,4 @@ namespace api.Features {
         .Where(x => x.Code.ToString().Length == 6)
         .Select(x => x.Code)
         .Distinct());
-  }
 }

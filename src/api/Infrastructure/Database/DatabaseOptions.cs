@@ -1,5 +1,5 @@
-namespace api.Infrastructure {
-  public class DatabaseOptions {
+namespace api.Infrastructure;
+public class DatabaseOptions {
     public string Host { get; set; } = "localhost";
     public string Port { get; set; } = "5432";
     public string Db { get; set; } = "app";
@@ -8,5 +8,4 @@ namespace api.Infrastructure {
 
     public string ConnectionString =>
         $"Host={Host};Port={Port};Username={Username};Password={Password};Database={Db};Enlist=false";
-  }
 }

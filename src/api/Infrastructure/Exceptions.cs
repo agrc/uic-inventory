@@ -1,7 +1,7 @@
 using System;
 
-namespace api.Exceptions {
-  public class AccountNotFoundException : Exception {
+namespace api.Exceptions;
+public class AccountNotFoundException : Exception {
     public AccountNotFoundException() {
     }
 
@@ -10,5 +10,4 @@ namespace api.Exceptions {
 
     public AccountNotFoundException(string message, Exception innerException) : base(message, innerException) {
     }
-  }
 }

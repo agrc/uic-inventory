@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.Features {
-  public class WaterSystemContacts {
+namespace api.Features;
+public class WaterSystemContacts {
     public int Id { get; set; }
     public int SiteFk { get; set; }
     public int InventoryFk { get; set; }
@@ -14,6 +14,5 @@ namespace api.Features {
 
     [ForeignKey("WellFk")] public Well Well { get; set; } = default!;
     [ForeignKey("InventoryFk")] public Inventory Inventory { get; set; } = default!;
-  }
-  public record WaterSystemContact(string Name, string Email, string System);
 }
+public record WaterSystemContact(string Name, string Email, string System);

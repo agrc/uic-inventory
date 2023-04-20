@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace api.Migrations {
-  public partial class SurfaceWaterProtection : Migration {
+namespace api.Migrations;
+public partial class SurfaceWaterProtection : Migration {
     protected override void Up(MigrationBuilder migrationBuilder) =>
       migrationBuilder.AddColumn<string>(
         name: "surface_water_protection",
@@ -17,5 +17,4 @@ namespace api.Migrations {
         name: "surface_water_protection",
         table: "wells",
         schema: "public");
-  }
 }

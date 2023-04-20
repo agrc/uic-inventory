@@ -1,4 +1,3 @@
-namespace api.Infrastructure {
-  public static class DatabaseExtensions {
-  }
+namespace api.Infrastructure;
+public static class DatabaseExtensions {
 }
