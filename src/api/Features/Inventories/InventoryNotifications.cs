@@ -390,23 +390,23 @@ public static class InventoryNotifications {
                 }
 
                 var queryString = new QueryBuilder {
-        { "where", string.Empty },
-        { "geometry", well.Geometry },
-        { "geometryType", "esriGeometryPoint" },
-        { "spatialRel", "esriSpatialRelIntersects" },
-        { "returnCountOnly", true.ToString() },
-        { "f", "json" }
-      };
+                    { "where", string.Empty },
+                    { "geometry", well.Geometry },
+                    { "geometryType", "esriGeometryPoint" },
+                    { "spatialRel", "esriSpatialRelIntersects" },
+                    { "returnCountOnly", true.ToString() },
+                    { "f", "json" }
+                };
 
                 var gwzQueryString = new QueryBuilder {
-        { "where", string.Empty },
-        { "geometry", well.Geometry },
-        { "geometryType", "esriGeometryPoint" },
-        { "spatialRel", "esriSpatialRelIntersects" },
-        { "returnGeometry", false.ToString() },
-        { "outFields", "SYSNUMBER" },
-        { "f", "json" }
-      };
+                    { "where", string.Empty },
+                    { "geometry", well.Geometry },
+                    { "geometryType", "esriGeometryPoint" },
+                    { "spatialRel", "esriSpatialRelIntersects" },
+                    { "returnGeometry", false.ToString() },
+                    { "outFields", "SYSNUMBER" },
+                    { "f", "json" }
+                };
 
                 urls.Add(new ProtectionQuery(
                   well.Id,

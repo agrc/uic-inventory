@@ -16,7 +16,7 @@ public class Contact {
     public string? ZipCode { get; set; }
     public ContactTypes ContactType { get; set; }
     public int SiteFk { get; set; }
-    public Site? Site { get; set; } = default!;
+    public Site? Site { get; set; }
     public bool SerContact { get; set; }
 }
 
