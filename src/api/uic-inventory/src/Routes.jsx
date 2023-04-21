@@ -1,6 +1,7 @@
 import { Navigation, Navigate, Route, Router, Routes, ToastContainer } from './components/PageElements';
 import { Outlet } from 'react-router-dom';
 import {
+  AuthorizationByRule,
   ContactProgram,
   NotFound,
   Profile,
@@ -34,6 +35,9 @@ function AuthenticatedRoutes({ completeProfile, elevated }) {
   return (
     <Routes>
       {elevated && <Route path="/review/site/:siteId/inventory/:inventoryId" element={<Review />} />}
+      {elevated && (
+        <Route path="/review/site/:siteId/inventory/:inventoryId/authorization" element={<AuthorizationByRule />} />
+      )}
       {elevated && <Route path="/admin/accounts" element={<UserManagement />} />}
       <Route path="/contact" element={<ContactProgram />} />
       <Route path="/profile" element={<Profile />} />

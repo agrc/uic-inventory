@@ -13,7 +13,16 @@ import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 
 import { AuthContext } from '../../../AuthProvider';
 import { FormGrid, ResponsiveGridColumn } from '../../FormElements';
-import { ConfirmationModal, Chrome, Flagged, useParams, onRequestError, toast, useNavigate } from '../../PageElements';
+import {
+  ConfirmationModal,
+  Chrome,
+  Flagged,
+  Link,
+  useParams,
+  onRequestError,
+  toast,
+  useNavigate,
+} from '../../PageElements';
 import { ownershipTypes, wellTypes, contactTypes, valueToLabel } from '../../../data/lookups';
 import { useOpenClosed, useWebMap, useSitePolygon, useInventoryWells } from '../../Hooks';
 
@@ -83,9 +92,14 @@ export default function Review() {
           <button data-meta="primary" className="rounded border sm:col-span-6 md:col-span-2">
             Print
           </button>
-          <button data-meta="default" className="sm:col-span-6 md:col-span-2">
+          <Link
+            to={`/review/site/${siteId}/inventory/${inventoryId}/authorization`}
+            type="button"
+            data-meta="default"
+            className="sm:col-span-6 md:col-span-2"
+          >
             Approve
-          </button>
+          </Link>
         </Section>
       </Chrome>
     </>
