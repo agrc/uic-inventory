@@ -158,7 +158,7 @@ const chooseContactByType = (contacts) => {
 
 const ContactDetails = ({ siteId }) => {
   const { status, data } = useQuery(
-    ['contacts', siteId],
+    ['primary-contact', siteId],
     async () => {
       const response = await ky.get(`/api/site/${siteId}/contacts`).json();
 
