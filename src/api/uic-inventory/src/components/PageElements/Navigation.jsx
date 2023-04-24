@@ -107,7 +107,7 @@ function Navigation() {
                                 >
                                   <Popover.Panel
                                     static
-                                    className="absolute right-0 mt-2 max-h-64 w-96 origin-top-right overflow-scroll rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                    className="absolute right-0 z-20 mt-2 max-h-64 w-96 origin-top-right overflow-scroll rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                   >
                                     <Notifications
                                       notifications={data?.notifications}
