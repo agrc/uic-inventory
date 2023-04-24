@@ -74,8 +74,9 @@ function General({ inventory }) {
       </p>
       <p>
         The Class V well{wellCount > 1 ? 's' : ''} {wellCount > 1 ? 'are' : 'is'} authorized as{' '}
-        <Note>… What goes here?</Note> The subject facility is authorized to dispose of wastewater associated with{' '}
-        <Note>… What goes here?</Note>
+        {wellTypes.find((item) => item.value === inventory.subClass).label}. The subject facility is authorized to
+        dispose of wastewater in accordance with the activities defined in the submitted well inventory application
+        associated with this Authorization by Rule approval.
       </p>
       <SurfaceWaterProtection wells={inventory.wells} />
       <p className="text-lg font-black text-red-700">
