@@ -76,6 +76,7 @@ function UnauthenticatedRoutes() {
   return (
     <Routes>
       <Route path="/" element={<GenericLandingPage />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 }
