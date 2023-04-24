@@ -361,8 +361,8 @@ public static class InventoryNotifications {
         public record ProtectionQuery(int WellId, string Service, string Url);
         public record Protections(bool Aquifers, bool GroundWater);
 
-        private const string _aquiferRechargeDischargeAreas = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Aquifer_RechargeDischargeAreas/FeatureServer/0";
-        private const string _groundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0";
+        private const string AquiferRechargeDischargeAreas = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Aquifer_RechargeDischargeAreas/FeatureServer/0";
+        private const string GroundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0";
         private readonly HttpClient _client;
         private readonly IWaterSystemContactService _service;
         private readonly IAppDbContext _context;
@@ -411,13 +411,13 @@ public static class InventoryNotifications {
                 urls.Add(new ProtectionQuery(
                   well.Id,
                   "Aquifer Recharge/Discharge Areas",
-                  $"{_aquiferRechargeDischargeAreas}/query?{queryString}")
+                  $"{AquiferRechargeDischargeAreas}/query?{queryString}")
                 );
 
                 urls.Add(new ProtectionQuery(
                   well.Id,
                   "Ground Water",
-                  $"{_groundWaterFeatureServiceUrl}/query?{gwzQueryString}")
+                  $"{GroundWaterFeatureServiceUrl}/query?{gwzQueryString}")
                 );
 
                 queryResults[well.Id] = new List<ProtectionResult>();
