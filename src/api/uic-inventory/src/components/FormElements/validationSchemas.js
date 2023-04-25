@@ -42,7 +42,7 @@ export const SiteSchema = yup.object().shape({
 export const ContactSchema = yup.object().shape({
   description: yup.string().when('contactType', {
     is: 'OTHER',
-    then: yup.string().required().min(5).max(512),
+    then: () => yup.string().required().min(5).max(512),
   }),
   contactType: yup
     .string()
@@ -128,7 +128,7 @@ export const WellLocationSchema = yup.object().shape({
   status: yup.string().oneOf(['AC', 'PA', 'PR', 'OT'], 'A valid selection must be made').required(),
   description: yup.string().when('status', {
     is: 'OT',
-    then: yup.string().required().min(5).max(512),
+    then: () => yup.string().required().min(5).max(512),
   }),
   quantity: yup.number().typeError('A well count is required').integer().positive().required(),
   geometry: yup
@@ -144,18 +144,19 @@ export const WellLocationSchema = yup.object().shape({
     .optional()
     .when('$subClass', {
       is: 5002,
-      then: yup
-        .number()
-        .typeError('A valid selection is required')
-        .oneOf([1, 2, 3, 4, 5, 6, 7, 8, 999], 'A valid selection must be made')
-        .required(),
+      then: () =>
+        yup
+          .number()
+          .typeError('A valid selection is required')
+          .oneOf([1, 2, 3, 4, 5, 6, 7, 8, 999], 'A valid selection must be made')
+          .required(),
     }),
   remediationDescription: yup
     .mixed()
     .optional()
     .when('remediationType', {
       is: 999,
-      then: yup.string().required().min(5).max(512).label('Remediation Description'),
+      then: () => yup.string().required().min(5).max(512).label('Remediation Description'),
     }),
   remediationProjectId: yup.string().optional(),
 });
@@ -191,24 +192,25 @@ export const WellDetailSchema = yup.object().shape({
     .optional()
     .when('$subClass', {
       is: 5002,
-      then: yup.lazy((value) => {
-        switch (typeof value) {
-          case 'object': {
-            return yup
-              .mixed()
-              .test('fileSize', 'Choose to type your response or upload a file', (value) => value.size > 0)
-              .label('Injectate characterization');
+      then: () =>
+        yup.lazy((value) => {
+          switch (typeof value) {
+            case 'object': {
+              return yup
+                .mixed()
+                .test('fileSize', 'Choose to type your response or upload a file', (value) => value.size > 0)
+                .label('Injectate characterization');
+            }
+            case 'string': {
+              return yup.string().max(2500).required('Choose to type your response or upload a file');
+            }
+            default:
+              return yup
+                .string()
+                .label('Injectate characterization')
+                .required('Choose to type your response or upload a file');
           }
-          case 'string': {
-            return yup.string().max(2500).required('Choose to type your response or upload a file');
-          }
-          default:
-            return yup
-              .string()
-              .label('Injectate characterization')
-              .required('Choose to type your response or upload a file');
-        }
-      }),
+        }),
     }),
 });
 
