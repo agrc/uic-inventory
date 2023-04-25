@@ -1,4 +1,4 @@
-import { Fragment, useContext, useMemo, useRef, useState } from 'react';
+import { Fragment, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 import ky from 'ky';
 import clsx from 'clsx';
@@ -9,6 +9,7 @@ import { Dialog, Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import { when } from '@arcgis/core/core/reactiveUtils';
 import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 
 import { AuthContext } from '../../../AuthProvider';
@@ -89,7 +90,7 @@ export default function Review() {
           >
             Reject
           </button>
-          <button data-meta="primary" className="rounded border sm:col-span-6 md:col-span-2">
+          <button data-meta="primary" onClick={window.print} className="rounded border sm:col-span-6 md:col-span-2">
             Print
           </button>
           <Link
@@ -509,6 +510,7 @@ function Address({ mailingAddress, city, state, zipCode }) {
 
 const LocationDetails = ({ siteId, inventoryId }) => {
   const mapDiv = useRef();
+  const [screenshot, setScreenshot] = useState('');
   const groundWaterProtectionZones = useRef(
     new FeatureLayer({
       url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0',
@@ -538,6 +540,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
     mapView.current.map.add(groundWaterProtectionZones.current);
   });
 
+  // hover well points
   mapView.current?.when(() => {
     if (hoverEvent.current) {
       return;
@@ -560,6 +563,19 @@ const LocationDetails = ({ siteId, inventoryId }) => {
     );
   });
 
+  // sync image for printing
+  useEffect(() => {
+    mapView.current?.when(() => {
+      when(
+        () => mapView.current.stationary === true,
+        async () => {
+          const screenshot = await mapView.current.takeScreenshot({ width: 850, height: 1100 });
+          setScreenshot(screenshot.dataUrl);
+        }
+      );
+    });
+  }, [mapView]);
+
   useSitePolygon(mapView, data?.site);
   const wells = useInventoryWells(mapView, data?.wells);
 
@@ -568,15 +584,22 @@ const LocationDetails = ({ siteId, inventoryId }) => {
   }
 
   return (
-    <Section title="Location Details" height="h-screen">
-      <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
-        <div>
-          {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} />}
-          <WaterSystemContacts wells={data?.wells} />
+    <>
+      <Section title="Location Details" height="h-screen print:h-auto" className="print:break-before-page">
+        <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
+          <div className="w-full">
+            {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} />}
+            <WaterSystemContacts wells={data?.wells} />
+          </div>
+          <div className="aspect-[17/22] w-full rounded border shadow print:hidden" ref={mapDiv}></div>
         </div>
-        <div className="h-full rounded border shadow print:w-full" ref={mapDiv}></div>
-      </div>
-    </Section>
+      </Section>
+      <img
+        className="hidden aspect-[17/22] rounded border shadow print:block print:break-after-page"
+        alt=""
+        src={screenshot}
+      />
+    </>
   );
 };
 
