@@ -400,7 +400,7 @@ const ContactDetails = ({ siteId }) => {
             </Value>
           </ResponsiveGridColumn>
           <ResponsiveGridColumn full={true} half={true}>
-            <Label>label</Label>
+            <Label>Name</Label>
             <Value>
               {contact.firstName} {contact.LastName}
             </Value>
