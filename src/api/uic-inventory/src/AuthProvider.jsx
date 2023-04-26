@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import ky from 'ky';
 import { createContext, useEffect, useState } from 'react';
 
@@ -6,9 +6,10 @@ export const AuthContext = createContext();
 const Provider = AuthContext.Provider;
 
 export function AuthProvider({ children }) {
-  const { status, error, data } = useQuery('auth', () =>
-    ky.get('/api/me', { timeout: 5000, redirect: 'manual' }).json()
-  );
+  const { status, error, data } = useQuery({
+    queryKey: ['auth'],
+    queryFn: () => ky.get('/api/me', { timeout: 5000, redirect: 'manual' }).json(),
+  });
   const [authInfo, setAuthInfo] = useState({
     id: null,
     userData: {},

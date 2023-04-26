@@ -1,5 +1,5 @@
 import { useContext, useMemo } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import ky from 'ky';
 import { useTable, useSortBy } from 'react-table';
 import { ChevronDownIcon, ChevronUpIcon, UserCircleIcon } from '@heroicons/react/24/outline';
@@ -10,7 +10,9 @@ import { BulletList } from 'react-content-loader';
 export default function UserManagement() {
   const { authInfo } = useContext(AuthContext);
 
-  const { data, status } = useQuery('all-accounts', () => ky.get('/api/accounts').json(), {
+  const { data, status } = useQuery({
+    queryKey: ['all-accounts'],
+    queryFn: () => ky.get('/api/accounts').json(),
     enabled: authInfo?.id ? true : false,
     onError: (error) => onRequestError(error, 'We had trouble fetching your sites.'),
   });

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useCombobox } from 'downshift';
 import { ErrorMessage } from '@hookform/error-message';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import ky from 'ky';
 import clsx from 'clsx';
 import { Label } from '../FormElements/TextInput';
@@ -10,7 +10,9 @@ import ErrorMessageTag from '../FormElements/ErrorMessage';
 
 function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
   const [codes, setCodes] = useState([]);
-  const { data } = useQuery(['naicsCodes'], () => ky.get(`/api/naics/codes`).json(), {
+  const { data } = useQuery({
+    queryKey: ['naicsCodes'],
+    queryFn: () => ky.get(`/api/naics/codes`).json(),
     staleTime: Infinity,
     onSuccess: (data) => setCodes(data),
     onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),

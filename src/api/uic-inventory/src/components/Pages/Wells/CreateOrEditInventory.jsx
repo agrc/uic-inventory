@@ -3,7 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Dialog, Transition, RadioGroup } from '@headlessui/react';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
 import { AuthContext } from '../../../AuthProvider';
@@ -23,14 +23,12 @@ function CreateOrEditInventory() {
   const { authInfo } = useContext(AuthContext);
   const { siteId, inventoryId = -1 } = useParams();
 
-  const { data, status } = useQuery(
-    ['inventory', inventoryId],
-    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    {
-      enabled: siteId > 0,
-      onError: (error) => onRequestError(error, 'We had some trouble finding this wells information.'),
-    }
-  );
+  const { data, status } = useQuery({
+    queryKey: ['inventory', inventoryId],
+    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding this wells information.'),
+  });
   const { mutate } = useMutation((json) => ky.post('/api/inventory', { json }).json(), {
     onSuccess: (response) => {
       toast.success('Inventory created successfully!');

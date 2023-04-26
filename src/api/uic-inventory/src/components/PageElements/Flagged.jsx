@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ky from 'ky';
 import { Dialog } from '@headlessui/react';
 import { AuthContext } from '../../AuthProvider';

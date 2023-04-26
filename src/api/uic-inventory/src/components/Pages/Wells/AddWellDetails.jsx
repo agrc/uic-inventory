@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useQuery, useQueryClient, useMutation } from 'react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
 import Graphic from '@arcgis/core/Graphic';
@@ -64,14 +64,12 @@ function AddWellDetails() {
   const navigate = useNavigate();
 
   // get site and inventory data
-  const { status, data } = useQuery(
-    ['inventory', inventoryId],
-    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    {
-      enabled: siteId > 0,
-      onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
-    }
-  );
+  const { status, data } = useQuery({
+    queryKey: ['inventory', inventoryId],
+    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
+  });
 
   const { control, formState, handleSubmit, reset, setValue, getValues } = useForm({
     resolver: yupResolver(schema),

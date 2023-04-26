@@ -13,7 +13,7 @@ import { Disclosure, Menu, Popover, Transition } from '@headlessui/react';
 import { Link } from 'react-router-dom';
 import { Facebook } from 'react-content-loader';
 import { AuthContext } from '../../AuthProvider';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ky from 'ky';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -60,7 +60,9 @@ const getInitials = (account) => {
 
 function Navigation() {
   const { authInfo, isAuthenticated, receiveNotifications, isElevated } = useContext(AuthContext);
-  const { status, data, error, refetch } = useQuery('notifications', () => ky.get(`/api/notifications/mine`).json(), {
+  const { status, data, error, refetch } = useQuery({
+    queryKey: ['notifications', authInfo.id],
+    queryFn: () => ky.get(`/api/notifications/mine`).json(),
     enabled: authInfo?.id ? true : false,
     refetchInterval: 1000 * 60 * 10,
   });

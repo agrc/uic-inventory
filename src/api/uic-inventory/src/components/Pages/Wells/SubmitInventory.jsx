@@ -4,7 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ErrorMessage } from '@hookform/error-message';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
-import { useQuery, useQueryClient, useMutation } from 'react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 import { Switch } from '@headlessui/react';
 
@@ -31,14 +31,12 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
 export default function SubmitInventory() {
   const { siteId, inventoryId } = useParams();
 
-  const { status, data, error } = useQuery(
-    ['inventory', inventoryId],
-    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    {
-      enabled: siteId > 0,
-      onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
-    }
-  );
+  const { status, data, error } = useQuery({
+    queryKey: ['inventory', inventoryId],
+    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
+  });
 
   return (
     <main>

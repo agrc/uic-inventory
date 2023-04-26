@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 import { Chrome, onRequestError, toast } from '../PageElements';
 import { FormGrid, PageGrid, ContactProgramSchema as schema, ResponsiveGridColumn, TextInput } from '../FormElements';

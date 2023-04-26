@@ -3,7 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Dialog, Transition } from '@headlessui/react';
 import ky from 'ky';
-import { useQueryClient, useMutation, useQuery } from 'react-query';
+import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { AuthContext } from '../../../AuthProvider';
 import {
   FormGrid,
@@ -32,7 +32,9 @@ function CreateOrEditSite() {
   });
 
   const queryClient = useQueryClient();
-  const { data } = useQuery(['site', siteId], () => ky.get(`/api/site/${siteId}`).json(), {
+  const { data } = useQuery({
+    queryKey: ['site', siteId],
+    queryFn: () => ky.get(`/api/site/${siteId}`).json(),
     enabled: siteId ?? 0 > 0 ? true : false,
     onError: (error) => onRequestError(error, 'We had some trouble finding your site.'),
   });
@@ -52,7 +54,9 @@ function CreateOrEditSite() {
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating this site.'),
   });
-  const { isFetching } = useQuery(['naicsCodes', naicsCode], () => ky.get(`/api/naics/${naicsCode}/single`).json(), {
+  const { isFetching } = useQuery({
+    queryKey: ['naicsCodes', naicsCode],
+    queryFn: () => ky.get(`/api/naics/${naicsCode}/single`).json(),
     staleTime: Infinity,
     enabled: naicsCode?.length > 0 ? true : false,
     onSuccess: (data) => {

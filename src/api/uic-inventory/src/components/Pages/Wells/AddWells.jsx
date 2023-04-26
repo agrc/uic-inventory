@@ -2,7 +2,7 @@ import { Fragment, useContext, useEffect, useMemo, useReducer, useRef } from 're
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTable } from 'react-table';
-import { useQuery, useQueryClient, useMutation } from 'react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 import { ErrorMessage } from '@hookform/error-message';
 import { Dialog, Transition } from '@headlessui/react';
@@ -72,14 +72,12 @@ function AddWells() {
     highlighted: undefined,
   });
 
-  const { status, data } = useQuery(
-    ['inventory', inventoryId],
-    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    {
-      enabled: siteId > 0,
-      onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
-    }
-  );
+  const { status, data } = useQuery({
+    queryKey: ['inventory', inventoryId],
+    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
+  });
 
   return (
     <main>

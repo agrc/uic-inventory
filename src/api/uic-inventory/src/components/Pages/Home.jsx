@@ -3,7 +3,7 @@ import { List } from 'react-content-loader';
 import clsx from 'clsx';
 import { Dialog } from '@headlessui/react';
 import { useExpanded, useSortBy, useTable } from 'react-table';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ky from 'ky';
 import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/24/outline';
 import {
@@ -23,7 +23,9 @@ import { wellTypes } from '../../data/lookups';
 
 export function SitesAndInventory({ completeProfile }) {
   const { authInfo } = useContext(AuthContext);
-  const siteQuery = useQuery('sites', () => ky.get(`/api/sites/mine`).json(), {
+  const siteQuery = useQuery({
+    queryKey: ['sites'],
+    queryFn: () => ky.get(`/api/sites/mine`).json(),
     enabled: authInfo?.id ? true : false,
     onError: (error) => onRequestError(error, 'We had trouble fetching your sites.'),
   });
@@ -690,14 +692,12 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
 
 function WellInventorySubTable({ row, rowProps, visibleColumns }) {
   const { authInfo } = useContext(AuthContext);
-  const wellQuery = useQuery(
-    ['site-inventories', row.original.id],
-    () => ky.get(`/api/site/${row.original.id}/inventories`).json(),
-    {
-      enabled: authInfo?.id ? true : false,
-      onError: (error) => onRequestError(error, 'We had trouble fetching the inventories for this site.'),
-    }
-  );
+  const wellQuery = useQuery({
+    queryKey: ['site-inventories', row.original.id],
+    queryFn: () => ky.get(`/api/site/${row.original.id}/inventories`).json(),
+    enabled: authInfo?.id ? true : false,
+    onError: (error) => onRequestError(error, 'We had trouble fetching the inventories for this site.'),
+  });
 
   return <SubRows row={row} rowProps={rowProps} visibleColumns={visibleColumns} {...wellQuery} />;
 }

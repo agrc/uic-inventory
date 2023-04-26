@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import ky from 'ky';
 import { List } from 'react-content-loader';
 
@@ -9,14 +9,12 @@ import { wellTypes } from '../../../data/lookups';
 
 export default function AuthorizationByRule() {
   const { inventoryId, siteId } = useParams();
-  const { status, data } = useQuery(
-    ['inventory', inventoryId],
-    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    {
-      enabled: siteId > 0,
-      onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
-    }
-  );
+  const { status, data } = useQuery({
+    queryKey: ['inventory', inventoryId],
+    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
+  });
 
   return (
     <Chrome title="Authorization by Rule">
@@ -157,18 +155,16 @@ const chooseContactByType = (contacts) => {
 };
 
 const ContactDetails = ({ siteId }) => {
-  const { status, data } = useQuery(
-    ['primary-contact', siteId],
-    async () => {
+  const { status, data } = useQuery({
+    queryKey: ['primary-contact', siteId],
+    queryFn: async () => {
       const response = await ky.get(`/api/site/${siteId}/contacts`).json();
 
       return chooseContactByType(response.contacts);
     },
-    {
-      enabled: siteId > 0,
-      onError: (error) => onRequestError(error, 'We had some trouble finding the contacts.'),
-    }
-  );
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding the contacts.'),
+  });
 
   if (status === 'loading') {
     return <List />;
@@ -251,7 +247,9 @@ const SurfaceWaterProtection = ({ wells }) => {
 
 const Sincerely = ({ authInfo }) => {
   const profileId = authInfo.id;
-  const { status, data } = useQuery(['profile', profileId], () => ky.get(`/api/account/${profileId}`).json(), {
+  const { status, data } = useQuery({
+    queryKey: ['profile', profileId],
+    queryFn: () => ky.get(`/api/account/${profileId}`).json(),
     enabled: profileId ? true : false,
     onError: (error) => onRequestError(error, 'We had some trouble finding your profile.'),
   });

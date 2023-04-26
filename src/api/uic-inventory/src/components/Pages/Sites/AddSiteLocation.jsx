@@ -24,7 +24,7 @@ import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { enablePolygonDrawing } from '../../MapElements/Drawing';
 import { AuthContext } from '../../../AuthProvider';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 
 function AddSiteLocation() {
@@ -36,7 +36,9 @@ function AddSiteLocation() {
   const pointAddressClickEvent = useRef(null);
   const parcelClickEvent = useRef(null);
   const siteDrawingEvents = useRef(null);
-  const { status, data } = useQuery(['site', siteId], () => ky.get(`/api/site/${siteId}`).json(), {
+  const { status, data } = useQuery({
+    queryKey: ['site', siteId],
+    queryFn: () => ky.get(`/api/site/${siteId}`).json(),
     enabled: siteId > 0,
     onError: (error) => onRequestError(error, 'We had some trouble finding your site location.'),
   });

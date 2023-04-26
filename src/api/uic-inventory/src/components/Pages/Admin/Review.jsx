@@ -1,5 +1,5 @@
 import { Fragment, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useQuery, useQueryClient, useMutation } from 'react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 import clsx from 'clsx';
 import { useTable } from 'react-table';
@@ -138,14 +138,12 @@ const Section = ({ gray, children, title, height = 'max-h-96', className }) => (
 const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
   const { authInfo } = useContext(AuthContext);
 
-  const { status, data } = useQuery(
-    ['inventory', inventoryId],
-    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    {
-      enabled: siteId > 0,
-      onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
-    }
-  );
+  const { status, data } = useQuery({
+    queryKey: ['inventory', inventoryId],
+    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
+  });
 
   const queryClient = useQueryClient();
 
@@ -382,7 +380,9 @@ const MyListbox = ({ selected, setSelected }) => {
 };
 
 const ContactDetails = ({ siteId }) => {
-  const { status, data } = useQuery(['contacts', siteId], () => ky.get(`/api/site/${siteId}/contacts`).json(), {
+  const { status, data } = useQuery({
+    queryKey: ['contacts', siteId],
+    queryFn: () => ky.get(`/api/site/${siteId}/contacts`).json(),
     enabled: siteId > 0,
     onError: (error) => onRequestError(error, 'We had some trouble finding the contacts.'),
   });
@@ -440,14 +440,12 @@ const handleLink = (text, siteId, inventoryId) => {
 };
 
 const WellDetails = ({ siteId, inventoryId }) => {
-  const { status, data } = useQuery(
-    ['inventory', inventoryId],
-    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    {
-      enabled: siteId > 0,
-      onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
-    }
-  );
+  const { status, data } = useQuery({
+    queryKey: ['inventory', inventoryId],
+    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
+  });
 
   if (status === 'loading') {
     return <Code />;
@@ -521,14 +519,12 @@ const LocationDetails = ({ siteId, inventoryId }) => {
 
   const [state, setState] = useState({ highlighted: undefined, graphics: [] });
 
-  const { status, data } = useQuery(
-    ['inventory', inventoryId],
-    () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    {
-      enabled: siteId > 0,
-      onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
-    }
-  );
+  const { status, data } = useQuery({
+    queryKey: ['inventory', inventoryId],
+    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
+  });
 
   const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
 

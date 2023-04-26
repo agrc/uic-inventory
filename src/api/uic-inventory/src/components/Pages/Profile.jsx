@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
-import { useQuery, useQueryClient, useMutation } from 'react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Facebook } from 'react-content-loader';

@@ -6,7 +6,7 @@ import { BulletList } from 'react-content-loader';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { TrashIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { Switch } from '@headlessui/react';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ky from 'ky';
 import { useTable } from 'react-table';
 import { AuthContext } from '../../../AuthProvider';
@@ -29,7 +29,9 @@ import { contactTypes, serDivisions, validSiteContactTypes, valueToLabel } from 
 
 function AddSiteContacts() {
   const { siteId } = useParams();
-  const { status, error, data } = useQuery(['contacts', siteId], () => ky.get(`/api/site/${siteId}/contacts`).json(), {
+  const { status, error, data } = useQuery({
+    queryKey: ['contacts', siteId],
+    queryFn: () => ky.get(`/api/site/${siteId}/contacts`).json(),
     enabled: siteId ?? 0 > 0 ? true : false,
     onError: (error) => onRequestError(error, 'We had some trouble finding your contacts.'),
   });
