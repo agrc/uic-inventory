@@ -84,9 +84,21 @@ function AddSiteContacts() {
 function CreateContactForm({ data }) {
   const { siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
-  const [isSerContact, { toggle }] = useOpenClosed();
+  const [isSerContact, { open, close }] = useOpenClosed();
   const { control, formState, handleSubmit, register, reset, unregister, watch } = useForm({
     resolver: yupResolver(isSerContact ? SerContactSchema : ContactSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      organization: '',
+      phoneNumber: '',
+      mailingAddress: '',
+      state: '',
+      zipCode: '',
+      contactType: '',
+      description: '',
+    },
   });
 
   //* pull value from form state to activate proxy
@@ -126,6 +138,7 @@ function CreateContactForm({ data }) {
     reset();
   }, [isSubmitSuccessful, reset]);
 
+  // toggle form fields for different contact types
   useEffect(() => {
     const contactFieldNames = ['contactType', 'mailingAddress', 'city', 'state', 'zipCode'];
     if (isSerContact) {
@@ -166,7 +179,7 @@ function CreateContactForm({ data }) {
       return object;
     }, {});
 
-    reset({ ...defaults, contactType: undefined }, { keepDefaultValues: true });
+    reset({ ...defaults, contactType: '' }, { keepDefaultValues: true });
   }, [data, reset]);
 
   const create = (formData) => {
@@ -205,7 +218,7 @@ function CreateContactForm({ data }) {
                 <ToggleSwitch
                   label="Is this a Department of Environmental Quality contact providing primary regulatory oversight for subsurface environmental remediation?"
                   value={isSerContact}
-                  onChange={toggle}
+                  onChange={(newState) => (newState ? open() : close())}
                 />
               </div>
             </div>
