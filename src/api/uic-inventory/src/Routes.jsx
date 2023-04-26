@@ -1,5 +1,4 @@
 import { Navigation, Navigate, Route, Router, Routes, ToastContainer } from './components/PageElements';
-import { List } from 'react-content-loader';
 import { Outlet } from 'react-router-dom';
 import {
   AuthorizationByRule,
@@ -13,7 +12,6 @@ import {
   UserManagement,
   Wells,
 } from './components/Pages';
-import { Chrome } from './components/PageElements';
 import { AuthContext } from './AuthProvider';
 import { useContext } from 'react';
 
@@ -22,13 +20,9 @@ function ApplicationRoutes() {
 
   if (status === 'loading') {
     return (
-      <div className="space-y-6">
-        <Navigation />
-        <Chrome title="Utah UIC Class V Injection Well Inventory">
-          <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-            <List />
-          </div>
-        </Chrome>
+      <div>
+        <Navigation authenticationStatus={status} />
+        <GenericLandingPage />
       </div>
     );
   }

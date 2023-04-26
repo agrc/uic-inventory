@@ -58,7 +58,7 @@ const getInitials = (account) => {
   return `${account?.firstName[0]}${account?.lastName[0]}`;
 };
 
-function Navigation() {
+function Navigation({ authenticationStatus }) {
   const { authInfo, isAuthenticated, receiveNotifications, isElevated } = useContext(AuthContext);
   const { status, data, error, refetch } = useQuery({
     queryKey: ['notifications', authInfo.id],
@@ -66,6 +66,30 @@ function Navigation() {
     enabled: authInfo?.id ? true : false,
     refetchInterval: 1000 * 60 * 10,
   });
+
+  if (authenticationStatus === 'loading') {
+    return (
+      <Disclosure as="nav" className="bg-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center">
+              <div className="shrink-0">
+                <img className="hidden h-12 w-auto sm:block" src="/logo-alternate.svg" alt="Workflow" />
+                <img className="h-12 w-auto sm:hidden" src="/logo.svg" alt="Workflow" />
+              </div>
+              <div>
+                <div className="ml-10 flex items-baseline space-x-4">
+                  <div className="animate-text cursor-default select-none bg-gradient-to-r from-white via-blue-500 to-white bg-clip-text text-sm text-transparent">
+                    Checking login status...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Disclosure>
+    );
+  }
 
   return (
     <div className="print:hidden">
@@ -85,7 +109,6 @@ function Navigation() {
                     </div>
                   </div>
                 </div>
-
                 {isAuthenticated() ? (
                   <>
                     <div className="hidden md:block">
