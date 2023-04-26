@@ -14,10 +14,10 @@ export function AuthProvider({ children }) {
     userData: {},
   });
 
-  const isAuthenticated = () => authInfo.id !== null;
-  const receiveNotifications = () => authInfo.userData.receiveNotifications;
-  const completeProfile = () => authInfo.userData.profileComplete;
-  const isElevated = () => authInfo.userData.access === 'elevated';
+  const isAuthenticated = () => data?.id !== undefined;
+  const receiveNotifications = () => data?.userData?.receiveNotifications;
+  const completeProfile = () => data?.userData?.profileComplete;
+  const isElevated = () => data?.userData.access === 'elevated';
 
   useEffect(() => {
     if (status !== 'success' || error) {
@@ -29,7 +29,16 @@ export function AuthProvider({ children }) {
 
   return (
     <Provider
-      value={{ error, authInfo, isAuthenticated, isElevated, receiveNotifications, setAuthInfo, completeProfile }}
+      value={{
+        status,
+        error,
+        authInfo,
+        isAuthenticated,
+        isElevated,
+        receiveNotifications,
+        setAuthInfo,
+        completeProfile,
+      }}
     >
       {children}
     </Provider>
