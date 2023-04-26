@@ -43,18 +43,18 @@ function AuthenticatedRoutes({ completeProfile, elevated }) {
       <Route path="/profile" element={<Profile />} />
       <Route path="/account/:id/profile" element={<Profile />} />
       <Route path="/site" element={<Outlet />}>
-        <Route path="" element={<Navigate to="/" />}></Route>
+        <Route index element={<Navigate to="/" />}></Route>
         <Route path="create" element={<Sites.CreateOrEditSite />} />
         <Route path=":siteId" element={<Outlet />}>
-          <Route path="" element={<Sites.CreateOrEditSite />} />
+          <Route index element={<Sites.CreateOrEditSite />} />
           <Route path="add-details" element={<Sites.CreateOrEditSite />} />
           <Route path="add-contacts" element={<Sites.AddSiteContacts />} />
           <Route path="add-location" element={<Sites.AddSiteLocation />} />
           <Route path="inventory" element={<Outlet />}>
-            <Route path="" element={<Navigate to="/" />}></Route>
+            <Route index element={<Navigate to="/" />}></Route>
             <Route path="create" element={<Wells.CreateOrEditInventory />} />
             <Route path=":inventoryId" element={<Outlet />}>
-              <Route path="" element={<Navigate to="/" />}></Route>
+              <Route index element={<Navigate to="/" />}></Route>
               <Route path="details" element={<Wells.CreateOrEditInventory />} />
               <Route path="regulatory-contact" element={<Wells.AddSerWellContact />} />
               <Route path="add-wells" element={<Wells.AddWells />} />
