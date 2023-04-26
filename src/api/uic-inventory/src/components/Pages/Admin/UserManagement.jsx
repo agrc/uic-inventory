@@ -19,7 +19,7 @@ export default function UserManagement() {
 
   return (
     <>
-      <Chrome title="Inventory Review">
+      <Chrome title="Utah UIC Well Inventory Registered Users">
         {status === 'loading' ? <BulletList height={240} /> : <UserTable accounts={data?.accounts} />}
       </Chrome>
     </>
