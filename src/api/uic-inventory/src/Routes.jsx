@@ -65,8 +65,8 @@ function AuthenticatedRoutes({ completeProfile, elevated }) {
         </Route>
       </Route>
 
-      <Route exact strict path="/signin-oidc" element={<Navigate to="/" />} />
-      <Route exact path="/" element={<SitesAndInventory completeProfile={completeProfile} />} />
+      <Route path="/signin-oidc" element={<Navigate to="/" />} />
+      <Route path="/" element={<SitesAndInventory completeProfile={completeProfile} />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
