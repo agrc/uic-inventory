@@ -24,8 +24,9 @@ import {
 } from '../../FormElements';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
 import { serContactTypes, serDivisions, valueToLabel } from '../../../data/lookups';
+import { getSerContact } from '../loaders';
 
-function AddSerWellContact() {
+export function Component() {
   const { siteId, inventoryId } = useParams();
   const { authInfo } = useContext(AuthContext);
   const { control, formState, handleSubmit, register, reset } = useForm({
@@ -36,19 +37,7 @@ function AddSerWellContact() {
   const { isDirty, isSubmitSuccessful } = formState;
 
   const queryClient = useQueryClient();
-  const { status, error, data } = useQuery({
-    queryKey: ['ser-contacts', siteId],
-    queryFn: async () => {
-      const response = await ky.get(`/api/site/${siteId}/contacts`).json();
-
-      return {
-        ...response,
-        contacts: response.contacts.filter((contact) => contact.contactType === 'project_manager'),
-      };
-    },
-    enabled: siteId ?? 0 > 0 ? true : false,
-    onError: (error) => onRequestError(error, 'We had some trouble finding your contacts.'),
-  });
+  const { status, error, data } = useQuery(getSerContact(siteId));
   const { mutate } = useMutation((json) => ky.post('/api/contact', { json }), {
     onMutate: async (contact) => {
       await queryClient.cancelQueries(['ser-contacts', siteId]);
@@ -401,5 +390,3 @@ function ContactTable({ data }) {
     </>
   );
 }
-
-export default AddSerWellContact;

@@ -10,8 +10,7 @@ import ConfirmationModal from './ConfirmationModal';
 import Flagged from './Flagged';
 
 export { ToastContainer } from 'react-toastify';
-export { Link, Route, Navigate, BrowserRouter as Router, Routes, useParams, useNavigate } from 'react-router-dom';
-export {};
+export { Link, Navigate, useParams, useNavigate } from 'react-router-dom';
 export { toast } from 'react-toastify';
 export * from './Icons';
 

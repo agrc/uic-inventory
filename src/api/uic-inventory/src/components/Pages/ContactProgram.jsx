@@ -6,7 +6,7 @@ import ky from 'ky';
 import { Chrome, onRequestError, toast } from '../PageElements';
 import { FormGrid, PageGrid, ContactProgramSchema as schema, ResponsiveGridColumn, TextInput } from '../FormElements';
 
-export function ContactProgram() {
+export function Component() {
   const { formState, handleSubmit, register, reset } = useForm({
     resolver: yupResolver(schema),
   });
@@ -56,4 +56,4 @@ export function ContactProgram() {
   );
 }
 
-export default ContactProgram;
+// export default ContactProgram;

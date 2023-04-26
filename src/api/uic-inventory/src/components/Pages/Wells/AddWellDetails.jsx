@@ -12,7 +12,7 @@ import { BackButton, Chrome, onRequestError, toast, useNavigate, useParams } fro
 import { GridHeading, LimitedTextarea, LimitedDropzone, Label, WellDetailSchema as schema } from '../../FormElements';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { AuthContext } from '../../../AuthProvider';
-
+import { getInventory } from '../loaders';
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
 const CompletedWellsSymbol = PinSymbol.clone();
@@ -52,7 +52,7 @@ CompletedWellsSymbol.data.primitiveOverrides = [
   },
 ];
 
-function AddWellDetails() {
+export function Component() {
   const { authInfo } = useContext(AuthContext);
   const { siteId, inventoryId } = useParams();
   const queryClient = useQueryClient();
@@ -62,14 +62,9 @@ function AddWellDetails() {
   const [selectedWells, setSelectedWells] = useState([]);
   const [wellsRemaining, setWellsRemaining] = useState(0);
   const navigate = useNavigate();
-
+  const queryKey = ['site', siteId, 'inventory', inventoryId];
   // get site and inventory data
-  const { status, data } = useQuery({
-    queryKey: ['inventory', inventoryId],
-    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    enabled: siteId > 0,
-    onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
-  });
+  const { status, data } = useQuery(getInventory(siteId, inventoryId));
 
   const { control, formState, handleSubmit, reset, setValue, getValues } = useForm({
     resolver: yupResolver(schema),
@@ -81,7 +76,7 @@ function AddWellDetails() {
   const { mutate } = useMutation((body) => ky.put('/api/well', { body, timeout: 600000 }), {
     onSuccess: () => {
       toast.success('Wells updated successfully!');
-      queryClient.invalidateQueries(['inventory', inventoryId]);
+      queryClient.invalidateQueries(queryKey);
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating your wells.'),
   });
@@ -360,5 +355,3 @@ function AddWellDetails() {
     </main>
   );
 }
-
-export default AddWellDetails;

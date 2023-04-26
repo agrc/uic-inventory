@@ -1,7 +1,7 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Chrome, Link } from '../PageElements';
 
-export default function NotFound() {
+export function Component() {
   return (
     <main>
       <Chrome>

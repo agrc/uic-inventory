@@ -11,15 +11,16 @@ import { useOpenClosed } from '../Hooks';
 export default function Flagged({ reason, siteId, inventoryId }) {
   const { authInfo } = useContext(AuthContext);
   const queryClient = useQueryClient();
+  const queryKey = ['site', siteId, 'inventory', inventoryId];
 
   const [text, setText] = useState(reason ?? '');
 
   const { mutate } = useMutation((json) => ky.put('/api/inventory', { json }), {
     onMutate: async () => {
-      await queryClient.cancelQueries(['inventory', inventoryId]);
-      const previousValue = queryClient.getQueryData(['inventory', inventoryId]);
+      await queryClient.cancelQueries(queryKey);
+      const previousValue = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData(['inventory', inventoryId], (old) => {
+      queryClient.setQueryData(queryKey, (old) => {
         const updated = {
           ...old,
           site: { ...old.site },
@@ -32,7 +33,7 @@ export default function Flagged({ reason, siteId, inventoryId }) {
       return previousValue;
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['inventory', inventoryId]);
+      queryClient.invalidateQueries(queryKey);
     },
     onSuccess: (_, variables) => {
       if (variables.flagged?.length > 0) {

@@ -36,7 +36,7 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   minute: 'numeric',
 });
 
-export default function Review() {
+export function Component() {
   const { authInfo } = useContext(AuthContext);
   const navigate = useNavigate();
   const { inventoryId, siteId } = useParams();
@@ -46,7 +46,7 @@ export default function Review() {
   const { mutate } = useMutation((json) => ky.delete('/api/inventory/reject', { json }), {
     onSettled: () => {
       queryClient.invalidateQueries('sites');
-      queryClient.invalidateQueries(['inventory', inventoryId]);
+      queryClient.invalidateQueries(['site', siteId, 'inventory', inventoryId]);
       queryClient.invalidateQueries(['site-inventories', inventoryId]);
     },
     onSuccess: () => {
@@ -133,9 +133,9 @@ const Section = ({ gray, children, title, height = 'max-h-96', className }) => (
 
 const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
   const { authInfo } = useContext(AuthContext);
-
+  const queryKey = ['site', siteId, 'inventory', inventoryId];
   const { status, data } = useQuery({
-    queryKey: ['inventory', inventoryId],
+    queryKey,
     queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
     enabled: siteId > 0,
     onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
@@ -145,10 +145,10 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
 
   const { mutate } = useMutation((json) => ky.put('/api/inventory', { json }), {
     onMutate: async (inventory) => {
-      await queryClient.cancelQueries(['inventory', inventoryId]);
-      const previousValue = queryClient.getQueryData(['inventory', inventoryId]);
+      await queryClient.cancelQueries(queryKey);
+      const previousValue = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData(['inventory', inventoryId], (old) => {
+      queryClient.setQueryData(queryKey, (old) => {
         const updated = {
           ...old,
           site: { ...old.site },
@@ -169,7 +169,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
       return previousValue;
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['inventory', inventoryId]);
+      queryClient.invalidateQueries(queryKey);
     },
     onSuccess: () => {
       toast.success('Inventory updated successfully!');
@@ -428,8 +428,10 @@ const handleLink = (text, siteId, inventoryId) => {
 };
 
 const WellDetails = ({ siteId, inventoryId }) => {
+  const queryKey = ['site', siteId, 'inventory', inventoryId];
+
   const { status, data } = useQuery({
-    queryKey: ['inventory', inventoryId],
+    queryKey,
     queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
     enabled: siteId > 0,
     onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
@@ -531,7 +533,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
   const [state, setState] = useState({ highlighted: undefined, graphics: [] });
 
   const { status, data } = useQuery({
-    queryKey: ['inventory', inventoryId],
+    queryKey: queryKey,
     queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
     enabled: siteId > 0,
     onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),

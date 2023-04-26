@@ -32,10 +32,11 @@ import { useOpenClosed } from '../../Hooks';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
 import { Tooltip } from '../../PageElements';
 import { remediationTypes, operatingStatusTypes } from '../../../data/lookups';
+import { getInventory } from '../loaders';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
-function AddWells() {
+export function Component() {
   const { siteId, inventoryId } = useParams();
   const navigate = useNavigate();
 
@@ -72,12 +73,7 @@ function AddWells() {
     highlighted: undefined,
   });
 
-  const { status, data } = useQuery({
-    queryKey: ['inventory', inventoryId],
-    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    enabled: siteId > 0,
-    onError: (error) => onRequestError(error, 'We had some trouble finding your wells.'),
-  });
+  const { status, data } = useQuery(getInventory(siteId, inventoryId));
 
   return (
     <main>
@@ -127,7 +123,7 @@ function AddWellForm({ data, state, dispatch }) {
   const { mutate: addWell } = useMutation((json) => ky.post('/api/well', { json }).json(), {
     onSuccess: () => {
       toast.success('Well added successfully!');
-      queryClient.invalidateQueries(['inventory', inventoryId]);
+      queryClient.invalidateQueries(['site', siteId, 'inventory', inventoryId]);
     },
     onError: (error) => onRequestError(error, 'We had some trouble adding your well.'),
   });
@@ -420,13 +416,14 @@ function WellTable({ wells = [], state, dispatch }) {
   const { authInfo } = useContext(AuthContext);
   const [isOpen, { open, close }] = useOpenClosed();
   const deleteWell = useRef();
+  const queryKey = ['site', siteId, 'inventory', inventoryId];
 
   const { mutate } = useMutation((json) => ky.delete(`/api/well`, { json }), {
     onMutate: async (mutationData) => {
-      await queryClient.cancelQueries(['inventory', inventoryId]);
-      const previousValue = queryClient.getQueryData(['inventory', inventoryId]);
+      await queryClient.cancelQueries(queryKey);
+      const previousValue = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData(['inventory', inventoryId], (old) => {
+      queryClient.setQueryData(queryKey, (old) => {
         return {
           ...old,
           wells: old.wells.filter((x) => x.id !== mutationData.wellId),
@@ -441,10 +438,10 @@ function WellTable({ wells = [], state, dispatch }) {
       toast.success('This well was removed.');
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['inventory', inventoryId]);
+      queryClient.invalidateQueries(queryKey);
     },
     onError: (error, previousValue) => {
-      queryClient.setQueryData(['inventory', inventoryId], previousValue);
+      queryClient.setQueryData(queryKey, previousValue);
       onRequestError(error, 'We had some trouble deleting this well.');
     },
   });
@@ -639,5 +636,3 @@ function WellTable({ wells = [], state, dispatch }) {
     </>
   );
 }
-
-export default AddWells;

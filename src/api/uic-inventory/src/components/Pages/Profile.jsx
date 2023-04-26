@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useContext, useEffect } from 'react';
 import clsx from 'clsx';
 import { Controller, useForm } from 'react-hook-form';
@@ -20,27 +21,50 @@ import {
   TextInput,
 } from '../FormElements';
 
-export function Profile() {
+const getLoggedInUserQuery = () => ({
+  queryKey: ['auth'],
+  queryFn: () => ky.get(`/api/me`).json(),
+  staleTime: Infinity,
+  onError: (error) => onRequestError(error, 'We had some trouble finding your profile.'),
+});
+
+export const loggedInUserLoader = (queryClient) => async () => {
+  const query = getLoggedInUserQuery();
+
+  return await queryClient.ensureQueryData(query);
+};
+
+export function Component() {
   const { id } = useParams();
   const { authInfo } = useContext(AuthContext);
   const profileId = parseInt(id || authInfo?.id || false);
 
-  const { status, data } = useQuery(['profile', profileId], () => ky.get(`/api/account/${profileId}`).json(), {
-    enabled: profileId ? true : false,
+  const { data, status } = useQuery(getLoggedInUserQuery());
+
+  const { data: profileData, status: profileStatus } = useQuery({
+    queryKey: ['profile', profileId],
+    queryFn: () => ky.get(`/api/account/${profileId}`).json(),
+    enabled: true,
+    staleTime: Infinity,
     onError: (error) => onRequestError(error, 'We had some trouble finding your profile.'),
   });
 
-  const { data: me } = useQuery(['auth'], () => ky.get(`/api/me`).json(), {
-    enabled: authInfo?.id ? true : false,
-    onError: (error) => onRequestError(error, 'We had some trouble finding your profile.'),
-  });
+  const loading = status === 'loading' || profileStatus === 'loading';
+
+  if (loading) {
+    return (
+      <Chrome loading={loading}>
+        <Facebook />
+      </Chrome>
+    );
+  }
 
   return (
     <main>
-      <Chrome loading={status === 'loading'}>
-        {status === 'loading' ? <Facebook /> : <ProfileForm data={data} id={profileId} />}
-        {data?.access === 'elevated' && <NotificationForm data={data} id={profileId} />}
-        {me?.userData?.access === 'elevated' && <AccessForm profileData={data} />}
+      <Chrome loading={loading}>
+        <ProfileForm data={profileData} id={profileId} />
+        {data.userData.access === 'elevated' && <NotificationForm data={profileData} id={profileId} />}
+        {data.userData.access === 'elevated' && <AccessForm profileData={profileData} />}
       </Chrome>
     </main>
   );
@@ -342,5 +366,3 @@ const AccessForm = ({ profileData }) => {
     </form>
   );
 };
-
-export default Profile;

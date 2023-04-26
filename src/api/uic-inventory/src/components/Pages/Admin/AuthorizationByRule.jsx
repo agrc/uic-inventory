@@ -7,10 +7,10 @@ import { AuthContext } from '../../../AuthProvider';
 import { Chrome, useParams, onRequestError } from '../../PageElements';
 import { wellTypes } from '../../../data/lookups';
 
-export default function AuthorizationByRule() {
+export function Component() {
   const { inventoryId, siteId } = useParams();
   const { status, data } = useQuery({
-    queryKey: ['inventory', inventoryId],
+    queryKey: ['site', siteId, 'inventory', inventoryId],
     queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
     enabled: siteId > 0,
     onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),

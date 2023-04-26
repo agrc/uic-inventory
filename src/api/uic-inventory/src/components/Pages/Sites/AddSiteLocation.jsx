@@ -27,8 +27,9 @@ import { AuthContext } from '../../../AuthProvider';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import ky from 'ky';
+import { getSites } from '../loaders';
 
-function AddSiteLocation() {
+export function Component() {
   const { authInfo } = useContext(AuthContext);
   const { siteId } = useParams();
   const navigate = useNavigate();
@@ -37,12 +38,7 @@ function AddSiteLocation() {
   const pointAddressClickEvent = useRef(null);
   const parcelClickEvent = useRef(null);
   const siteDrawingEvents = useRef(null);
-  const { status, data } = useQuery({
-    queryKey: ['site', siteId],
-    queryFn: () => ky.get(`/api/site/${siteId}`).json(),
-    enabled: siteId > 0,
-    onError: (error) => onRequestError(error, 'We had some trouble finding your site location.'),
-  });
+  const { status, data } = useQuery(getSites(siteId));
   const { mutate } = useMutation((input) => ky.put('/api/site', { json: input }).json(), {
     onSuccess: () => {
       toast.success('Site location updated successfully!');
@@ -441,5 +437,3 @@ function AddSiteLocation() {
     </main>
   );
 }
-
-export default AddSiteLocation;

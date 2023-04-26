@@ -26,15 +26,12 @@ import {
 } from '../../FormElements';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
 import { contactTypes, serDivisions, validSiteContactTypes, valueToLabel } from '../../../data/lookups';
+import { DevTool } from '@hookform/devtools';
+import { getSiteContacts } from '../loaders';
 
-function AddSiteContacts() {
+export function Component() {
   const { siteId } = useParams();
-  const { status, error, data } = useQuery({
-    queryKey: ['contacts', siteId],
-    queryFn: () => ky.get(`/api/site/${siteId}/contacts`).json(),
-    enabled: siteId ?? 0 > 0 ? true : false,
-    onError: (error) => onRequestError(error, 'We had some trouble finding your contacts.'),
-  });
+  const { status, error, data } = useQuery(getSiteContacts(siteId));
 
   return (
     <Chrome loading={status === 'loading'}>
@@ -239,6 +236,7 @@ function CreateContactForm({ data }) {
           )}
         </FormGrid>
       </PageGrid>
+      <DevTool control={control} />
     </form>
   );
 }
@@ -612,5 +610,3 @@ function ContactTable({ data }) {
     </>
   );
 }
-
-export default AddSiteContacts;

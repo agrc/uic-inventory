@@ -7,7 +7,7 @@ import { AuthContext } from '../../../AuthProvider';
 import { Chrome, onRequestError, useNavigate } from '../../PageElements';
 import { BulletList } from 'react-content-loader';
 
-export default function UserManagement() {
+export function Component() {
   const { authInfo } = useContext(AuthContext);
 
   const { data, status } = useQuery({

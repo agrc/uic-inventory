@@ -1,8 +1,10 @@
 import { ErrorBoundary } from 'react-error-boundary';
 import { Link, useNavigate } from '../PageElements';
+import { useRouteError } from 'react-router-dom';
 
-const RouterErrorPage = ({ error }) => {
+export const RouterErrorPage = ({ error }) => {
   const navigate = useNavigate();
+  let routeError = useRouteError();
 
   return (
     <section>
@@ -25,6 +27,12 @@ const RouterErrorPage = ({ error }) => {
           </span>{' '}
           Technical Details
         </summary>
+        {routeError && (
+          <>
+            <label htmlFor="route">Routing Error:</label>
+            <pre id="route" className="overflow-auto text-base text-gray-400">{`${routeError}`}</pre>
+          </>
+        )}
         {error && error.message ? (
           <>
             <label htmlFor="message">Error message:</label>

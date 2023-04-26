@@ -18,11 +18,15 @@ import {
 import { Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { useOpenClosed } from '../../Hooks';
 import { ownershipTypes } from '../../../data/lookups';
+import { getSites } from '../loaders';
 
-function CreateOrEditSite() {
+export function Component() {
   const { siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
   const [naicsCode, setNaicsCode] = useState([]);
+  const navigate = useNavigate();
+  const [status, { open, close }] = useOpenClosed(false);
+
   const { control, formState, handleSubmit, register, reset, setValue } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -32,12 +36,7 @@ function CreateOrEditSite() {
   });
 
   const queryClient = useQueryClient();
-  const { data } = useQuery({
-    queryKey: ['site', siteId],
-    queryFn: () => ky.get(`/api/site/${siteId}`).json(),
-    enabled: siteId ?? 0 > 0 ? true : false,
-    onError: (error) => onRequestError(error, 'We had some trouble finding your site.'),
-  });
+  const { data } = useQuery(getSites(siteId));
   const { mutate } = useMutation((data) => ky.post('/api/site', { json: { ...data, id: authInfo.id } }).json(), {
     onSuccess: (data) => {
       toast.success('Site created successfully!');
@@ -68,8 +67,6 @@ function CreateOrEditSite() {
 
   //! pull isDirty from form state to activate proxy
   const { isDirty } = formState;
-  const navigate = useNavigate();
-  const [status, { open, close }] = useOpenClosed(false);
 
   // set existing form values
   useEffect(() => {
@@ -227,5 +224,3 @@ function CreateOrEditSite() {
     </Chrome>
   );
 }
-
-export default CreateOrEditSite;

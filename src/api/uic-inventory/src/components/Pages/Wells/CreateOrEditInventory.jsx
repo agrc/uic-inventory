@@ -18,17 +18,13 @@ import {
 import { Chrome, toast, IncompleteSiteWarning, onRequestError, useParams, useNavigate } from '../../PageElements';
 import { useOpenClosed } from '../../Hooks';
 import { wellTypes } from '../../../data/lookups';
+import { getInventory } from '../loaders';
 
-function CreateOrEditInventory() {
+export function Component() {
   const { authInfo } = useContext(AuthContext);
   const { siteId, inventoryId = -1 } = useParams();
 
-  const { data, status } = useQuery({
-    queryKey: ['inventory', inventoryId],
-    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    enabled: siteId > 0,
-    onError: (error) => onRequestError(error, 'We had some trouble finding this wells information.'),
-  });
+  const { data, status } = useQuery(getInventory(siteId, inventoryId));
   const { mutate } = useMutation((json) => ky.post('/api/inventory', { json }).json(), {
     onSuccess: (response) => {
       toast.success('Inventory created successfully!');
@@ -277,5 +273,3 @@ function CheckIcon(props) {
     </svg>
   );
 }
-
-export default CreateOrEditInventory;

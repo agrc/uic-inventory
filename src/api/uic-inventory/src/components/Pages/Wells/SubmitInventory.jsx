@@ -18,6 +18,7 @@ import {
   InventorySubmissionSchema as schema,
   TextInput,
 } from '../../FormElements';
+import { getInventory } from '../loaders';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'numeric',
@@ -28,15 +29,10 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   minute: 'numeric',
 });
 
-export default function SubmitInventory() {
+export function Component() {
   const { siteId, inventoryId } = useParams();
 
-  const { status, data, error } = useQuery({
-    queryKey: ['inventory', inventoryId],
-    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
-    enabled: siteId > 0,
-    onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
-  });
+  const { status, data, error } = useQuery(getInventory(siteId, inventoryId));
 
   return (
     <main>
@@ -110,7 +106,7 @@ const SubmissionForm = ({ data }) => {
       onSuccess: () => {
         toast.success('Inventory submitted successfully!');
         navigate('/');
-        queryClient.invalidateQueries(['inventory', inventoryId]);
+        queryClient.invalidateQueries(['site', siteId, 'inventory', inventoryId]);
       },
       onError: (error) => onRequestError(error, 'We had some trouble submitting this inventory.'),
     }
