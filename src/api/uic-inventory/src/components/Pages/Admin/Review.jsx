@@ -784,13 +784,18 @@ const WaterSystemContacts = ({ wells = [] }) => {
     return null;
   }
 
-  const contacts = wells.reduce((a, b) => {
+  let contacts = wells.reduce((a, b) => {
     return a.concat(b.waterSystemContacts);
   }, []);
 
   if (contacts.length === 0) {
     return null;
   }
+
+  contacts = contacts.filter(
+    (contact, index, self) =>
+      index === self.findIndex((duplicate) => duplicate.system === contact.system && duplicate.email === contact.email)
+  );
 
   return (
     <section>
