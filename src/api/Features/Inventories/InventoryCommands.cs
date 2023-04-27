@@ -65,6 +65,7 @@ public static class UpdateInventory {
             Edocs = input.Edocs;
             InventoryId = input.InventoryId;
             Flagged = input.Flagged;
+            OrderNumber = input.OrderNumber;
         }
 
         public int AccountId { get; init; }
@@ -73,6 +74,7 @@ public static class UpdateInventory {
         public int? SubClass { get; init; }
         public string? Edocs { get; set; }
         public string? Flagged { get; set; }
+        public int? OrderNumber { get; set; }
     }
     public class Handler : IRequestHandler<Command, Inventory> {
         private readonly IAppDbContext _context;
@@ -109,6 +111,10 @@ public static class UpdateInventory {
 
             if (request.Flagged?.Length == 0) {
                 inventory.Flagged = null;
+            }
+
+            if (request.OrderNumber.HasValue) {
+                inventory.OrderNumber = request.OrderNumber.Value;
             }
 
             await _context.SaveChangesAsync(cancellationToken);

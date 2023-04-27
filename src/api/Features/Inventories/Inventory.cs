@@ -117,9 +117,10 @@ public class InventoryDeletionInput : InventoryInput {
     public int InventoryId { get; set; }
 }
 public class InventoryMutationInput : InventoryInput {
-    public int? SubClass { get; set; }
-    public string? Edocs { get; set; }
     public int InventoryId { get; set; }
+    public int? SubClass { get; set; }
+    public int? OrderNumber { get; set; }
+    public string? Edocs { get; set; }
     public string? Flagged { get; set; }
 }
 public class InventorySubmissionInput : InventoryInput {
