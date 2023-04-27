@@ -27,7 +27,7 @@ export default function AuthorizationByRule() {
           onClick={open}
           className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 sm:col-span-6 md:col-span-2"
         >
-          Cancel
+          Back
         </button>
         <button data-meta="default" className="sm:col-span-6 md:col-span-2">
           Approve and Send
