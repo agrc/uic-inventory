@@ -86,7 +86,7 @@ export default function Review() {
         <Section className="print:hidden">
           <button onClick={open} data-style="primary" className="hover:bg-red-600 sm:col-span-6 md:col-span-2">
             Reject
-        </button>
+          </button>
           <button data-style="secondary" onClick={window.print} className="rounded border sm:col-span-6 md:col-span-2">
             Print
           </button>
@@ -178,22 +178,13 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
     onError: (error) => onRequestError(error, 'We had some trouble updating this inventory.'),
   });
 
-  const updateSubClass = (newSubClass) => {
+  const modify = ({ subClass, edocs, orderNumber }) => {
     const input = {
       accountId: parseInt(authInfo.id),
       inventoryId: parseInt(inventoryId),
       siteId: parseInt(siteId),
-      subClass: newSubClass.value,
-    };
-
-    mutate(input);
-  };
-
-  const updateEdocs = (edocs) => {
-    const input = {
-      accountId: parseInt(authInfo.id),
-      inventoryId: parseInt(inventoryId),
-      siteId: parseInt(siteId),
+      subClass,
+      orderNumber,
       edocs,
     };
 
@@ -224,19 +215,20 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
           <Label>NAICS</Label>
           <Value>{`${data?.site.naicsPrimary} - ${data?.site.naicsTitle}`}</Value>
         </ResponsiveGridColumn>
-        <EditableText field="Edocs #" initialValue={data?.edocs} onMutate={updateEdocs} />
+        <EditableText field="Edocs #" initialValue={data?.edocs} onMutate={(edocs) => modify({ edocs })} />
       </Section>
       <Section title="Inventory Details">
         <EditableList
           field="Inventory Class"
           items={wellTypes}
           initialValue={valueToLabel(wellTypes, data?.subClass)}
-          onMutate={updateSubClass}
+          onMutate={(value) => modify({ subClass: value?.value })}
         />
-        <ResponsiveGridColumn full={true} half={true}>
-          <Label>Order Number</Label>
-          <Value>{data?.orderNumber}</Value>
-        </ResponsiveGridColumn>
+        <EditableText
+          field="Order Number"
+          initialValue={data?.orderNumber}
+          onMutate={(orderNumber) => modify({ orderNumber })}
+        />
         <ResponsiveGridColumn full={true} half={true}>
           <Label>Signed By</Label>
           <Value>{data?.signature}</Value>
