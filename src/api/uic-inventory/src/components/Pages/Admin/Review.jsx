@@ -73,7 +73,6 @@ export default function Review() {
           Reject Submission Confirmation
         </Dialog.Title>
         <Dialog.Description className="mt-1">This inventory will be permanently deleted</Dialog.Description>
-
         <p className="mt-1 text-sm text-gray-500">
           Are you sure you want to reject this submission? This action cannot be undone..
         </p>
@@ -454,6 +453,8 @@ const WellDetails = ({ siteId, inventoryId }) => {
             <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
               {well.status}
             </Value>
+            <Label>Well Name</Label>
+            <Value>{well.wellName}</Value>
             <Label>Construction</Label>
             <Value>{handleLink(well.constructionDetails, siteId, inventoryId)}</Value>
           </Panel>
@@ -471,6 +472,8 @@ const WellDetails = ({ siteId, inventoryId }) => {
             <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
               {well.status}
             </Value>
+            <Label>Well Name</Label>
+            <Value>{well.wellName}</Value>
             <Label>Injectate Characterization</Label>
             <Value>{handleLink(well.injectateCharacterization, siteId, inventoryId)}</Value>
           </Panel>
@@ -488,6 +491,8 @@ const WellDetails = ({ siteId, inventoryId }) => {
             <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
               {well.status}
             </Value>
+            <Label>Well Name</Label>
+            <Value>{well.wellName}</Value>
             <Label>Injectate Characterization</Label>
             <Value>{well.hydrogeologicCharacterization}</Value>
           </Panel>
