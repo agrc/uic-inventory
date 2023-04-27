@@ -302,6 +302,7 @@ function AddWellDetails() {
                           name="injectateCharacterization"
                           render={({ field, fieldState, formState }) => (
                             <LimitedDropzone
+                              helpText="Name the fluids that will be entering the well, e.g. stormwater runoff from parking area, car wash wastewater, etc."
                               textarea={{
                                 id: 'injectateCharacterization',
                                 limit: 2500,

@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { ErrorMessage } from '@hookform/error-message';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { CloudArrowUpIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { CloudArrowUpIcon, QuestionMarkCircleIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 import ErrorMessageTag from './ErrorMessage';
 import { Label } from './TextInput';
+import Tippy from '@tippyjs/react/headless';
+import { Tooltip } from '../PageElements';
 
 export const LimitedTextarea = ({ rows, placeholder, value, maxLength, field, errors, className, disabled }) => {
   const { limit, remaining } = useMaxLength({ value: field.value, limit: maxLength });
@@ -122,7 +124,7 @@ export const CharactersRemaining = ({ remaining, limit }) => {
   );
 };
 
-export const LimitedDropzone = ({ textarea, forms }) => {
+export const LimitedDropzone = ({ textarea, forms, helpText }) => {
   const [files, setFiles] = useState([]);
   const { limit, remaining } = useMaxLength({ value: forms.field.value, limit: textarea.limit });
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
@@ -153,7 +155,13 @@ export const LimitedDropzone = ({ textarea, forms }) => {
 
   return (
     <section className="grid grid-cols-2 content-start" {...getRootProps()}>
-      <Label className="col-span-2" id={textarea.id} />
+      <Label className="col-span-2" id={textarea.id}>
+        {helpText && (
+          <Tippy render={(attrs) => <Tooltip {...attrs}>{helpText}</Tooltip>}>
+            <QuestionMarkCircleIcon className="h-6 w-6 text-blue-600" />
+          </Tippy>
+        )}
+      </Label>
       <section
         className={clsx('relative', {
           hidden: files.length > 0,
