@@ -91,7 +91,7 @@ export const DropzoneMessaging = ({ isDragActive, files = [], reset = () => {} }
           <CheckIcon className="mx-2 h-8 w-8 text-emerald-500" />
           <span className="self-center overflow-hidden truncate whitespace-nowrap lowercase">{files[0].name}</span>
         </div>
-        <button type="button" data-meta="default" className="mt-4 w-full" onClick={reset}>
+        <button type="button" data-style="primary" className="mt-4 w-full" onClick={reset}>
           <XMarkIcon className="mx-2 h-6 w-6 text-pink-500" />
           <span className="justify-between self-center">Clear</span>
         </button>
@@ -179,11 +179,11 @@ export const LimitedDropzone = ({ textarea, forms }) => {
         {remaining < limit && (
           <button
             type="button"
-            data-meta="default"
+            data-style="secondary"
             className="mt-4 w-full"
             onClick={() => forms.reset({ ...forms.getValues(), [textarea.id]: '' }, { keepDefaultValues: true })}
           >
-            <XMarkIcon className="mx-2 h-6 w-6 text-pink-500" />
+            <XMarkIcon className="mx-2 h-6 w-6 text-pink-200" />
             <span className="justify-between self-center">Clear</span>
           </button>
         )}
@@ -215,7 +215,7 @@ export const LimitedDropzone = ({ textarea, forms }) => {
           />
           {files.length === 0 && (
             <>
-              <button className="items-center pl-0" type="button" data-meta="default" onClick={open}>
+              <button className="items-center pl-0" type="button" data-style="secondary" onClick={open}>
                 <CloudArrowUpIcon className="mx-2 h-6 w-6 text-white" />
                 Pick a file
               </button>

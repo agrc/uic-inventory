@@ -84,19 +84,16 @@ export default function Review() {
         <ContactDetails siteId={siteId} />
         <WellDetails siteId={siteId} inventoryId={inventoryId} />
         <Section className="print:hidden">
-          <button
-            onClick={open}
-            className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 sm:col-span-6 md:col-span-2"
-          >
+          <button onClick={open} data-style="primary" className="hover:bg-red-600 sm:col-span-6 md:col-span-2">
             Reject
-          </button>
-          <button data-meta="primary" onClick={window.print} className="rounded border sm:col-span-6 md:col-span-2">
+        </button>
+          <button data-style="secondary" onClick={window.print} className="rounded border sm:col-span-6 md:col-span-2">
             Print
           </button>
           <Link
             to={`/review/site/${siteId}/inventory/${inventoryId}/authorization`}
             type="button"
-            data-meta="default"
+            data-style="primary"
             className="sm:col-span-6 md:col-span-2"
           >
             Approve
@@ -426,7 +423,7 @@ const handleLink = (text, siteId, inventoryId) => {
   if (text?.startsWith('file::')) {
     return (
       <a
-        data-meta="primary"
+        data-style="link"
         href={text.replace('file::', `/api/site/${siteId}/inventory/${inventoryId}/well/`).replaceAll('_', '/')}
         target="_blank"
         rel="noopener noreferrer"

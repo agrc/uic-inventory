@@ -25,11 +25,12 @@ export default function AuthorizationByRule() {
       <section className="mt-10 flex flex-1 justify-center gap-6 print:hidden">
         <button
           onClick={open}
-          className="inline-flex justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 sm:col-span-6 md:col-span-2"
+          data-style="alternate"
+          className="sm:col-span-6 md:col-span-2"
         >
           Back
         </button>
-        <button data-meta="default" className="sm:col-span-6 md:col-span-2">
+        <button data-style="primary" className="sm:col-span-6 md:col-span-2">
           Approve and Send
         </button>
       </section>
@@ -80,12 +81,12 @@ function General({ inventory }) {
       <p className="text-lg font-black text-red-700">
         NOTICE - You are required to report any well operating status changes (e.g. date constructed, date active, date
         closed, etc.) within the{' '}
-        <a data-meta="primary" href="https://uic-inventory.utah.gov/">
+        <a data-style="link" href="https://uic-inventory.utah.gov/">
           UIC Web Application
         </a>{' '}
         (https://uic-inventory.utah.gov/). The well is currently entered as{' '}
         <span className="text-gray-900">{wellStatus}</span>. You must update the well operating status within the{' '}
-        <a data-meta="primary" href="https://uic-inventory.utah.gov/">
+        <a data-style="link" href="https://uic-inventory.utah.gov/">
           UIC Web Application
         </a>{' '}
         (https://uic-inventory.utah.gov/) if the well status changes.

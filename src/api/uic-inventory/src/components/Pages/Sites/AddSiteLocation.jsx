@@ -319,7 +319,7 @@ function AddSiteLocation() {
           <GridHeading text="Site Location" subtext="Set the address and polygon for your site" site={data}>
             <p className="mb-3">
               First, find your site location by it&apos;s address. If you don&apos;t have an address{' '}
-              <button data-meta="primary" onClick={() => dispatch({ type: 'skip-geocoding', payload: null })}>
+              <button data-style="link" onClick={() => dispatch({ type: 'skip-geocoding', payload: null })}>
                 skip
               </button>{' '}
               this step.
@@ -346,14 +346,17 @@ function AddSiteLocation() {
                     'opacity-25': state.formStatus !== 'allow-site-address-from-click',
                   })}
                 >
-                  <button
-                    type="button"
-                    data-meta="default"
-                    className={clsx({ 'bg-blue-800': state.activeTool === 'site-address-click' })}
-                    onClick={() => dispatch({ type: 'activate-site-address-from-click', payload: '' })}
-                  >
-                    <PointIcon classes="h-6 text-white fill-current" />
-                  </button>
+                  <div className="flex flex-col items-center space-y-2">
+                    <button
+                      type="button"
+                      data-style="tool"
+                      className={clsx({ 'border-amber-900 bg-amber-800 text-white': state.activeTool === 'site-address-click' })}
+                      onClick={() => dispatch({ type: 'activate-site-address-from-click', payload: '' })}
+                    >
+                      <PointIcon classes="h-6 w-6 text-white fill-current" />
+                    </button>
+                    <span className="block text-xs text-gray-500">Choose site point</span>
+                  </div>
                 </div>
               </>
             )}
@@ -366,22 +369,24 @@ function AddSiteLocation() {
                   <div className="flex flex-col items-center space-y-2">
                     <button
                       type="button"
-                      data-meta="default"
-                      className={clsx({ 'bg-blue-800': state.activeTool === 'selecting-a-parcel' })}
+                      data-style="tool"
+                      className={clsx({ 'border-amber-900 bg-amber-800 text-white': state.activeTool === 'selecting-a-parcel' })}
                       onClick={() => dispatch({ type: 'select-site-from-parcel', payload: '' })}
                     >
-                      <SelectPolygonIcon classes="h-6 text-white fill-current" />
+                      <SelectPolygonIcon classes="h-6 w-6 text-white fill-current" />
                     </button>
                     <span className="block text-xs text-gray-500">Select Parcel</span>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
                     <button
                       type="button"
-                      data-meta="default"
-                      className={clsx({ 'bg-blue-800': state.activeTool === 'freehand-polygon-drawing' })}
+                      data-style="tool"
+                      className={clsx({
+                        'border-amber-900 bg-amber-800 text-white': state.activeTool === 'freehand-polygon-drawing',
+                      })}
                       onClick={() => dispatch({ type: 'draw-site-boundary', payload: '' })}
                     >
-                      <PolygonIcon classes="h-6 text-white fill-current" />
+                      <PolygonIcon classes="h-6 w-6 text-white fill-current" />
                     </button>
                     <span className="block text-xs text-gray-500">Draw Site</span>
                   </div>
@@ -412,7 +417,7 @@ function AddSiteLocation() {
                       </div>
                       <div className="flex justify-between bg-gray-100 px-4 py-3 text-right sm:px-6">
                         <BackButton />
-                        <button type="submit" disabled={!state.formStatus === 'complete'}>
+                        <button type="submit" data-style="primary" disabled={!state.formStatus === 'complete'}>
                           Next
                         </button>
                       </div>

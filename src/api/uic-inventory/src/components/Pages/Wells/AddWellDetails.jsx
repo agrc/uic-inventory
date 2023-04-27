@@ -183,7 +183,7 @@ function AddWellDetails() {
       pointAddressClickEvent.current?.remove();
       pointAddressClickEvent.current = null;
     };
-  }, [wellGraphics, append, remove, selectedWells]);
+  }, [wellGraphics, append, remove, selectedWells, mapView]);
 
   // form reset after submission
   useEffect(() => {
@@ -339,12 +339,12 @@ function AddWellDetails() {
                 </div>
                 <div className="flex justify-around bg-gray-100 px-4 py-3 text-right sm:px-6">
                   <BackButton />
-                  <button type="submit" disabled={(selectedWells?.length ?? 0) === 0}>
+                  <button type="submit" data-style="secondary" disabled={(selectedWells?.length ?? 0) === 0}>
                     Update
                   </button>
                   <button
                     type="button"
-                    data-meta="default"
+                    data-style="primary"
                     onClick={() => navigate(`/site/${siteId}/inventory/${inventoryId}/submit`)}
                     disabled={wellsRemaining > 0}
                   >

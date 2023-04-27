@@ -13,15 +13,15 @@ export default function NotFound() {
           <p>
             This page does not exist as a part of the UIC inventory submission process. If normal usage has brought you
             here, please click the{' '}
-            <Link data-meta="primary" to="contact">
+            <Link data-style="link" to="contact">
               Contact us
             </Link>{' '}
             link and let us know what happened. Otherwise, please go back to the main page and navigate to your item of
             interest.
           </p>
           <p className="mt-4 text-center text-lg">
-            <Link type="button" data-meta="default" to="/">
-              Sites
+            <Link type="button" data-style="primary" to="/">
+              Back to home
             </Link>
           </p>
           <p className="mt-4">Thank you,</p>

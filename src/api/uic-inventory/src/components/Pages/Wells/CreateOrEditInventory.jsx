@@ -126,8 +126,8 @@ function CreateOrEditInventory() {
                                 className={({ active, checked }) =>
                                   clsx(
                                     {
-                                      'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-800': active,
-                                      'bg-gray-800 text-white': checked,
+                                      'ring-2 ring-white ring-opacity-60 ring-offset-2 ring-offset-indigo-700': active,
+                                      'bg-indigo-500 text-white': checked,
                                       'bg-white': !checked,
                                     },
                                     'relative flex cursor-pointer rounded-lg border px-5 py-4 shadow-md focus:outline-none'
@@ -154,7 +154,7 @@ function CreateOrEditInventory() {
                                     </div>
                                     {checked && (
                                       <div className="shrink-0 ">
-                                        <CheckIcon className="h-6 w-6 text-blue-300" />
+                                        <CheckIcon className="h-6 w-6 text-indigo-100" />
                                       </div>
                                     )}
                                   </div>
@@ -179,7 +179,7 @@ function CreateOrEditInventory() {
                 <ResponsiveGridColumn full={true} half={true}>
                   <p className="text-center italic text-gray-500 md:text-left">
                     To submit a UIC Inventory Form you must have a valid Inventory Review Fee order number or receipt.{' '}
-                    <button data-meta="primary" onClick={open}>
+                    <button data-style="link" onClick={open}>
                       Click for instructions
                     </button>{' '}
                     to pay the UIC Inventory Fee online.
@@ -220,7 +220,7 @@ function CreateOrEditInventory() {
                       <li className="leading-loose">
                         Navigate to this website:{' '}
                         <a
-                          data-meta="primary"
+                          data-style="primary"
                           href="https://secure.utah.gov/cart/dwq_cart/details.html?productId=205"
                           target="_blank"
                           rel="noreferrer noopener"
@@ -255,7 +255,7 @@ function CreateOrEditInventory() {
                         .
                       </li>
                     </ul>
-                    <button type="button" data-meta="default" className="mt-4" onClick={close}>
+                    <button type="button" data-style="primary" className="mt-4" onClick={close}>
                       Close
                     </button>
                   </div>

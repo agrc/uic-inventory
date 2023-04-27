@@ -20,7 +20,7 @@ const SiteInformation = ({ site }) => {
     <div className="relative mt-4 grid auto-cols-auto gap-1 rounded-lg bg-gray-800 px-4 py-3 text-white shadow md:mt-12">
       <button
         type="button"
-        data-meta="default"
+        data-style="primary"
         className="absolute right-0 top-0 px-3 py-1"
         onClick={() => setShow(false)}
       >

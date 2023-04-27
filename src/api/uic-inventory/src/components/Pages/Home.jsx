@@ -41,7 +41,7 @@ export function SitesAndInventory({ completeProfile }) {
           ) : (
             <p>
               You must complete your{' '}
-              <Link data-meta="primary" to="/profile">
+              <Link data-style="primary" to="/profile">
                 profile
               </Link>{' '}
               before submitting sites.
@@ -66,7 +66,7 @@ export function GenericLandingPage() {
           <p>
             Owners or operators of all Class V injection wells, existing and new, must submit inventory information
             according to Section{' '}
-            <a href="https://adminrules.utah.gov/public/rule/R317-7/Current%20Rules" data-meta="primary">
+            <a href="https://adminrules.utah.gov/public/rule/R317-7/Current%20Rules" data-style="link">
               R317-7- 6.4(C)
             </a>{' '}
             of the Utah Administrative Rules for the Underground Injection Control Program. Required information
@@ -79,7 +79,7 @@ export function GenericLandingPage() {
           </p>
           <p>
             To submit, you must first create a Utah ID account and provide UIC user profile information. Please visit{' '}
-            <a data-meta="primary" href="/api/login">
+            <a data-style="link" href="/api/login">
               Utah ID
             </a>{' '}
             to register with Utah ID and then return to this page to login and complete your profile. If you already
@@ -108,7 +108,7 @@ export function GenericLandingPage() {
 
 function CreationButton({ access, url = '/site/create', label = 'Create item', className = 'm-4 text-2xl' }) {
   return (
-    <Link to={url} type="button" data-meta="default" disabled={access} className={className}>
+    <Link to={url} type="button" data-style="primary" disabled={access} className={className}>
       <div className="flex">
         <PlusIcon className="mr-2 h-5 w-5 self-center" />
         <span>{label}</span>
@@ -142,7 +142,7 @@ function SiteList({ show, status, data }) {
   ) : (
     <p>
       You must complete your{' '}
-      <Link data-meta="primary" to="/profile">
+      <Link data-style="primary" to="/profile">
         {' '}
         profile{' '}
       </Link>{' '}

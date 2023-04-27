@@ -35,10 +35,10 @@ export default function ConfirmationModal({ isOpen, onClose, onYes, children }) 
               {children}
 
               <div className="mt-6 flex justify-around">
-                <button type="button" data-meta="default" className="bg-indigo-900" onClick={onYes}>
+                <button type="button" data-style="primary" className="bg-indigo-900" onClick={onYes}>
                   Yes
                 </button>
-                <button type="button" data-meta="default" onClick={onClose}>
+                <button type="button" data-style="primary" onClick={onClose}>
                   No
                 </button>
               </div>

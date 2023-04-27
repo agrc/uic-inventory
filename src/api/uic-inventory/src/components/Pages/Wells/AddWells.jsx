@@ -102,6 +102,7 @@ function AddWells() {
                       <BackButton />
                       <button
                         type="submit"
+                        data-style="primary"
                         onClick={() => navigate(`/site/${siteId}/inventory/${inventoryId}/add-well-details`)}
                       >
                         Next
@@ -238,17 +239,17 @@ function AddWellForm({ data, state, dispatch }) {
           <div className="flex flex-col items-center space-y-2">
             <button
               type="button"
-              data-meta="default"
-              className={clsx({ 'bg-blue-800': state.activeTool === 'draw-well' })}
+              data-style="tool"
+              className={clsx({ 'border-amber-900 bg-amber-800 text-white': state.activeTool === 'draw-well' })}
               onClick={() => dispatch({ type: 'activate-tool', payload: 'draw-well' })}
             >
-              <PointIcon classes="h-6 text-white fill-current" />
+              <PointIcon classes="fill-current h-6 w-6" />
             </button>
             <span className="block text-xs text-gray-500">Draw Well</span>
           </div>
         </Tippy>
         <div className="flex flex-col items-center space-y-2">
-          <button type="submit" disabled={!isValid}>
+          <button type="submit" data-style="secondary" disabled={!isValid}>
             Add
           </button>
         </div>
@@ -561,12 +562,12 @@ function WellTable({ wells = [], state, dispatch }) {
                 </p>
 
                 <div className="mt-6 flex justify-around">
-                  <button type="button" data-meta="default" className="bg-indigo-900" onClick={remove}>
+                  <button type="button" data-style="primary" className="bg-indigo-900" onClick={remove}>
                     Yes
                   </button>
                   <button
                     type="button"
-                    data-meta="default"
+                    data-style="primary"
                     onClick={() => {
                       close();
                       deleteWell.current = null;

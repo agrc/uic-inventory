@@ -142,7 +142,7 @@ const HasFlag = ({ reason, onResolve }) => {
         <div className="flex h-full grow justify-between gap-4 bg-red-400 px-4 py-5 sm:p-6">
           <div className="ml-8">{reason}</div>
           <div className="items-end">
-            <button type="button" data-meta="default" onClick={openFlagModal}>
+            <button type="button" data-style="primary" onClick={openFlagModal}>
               Resolve
             </button>
           </div>
