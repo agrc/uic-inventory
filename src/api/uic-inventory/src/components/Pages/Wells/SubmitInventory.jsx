@@ -104,7 +104,7 @@ const SubmissionForm = ({ data }) => {
 
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation(
+  const { status, mutate } = useMutation(
     (data) => ky.post('/api/inventory/submit', { json: { ...data, id: authInfo.id, siteId, inventoryId } }),
     {
       onSuccess: () => {
@@ -129,6 +129,7 @@ const SubmissionForm = ({ data }) => {
         back={true}
         submitLabel="Submit"
         site={data?.site}
+        status={status}
       >
         <FormGrid>
           <ResponsiveGridColumn full={true}>
