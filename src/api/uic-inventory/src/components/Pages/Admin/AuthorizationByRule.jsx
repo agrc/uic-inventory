@@ -184,13 +184,14 @@ const ContactDetails = ({ siteId }) => {
 };
 
 const SubjectDetails = ({ inventory }) => {
+  const lookUp = wellTypes.find((item) => item.value === inventory.subClass);
   return (
     <div className="grid grid-cols-4">
       Subject:
       <ul className="col-span-3">
         <li>Approval of Class V Injection Well Authorization by Rule</li>
         <li>
-          {wellTypes.find((item) => item.value === inventory.subClass).label} – EPA Well Code – {inventory.subClass}
+          {lookUp.label} – EPA Well Code – {lookUp.epa}
         </li>
         <li>{inventory.site.name}</li>
         <li>{inventory.site.address}</li>
@@ -207,7 +208,7 @@ const SubjectDetails = ({ inventory }) => {
 
 const SurfaceWaterProtection = ({ wells }) => {
   const filtered = wells
-    .filter((well) => well.surfaceWaterProtection[0] === 'Y')
+    .filter((well) => (well.surfaceWaterProtection?.length ?? 0) > 0 && well.surfaceWaterProtection[0] === 'Y')
     .map((well) => {
       return {
         name: well.wellName,
