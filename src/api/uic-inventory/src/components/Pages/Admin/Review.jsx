@@ -476,6 +476,23 @@ const WellDetails = ({ siteId, inventoryId }) => {
           </Panel>
         ))}
       </Section>
+      <Section gray={true} title="Hydrogeologic Characterization">
+        {data?.wells.map((well) => (
+          <Panel key={well.id}>
+            <div
+              title="Well count"
+              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700 print:block print:border-0 print:bg-transparent"
+            >
+              {well.count}
+            </div>
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
+              {well.status}
+            </Value>
+            <Label>Injectate Characterization</Label>
+            <Value>{well.hydrogeologicCharacterization}</Value>
+          </Panel>
+        ))}
+      </Section>
     </>
   );
 };
