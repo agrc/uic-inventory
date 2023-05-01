@@ -17,6 +17,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Viewpoint from '@arcgis/core/Viewpoint';
+import { union } from '@arcgis/core/geometry/geometryEngine';
 import { TailwindDartboard } from '../../Dartboard/Dartboard';
 import { useContext, useEffect, useReducer, useRef } from 'react';
 import clsx from 'clsx';
@@ -54,7 +55,7 @@ function AddSiteLocation() {
   // zoom map on geocode
   const { setViewPoint } = useViewPointZooming(mapView);
   // manage graphics
-  const { setGraphic: setPolygonGraphic } = useGraphicManager(mapView);
+  const { setGraphic: setPolygonGraphic, graphic: sitePolygon } = useGraphicManager(mapView);
   const { setGraphic: setPointGraphic } = useGraphicManager(mapView);
 
   const reducer = (state, action) => {
@@ -156,6 +157,10 @@ function AddSiteLocation() {
         setValue('geometry', geometry);
 
         isDirty.current = true;
+
+        if (sitePolygon) {
+          action.payload.geometry = union([sitePolygon.geometry, action.payload.geometry]);
+        }
 
         setPolygonGraphic(action.payload);
 
@@ -375,7 +380,7 @@ function AddSiteLocation() {
                     >
                       <SelectPolygonIcon classes="h-6 w-6 text-white fill-current" />
                     </button>
-                    <span className="block text-xs text-gray-500">Select Parcel</span>
+                    <span className="block text-xs text-gray-500">Select Parcels</span>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
                     <button
