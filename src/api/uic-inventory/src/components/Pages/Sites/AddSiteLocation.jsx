@@ -355,7 +355,9 @@ function AddSiteLocation() {
                     <button
                       type="button"
                       data-style="tool"
-                      className={clsx({ 'border-amber-900 bg-amber-800 text-white': state.activeTool === 'site-address-click' })}
+                      className={clsx({
+                        'border-amber-900 bg-amber-800 text-white': state.activeTool === 'site-address-click',
+                      })}
                       onClick={() => dispatch({ type: 'activate-site-address-from-click', payload: '' })}
                     >
                       <PointIcon classes="h-6 w-6 text-white fill-current" />
@@ -375,7 +377,9 @@ function AddSiteLocation() {
                     <button
                       type="button"
                       data-style="tool"
-                      className={clsx({ 'border-amber-900 bg-amber-800 text-white': state.activeTool === 'selecting-a-parcel' })}
+                      className={clsx({
+                        'border-amber-900 bg-amber-800 text-white': state.activeTool === 'selecting-a-parcel',
+                      })}
                       onClick={() => dispatch({ type: 'select-site-from-parcel', payload: '' })}
                     >
                       <SelectPolygonIcon classes="h-6 w-6 text-white fill-current" />
