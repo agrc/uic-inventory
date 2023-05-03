@@ -55,7 +55,7 @@ public class SiteController : ControllerBase {
             return Unauthorized(new SitePayload(ex));
         } catch (Exception ex) {
             _log.ForContext("endpoint", $"GET:api/site/{siteId}")
-              .Fatal(ex, "unhandled excpetion");
+              .Fatal(ex, "unhandled exception");
 
             return StatusCode(500, new SitePayload(ex));
         }
