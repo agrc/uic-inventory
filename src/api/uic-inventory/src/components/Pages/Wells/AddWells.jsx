@@ -24,7 +24,14 @@ import {
   PointIcon,
   useNavigate,
 } from '../../PageElements';
-import { Label, GridHeading, WellLocationSchema as schema, SelectInput, TextInput } from '../../FormElements';
+import {
+  Label,
+  EditableList,
+  GridHeading,
+  WellLocationSchema as schema,
+  SelectInput,
+  TextInput,
+} from '../../FormElements';
 import { PinSymbol, SelectedWellsSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { AuthContext } from '../../../AuthProvider';
 import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
@@ -457,6 +464,9 @@ function WellTable({ wells = [], state, dispatch }) {
       {
         accessor: 'status',
         Header: 'Operating Status',
+        Cell: ({ cell }) => {
+          return <EditableList initialValue={cell.value} items={operatingStatusTypes} />;
+        },
       },
       {
         Header: 'Count',

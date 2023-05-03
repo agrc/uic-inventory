@@ -1,31 +1,32 @@
-import { Fragment, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import ky from 'ky';
+import { Dialog } from '@headlessui/react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { useTable } from 'react-table';
+import ky from 'ky';
 import throttle from 'lodash.throttle';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Code } from 'react-content-loader';
-import { Dialog, Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { useTable } from 'react-table';
 
-import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { when } from '@arcgis/core/core/reactiveUtils';
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 
 import { AuthContext } from '../../../AuthProvider';
-import { FormGrid, ResponsiveGridColumn } from '../../FormElements';
+import { contactTypes, ownershipTypes, valueToLabel, wellTypes } from '../../../data/lookups';
+import { FormGrid, ResponsiveGridColumn, SelectListbox, useEditableInput, useEditableSelect } from '../../FormElements';
+import { useInventoryWells, useOpenClosed, useSitePolygon, useWebMap } from '../../Hooks';
 import {
-  ConfirmationModal,
   Chrome,
+  ConfirmationModal,
   Flagged,
   Link,
-  useParams,
   onRequestError,
   toast,
   useNavigate,
+  useParams,
 } from '../../PageElements';
-import { ownershipTypes, wellTypes, contactTypes, valueToLabel } from '../../../data/lookups';
-import { useOpenClosed, useWebMap, useSitePolygon, useInventoryWells } from '../../Hooks';
+
+import '@arcgis/core/assets/esri/themes/light/main.css';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'numeric',
@@ -43,7 +44,8 @@ export function Component() {
   const queryClient = useQueryClient();
   const [isOpen, { open, close }] = useOpenClosed();
 
-  const { mutate } = useMutation((json) => ky.delete('/api/inventory/reject', { json }), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.delete('/api/inventory/reject', { json }),
     onSettled: () => {
       queryClient.invalidateQueries('sites');
       queryClient.invalidateQueries(['site', siteId, 'inventory', inventoryId]);
@@ -143,7 +145,8 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
 
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation((json) => ky.put('/api/inventory', { json }), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.put('/api/inventory', { json }),
     onMutate: async (inventory) => {
       await queryClient.cancelQueries(queryKey);
       const previousValue = queryClient.getQueryData(queryKey);
@@ -163,6 +166,10 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
           updated.edocs = inventory.edocs;
         }
 
+        if (inventory.orderNumber) {
+          updated.orderNumber = inventory.orderNumber;
+        }
+
         return updated;
       });
 
@@ -177,7 +184,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
     onError: (error) => onRequestError(error, 'We had some trouble updating this inventory.'),
   });
 
-  const modify = ({ subClass, edocs, orderNumber }) => {
+  const modify = ({ subClass, orderNumber, edocs }) => {
     const input = {
       accountId: parseInt(authInfo.id),
       inventoryId: parseInt(inventoryId),
@@ -189,6 +196,10 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
 
     mutate(input);
   };
+
+  const edocsEditable = useEditableInput(data?.edocs, (edocs) => modify({ edocs }));
+  const orderNumberEditable = useEditableInput(data?.orderNumber, (orderNumber) => modify({ orderNumber }));
+  const subClassEditable = useEditableSelect(data?.subClass, wellTypes, (value) => modify({ subClass: value?.value }));
 
   if (status === 'loading') {
     return <Code />;
@@ -214,20 +225,46 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
           <Label>NAICS</Label>
           <Value>{`${data?.site.naicsPrimary} - ${data?.site.naicsTitle}`}</Value>
         </ResponsiveGridColumn>
-        <EditableText field="Edocs #" initialValue={data?.edocs} onMutate={(edocs) => modify({ edocs })} />
+        <ResponsiveGridColumn full={true} half={true} third={true}>
+          <Label>
+            Edocs #
+            <button {...edocsEditable.getModifyButtonProps()} />
+            {edocsEditable.isEditing && <button {...edocsEditable.getCancelButtonProps()} />}
+          </Label>
+          {edocsEditable.isEditing ? (
+            <input value={data?.edocs} {...edocsEditable.getInputProps()} />
+          ) : (
+            <Value>{data?.edocs ?? '-'}</Value>
+          )}
+        </ResponsiveGridColumn>
       </Section>
       <Section title="Inventory Details">
-        <EditableList
-          field="Inventory Class"
-          items={wellTypes}
-          initialValue={valueToLabel(wellTypes, data?.subClass)}
-          onMutate={(value) => modify({ subClass: value?.value })}
-        />
-        <EditableText
-          field="Order Number"
-          initialValue={data?.orderNumber}
-          onMutate={(orderNumber) => modify({ orderNumber })}
-        />
+        <ResponsiveGridColumn full={true} half={true}>
+          <Label>
+            Inventory Class
+            <button {...subClassEditable.getModifyButtonProps()} />
+            {subClassEditable.isEditing && <button {...subClassEditable.getCancelButtonProps()} />}
+          </Label>
+          {subClassEditable.isEditing ? (
+            <div className="mt-1">
+              <SelectListbox {...subClassEditable.getSelectProps()} />
+            </div>
+          ) : (
+            <Value>{subClassEditable.label}</Value>
+          )}
+        </ResponsiveGridColumn>
+        <ResponsiveGridColumn full={true} half={true} third={true}>
+          <Label>
+            Order Number
+            <button {...orderNumberEditable.getModifyButtonProps()} />
+            {orderNumberEditable.isEditing && <button {...orderNumberEditable.getCancelButtonProps()} />}
+          </Label>
+          {orderNumberEditable.isEditing ? (
+            <input {...orderNumberEditable.getInputProps()} />
+          ) : (
+            <Value>{data?.orderNumber ?? '-'}</Value>
+          )}
+        </ResponsiveGridColumn>
         <ResponsiveGridColumn full={true} half={true}>
           <Label>Signed By</Label>
           <Value>{data?.signature}</Value>
@@ -238,132 +275,6 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
         </ResponsiveGridColumn>
       </Section>
     </>
-  );
-};
-
-const EditableText = ({ field, initialValue, onMutate }) => {
-  const [active, { toggle }] = useOpenClosed();
-  const [value, setValue] = useState(initialValue ?? '');
-
-  const handleChange = () => {
-    if (active) {
-      onMutate(value);
-    }
-
-    toggle();
-  };
-
-  return (
-    <ResponsiveGridColumn full={true} half={true} third={true}>
-      <Label>
-        {field}
-        <button
-          onClick={handleChange}
-          className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white print:hidden"
-        >
-          {active ? 'save' : 'modify'}
-        </button>
-        {active && (
-          <button
-            onClick={toggle}
-            className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-red-800 hover:text-white"
-          >
-            cancel
-          </button>
-        )}
-      </Label>
-      {!active ? (
-        <Value>{value === '' ? '-' : value}</Value>
-      ) : (
-        <input type="text" value={value} onChange={(event) => setValue(event.target.value)} />
-      )}
-    </ResponsiveGridColumn>
-  );
-};
-
-const EditableList = ({ field, initialValue, onMutate, items }) => {
-  const [active, { toggle }] = useOpenClosed();
-  const [selected, setSelected] = useState(() => {
-    const results = items.filter((type) => type.label === initialValue);
-    return results.length === 1 ? results[0] : results[0];
-  });
-
-  const handleChange = () => {
-    if (active) {
-      onMutate(selected);
-    }
-
-    toggle();
-  };
-
-  return (
-    <ResponsiveGridColumn full={true} half={true}>
-      <Label>
-        {field}
-        <button
-          onClick={handleChange}
-          className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-gray-800 hover:text-white print:hidden"
-        >
-          {active ? 'save' : 'modify'}
-        </button>
-        {active && (
-          <button
-            onClick={toggle}
-            className="ml-1 rounded-lg border px-2 py-1 text-xs hover:bg-red-800 hover:text-white"
-          >
-            cancel
-          </button>
-        )}
-      </Label>
-      {!active ? <Value>{initialValue}</Value> : <MyListbox selected={selected} setSelected={setSelected} />}
-    </ResponsiveGridColumn>
-  );
-};
-
-const MyListbox = ({ selected, setSelected }) => {
-  return (
-    <div className="w-72">
-      <Listbox value={selected} onChange={setSelected}>
-        <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
-          <span className="block truncate">{selected.label}</span>
-          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-          </span>
-        </Listbox.Button>
-        <Transition as={Fragment} leave="transition ease-in duration-100" leaveFrom="opacity-100" leaveTo="opacity-0">
-          <Listbox.Options className="absolute z-10 mt-1 max-h-60 max-w-min overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-            {wellTypes.map((subclass) => (
-              <Listbox.Option
-                key={subclass.value}
-                className={({ active }) =>
-                  clsx('relative cursor-default select-none py-2 pl-10 pr-4', {
-                    'bg-gray-700 text-white': active,
-                  })
-                }
-                value={subclass}
-              >
-                {({ selected, active }) => (
-                  <>
-                    <span className={`${selected ? 'font-medium' : 'font-normal'} block truncate`}>
-                      {subclass.label}
-                    </span>
-                    {selected ? (
-                      <span
-                        className={clsx('absolute inset-y-0 left-0 flex items-center pl-3', {
-                          'text-white': active,
-                        })}
-                      >
-                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                      </span>
-                    ) : null}
-                  </>
-                )}
-              </Listbox.Option>
-            ))}
-          </Listbox.Options>
-        </Transition>
-      </Listbox>
-    </div>
   );
 };
 
@@ -532,6 +443,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
 
   const [state, setState] = useState({ highlighted: undefined, graphics: [] });
 
+  const queryKey = ['site', siteId, 'inventory', inventoryId];
   const { status, data } = useQuery({
     queryKey: queryKey,
     queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
@@ -594,7 +506,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
 
   return (
     <>
-      <Section title="Location Details" height="h-screen print:h-auto" className="print:break-before-page">
+      <Section title="Location Details" height="print:h-auto" className="print:break-before-page">
         <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
           <div className="w-full">
             {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} />}
