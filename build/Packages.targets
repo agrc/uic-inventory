@@ -16,7 +16,7 @@
 
     <!-- Database -->
     <PackageReference Update="Dapper" Version="2.0.123" />
-    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.3" />
+    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="7.0.5" />
     <PackageReference Update="EFCORE.NamingConventions" Version="7.0.2" />
     <PackageReference Update="Oracle.ManagedDataAccess.Core" Version="3.21.100" />
@@ -33,7 +33,7 @@
     <PackageReference Update="System.Text.Encoding.CodePages" Version="7.0.0" />
 
     <!-- Cloud -->
-    <PackageReference Update="Google.Cloud.Storage.V1" Version="4.4.0" />
+    <PackageReference Update="Google.Cloud.Storage.V1" Version="4.5.0" />
 
     <!-- Email -->
     <PackageReference Update="SendGrid" Version="9.28.1" />
