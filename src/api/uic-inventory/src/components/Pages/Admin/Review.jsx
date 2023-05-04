@@ -406,7 +406,7 @@ const WellDetails = ({ siteId, inventoryId }) => {
             </Value>
             <Label>Well Name</Label>
             <Value>{well.wellName}</Value>
-            <Label>Injectate Characterization</Label>
+            <Label>Hydrogeologic Characterization</Label>
             <Value>{well.hydrogeologicCharacterization}</Value>
           </Panel>
         ))}
