@@ -38,7 +38,8 @@ export function Component() {
 
   const queryClient = useQueryClient();
   const { status, error, data } = useQuery(getSerContact(siteId));
-  const { mutate } = useMutation((json) => ky.post('/api/contact', { json }), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.post('/api/contact', { json }),
     onMutate: async (contact) => {
       await queryClient.cancelQueries(['ser-contacts', siteId]);
       const previousValue = queryClient.getQueryData(['ser-contacts', siteId]);
@@ -180,7 +181,8 @@ function ContactTable({ data }) {
   const [isOpen, { open, close }] = useOpenClosed();
   const deleteContact = useRef();
 
-  const { mutate } = useMutation((json) => ky.delete(`/api/contact`, { json }), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.delete(`/api/contact`, { json }),
     onMutate: async (mutationData) => {
       await queryClient.cancelQueries(['contacts', siteId]);
       const previousValue = queryClient.getQueryData(['contacts', siteId]);

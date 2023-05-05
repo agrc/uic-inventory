@@ -25,7 +25,8 @@ export function Component() {
   const { siteId, inventoryId = -1 } = useParams();
 
   const { data, status } = useQuery(getInventory(siteId, inventoryId));
-  const { mutate } = useMutation((json) => ky.post('/api/inventory', { json }).json(), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.post('/api/inventory', { json }).json(),
     onSuccess: (response) => {
       toast.success('Inventory created successfully!');
 

@@ -14,7 +14,8 @@ export function Component() {
   //* pull isDirty from form state to activate proxy
   const { isDirty, isSubmitSuccessful } = formState;
 
-  const { mutate, status } = useMutation((json) => ky.post('/api/notify/staff', { json }), {
+  const { mutate, status } = useMutation({
+    mutationFn: (json) => ky.post('/api/notify/staff', { json }),
     onError: (error) => onRequestError(error, 'We had some trouble updating your profile.'),
   });
 

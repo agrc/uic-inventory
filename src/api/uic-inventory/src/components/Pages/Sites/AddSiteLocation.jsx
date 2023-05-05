@@ -39,7 +39,8 @@ export function Component() {
   const parcelClickEvent = useRef(null);
   const siteDrawingEvents = useRef(null);
   const { status, data } = useQuery(getSites(siteId));
-  const { mutate } = useMutation((input) => ky.put('/api/site', { json: input }).json(), {
+  const { mutate } = useMutation({
+    mutationFn: (input) => ky.put('/api/site', { json: input }).json(),
     onSuccess: () => {
       toast.success('Site location updated successfully!');
       navigate(`/site/${siteId}/inventory/create`);

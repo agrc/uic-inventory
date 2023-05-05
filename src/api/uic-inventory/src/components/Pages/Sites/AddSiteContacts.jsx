@@ -105,7 +105,8 @@ function CreateContactForm({ data }) {
 
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation((json) => ky.post('/api/contact', { json }), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.post('/api/contact', { json }),
     onMutate: async (contact) => {
       await queryClient.cancelQueries(['contacts', siteId]);
       const previousValue = queryClient.getQueryData(['contacts', siteId]);
@@ -389,7 +390,8 @@ function ContactTable({ data }) {
   const [isOpen, { open, close }] = useOpenClosed();
   const deleteContact = useRef();
 
-  const { mutate } = useMutation((json) => ky.delete(`/api/contact`, { json }), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.delete(`/api/contact`, { json }),
     onMutate: async (mutationData) => {
       await queryClient.cancelQueries(['contacts', siteId]);
       const previousValue = queryClient.getQueryData(['contacts', siteId]);

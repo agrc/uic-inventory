@@ -15,7 +15,8 @@ export default function Flagged({ reason, siteId, inventoryId }) {
 
   const [text, setText] = useState(reason ?? '');
 
-  const { mutate } = useMutation((json) => ky.put('/api/inventory', { json }), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.put('/api/inventory', { json }),
     onMutate: async () => {
       await queryClient.cancelQueries(queryKey);
       const previousValue = queryClient.getQueryData(queryKey);

@@ -398,7 +398,8 @@ function SiteTable({ data }) {
   );
 
   const queryClient = useQueryClient();
-  const { mutate } = useMutation((siteId) => ky.delete(`/api/site`, { json: { siteId } }), {
+  const { mutate } = useMutation({
+    mutationFn: (siteId) => ky.delete(`/api/site`, { json: { siteId } }),
     onMutate: async (id) => {
       await queryClient.cancelQueries('sites');
       const previousValue = queryClient.getQueryData('sites');

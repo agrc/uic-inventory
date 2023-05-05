@@ -73,7 +73,8 @@ export function Component() {
 const ProfileForm = ({ id, data }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { mutate } = useMutation((data) => ky.put('/api/account', { json: { ...data, id } }).json(), {
+  const { mutate } = useMutation({
+    mutationFn: (data) => ky.put('/api/account', { json: { ...data, id } }).json(),
     onSuccess: () => {
       queryClient.invalidateQueries('auth');
       queryClient.invalidateQueries('all-accounts');
@@ -190,7 +191,8 @@ const ProfileForm = ({ id, data }) => {
 };
 
 const NotificationForm = ({ id, data }) => {
-  const { mutate } = useMutation((data) => ky.patch('/api/admin/account', { json: { ...data, id } }).json(), {
+  const { mutate } = useMutation({
+    mutationFn: (data) => ky.patch('/api/admin/account', { json: { ...data, id } }).json(),
     onSuccess: (data) => {
       reset({
         receiveNotifications: data.receiveNotifications,
@@ -277,7 +279,8 @@ const AccessForm = ({ profileData }) => {
   const profileId = parseInt(id || authInfo?.id || false);
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation((json) => ky.patch('/api/admin/account', { json }).json(), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.patch('/api/admin/account', { json }).json(),
     onSuccess: (data) => {
       reset({
         access: data.access === 'elevated',

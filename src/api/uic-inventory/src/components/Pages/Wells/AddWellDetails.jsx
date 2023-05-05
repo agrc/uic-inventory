@@ -73,7 +73,8 @@ export function Component() {
 
   const { isSubmitSuccessful } = formState;
   // update wells
-  const { mutate } = useMutation((body) => ky.put('/api/well', { body, timeout: 600000 }), {
+  const { mutate } = useMutation({
+    mutationFn: (body) => ky.put('/api/well', { body, timeout: 600000 }),
     onSuccess: () => {
       toast.success('Wells updated successfully!');
       queryClient.invalidateQueries(queryKey);
