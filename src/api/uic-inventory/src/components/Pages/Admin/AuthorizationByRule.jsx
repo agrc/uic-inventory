@@ -4,11 +4,12 @@ import ky from 'ky';
 import { List } from 'react-content-loader';
 
 import { AuthContext } from '../../../AuthProvider';
-import { Chrome, useParams, onRequestError } from '../../PageElements';
+import { Chrome, useParams, onRequestError, useNavigate } from '../../PageElements';
 import { wellTypes } from '../../../data/lookups';
 
 export function Component() {
   const { inventoryId, siteId } = useParams();
+  const navigate = useNavigate();
   const { status, data } = useQuery({
     queryKey: ['site', siteId, 'inventory', inventoryId],
     queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
@@ -23,11 +24,7 @@ export function Component() {
         {status === 'success' && getAbrType(data)}
       </section>
       <section className="mt-10 flex flex-1 justify-center gap-6 print:hidden">
-        <button
-          onClick={open}
-          data-style="alternate"
-          className="sm:col-span-6 md:col-span-2"
-        >
+        <button onClick={() => navigate(-1)} data-style="alternate" className="sm:col-span-6 md:col-span-2">
           Back
         </button>
         <button data-style="primary" className="sm:col-span-6 md:col-span-2">
@@ -217,11 +214,6 @@ const SurfaceWaterProtection = ({ wells }) => {
       };
     });
   const within = filtered.length > 0;
-
-  // const nameMapping = wells.reduce(
-  //   (acc, { name, waterSystemContacts }) => ({ ...acc, [name]: waterSystemContacts.join(', ') }),
-  //   {}
-  // );
 
   return (
     <>
