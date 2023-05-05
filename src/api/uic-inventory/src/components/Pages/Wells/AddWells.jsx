@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
+import { Fragment, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTable } from 'react-table';
@@ -26,7 +26,7 @@ import {
 } from '../../PageElements';
 import {
   Label,
-  EditableList,
+  EditableCellSelect,
   GridHeading,
   WellLocationSchema as schema,
   SelectInput,
@@ -48,7 +48,6 @@ export function Component() {
   const navigate = useNavigate();
 
   const reducer = (state, action) => {
-    console.log('add wells reducer', state, action);
     switch (action.type) {
       case 'activate-tool': {
         return { ...state, activeTool: action.payload };
@@ -127,7 +126,8 @@ function AddWellForm({ data, state, dispatch }) {
   const { siteId, inventoryId } = useParams();
   const queryClient = useQueryClient();
 
-  const { mutate: addWell } = useMutation((json) => ky.post('/api/well', { json }).json(), {
+  const { mutate: addWell } = useMutation({
+    mutationFn: (json) => ky.post('/api/well', { json }).json(),
     onSuccess: () => {
       toast.success('Well added successfully!');
       queryClient.invalidateQueries(['site', siteId, 'inventory', inventoryId]);
@@ -425,7 +425,8 @@ function WellTable({ wells = [], state, dispatch }) {
   const deleteWell = useRef();
   const queryKey = ['site', siteId, 'inventory', inventoryId];
 
-  const { mutate } = useMutation((json) => ky.delete(`/api/well`, { json }), {
+  const { mutate } = useMutation({
+    mutationFn: (json) => ky.delete(`/api/well`, { json }),
     onMutate: async (mutationData) => {
       await queryClient.cancelQueries(queryKey);
       const previousValue = queryClient.getQueryData(queryKey);
@@ -452,6 +453,57 @@ function WellTable({ wells = [], state, dispatch }) {
       onRequestError(error, 'We had some trouble deleting this well.');
     },
   });
+  const { mutate: update } = useMutation({
+    mutationFn: (json) => ky.put(`/api/well`, { json }),
+    onMutate: async (well) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousValue = queryClient.getQueryData(queryKey);
+
+      queryClient.setQueryData(queryKey, (old) => {
+        const updatedWell = old.wells.find((w) => w.id === well.wellId);
+        const originalWells = old.wells.filter((w) => w.id !== well.wellId);
+
+        updatedWell.status = well.status;
+
+        const updated = {
+          ...old,
+          site: { ...old.site },
+          wells: [...originalWells, updatedWell],
+        };
+
+        return updated;
+      });
+
+      return { previousValue };
+    },
+    mutationKey: ['well', 'update'],
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Well updated successfully!');
+    },
+    onError: (error, _, context) => {
+      onRequestError(error, 'We had some trouble updating this well.');
+      queryClient.setQueryData(queryKey, context.previousValue);
+    },
+  });
+
+  const modify = useCallback(
+    (well) => {
+      const input = {
+        accountId: parseInt(authInfo.id),
+        inventoryId: parseInt(inventoryId),
+        siteId: parseInt(siteId),
+        wellId: parseInt(well.id),
+        status: well.status,
+      };
+
+      update(input);
+    },
+    [authInfo, inventoryId, siteId, update]
+  );
+  const onMutate = useCallback((well) => modify(well), [modify]);
   const columns = useMemo(
     () => [
       {
@@ -464,8 +516,15 @@ function WellTable({ wells = [], state, dispatch }) {
       {
         accessor: 'status',
         Header: 'Operating Status',
-        Cell: ({ cell }) => {
-          return <EditableList initialValue={cell.value} items={operatingStatusTypes} />;
+        Cell: ({ cell, row }) => {
+          return (
+            <EditableCellSelect
+              wellId={row.values.id}
+              status={cell.value}
+              items={operatingStatusTypes}
+              onMutate={onMutate}
+            />
+          );
         },
       },
       {
@@ -491,7 +550,7 @@ function WellTable({ wells = [], state, dispatch }) {
         },
       },
     ],
-    [open]
+    [open, onMutate]
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
