@@ -141,7 +141,7 @@ public static class WellLookup {
 
         var lookup = new Dictionary<string, string> {
     {"AC", "Active"},
-    {"PA", "Abandoned ‐ Approved"},
+    {"PA", "Abandoned - Approved"},
     {"PR", "Proposed Under Authorization By Rule"},
     {"OT", "Other"},
   };
