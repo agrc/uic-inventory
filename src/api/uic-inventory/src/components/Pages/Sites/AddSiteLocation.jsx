@@ -59,6 +59,8 @@ const pureReducer = (draft, action) => {
     case 'activate-site-address-from-click': {
       if (draft.activeTool === 'site-address-click') {
         draft.activeTool = null;
+      } else {
+        draft.activeTool = 'site-address-click';
       }
 
       break;
@@ -74,6 +76,8 @@ const pureReducer = (draft, action) => {
     case 'select-site-from-parcel': {
       if (draft.activeTool === 'selecting-a-parcel') {
         draft.activeTool = null;
+      } else {
+        draft.activeTool = 'selecting-a-parcel';
       }
 
       break;
@@ -90,6 +94,8 @@ const pureReducer = (draft, action) => {
     case 'draw-site-boundary': {
       if (draft.activeTool === 'freehand-polygon-drawing') {
         draft.activeTool = null;
+      } else {
+        draft.activeTool = 'freehand-polygon-drawing';
       }
 
       break;
