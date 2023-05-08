@@ -1,4 +1,5 @@
-import { Fragment, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
+import { Fragment, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import { useImmerReducer } from 'use-immer';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useTable } from 'react-table';
@@ -43,28 +44,32 @@ import { getInventory } from '../loaders';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
-const reducer = (state, action) => {
+const reducer = (draft, action) => {
   switch (action.type) {
     case 'activate-tool': {
-      return { ...state, activeTool: action.payload };
+      draft.activeTool = action.payload;
+
+      break;
     }
     case 'set-geometry-value': {
-      return { ...state, geometry: action.payload };
+      draft.geometry = action.payload;
+
+      break;
     }
     case 'set-wells': {
-      return { ...state, graphics: action.payload };
+      draft.graphics = action.payload;
+
+      break;
     }
     case 'set-hover-graphic': {
       if (action?.meta === 'toggle') {
-        action.payload == state.highlighted ? null : action.payload;
+        action.payload == draft.highlighted ? null : action.payload;
       }
 
-      console.log('set-hover-graphic', action.payload);
+      draft.highlighted = action.payload;
 
-      return { ...state, highlighted: action.payload };
+      break;
     }
-    default:
-      return state;
   }
 };
 
@@ -72,7 +77,7 @@ export function Component() {
   const { siteId, inventoryId } = useParams();
   const navigate = useNavigate();
 
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useImmerReducer(reducer, {
     graphics: [],
     geometry: undefined,
     activeTool: undefined,
