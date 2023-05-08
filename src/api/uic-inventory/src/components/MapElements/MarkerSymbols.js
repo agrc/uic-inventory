@@ -214,8 +214,8 @@ export const InvalidPolygonSegmentSymbol = {
   color: [220, 38, 38, 1],
 };
 
-export const SelectedWellsSymbol = PinSymbol.clone();
-SelectedWellsSymbol.data.primitiveOverrides = [
+const temp = PinSymbol.clone();
+temp.data.primitiveOverrides = [
   {
     type: 'CIMPrimitiveOverride',
     primitiveName: 'complete',
@@ -250,3 +250,5 @@ SelectedWellsSymbol.data.primitiveOverrides = [
     },
   },
 ];
+
+export const SelectedWellsSymbol = temp;
