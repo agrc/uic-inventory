@@ -43,34 +43,34 @@ import { getInventory } from '../loaders';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'activate-tool': {
+      return { ...state, activeTool: action.payload };
+    }
+    case 'set-geometry-value': {
+      return { ...state, geometry: action.payload };
+    }
+    case 'set-wells': {
+      return { ...state, graphics: action.payload };
+    }
+    case 'set-hover-graphic': {
+      if (action?.meta === 'toggle') {
+        action.payload == state.highlighted ? null : action.payload;
+      }
+
+      console.log('set-hover-graphic', action.payload);
+
+      return { ...state, highlighted: action.payload };
+    }
+    default:
+      return state;
+  }
+};
+
 export function Component() {
   const { siteId, inventoryId } = useParams();
   const navigate = useNavigate();
-
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case 'activate-tool': {
-        return { ...state, activeTool: action.payload };
-      }
-      case 'set-geometry-value': {
-        return { ...state, geometry: action.payload };
-      }
-      case 'set-wells': {
-        return { ...state, graphics: action.payload };
-      }
-      case 'set-hover-graphic': {
-        if (action?.meta === 'toggle') {
-          action.payload == state.highlighted ? null : action.payload;
-        }
-
-        console.log('set-hover-graphic', action.payload);
-
-        return { ...state, highlighted: action.payload };
-      }
-      default:
-        return state;
-    }
-  };
 
   const [state, dispatch] = useReducer(reducer, {
     graphics: [],
