@@ -41,7 +41,7 @@ export function Component({ completeProfile }) {
           ) : (
             <p>
               You must complete your{' '}
-              <Link data-style="primary" to="/profile">
+              <Link data-style="link" to="/profile">
                 profile
               </Link>{' '}
               before submitting sites.
@@ -94,7 +94,7 @@ function SiteList({ show, status, data }) {
   ) : (
     <p>
       You must complete your{' '}
-      <Link data-style="primary" to="/profile">
+      <Link data-style="link" to="/profile">
         {' '}
         profile{' '}
       </Link>{' '}
