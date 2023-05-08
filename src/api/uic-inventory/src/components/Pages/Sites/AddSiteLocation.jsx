@@ -315,7 +315,6 @@ export function Component() {
   // clear polygons when drawing tool changes
   useEffect(() => {
     if (['freehand-polygon-drawing', 'selecting-a-parcel'].includes(state.activeTool)) {
-      console.log('drawing type clear geometry');
       dispatch({ type: 'set-site-boundary', payload: null });
     }
   }, [state.activeTool, dispatch]);

@@ -317,8 +317,6 @@ function WellMap({ site, wells, state, dispatch }) {
         })
     );
 
-    console.log('setting initial graphics', wellGraphics);
-
     dispatch({ type: 'set-wells', payload: wellGraphics });
     setExistingPointGraphics(wellGraphics);
   }, [wells, dispatch, setExistingPointGraphics]);
@@ -395,7 +393,6 @@ function WellMap({ site, wells, state, dispatch }) {
       return;
     }
 
-    console.log('clearing temp point graphic');
     setPointGraphic(null);
   }, [setPointGraphic, state.geometry]);
 
@@ -414,9 +411,7 @@ function WellMap({ site, wells, state, dispatch }) {
         })
     );
 
-    console.log('dispatch set-wells', wellGraphics);
     dispatch({ type: 'set-wells', payload: wellGraphics });
-    console.log('existing point graphics', wellGraphics);
     setExistingPointGraphics(wellGraphics);
   }, [wells, dispatch, setExistingPointGraphics, state.highlighted]);
 
