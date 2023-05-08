@@ -17,9 +17,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Viewpoint from '@arcgis/core/Viewpoint';
-import { union } from '@arcgis/core/geometry/geometryEngine';
+import { difference, union } from '@arcgis/core/geometry/geometryEngine';
 import { TailwindDartboard } from '../../Dartboard/Dartboard';
-import { useContext, useEffect, useReducer, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { enablePolygonDrawing } from '../../MapElements/Drawing';
@@ -28,6 +28,74 @@ import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 import { getSites } from '../loaders';
+import { useImmerReducer } from 'use-immer';
+
+const pureReducer = (draft, action) => {
+  switch (action.type) {
+    case 'initial-load': {
+      if (action.payload.geometry) {
+        const shape = JSON.parse(action.payload.geometry);
+
+        draft.geometry = shape;
+      }
+
+      if (action.payload.address) {
+        draft.address = action.payload.address;
+      }
+
+      break;
+    }
+    case 'geocode-success': {
+      draft.address = action.payload.attributes.InputAddress;
+      draft.formStatus = 'allow-site-boundary-from-click';
+
+      break;
+    }
+    case 'skip-geocoding': {
+      draft.formStatus = 'allow-site-address-from-click';
+
+      break;
+    }
+    case 'activate-site-address-from-click': {
+      if (draft.activeTool === 'site-address-click') {
+        draft.activeTool = null;
+      }
+
+      break;
+    }
+    case 'address-clicked': {
+      const coordinates = `${Math.round(action.payload.geometry.x)}, ${Math.round(action.payload.geometry.y)}`;
+
+      draft.address = coordinates;
+      draft.formStatus = 'allow-site-boundary-from-click';
+
+      break;
+    }
+    case 'select-site-from-parcel': {
+      if (draft.activeTool === 'selecting-a-parcel') {
+        draft.activeTool = null;
+      }
+
+      break;
+    }
+    case 'set-site-boundary': {
+      draft.geometry = action.payload?.toJSON();
+
+      if (action.meta === 'freehand-polygon-drawing') {
+        draft.activeTool = null;
+      }
+
+      break;
+    }
+    case 'draw-site-boundary': {
+      if (draft.activeTool === 'freehand-polygon-drawing') {
+        draft.activeTool = null;
+      }
+
+      break;
+    }
+  }
+};
 
 export function Component() {
   const { authInfo } = useContext(AuthContext);
@@ -38,6 +106,7 @@ export function Component() {
   const pointAddressClickEvent = useRef(null);
   const parcelClickEvent = useRef(null);
   const siteDrawingEvents = useRef(null);
+  const parcelIds = useRef([]);
   const { status, data } = useQuery(getSites(siteId));
   const { mutate } = useMutation({
     mutationFn: (input) => ky.put('/api/site', { json: input }).json(),
@@ -54,125 +123,9 @@ export function Component() {
   // manage graphics
   const { setGraphic: setPolygonGraphic, graphic: sitePolygon } = useGraphicManager(mapView);
   const { setGraphic: setPointGraphic } = useGraphicManager(mapView);
+  const { setGraphic: setDrawingGraphic } = useGraphicManager(mapView);
 
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case 'initial-load': {
-        if (action.payload.geometry) {
-          const shape = JSON.parse(action.payload.geometry);
-
-          setValue('geometry', shape);
-          state = { ...state, geometry: shape };
-
-          const geometry = new Polygon({
-            type: 'polygon',
-            rings: shape.rings,
-            spatialReference: shape.spatialReference,
-          });
-
-          setPolygonGraphic(
-            new Graphic({
-              geometry: geometry,
-              attributes: {},
-              symbol: PolygonSymbol,
-            })
-          );
-
-          setViewPoint(geometry.extent.expand(3));
-        }
-
-        if (action.payload.address) {
-          state = { ...state, address: action.payload.address };
-          setValue('address', action.payload.address);
-        }
-
-        if (state.address && state.geometry) {
-          state = { ...state };
-        }
-
-        isDirty.current = false;
-
-        return state;
-      }
-      case 'geocode-success': {
-        isDirty.current = true;
-        setValue('address', action.payload.attributes.InputAddress);
-        setPointGraphic(new Graphic(action.payload));
-        setViewPoint(new Viewpoint({ targetGeometry: action.payload.geometry, scale: 1500 }));
-
-        return {
-          ...state,
-          address: action.payload.attributes.InputAddress,
-          formStatus: 'allow-site-boundary-from-click',
-        };
-      }
-      case 'skip-geocoding': {
-        return { ...state, formStatus: 'allow-site-address-from-click' };
-      }
-      case 'activate-site-address-from-click': {
-        if (state.activeTool === 'site-address-click') {
-          return { ...state, activeTool: null };
-        }
-
-        return { ...state, activeTool: 'site-address-click' };
-      }
-      case 'address-clicked': {
-        const coordinates = `${Math.round(action.payload.geometry.x)}, ${Math.round(action.payload.geometry.y)}`;
-        setValue('address', coordinates);
-        isDirty.current = true;
-        setPointGraphic(action.payload);
-
-        if (mapView.current.scale > 10489.34) {
-          mapView.current.goTo(new Viewpoint({ targetGeometry: action.payload.geometry, scale: 10480 }));
-        }
-
-        return { ...state, address: coordinates, formStatus: 'allow-site-boundary-from-click' };
-      }
-      case 'select-site-from-parcel': {
-        if (state.activeTool === 'selecting-a-parcel') {
-          return { ...state, activeTool: null };
-        }
-
-        return { ...state, activeTool: 'selecting-a-parcel' };
-      }
-      case 'draw-site-boundary': {
-        if (state.activeTool === 'freehand-polygon-drawing') {
-          return { ...state, activeTool: null };
-        }
-
-        return { ...state, activeTool: 'freehand-polygon-drawing' };
-      }
-      case 'set-site-boundary': {
-        if (!action.payload) {
-          setValue('geometry', null);
-          setPolygonGraphic(null);
-
-          return { ...state, geometry: null };
-        }
-
-        const geometry = action.payload.geometry.toJSON();
-        setValue('geometry', geometry);
-
-        isDirty.current = true;
-
-        if (sitePolygon) {
-          action.payload.geometry = union([sitePolygon.geometry, action.payload.geometry]);
-        }
-
-        setPolygonGraphic(action.payload);
-
-        return {
-          ...state,
-          geometry: geometry,
-          activeTool: action.meta === 'freehand-polygon-drawing' ? null : state.activeTool,
-        };
-      }
-      default:
-        return state;
-    }
-  };
-
-  const [state, dispatch] = useReducer(reducer, {
+  const [state, dispatch] = useImmerReducer(pureReducer, {
     address: undefined,
     geometry: undefined,
     activeTool: undefined,
@@ -189,8 +142,49 @@ export function Component() {
           address: data?.address,
         },
       });
+
+      if (data.geometry) {
+        const shape = JSON.parse(data.geometry);
+
+        const geometry = new Polygon({
+          type: 'polygon',
+          rings: shape.rings,
+          spatialReference: shape.spatialReference,
+        });
+
+        setViewPoint(geometry.extent.expand(3));
+      }
     }
-  }, [data, status]);
+  }, [data, status, setViewPoint, dispatch]);
+
+  // synchronizes the form with the state for sites with a geometry
+  useEffect(() => {
+    setValue('geometry', state.geometry);
+
+    if (state.geometry) {
+      const geometry = new Polygon({
+        type: 'polygon',
+        rings: state.geometry.rings,
+        spatialReference: state.geometry.spatialReference,
+      });
+
+      setPolygonGraphic(
+        new Graphic({
+          geometry: geometry,
+          attributes: {},
+          symbol: PolygonSymbol,
+        })
+      );
+    } else {
+      setPolygonGraphic(null);
+      parcelIds.current = [];
+    }
+  }, [state.geometry, setValue, setPolygonGraphic, setViewPoint]);
+
+  // synchronizes the form with the state for sites with an address
+  useEffect(() => {
+    setValue('address', state.address);
+  }, [setValue, state.address]);
 
   // activate point clicking for selecting an address
   useEffect(() => {
@@ -210,6 +204,13 @@ export function Component() {
         });
 
         dispatch({ type: 'address-clicked', payload: graphic });
+
+        isDirty.current = true;
+        setPointGraphic(graphic);
+
+        if (mapView.current.scale > 10489.34) {
+          mapView.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
+        }
       });
     }
 
@@ -217,7 +218,7 @@ export function Component() {
       pointAddressClickEvent.current?.remove();
       pointAddressClickEvent.current = null;
     };
-  }, [state.activeTool, mapView]);
+  }, [state.activeTool, mapView, setPointGraphic, dispatch]);
 
   // activate parcel hit test clicking
   useEffect(() => {
@@ -231,6 +232,7 @@ export function Component() {
       parcelClickEvent.current = mapView.current.on('click', (event) => {
         //! stop popup from displaying
         event.preventDefault();
+        event.stopPropagation();
 
         const parcelLayerIndex = mapView.current.map.layers.items[0];
 
@@ -239,14 +241,30 @@ export function Component() {
             include: parcelLayerIndex,
           })
           .then((test) => {
-            if (test.results.length < 1) {
-              return dispatch({ type: 'set-site-boundary', payload: null, meta: 'selecting-a-parcel' });
+            if ((test.results?.length ?? 0) < 1) {
+              return;
             }
 
             const graphic = test.results[0].graphic;
-            graphic.symbol = PolygonSymbol;
+            const parcel = graphic.attributes.OBJECTID;
 
-            dispatch({ type: 'set-site-boundary', payload: graphic, meta: 'selecting-a-parcel' });
+            let geometry;
+            if (parcelIds.current.includes(parcel)) {
+              geometry = difference(sitePolygon.geometry, graphic.geometry);
+              parcelIds.current = parcelIds.current.filter((id) => id !== parcel);
+            } else {
+              if (sitePolygon) {
+                geometry = union([sitePolygon.geometry, graphic.geometry]);
+              } else {
+                geometry = graphic.geometry;
+              }
+
+              parcelIds.current.push(parcel);
+            }
+
+            dispatch({ type: 'set-site-boundary', payload: geometry, meta: 'selecting-a-parcel' });
+
+            isDirty.current = true;
           });
       });
     }
@@ -255,7 +273,7 @@ export function Component() {
       parcelClickEvent.current?.remove();
       parcelClickEvent.current = null;
     };
-  }, [state.activeTool, mapView]);
+  }, [state.activeTool, mapView, sitePolygon, dispatch]);
 
   // activate polygon site drawing
   useEffect(() => {
@@ -268,18 +286,17 @@ export function Component() {
 
       siteDrawingEvents.current = null;
     } else {
-      const [drawAction, drawingEvent] = enablePolygonDrawing(mapView.current, setPolygonGraphic);
+      mapView.current.focus();
+
+      const [drawAction, drawingEvent] = enablePolygonDrawing(mapView.current, setDrawingGraphic);
 
       const finishEvent = drawAction.on(['draw-complete'], (event) => {
         dispatch({
           type: 'set-site-boundary',
-          payload: new Graphic({
-            geometry: new Polygon({
-              type: 'polygon',
-              rings: event.vertices,
-              spatialReference: mapView.current.spatialReference,
-            }),
-            symbol: PolygonSymbol,
+          payload: new Polygon({
+            type: 'polygon',
+            rings: event.vertices,
+            spatialReference: mapView.current.spatialReference,
           }),
           meta: 'freehand-polygon-drawing',
         });
@@ -287,7 +304,15 @@ export function Component() {
 
       siteDrawingEvents.current = [drawingEvent, finishEvent];
     }
-  }, [state.activeTool, setPolygonGraphic, mapView]);
+  }, [state.activeTool, setPolygonGraphic, setDrawingGraphic, mapView, dispatch]);
+
+  // clear polygons when drawing tool changes
+  useEffect(() => {
+    if (['freehand-polygon-drawing', 'selecting-a-parcel'].includes(state.activeTool)) {
+      console.log('drawing type clear geometry');
+      dispatch({ type: 'set-site-boundary', payload: null });
+    }
+  }, [state.activeTool, dispatch]);
 
   const geocode = (result) => {
     if (!result) {
@@ -295,6 +320,10 @@ export function Component() {
     }
 
     dispatch({ type: 'geocode-success', payload: result });
+    isDirty.current = true;
+    setValue('address', result.attributes.InputAddress);
+    setPointGraphic(new Graphic(result));
+    setViewPoint(new Viewpoint({ targetGeometry: result.geometry, scale: 1500 }));
   };
 
   const geocodeError = () => dispatch({ type: 'skip-geocoding', payload: false });

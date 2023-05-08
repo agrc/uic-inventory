@@ -18,6 +18,10 @@ export const enablePolygonDrawing = (view, setGraphic) => {
     drawPolygon(event, view, setGraphic)
   );
 
+  action.on(['draw-complete'], () => {
+    setGraphic();
+  });
+
   view.focus();
 
   return [action, event];
