@@ -40,7 +40,7 @@ import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
 import { useOpenClosed } from '../../Hooks';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
 import { Tooltip } from '../../PageElements';
-import { remediationTypes, operatingStatusTypes } from '../../../data/lookups';
+import { remediationTypes, operatingStatusTypes, valueToLabel } from '../../../data/lookups';
 import { getInventory } from '../loaders';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
@@ -458,18 +458,18 @@ function WellTable({ wells = [], state, dispatch }) {
     mutationFn: (json) => ky.put(`/api/well`, { json }),
     onMutate: async (well) => {
       await queryClient.cancelQueries({ queryKey });
-      const previousValue = queryClient.getQueryData(queryKey);
+      const previousValue = queryClient.getQueryData({ queryKey });
 
-      queryClient.setQueryData(queryKey, (old) => {
+      queryClient.setQueryData({ queryKey }, (old) => {
         const updatedWell = old.wells.find((w) => w.id === well.wellId);
         const originalWells = old.wells.filter((w) => w.id !== well.wellId);
 
-        updatedWell.status = well.status;
+        updatedWell.status = valueToLabel(operatingStatusTypes, well.status);
 
         const updated = {
           ...old,
           site: { ...old.site },
-          wells: [...originalWells, updatedWell],
+          wells: [...originalWells, updatedWell].sort((a, b) => a.id - b.id),
         };
 
         return updated;
@@ -477,9 +477,9 @@ function WellTable({ wells = [], state, dispatch }) {
 
       return { previousValue };
     },
-    mutationKey: ['well', 'update'],
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: 'notifications' });
     },
     onSuccess: () => {
       toast.success('Well updated successfully!');
@@ -498,6 +498,7 @@ function WellTable({ wells = [], state, dispatch }) {
         siteId: parseInt(siteId),
         wellId: parseInt(well.id),
         status: well.status,
+        description: well.description,
       };
 
       update(input);
