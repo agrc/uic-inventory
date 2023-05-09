@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useOpenClosed } from '../Hooks';
 import { SelectListbox } from './SelectInput';
+import Tippy from '@tippyjs/react/headless';
+import { Tooltip } from '../PageElements';
 
 const alternateClasses = 'mr-1 rounded-lg border h-6 px-1.5 py-0.5 text-xs hover:bg-red-800 hover:text-white';
 const secondaryClasses =
@@ -118,7 +120,7 @@ export const useEditableSelect = (value, items, onMutate) => {
   return { getModifyButtonProps, getCancelButtonProps, isEditing, getSelectProps, label: selected?.label };
 };
 
-export const EditableCellSelect = ({ status, wellId, items, onMutate, isValid }) => {
+export const EditableCellSelect = ({ status, wellId, items, onMutate, isValid, tooltip }) => {
   const [isEditing, { toggle }] = useOpenClosed();
   const [error, setError] = useState();
   const otherRef = useRef();
@@ -171,11 +173,14 @@ export const EditableCellSelect = ({ status, wellId, items, onMutate, isValid })
             cancel
           </button>
         )}
-        {isEditing ? (
-          <SelectListbox selected={selected} setSelected={setSelected} items={items} />
-        ) : (
-          <span>{selected?.label}</span>
+        {isEditing && <SelectListbox selected={selected} setSelected={setSelected} items={items} />}
+        {!isEditing && !tooltip && <span>{selected?.label}</span>}
+        {!isEditing && tooltip && (
+          <Tippy render={(attrs) => <Tooltip {...attrs}>{tooltip}</Tooltip>}>
+            <span className="cursor-help text-blue-800 hover:text-blue-400">{selected?.label}</span>
+          </Tippy>
         )}
+
         {isEditing && selected?.value === 'OT' && (
           <input
             type="text"

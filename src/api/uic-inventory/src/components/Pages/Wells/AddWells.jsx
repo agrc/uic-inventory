@@ -537,9 +537,13 @@ function WellTable({ wells = [], state, dispatch }) {
                   })
                   .validateSync(data)
               }
+              tooltip={row.values.description}
             />
           );
         },
+      },
+      {
+        accessor: 'description',
       },
       {
         Header: 'Count',
@@ -571,7 +575,7 @@ function WellTable({ wells = [], state, dispatch }) {
     columns,
     data: wells,
     initialState: {
-      hiddenColumns: ['id'],
+      hiddenColumns: ['id', 'description'],
     },
   });
 
