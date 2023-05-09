@@ -420,33 +420,35 @@ function Notifications({ status, error, notifications }) {
       key={notification.id}
       className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
     >
-      <span className="self-center text-xs text-gray-400">
-        {dateFormatter.format(Date.parse(notification.createdAt))}
-      </span>{' '}
-      <span>{formatNotification(notification)}</span>
-      <span>
-        <Link to={notification.url}>
-          <LinkIcon className="ml-1 inline-block h-5 w-5 text-blue-400" />
-        </Link>
-        {notification.read ? (
-          <span
-            alt={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
-            title={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
-          >
-            <EnvelopeOpenIcon className="ml-1 inline-block h-5 w-5 text-gray-400" />
-          </span>
-        ) : (
-          <span>
-            <EnvelopeIcon
-              className="ml-1 inline-block h-5 w-5 cursor-pointer text-blue-400"
-              onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'read' })}
-            />
-          </span>
-        )}
-        <TrashIcon
-          className="ml-1 inline-block h-5 w-5 cursor-pointer text-red-300"
-          onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'deleted' })}
-        />
+      <span className="px-2">{formatNotification(notification)}</span>
+      <span className="flex flex-col">
+        <span className="self-center whitespace-nowrap text-xs text-gray-400">
+          {dateFormatter.format(Date.parse(notification.createdAt))}
+        </span>
+        <span className="whitespace-nowrap">
+          <Link to={notification.url}>
+            <LinkIcon className="ml-1 inline-block h-5 w-5 text-blue-400" />
+          </Link>
+          {notification.read ? (
+            <span
+              alt={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
+              title={'Read at: ' + dateFormatter.format(Date.parse(notification.readAt))}
+            >
+              <EnvelopeOpenIcon className="ml-1 inline-block h-5 w-5 text-gray-400" />
+            </span>
+          ) : (
+            <span>
+              <EnvelopeIcon
+                className="ml-1 inline-block h-5 w-5 cursor-pointer text-blue-400"
+                onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'read' })}
+              />
+            </span>
+          )}
+          <TrashIcon
+            className="ml-1 inline-block h-5 w-5 cursor-pointer text-red-300"
+            onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'deleted' })}
+          />
+        </span>
       </span>
     </div>
   ));
