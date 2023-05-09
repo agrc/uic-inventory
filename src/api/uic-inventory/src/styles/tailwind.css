@@ -41,7 +41,7 @@
     @apply flex h-10 w-10 select-none items-center justify-center rounded-full border border-amber-700 bg-amber-500 font-medium text-amber-900 shadow-sm hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-700 disabled:opacity-50;
   }
   [data-style='link'] {
-    @apply select-none font-bold italic tracking-normal text-blue-800 hover:text-blue-400;
+    @apply font-bold italic tracking-normal text-blue-800 hover:text-blue-400;
   }
   :root {
     --toastify-color-dark: theme('colors.gray.800') !important;
