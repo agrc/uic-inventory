@@ -153,7 +153,7 @@ public static class UpdateWellDetails {
             _log = log;
             _fileNamerService = fileNamer;
             _client = cloudService;
-            _bucket = configuration["UPLOAD_BUCKET"];
+            _bucket = configuration.GetValue<string>("UPLOAD_BUCKET") ?? string.Empty;
         }
         public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
@@ -321,7 +321,7 @@ public static class GetWellFiles {
 
         public Handler(IConfiguration configuration, CloudStorageService service, ILogger log) {
             _log = log;
-            _bucket = configuration["STORAGE_BUCKET"];
+            _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
             _client = service;
         }
         async Task<Stream> IRequestHandler<Command, Stream>.Handle(Command request, CancellationToken cancellationToken) {
