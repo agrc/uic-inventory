@@ -47,9 +47,9 @@ export function Component() {
   const { mutate } = useMutation({
     mutationFn: (json) => ky.delete('/api/inventory/reject', { json }),
     onSettled: () => {
-      queryClient.invalidateQueries('sites');
-      queryClient.invalidateQueries(['site', siteId, 'inventory', inventoryId]);
-      queryClient.invalidateQueries(['site-inventories', inventoryId]);
+      queryClient.invalidateQueries({ queryKey: 'sites' });
+      queryClient.invalidateQueries({ queryKey: ['site', siteId, 'inventory', inventoryId] });
+      queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
     },
     onSuccess: () => {
       toast.success('Inventory rejected successfully!');
@@ -148,10 +148,10 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
   const { mutate } = useMutation({
     mutationFn: (json) => ky.put('/api/inventory', { json }),
     onMutate: async (inventory) => {
-      await queryClient.cancelQueries(queryKey);
-      const previousValue = queryClient.getQueryData(queryKey);
+      await queryClient.cancelQueries({ queryKey });
+      const previousValue = queryClient.getQueryData({ queryKey });
 
-      queryClient.setQueryData(queryKey, (old) => {
+      queryClient.setQueryData({ queryKey }, (old) => {
         const updated = {
           ...old,
           site: { ...old.site },
@@ -176,7 +176,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
       return previousValue;
     },
     onSettled: () => {
-      queryClient.invalidateQueries(queryKey);
+      queryClient.invalidateQueries({ queryKey });
     },
     onSuccess: () => {
       toast.success('Inventory updated successfully!');

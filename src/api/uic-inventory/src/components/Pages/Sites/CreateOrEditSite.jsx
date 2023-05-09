@@ -36,13 +36,15 @@ export function Component() {
   });
 
   const queryClient = useQueryClient();
+  const queryKey = ['site', siteId];
+
   const { data } = useQuery(getSites(siteId));
   const { mutate } = useMutation({
     mutationFn: (data) => ky.post('/api/site', { json: { ...data, id: authInfo.id } }).json(),
     onSuccess: (data) => {
       toast.success('Site created successfully!');
       navigate(`/site/${data.id}/add-contacts`, { replace: true });
-      queryClient.invalidateQueries(['site', siteId]);
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: (error) => onRequestError(error, 'We had some trouble creating this site.'),
   });
@@ -51,7 +53,7 @@ export function Component() {
     onSuccess: (data) => {
       toast.success('Your site was updated.');
       navigate(`/site/${data.id}/add-contacts`);
-      queryClient.invalidateQueries(['site', siteId]);
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating this site.'),
   });

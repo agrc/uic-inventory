@@ -18,10 +18,10 @@ export default function Flagged({ reason, siteId, inventoryId }) {
   const { mutate } = useMutation({
     mutationFn: (json) => ky.put('/api/inventory', { json }),
     onMutate: async () => {
-      await queryClient.cancelQueries(queryKey);
-      const previousValue = queryClient.getQueryData(queryKey);
+      await queryClient.cancelQueries({ queryKey });
+      const previousValue = queryClient.getQueryData({ queryKey });
 
-      queryClient.setQueryData(queryKey, (old) => {
+      queryClient.setQueryData({ queryKey }, (old) => {
         const updated = {
           ...old,
           site: { ...old.site },
@@ -34,7 +34,7 @@ export default function Flagged({ reason, siteId, inventoryId }) {
       return previousValue;
     },
     onSettled: () => {
-      queryClient.invalidateQueries(queryKey);
+      queryClient.invalidateQueries({ queryKey });
     },
     onSuccess: (_, variables) => {
       if (variables.flagged?.length > 0) {

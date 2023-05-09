@@ -396,15 +396,15 @@ function SiteTable({ data }) {
     useSortBy,
     useExpanded
   );
-
+  const queryKey = 'sites';
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: (siteId) => ky.delete(`/api/site`, { json: { siteId } }),
     onMutate: async (id) => {
-      await queryClient.cancelQueries('sites');
-      const previousValue = queryClient.getQueryData('sites');
+      await queryClient.cancelQueries({ queryKey });
+      const previousValue = queryClient.getQueryData({ queryKey });
 
-      queryClient.setQueryData('sites', (old) => old.filter((x) => x.id !== id));
+      queryClient.setQueryData({ queryKey }, (old) => old.filter((x) => x.id !== id));
       closeSiteModal();
 
       return previousValue;
@@ -413,10 +413,10 @@ function SiteTable({ data }) {
       toast.success('Site deleted successfully!');
     },
     onSettled: () => {
-      queryClient.invalidateQueries('sites');
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: (error, _, previousValue) => {
-      queryClient.setQueryData('sites', previousValue);
+      queryClient.setQueryData({ queryKey }, previousValue);
       onRequestError(error, 'We had some trouble deleting this site.');
     },
   });
@@ -427,10 +427,10 @@ function SiteTable({ data }) {
       onMutate: async ({ siteId, inventoryId }) => {
         closeInventoryModal();
 
-        await queryClient.cancelQueries(['site-inventories', siteId]);
-        const previousValue = queryClient.getQueryData(['site-inventories', siteId]);
+        await queryClient.cancelQueries({ queryKey: ['site-inventories', siteId] });
+        const previousValue = queryClient.getQueryData({ queryKey: ['site-inventories', siteId] });
 
-        queryClient.setQueryData(['site-inventories', siteId], (old) => {
+        queryClient.setQueryData({ queryKey: ['site-inventories', siteId] }, (old) => {
           return {
             ...old,
             inventories: old.inventories.filter((x) => x.id !== inventoryId),
@@ -443,7 +443,7 @@ function SiteTable({ data }) {
         toast.success('Inventory deleted successfully!');
       },
       onError: (error, variables, previousValue) => {
-        queryClient.setQueryData(['site-inventories', variables.siteId], previousValue);
+        queryClient.setQueryData({ queryKey: ['site-inventories', variables.siteId] }, previousValue);
         onRequestError(error, 'We had some trouble deleting this inventory.');
       },
     }

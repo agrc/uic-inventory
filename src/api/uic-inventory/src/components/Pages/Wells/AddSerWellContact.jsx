@@ -37,14 +37,15 @@ export function Component() {
   const { isDirty, isSubmitSuccessful } = formState;
 
   const queryClient = useQueryClient();
+  const queryKey = ['ser-contacts', siteId];
   const { status, error, data } = useQuery(getSerContact(siteId));
   const { mutate } = useMutation({
     mutationFn: (json) => ky.post('/api/contact', { json }),
     onMutate: async (contact) => {
-      await queryClient.cancelQueries(['ser-contacts', siteId]);
-      const previousValue = queryClient.getQueryData(['ser-contacts', siteId]);
+      await queryClient.cancelQueries({ queryKey });
+      const previousValue = queryClient.getQueryData({ queryKey });
 
-      queryClient.setQueryData(['ser-contacts', siteId], (old) => ({
+      queryClient.setQueryData({ queryKey }, (old) => ({
         ...old,
         contacts: [...old.contacts, { ...contact, contactType: valueToLabel(serContactTypes, contact.contactType) }],
       }));
@@ -52,10 +53,10 @@ export function Component() {
       return previousValue;
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['ser-contacts', siteId]);
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: async (error, _, previousValue) => {
-      queryClient.setQueryData(['ser-contacts', siteId], previousValue);
+      queryClient.setQueryData({ queryKey }, previousValue);
       onRequestError(error, 'We had some trouble creating this contact.');
     },
   });
@@ -180,14 +181,15 @@ function ContactTable({ data }) {
   const { authInfo } = useContext(AuthContext);
   const [isOpen, { open, close }] = useOpenClosed();
   const deleteContact = useRef();
+  const queryKey = ['contacts', siteId];
 
   const { mutate } = useMutation({
     mutationFn: (json) => ky.delete(`/api/contact`, { json }),
     onMutate: async (mutationData) => {
-      await queryClient.cancelQueries(['contacts', siteId]);
-      const previousValue = queryClient.getQueryData(['contacts', siteId]);
+      await queryClient.cancelQueries({ queryKey });
+      const previousValue = queryClient.getQueryData({ queryKey });
 
-      queryClient.setQueryData(['contacts', siteId], (old) => {
+      queryClient.setQueryData({ queryKey }, (old) => {
         return {
           ...old,
           contacts: old.contacts.filter((x) => x.id !== mutationData.contactId),
@@ -202,10 +204,10 @@ function ContactTable({ data }) {
       toast.success('This contact was removed.');
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['contacts', siteId]);
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: (error, _, previousValue) => {
-      queryClient.setQueryData(['contacts', siteId], previousValue);
+      queryClient.setQueryData({ queryKey }, previousValue);
       onRequestError(error, 'We had some trouble deleting this contact.');
     },
   });

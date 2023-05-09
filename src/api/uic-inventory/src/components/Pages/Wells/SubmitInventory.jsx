@@ -106,7 +106,7 @@ const SubmissionForm = ({ data }) => {
       onSuccess: () => {
         toast.success('Inventory submitted successfully!');
         navigate('/');
-        queryClient.invalidateQueries(['site', siteId, 'inventory', inventoryId]);
+        queryClient.invalidateQueries({ queryKey: ['site', siteId, 'inventory', inventoryId] });
       },
       onError: (error) => onRequestError(error, 'We had some trouble submitting this inventory.'),
     }

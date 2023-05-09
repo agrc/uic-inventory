@@ -77,7 +77,7 @@ export function Component() {
     mutationFn: (body) => ky.put('/api/well', { body, timeout: 600000 }),
     onSuccess: () => {
       toast.success('Wells updated successfully!');
-      queryClient.invalidateQueries(queryKey);
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating your wells.'),
   });

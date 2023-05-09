@@ -136,7 +136,7 @@ function AddWellForm({ data, state, dispatch }) {
     mutationFn: (json) => ky.post('/api/well', { json }).json(),
     onSuccess: () => {
       toast.success('Well added successfully!');
-      queryClient.invalidateQueries(['site', siteId, 'inventory', inventoryId]);
+      queryClient.invalidateQueries({ queryKey: ['site', siteId, 'inventory', inventoryId] });
     },
     onError: (error) => onRequestError(error, 'We had some trouble adding your well.'),
   });
@@ -429,10 +429,10 @@ function WellTable({ wells = [], state, dispatch }) {
   const { mutate } = useMutation({
     mutationFn: (json) => ky.delete(`/api/well`, { json }),
     onMutate: async (mutationData) => {
-      await queryClient.cancelQueries(queryKey);
-      const previousValue = queryClient.getQueryData(queryKey);
+      await queryClient.cancelQueries({ queryKey });
+      const previousValue = queryClient.getQueryData({ queryKey });
 
-      queryClient.setQueryData(queryKey, (old) => {
+      queryClient.setQueryData({ queryKey }, (old) => {
         return {
           ...old,
           wells: old.wells.filter((x) => x.id !== mutationData.wellId),
@@ -447,10 +447,10 @@ function WellTable({ wells = [], state, dispatch }) {
       toast.success('This well was removed.');
     },
     onSettled: () => {
-      queryClient.invalidateQueries(queryKey);
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: (error, previousValue) => {
-      queryClient.setQueryData(queryKey, previousValue);
+      queryClient.setQueryData({ queryKey }, previousValue);
       onRequestError(error, 'We had some trouble deleting this well.');
     },
   });
@@ -486,7 +486,7 @@ function WellTable({ wells = [], state, dispatch }) {
     },
     onError: (error, _, context) => {
       onRequestError(error, 'We had some trouble updating this well.');
-      queryClient.setQueryData(queryKey, context.previousValue);
+      queryClient.setQueryData({ queryKey }, context.previousValue);
     },
   });
 
