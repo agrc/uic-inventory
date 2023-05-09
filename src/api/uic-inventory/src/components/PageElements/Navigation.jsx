@@ -136,6 +136,7 @@ function Navigation({ authenticationStatus }) {
                                   >
                                     <Notifications
                                       notifications={data?.notifications}
+                                      queryKey={['notifications', authInfo.id]}
                                       status={status}
                                       error={error}
                                       refetch={refetch}
@@ -261,6 +262,7 @@ function Navigation({ authenticationStatus }) {
                       <Popover.Panel className="max-h-36 overflow-scroll rounded-sm bg-white">
                         <Notifications
                           notifications={data?.notifications}
+                          queryKey={['notifications', authInfo.id]}
                           status={status}
                           error={error}
                           refetch={refetch}
@@ -335,10 +337,10 @@ function Links({ links, isAuthenticated, isElevated }) {
     ));
 }
 
-function Notifications({ status, error, notifications }) {
+function Notifications({ status, error, notifications, queryKey }) {
   const queryClient = useQueryClient();
-  const { mutate, status: mutateStatus } = useMutation(
-    ({ id, key }) =>
+  const { mutate, status: mutateStatus } = useMutation({
+    mutationFn: ({ id, key }) =>
       ky
         .put('/api/notification', {
           json: {
@@ -347,39 +349,37 @@ function Notifications({ status, error, notifications }) {
           },
         })
         .json(),
-    {
-      onMutate: async ({ id, key }) => {
-        await queryClient.cancelQueries('notifications');
-        const previousValue = queryClient.getQueryData('notifications');
+    onMutate: async ({ id, key }) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousValue = queryClient.getQueryData({ queryKey });
 
-        queryClient.setQueryData('notifications', (old) => {
-          return {
-            ...old,
-            notifications: old.notifications.map((item) => {
-              if (item.id === id) {
-                return {
-                  ...item,
-                  [key]: true,
-                  [`${key}At`]: new Date().toISOString(),
-                };
-              }
+      queryClient.setQueryData({ queryKey }, (old) => {
+        return {
+          ...old,
+          notifications: old.notifications.map((item) => {
+            if (item.id === id) {
+              return {
+                ...item,
+                [key]: true,
+                [`${key}At`]: new Date().toISOString(),
+              };
+            }
 
-              return item;
-            }),
-          };
-        });
+            return item;
+          }),
+        };
+      });
 
-        return previousValue;
-      },
-      onError: (err, variables, previousValue) => {
-        queryClient.setQueryData('notifications', previousValue);
-        //! TODO: toast error
-      },
-      onSettled: () => {
-        queryClient.invalidateQueries('notifications');
-      },
-    }
-  );
+      return previousValue;
+    },
+    onError: (err, variables, previousValue) => {
+      queryClient.setQueryData({ queryKey }, previousValue);
+      //! TODO: toast error
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
 
   if (['idle', 'loading'].includes(status)) {
     return <Facebook />;
