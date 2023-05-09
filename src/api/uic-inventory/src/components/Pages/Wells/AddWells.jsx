@@ -2,6 +2,7 @@ import { Fragment, useCallback, useContext, useEffect, useMemo, useRef } from 'r
 import { useImmerReducer } from 'use-immer';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { useTable } from 'react-table';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import ky from 'ky';
@@ -523,6 +524,19 @@ function WellTable({ wells = [], state, dispatch }) {
               status={cell.value}
               items={operatingStatusTypes}
               onMutate={onMutate}
+              isValid={(data) =>
+                yup
+                  .object()
+                  .shape({
+                    status: yup.string().oneOf(['AC', 'PA', 'PR', 'OT'], 'A valid selection must be made').required(),
+                    id: yup.number().positive().required(),
+                    description: yup.string().when('status', {
+                      is: 'OT',
+                      then: () => yup.string().required().min(5).max(512),
+                    }),
+                  })
+                  .validateSync(data)
+              }
             />
           );
         },

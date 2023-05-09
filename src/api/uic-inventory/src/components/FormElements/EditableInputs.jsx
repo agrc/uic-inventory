@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useOpenClosed } from '../Hooks';
 import { SelectListbox } from './SelectInput';
 
@@ -118,8 +118,10 @@ export const useEditableSelect = (value, items, onMutate) => {
   return { getModifyButtonProps, getCancelButtonProps, isEditing, getSelectProps, label: selected?.label };
 };
 
-export const EditableCellSelect = ({ status, wellId, items, onMutate }) => {
+export const EditableCellSelect = ({ status, wellId, items, onMutate, isValid }) => {
   const [isEditing, { toggle }] = useOpenClosed();
+  const [error, setError] = useState();
+  const otherRef = useRef();
   const [selected, setSelected] = useState(() => {
     return getItemByLabel(items, status);
   });
@@ -129,40 +131,61 @@ export const EditableCellSelect = ({ status, wellId, items, onMutate }) => {
   }, [status, items]);
 
   return (
-    <span className="flex items-center">
-      <button
-        onClick={(event) => {
-          event.stopPropagation();
-
-          if (isEditing) {
-            onMutate({ status: selected.value, id: wellId });
-          }
-
-          toggle();
-        }}
-        data-style="secondary"
-        className={secondaryClasses}
-      >
-        {isEditing ? 'save' : 'modify'}
-      </button>
-      {isEditing && (
+    <>
+      <span className="flex items-center">
         <button
           onClick={(event) => {
             event.stopPropagation();
 
+            if (isEditing) {
+              const data = { status: selected.value, id: wellId, description: otherRef.current?.value };
+              setError();
+
+              try {
+                isValid(data);
+              } catch (error) {
+                setError(error.message);
+
+                return;
+              }
+              onMutate(data);
+            }
+
             toggle();
           }}
-          data-style="alternate"
-          className={alternateClasses}
+          data-style="secondary"
+          className={secondaryClasses}
         >
-          cancel
+          {isEditing ? 'save' : 'modify'}
         </button>
-      )}
-      {isEditing ? (
-        <SelectListbox selected={selected} setSelected={setSelected} items={items} />
-      ) : (
-        <span>{selected?.label}</span>
-      )}
-    </span>
+        {isEditing && (
+          <button
+            onClick={(event) => {
+              event.stopPropagation();
+
+              toggle();
+            }}
+            data-style="alternate"
+            className={alternateClasses}
+          >
+            cancel
+          </button>
+        )}
+        {isEditing ? (
+          <SelectListbox selected={selected} setSelected={setSelected} items={items} />
+        ) : (
+          <span>{selected?.label}</span>
+        )}
+        {isEditing && selected?.value === 'OT' && (
+          <input
+            type="text"
+            placeholder="description"
+            ref={otherRef}
+            className="ml-2 rounded-lg bg-white py-2 pl-3 pr-10 text-left focus:outline-none sm:text-sm"
+          />
+        )}
+      </span>
+      {error && <div className="m-2 text-xs text-red-500">{error}</div>}
+    </>
   );
 };
