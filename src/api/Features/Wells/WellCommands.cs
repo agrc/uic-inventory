@@ -116,6 +116,8 @@ public static class UpdateWell {
 
             await _context.SaveChangesAsync(cancellationToken);
 
+            await _publisher.Publish(new WellNotifications.WellStatusEditNotification(well, oldStatus), cancellationToken);
+
             return well;
         }
     }
