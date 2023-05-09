@@ -185,6 +185,7 @@ export const EditableCellSelect = ({ status, wellId, items, onMutate, isValid, t
           <input
             type="text"
             placeholder="description"
+            value={tooltip}
             ref={otherRef}
             className="ml-2 rounded-lg bg-white py-2 pl-3 pr-10 text-left focus:outline-none sm:text-sm"
           />
