@@ -7,7 +7,7 @@ export function useWebMap(div, id) {
   const mapView = useRef(null);
 
   useEffect(() => {
-    if (div.current) {
+    if (div.current && id) {
       webMap.current = new WebMap({
         portalItem: {
           id,
