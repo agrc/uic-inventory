@@ -408,6 +408,8 @@ function Notifications({ status, error, notifications }) {
         return `${notification.additionalData.name} is now an administrator`;
       case 'inventory_submission':
         return `${notification.additionalData.name} submitted inventory ${notification.additionalData.inventoryId}`;
+      case 'approved_well_status_edit':
+        return `${notification.additionalData.name} changed well status from ${notification.additionalData.oldStatus} to ${notification.additionalData.newStatus} for inventory ${notification.additionalData.inventoryId}`;
       default:
         return `Other notification: ${notification.event}`;
     }
