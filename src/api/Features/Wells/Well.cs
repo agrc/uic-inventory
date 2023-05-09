@@ -66,6 +66,7 @@ public class WellPayload : ResponseContract {
         Status = WellLookup.OperatingStatus(well.Status);
         Count = well.Quantity ?? 0;
         Geometry = well.Geometry ?? "{}";
+        Description = well.Description ?? "";
         ConstructionDetails = well.ConstructionDetails;
         InjectateCharacterization = well.InjectateCharacterization;
         HydrogeologicCharacterization = well.HydrogeologicCharacterization;
@@ -75,6 +76,7 @@ public class WellPayload : ResponseContract {
 
     public int Id { get; }
     public string? WellName { get; }
+    public string Description { get; set; }
     public int SubClass { get; }
     public int Count { get; }
     public string Geometry { get; }
