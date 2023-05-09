@@ -1,5 +1,6 @@
 import { WellDetailsCommonSchema } from './validationSchemas';
 import * as yup from 'yup';
+import { describe, test, expect } from 'vitest';
 
 describe('schema tests', () => {
   describe('without context', () => {
