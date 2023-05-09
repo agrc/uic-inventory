@@ -69,6 +69,60 @@ public static class CreateWell {
 
 public static class UpdateWell {
     public class Command : IRequest<Well> {
+        public Command(WellOperatingStatusInput input) {
+            AccountId = input.AccountId;
+            SiteId = input.SiteId;
+            InventoryId = input.InventoryId;
+            WellId = input.WellId;
+            Status = input.Status;
+            Description = input.Description;
+        }
+
+        public int AccountId { get; init; }
+        public int SiteId { get; init; }
+        public int InventoryId { get; init; }
+        public int WellId { get; init; }
+        public string Status { get; init; }
+        public string? Description { get; init; }
+    }
+
+    public class Handler : IRequestHandler<Command, Well> {
+        private readonly IAppDbContext _context;
+        private readonly IPublisher _publisher;
+        private readonly ILogger _log;
+        public Handler(
+          IAppDbContext context,
+          IPublisher publisher,
+          ILogger log) {
+            _context = context;
+            _publisher = publisher;
+            _log = log;
+        }
+        public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
+            _log.ForContext("input", request)
+              .Debug("Updating well");
+
+            var well = await _context.Wells
+                .Include(x => x.Account)
+                .Include(x => x.Inventory)
+                .FirstAsync(w => w.Id == request.WellId, cancellationToken);
+
+            var oldStatus = well.Status ?? string.Empty;
+
+            well.Status = request.Status;
+            if (request.Description is not null) {
+                well.Description = request.Description;
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return well;
+        }
+    }
+}
+
+public static class UpdateWellDetails {
+    public class Command : IRequest<Well> {
         public Command(WellDetailInput input) {
             Wells = input;
         }
@@ -101,7 +155,7 @@ public static class UpdateWell {
         }
         public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
-              .Debug("Updating well");
+              .Debug("Updating well details");
 
             var errors = new List<string>(2);
 

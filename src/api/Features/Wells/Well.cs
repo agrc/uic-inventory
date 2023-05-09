@@ -199,8 +199,6 @@ public abstract class RestErrorable {
     public virtual RestEndpointError Error { get; set; } = default!;
     public virtual bool IsSuccessful => Error == null;
 }
-public record Feature(Attributes Attributes);
-public record Attributes(string SysNumber);
 public class EsriQueryResponse : RestErrorable {
     public int Count { get; set; }
     public IReadOnlyList<Feature> Features { get; set; } = Array.Empty<Feature>();
@@ -214,3 +212,7 @@ public class EsriPoint {
     public double X { get; }
     public double Y { get; }
 }
+
+public record Feature(Attributes Attributes);
+public record Attributes(string SysNumber);
+public record WellOperatingStatusInput(int AccountId, int SiteId, int InventoryId, int WellId, string Status, string? Description);

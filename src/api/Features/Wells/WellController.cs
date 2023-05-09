@@ -58,6 +58,35 @@ public class WellController : ControllerBase {
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
     public async Task<ActionResult<WellPayload>> UpdateWellAsync([FromForm] WellDetailInput input, CancellationToken token) {
         try {
+            var result = await _mediator.Send(new UpdateWellDetails.Command(input), token);
+
+            return Accepted();
+        } catch (UnauthorizedException ex) {
+            _log.ForContext("endpoint", "PUT:api/well")
+              .ForContext("input", input)
+              .ForContext("requirement", ex.Message)
+              .Warning("UpdateWellAsync requirements failure");
+
+            return Unauthorized(new WellPayload(ex));
+        } catch (InvalidOperationException ex) {
+            _log.ForContext("endpoint", "PUT:api/well")
+              .ForContext("input", input)
+              .Fatal(ex, "Unhandled exception");
+
+            return StatusCode(500, new WellPayload(ex.Message));
+        } catch (Exception ex) {
+            _log.ForContext("endpoint", "PUT:api/well")
+              .ForContext("input", input)
+              .Fatal(ex, "Unhandled exception");
+
+            return StatusCode(500, new WellPayload(ex));
+        }
+    }
+
+    [HttpPut("api/well")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<WellPayload>> ModifyWellAsync(WellOperatingStatusInput input, CancellationToken token) {
+        try {
             var result = await _mediator.Send(new UpdateWell.Command(input), token);
 
             return Accepted();
