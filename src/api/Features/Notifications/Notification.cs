@@ -57,6 +57,7 @@ public enum NotificationTypes {
     admin_promotion,
     inventory_submission,
     facility_contact_modified,
+    approved_well_status_edit
 }
 public class NotificationInput {
     public int Id { get; set; }
