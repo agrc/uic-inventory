@@ -43,8 +43,8 @@ public static class AccountNotifications {
                 CreatedAt = DateTime.UtcNow,
                 NotificationType = notification.Type,
                 AdditionalData = new Dictionary<string, object> {
-        { "name", $"{notification.Account.FirstName} {notification.Account.LastName}" }
-      },
+                    { "name", $"{notification.Account.FirstName} {notification.Account.LastName}" }
+                },
                 Url = $"/account/{notification.Account.Id}/profile",
                 NotificationReceipts = recipients
             };
@@ -78,8 +78,8 @@ public static class AccountNotifications {
                 CreatedAt = DateTime.UtcNow,
                 NotificationType = notification.Type,
                 AdditionalData = new Dictionary<string, object> {
-        { "name", $"{notification.Account.FirstName} {notification.Account.LastName}" }
-      },
+                    { "name", $"{notification.Account.FirstName} {notification.Account.LastName}" }
+                },
                 Url = $"/account/{notification.Account.Id}/profile",
                 NotificationReceipts = recipients
             };

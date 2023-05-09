@@ -186,9 +186,9 @@ public static class InventoryNotifications {
                 CreatedAt = DateTime.UtcNow,
                 NotificationType = notification.NotificationType,
                 AdditionalData = new Dictionary<string, object> {
-        { "name", initials },
-        { "inventoryId", notification.Inventory.Id },
-      },
+                    { "name", initials },
+                    { "inventoryId", notification.Inventory.Id },
+                },
                 Url = $"/review/site/{notification.Site.Id}/inventory/{notification.Inventory.Id}",
                 NotificationReceipts = recipients
             };
