@@ -75,7 +75,7 @@ export function Component() {
         </Dialog.Title>
         <Dialog.Description className="mt-1">This inventory will be permanently deleted</Dialog.Description>
         <p className="mt-1 text-sm text-gray-500">
-          Are you sure you want to reject this submission? This action cannot be undone..
+          Are you sure you want to reject this submission? This action cannot be undone...
         </p>
       </ConfirmationModal>
       <Chrome title="Inventory Review">

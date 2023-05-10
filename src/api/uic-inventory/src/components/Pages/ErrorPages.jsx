@@ -35,7 +35,7 @@ const UnauthorizedRoute = ({ routeError }) => {
   return (
     <section>
       <div className="flex flex-col items-center py-6 text-5xl font-black text-gray-800">
-        <h1 className="mb-6 block">You are not allowed to be here..</h1>
+        <h1 className="mb-6 block">You are not allowed to be here...</h1>
         <LockClosedIcon className="block h-24 w-24" />
       </div>
 
