@@ -1,67 +1,58 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { Controller, useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
-import Graphic from '@arcgis/core/Graphic';
-import Polygon from '@arcgis/core/geometry/Polygon';
-import Point from '@arcgis/core/geometry/Point';
-import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import { BackButton, Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { GridHeading, LimitedTextarea, LimitedDropzone, Label, WellDetailSchema as schema } from '../../FormElements';
-import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
+import { useInventoryWells, useSitePolygon, useWebMap } from '../../Hooks';
 import { AuthContext } from '../../../AuthProvider';
 import { getInventory } from '../loaders';
+import { useImmerReducer } from 'use-immer';
+
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
-const CompletedWellsSymbol = PinSymbol.clone();
-CompletedWellsSymbol.data.primitiveOverrides = [
-  {
-    type: 'CIMPrimitiveOverride',
-    primitiveName: 'complete',
-    propertyName: 'Color',
-    valueExpressionInfo: {
-      type: 'CIMExpressionInfo',
-      title: 'Color of pin based on completeness',
-      expression: 'iif($feature.complete, [31, 41, 55, .25], [31, 41, 55, 1]);',
-      returnType: 'Default',
-    },
-  },
-  {
-    type: 'CIMPrimitiveOverride',
-    primitiveName: 'selected',
-    propertyName: 'Color',
-    valueExpressionInfo: {
-      type: 'CIMExpressionInfo',
-      title: 'Color of pin based on selected status',
-      expression: 'iif($feature.selected, [147, 197, 253, 1], [251, 251, 251, 1]);',
-      returnType: 'Default',
-    },
-  },
-  {
-    type: 'CIMPrimitiveOverride',
-    primitiveName: 'selected-stroke',
-    propertyName: 'Color',
-    valueExpressionInfo: {
-      type: 'CIMExpressionInfo',
-      title: 'Color of pin based on selected status',
-      expression: 'iif($feature.selected, [255, 255, 255, 1], [251, 191, 36, 1]);',
-      returnType: 'Default',
-    },
-  },
-];
+const reducer = (draft, action) => {
+  switch (action.type) {
+    case 'set-wells': {
+      draft.wellsRemaining = draft.graphics.filter((x) => !x.attributes.complete).length;
+
+      break;
+    }
+    case 'well-clicked': {
+      if (draft.selectedWells.includes(action.payload)) {
+        draft.selectedWells.splice(draft.selectedWells.indexOf(action.payload), 1);
+      } else {
+        draft.selectedWells.push(action.payload);
+      }
+
+      break;
+    }
+    case 'reset': {
+      draft.selectedWells = [];
+
+      break;
+    }
+  }
+};
 
 export function Component() {
   const { authInfo } = useContext(AuthContext);
+
+  const navigate = useNavigate();
   const { siteId, inventoryId } = useParams();
-  const queryClient = useQueryClient();
+
+  const [state, dispatch] = useImmerReducer(reducer, {
+    graphics: [],
+    selectedWells: [],
+    wellsRemaining: 0,
+  });
+
   const mapDiv = useRef(null);
   const pointAddressClickEvent = useRef(null);
-  const hoverEvent = useRef(null);
-  const [selectedWells, setSelectedWells] = useState([]);
-  const [wellsRemaining, setWellsRemaining] = useState(0);
-  const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
   const queryKey = ['site', siteId, 'inventory', inventoryId];
   // get site and inventory data
   const { status, data } = useQuery(getInventory(siteId, inventoryId));
@@ -85,93 +76,33 @@ export function Component() {
   const { append, remove } = useFieldArray({ control, name: 'selectedWells', keyName: 'key' });
 
   const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
-  // zoom map on geocode
-  const { setViewPoint } = useViewPointZooming(mapView);
+  useSitePolygon(mapView, data?.site);
   // manage graphics
-  const { graphic, setGraphic: setPolygonGraphic } = useGraphicManager(mapView);
-  const { graphic: wellGraphics, setGraphic: setExistingPointGraphics } = useGraphicManager(mapView);
+  const wellGraphics = useInventoryWells(mapView, data?.wells, { includeComplete: true });
 
-  // place site polygon
+  // update state with site wells
   useEffect(() => {
-    if (status !== 'success' || graphic) {
+    if (status !== 'success' || (wellGraphics?.length ?? 0) === 0) {
       return;
     }
 
-    const shape = JSON.parse(data.site.geometry);
-    const geometry = new Polygon({
-      type: 'polygon',
-      rings: shape.rings,
-      spatialReference: shape.spatialReference,
-    });
+    dispatch({ type: 'set-wells', payload: wellGraphics });
+  }, [status, wellGraphics, dispatch]);
 
-    setPolygonGraphic(
-      new Graphic({
-        geometry: geometry,
-        attributes: {},
-        symbol: PolygonSymbol,
-      })
-    );
-
-    setViewPoint(geometry.extent.expand(3));
-  }, [data, graphic, setPolygonGraphic, setViewPoint, status]);
-
-  // place site wells
+  // select well graphics
   useEffect(() => {
-    if (status !== 'success') {
-      return;
-    }
-
-    const wells = data.wells.map(
-      (well) =>
-        new Graphic({
-          geometry: new Point(JSON.parse(well.geometry)),
-          attributes: { id: well.id, complete: well.wellDetailsComplete, selected: false },
-          symbol: CompletedWellsSymbol,
-        })
-    );
-
-    setWellsRemaining(wells?.filter((x) => !x.attributes.complete).length || 0);
-
-    setExistingPointGraphics(wells);
-  }, [data, setExistingPointGraphics, status]);
-
-  useEffect(() => {
-    if (pointAddressClickEvent.current || hoverEvent.current) {
-      pointAddressClickEvent.current?.remove();
-      pointAddressClickEvent.current = null;
-
-      return;
-    }
-    const opts = {
+    const options = {
       include: wellGraphics,
     };
 
     pointAddressClickEvent.current = mapView.current.on('immediate-click', (event) => {
-      mapView.current.hitTest(event, opts).then((response) => {
-        if (!response.results.length) {
+      mapView.current.hitTest(event, options).then(({ results }) => {
+        if (!results.length) {
           return;
         }
 
-        const graphic = response.results[0].graphic;
-        const index = selectedWells.findIndex((item) => item.id === graphic.attributes.id);
-
-        if (index > -1) {
-          graphic.attributes.selected = false;
-          graphic.symbol = CompletedWellsSymbol.clone();
-
-          remove(index);
-          selectedWells.splice(index, 1);
-          setSelectedWells([...selectedWells]);
-
-          return;
-        }
-
-        graphic.attributes.selected = true;
-        graphic.symbol = CompletedWellsSymbol.clone();
-
-        setSelectedWells([...selectedWells, graphic.attributes]);
-
-        append({ ...graphic.attributes, key: graphic.attributes.id });
+        const id = results[0].graphic.attributes.id;
+        dispatch({ type: 'well-clicked', payload: id });
       });
     });
 
@@ -179,12 +110,25 @@ export function Component() {
       pointAddressClickEvent.current?.remove();
       pointAddressClickEvent.current = null;
     };
-  }, [wellGraphics, append, remove, selectedWells, mapView]);
+  }, [wellGraphics, mapView, dispatch]);
+
+  // update form with selected wells
+  useEffect(() => {
+    mapView.current.graphics.items.forEach((graphic) => {
+      if (state.selectedWells.includes(graphic.attributes.id)) {
+        graphic.setAttribute('selected', true);
+        append({ ...graphic.attributes, key: graphic.attributes.id });
+      } else {
+        graphic.setAttribute('selected', false);
+        remove(graphic.attributes.id);
+      }
+    });
+  }, [state.selectedWells, append, remove, mapView]);
 
   // form reset after submission
   useEffect(() => {
     if (isSubmitSuccessful) {
-      setSelectedWells([]);
+      dispatch({ type: 'reset' });
       remove();
       reset({
         selectedWells: [],
@@ -196,7 +140,7 @@ export function Component() {
         injectateCharacterizationFile: '',
       });
     }
-  }, [isSubmitSuccessful, remove, reset]);
+  }, [isSubmitSuccessful, remove, reset, dispatch]);
 
   const updateWells = (submittedData) => {
     const formData = new FormData();
@@ -237,13 +181,13 @@ export function Component() {
                 <div
                   className={clsx(
                     {
-                      'text-red-700': wellsRemaining !== 0,
-                      'text-emerald-500': wellsRemaining === 0,
+                      'text-red-700': state.wellsRemaining !== 0,
+                      'text-emerald-500': state.wellsRemaining === 0,
                     },
                     'inline-flex h-32 w-32 items-center justify-center rounded-full border-4 border-gray-200 text-5xl font-extrabold'
                   )}
                 >
-                  {wellsRemaining}
+                  {state.wellsRemaining}
                 </div>
               </div>
             </div>
@@ -259,13 +203,13 @@ export function Component() {
                         <span
                           className={clsx(
                             {
-                              'text-red-700': selectedWells?.length < 1,
-                              'text-emerald-500': selectedWells?.length > 0,
+                              'text-red-700': state.selectedWells?.length < 1,
+                              'text-emerald-500': state.selectedWells?.length > 0,
                             },
                             'text-2xl font-extrabold'
                           )}
                         >
-                          {selectedWells?.length ?? 0} wells selected
+                          {state.selectedWells?.length ?? 0} wells selected
                         </span>
                         <Controller
                           control={control}
@@ -298,7 +242,7 @@ export function Component() {
                           name="injectateCharacterization"
                           render={({ field, fieldState, formState }) => (
                             <LimitedDropzone
-                              helpText="Name the fluids that will be entering the well, e.g. stormwater runoff from parking area, car wash wastewater, etc."
+                              helpText="Name the fluids that will be entering the well, e.g. storm water runoff from parking area, car wash wastewater, etc."
                               textarea={{
                                 id: 'injectateCharacterization',
                                 limit: 2500,
@@ -336,14 +280,14 @@ export function Component() {
                 </div>
                 <div className="flex justify-around bg-gray-100 px-4 py-3 text-right sm:px-6">
                   <BackButton />
-                  <button type="submit" data-style="secondary" disabled={(selectedWells?.length ?? 0) === 0}>
+                  <button type="submit" data-style="secondary" disabled={(state.selectedWells?.length ?? 0) === 0}>
                     Update
                   </button>
                   <button
                     type="button"
                     data-style="primary"
                     onClick={() => navigate(`/site/${siteId}/inventory/${inventoryId}/submit`)}
-                    disabled={wellsRemaining > 0}
+                    disabled={state.wellsRemaining > 0}
                   >
                     Next
                   </button>

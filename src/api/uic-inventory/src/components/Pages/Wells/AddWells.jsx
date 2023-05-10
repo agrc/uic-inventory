@@ -10,8 +10,6 @@ import { ErrorMessage } from '@hookform/error-message';
 import { Dialog, Transition } from '@headlessui/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import Graphic from '@arcgis/core/Graphic';
-import Polygon from '@arcgis/core/geometry/Polygon';
-import Point from '@arcgis/core/geometry/Point';
 import Viewpoint from '@arcgis/core/Viewpoint';
 import throttle from 'lodash.throttle';
 import clsx from 'clsx';
@@ -34,9 +32,9 @@ import {
   SelectInput,
   TextInput,
 } from '../../FormElements';
-import { PinSymbol, SelectedWellsSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
+import { PinSymbol } from '../../MapElements/MarkerSymbols';
 import { AuthContext } from '../../../AuthProvider';
-import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
+import { useInventoryWells, useSitePolygon, useWebMap, useGraphicManager } from '../../Hooks';
 import { useOpenClosed } from '../../Hooks';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
 import { Tooltip } from '../../PageElements';
@@ -57,11 +55,6 @@ const reducer = (draft, action) => {
 
       break;
     }
-    case 'set-wells': {
-      draft.graphics = action.payload;
-
-      break;
-    }
     case 'set-hover-graphic': {
       if (action?.meta === 'toggle') {
         action.payload == draft.highlighted ? null : action.payload;
@@ -79,7 +72,6 @@ export function Component() {
   const navigate = useNavigate();
 
   const [state, dispatch] = useImmerReducer(reducer, {
-    graphics: [],
     geometry: undefined,
     activeTool: undefined,
     highlighted: undefined,
@@ -273,54 +265,10 @@ function WellMap({ site, wells, state, dispatch }) {
   const hoverEvent = useRef();
 
   const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
-  const { setViewPoint } = useViewPointZooming(mapView);
+  const hitTestGraphics = useInventoryWells(mapView, wells, { includeComplete: false });
+  useSitePolygon(mapView, site);
   // manage graphics
-  const { graphic, setGraphic: setPolygonGraphic } = useGraphicManager(mapView);
-  const { setGraphic: setExistingPointGraphics } = useGraphicManager(mapView);
   const { setGraphic: setPointGraphic } = useGraphicManager(mapView);
-
-  // place site polygon
-  useEffect(() => {
-    if (!site || graphic) {
-      return;
-    }
-
-    const shape = JSON.parse(site.geometry);
-    const geometry = new Polygon({
-      type: 'polygon',
-      rings: shape.rings,
-      spatialReference: shape.spatialReference,
-    });
-
-    setPolygonGraphic(
-      new Graphic({
-        geometry: geometry,
-        attributes: {},
-        symbol: PolygonSymbol,
-      })
-    );
-
-    setViewPoint(geometry.extent.expand(3));
-  }, [graphic, site, setPolygonGraphic, setViewPoint]);
-
-  // place site wells
-  useEffect(() => {
-    if (!wells) {
-      return;
-    }
-
-    const wellGraphics = wells.map(
-      (well) =>
-        new Graphic({
-          geometry: new Point(JSON.parse(well.geometry)),
-          attributes: { id: well.id, selected: false, complete: false },
-          symbol: SelectedWellsSymbol,
-        })
-    );
-
-    dispatch({ type: 'set-wells', payload: wellGraphics });
-    setExistingPointGraphics(wellGraphics);
-  }, [wells, dispatch, setExistingPointGraphics]);
 
   // activate point clicking for selecting a well location
   useEffect(() => {
@@ -338,7 +286,7 @@ function WellMap({ site, wells, state, dispatch }) {
     drawingEvent.current = mapView.current.on('immediate-click', (event) => {
       const graphic = new Graphic({
         geometry: event.mapPoint,
-        attributes: { selected: false, complete: false },
+        attributes: { id: 'temp', selected: false, complete: false },
         symbol: PinSymbol,
       });
 
@@ -363,21 +311,19 @@ function WellMap({ site, wells, state, dispatch }) {
 
   // activate point hovering for viewing a well location in the table
   useEffect(() => {
-    if (hoverEvent.current) {
-      return;
-    }
+    const options = {
+      include: hitTestGraphics,
+    };
 
     hoverEvent.current = mapView.current.on(
       'pointer-move',
       throttle((event) => {
-        const { x, y } = event;
-        mapView.current.hitTest({ x, y }).then(({ results }) => {
-          if (results?.length === 0) {
-            dispatch({ type: 'set-hover-graphic', payload: undefined });
-            return;
+        mapView.current.hitTest(event, options).then(({ results }) => {
+          let id = 'empty';
+          if (results.length > 0) {
+            id = results[0].graphic.attributes.id;
           }
 
-          const id = results[0].graphic.attributes['id'];
           dispatch({ type: 'set-hover-graphic', payload: id });
         });
       }, 100)
@@ -386,7 +332,7 @@ function WellMap({ site, wells, state, dispatch }) {
     return () => {
       hoverEvent.current?.remove();
     };
-  }, [mapView, dispatch]);
+  }, [mapView, dispatch, hitTestGraphics]);
 
   // clear temp point graphic when geometry is saved
   useEffect(() => {
@@ -399,22 +345,14 @@ function WellMap({ site, wells, state, dispatch }) {
 
   // manage point highlighting
   useEffect(() => {
-    if (!wells) {
-      return;
-    }
-
-    const wellGraphics = wells.map(
-      (well) =>
-        new Graphic({
-          geometry: new Point(JSON.parse(well.geometry)),
-          attributes: { id: well.id, selected: state.highlighted === well.id, complete: false },
-          symbol: SelectedWellsSymbol,
-        })
-    );
-
-    dispatch({ type: 'set-wells', payload: wellGraphics });
-    setExistingPointGraphics(wellGraphics);
-  }, [wells, dispatch, setExistingPointGraphics, state.highlighted]);
+    mapView.current.graphics.items.forEach((graphic) => {
+      if (graphic.getAttribute('id') === state.highlighted) {
+        graphic.setAttribute('selected', true);
+      } else {
+        graphic.setAttribute('selected', false);
+      }
+    });
+  }, [mapView, state.highlighted]);
 
   return <div className="h-96 w-full" ref={mapDiv}></div>;
 }

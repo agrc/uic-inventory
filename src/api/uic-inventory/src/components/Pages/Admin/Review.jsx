@@ -1,6 +1,7 @@
 import { Dialog } from '@headlessui/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
+import { useImmerReducer } from 'use-immer';
 import ky from 'ky';
 import throttle from 'lodash.throttle';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -9,7 +10,6 @@ import { useTable } from 'react-table';
 
 import { when } from '@arcgis/core/core/reactiveUtils';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import { SelectedWellsSymbol } from '../../MapElements/MarkerSymbols';
 
 import { AuthContext } from '../../../AuthProvider';
 import { contactTypes, ownershipTypes, valueToLabel, wellTypes } from '../../../data/lookups';
@@ -48,7 +48,6 @@ export function Component() {
     mutationFn: (json) => ky.delete('/api/inventory/reject', { json }),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: 'sites' });
-      queryClient.invalidateQueries({ queryKey: ['site', siteId, 'inventory', inventoryId] });
       queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
     },
     onSuccess: () => {
@@ -430,18 +429,38 @@ function Address({ mailingAddress, city, state, zipCode }) {
   );
 }
 
+const reducer = (draft, action) => {
+  switch (action.type) {
+    case 'set-screenshot': {
+      draft.screenshot = action.payload;
+
+      break;
+    }
+    case 'set-hover-graphic': {
+      if (action?.meta === 'toggle') {
+        action.payload == draft.highlighted ? null : action.payload;
+      }
+
+      draft.highlighted = action.payload;
+
+      break;
+    }
+  }
+};
+
 const LocationDetails = ({ siteId, inventoryId }) => {
+  const hoverEvent = useRef();
   const mapDiv = useRef();
-  const [screenshot, setScreenshot] = useState('');
   const groundWaterProtectionZones = useRef(
     new FeatureLayer({
       url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0',
       opacity: 0.25,
     })
   );
-  const hoverEvent = useRef();
-
-  const [state, setState] = useState({ highlighted: undefined, graphics: [] });
+  const [state, dispatch] = useImmerReducer(reducer, {
+    highlighted: undefined,
+    screenshot: '',
+  });
 
   const queryKey = ['site', siteId, 'inventory', inventoryId];
   const { status, data } = useQuery({
@@ -452,37 +471,58 @@ const LocationDetails = ({ siteId, inventoryId }) => {
   });
 
   const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
+  useSitePolygon(mapView, data?.site);
+  const wells = useInventoryWells(mapView, data?.wells, { includeComplete: false });
 
-  mapView.current?.when(() => {
-    if (mapView.current.map.layers.includes(groundWaterProtectionZones.current)) {
-      return;
-    }
-
-    mapView.current.map.add(groundWaterProtectionZones.current);
-  });
+  // add ground water protection zones
+  useEffect(() => {
+    mapView.current?.when(() => {
+      if (!mapView.current.map.layers.includes(groundWaterProtectionZones.current)) {
+        mapView.current.map.add(groundWaterProtectionZones.current);
+      }
+    });
+  }, [mapView]);
 
   // hover well points
-  mapView.current?.when(() => {
-    if (hoverEvent.current) {
-      return;
-    }
+  useEffect(() => {
+    mapView.current?.when(() => {
+      if (hoverEvent.current) {
+        return;
+      }
 
-    hoverEvent.current = mapView.current.on(
-      'pointer-move',
-      throttle((event) => {
-        const { x, y } = event;
-        mapView.current.hitTest({ x, y }).then(({ results }) => {
-          if (results?.length === 0) {
-            setState({ ...state, highlighted: undefined });
-            return;
-          }
+      hoverEvent.current = mapView.current.on(
+        'pointer-move',
+        throttle((event) => {
+          const options = {
+            include: wells,
+          };
+          mapView.current.hitTest(event, options).then(({ results }) => {
+            let id = 'empty';
+            if (results.length > 0) {
+              id = results[0].graphic.attributes.id;
+            }
 
-          const id = results[0].graphic.attributes['id'];
-          setState({ ...state, highlighted: id });
-        });
-      }, 100)
-    );
-  });
+            dispatch({ type: 'set-hover-graphic', payload: id });
+          });
+        }, 100)
+      );
+    });
+
+    return () => {
+      hoverEvent.current?.remove();
+    };
+  }, [dispatch, mapView, wells]);
+
+  // manage point highlighting
+  useEffect(() => {
+    mapView.current.graphics.items.forEach((graphic) => {
+      if (graphic.getAttribute('id') === state.highlighted) {
+        graphic.setAttribute('selected', true);
+      } else {
+        graphic.setAttribute('selected', false);
+      }
+    });
+  }, [mapView, state.highlighted]);
 
   // sync image for printing
   useEffect(() => {
@@ -491,25 +531,19 @@ const LocationDetails = ({ siteId, inventoryId }) => {
         () => mapView.current.stationary === true,
         async () => {
           const screenshot = await mapView.current.takeScreenshot({ width: 850, height: 1100 });
-          setScreenshot(screenshot.dataUrl);
+
+          dispatch({ type: 'set-screenshot', payload: screenshot.dataUrl });
         }
       );
     });
-  }, [mapView]);
-
-  useSitePolygon(mapView, data?.site);
-  const wells = useInventoryWells(mapView, data?.wells);
-
-  if (state.graphics.length === 0 && wells?.length > 0) {
-    setState({ ...state, graphics: wells });
-  }
+  }, [dispatch, mapView]);
 
   return (
     <>
       <Section title="Location Details" height="print:h-auto" className="print:break-before-page">
         <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
           <div className="w-full">
-            {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} />}
+            {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} dispatch={dispatch} />}
             <WaterSystemContacts wells={data?.wells} />
           </div>
           <div className="aspect-[17/22] w-full rounded border shadow print:hidden" ref={mapDiv}></div>
@@ -518,24 +552,10 @@ const LocationDetails = ({ siteId, inventoryId }) => {
       <img
         className="hidden aspect-[17/22] rounded border shadow print:block print:break-after-page"
         alt=""
-        src={screenshot}
+        src={state.screenshot}
       />
     </>
   );
-};
-
-const selectGraphic = (id, graphics, selected = undefined) => {
-  graphics.map((x) => {
-    if (x.attributes.id !== id) {
-      x.attributes.selected = false;
-      x.symbol = SelectedWellsSymbol.clone();
-    }
-  });
-
-  const graphic = graphics.filter((x) => x.attributes.id === id)[0];
-
-  graphic.attributes.selected = selected === undefined ? !graphic.attributes.selected : selected;
-  graphic.symbol = SelectedWellsSymbol.clone();
 };
 
 const Pill = ({ children, status }) => {
@@ -548,7 +568,7 @@ const Pill = ({ children, status }) => {
   return <span className={classes}>{children}</span>;
 };
 
-const WellTable = ({ wells = [], state }) => {
+const WellTable = ({ wells = [], state, dispatch }) => {
   const [highlighting, setHighlighting] = useState(false);
   const columns = useMemo(
     () => [
@@ -668,17 +688,17 @@ const WellTable = ({ wells = [], state }) => {
               {...row.getRowProps()}
               onPointerEnter={() => {
                 setHighlighting(true);
-                selectGraphic(row.original.id, state.graphics, true);
+                dispatch({ type: 'set-hover-graphic', payload: row.original.id });
               }}
               onPointerLeave={() => {
                 setHighlighting(false);
-                selectGraphic(row.original.id, state.graphics, false);
+                dispatch({ type: 'set-hover-graphic', payload: null });
               }}
               onClick={() => {
                 if (highlighting) {
                   return;
                 }
-                selectGraphic(row.original.id, state.graphics);
+                dispatch({ type: 'set-hover-graphic', payload: row.original.id, meta: 'toggle' });
               }}
             >
               {row.cells.map((cell) => (

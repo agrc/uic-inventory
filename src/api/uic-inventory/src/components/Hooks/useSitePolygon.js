@@ -3,7 +3,7 @@ import Graphic from '@arcgis/core/Graphic';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
 import { useGraphicManager, useViewPointZooming } from '.';
-import { SelectedWellsSymbol, PolygonSymbol } from '../MapElements/MarkerSymbols';
+import { PinSymbol, PolygonSymbol } from '../MapElements/MarkerSymbols';
 
 export function useSitePolygon(mapView, site) {
   const { graphic, setGraphic } = useGraphicManager(mapView);
@@ -37,7 +37,7 @@ export function useSitePolygon(mapView, site) {
   };
 }
 
-export function useInventoryWells(mapView, wells) {
+export function useInventoryWells(mapView, wells, { includeComplete }) {
   const { graphic, setGraphic } = useGraphicManager(mapView);
   const { setViewPoint } = useViewPointZooming(mapView);
 
@@ -50,13 +50,13 @@ export function useInventoryWells(mapView, wells) {
       (well) =>
         new Graphic({
           geometry: new Point(JSON.parse(well.geometry)),
-          attributes: { id: well.id, selected: false, complete: false },
-          symbol: SelectedWellsSymbol,
+          attributes: { id: well.id, selected: false, complete: includeComplete ? well.wellDetailsComplete : false },
+          symbol: PinSymbol,
         })
     );
 
     setGraphic(graphics);
-  }, [wells, graphic, setGraphic, setViewPoint]);
+  }, [wells, graphic, setGraphic, setViewPoint, includeComplete]);
 
   return graphic;
 }
