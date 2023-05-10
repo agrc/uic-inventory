@@ -1,59 +1,7 @@
 import { ErrorBoundary } from 'react-error-boundary';
-import { Link, useNavigate } from '../PageElements';
-import { useRouteError } from 'react-router-dom';
+import { RouterErrorPage } from '../Pages/ErrorPages';
 
-export const RouterErrorPage = ({ error }) => {
-  const navigate = useNavigate();
-  let routeError = useRouteError();
-
-  return (
-    <section>
-      <h2 className="mb-1 text-2xl font-medium text-gray-700">This is a little embarrassing...</h2>
-      <p>
-        We are really sorry. There was an error in the application that caused it to crash. You may now{' '}
-        <button data-style="link" onClick={() => navigate(-1)}>
-          go back
-        </button>{' '}
-        to the previous page and try again or{' '}
-        <Link data-style="link" to="/contact" replace={true}>
-          contact us
-        </Link>{' '}
-        to share the technical details with us from below.
-      </p>
-      <details className="mt-6">
-        <summary>
-          <span role="img" aria-label="nerd emoji">
-            🤓
-          </span>{' '}
-          Technical Details
-        </summary>
-        {routeError && (
-          <>
-            <label htmlFor="route">Routing Error:</label>
-            <pre id="route" className="overflow-auto text-base text-gray-400">{`${routeError}`}</pre>
-          </>
-        )}
-        {error && error.message ? (
-          <>
-            <label htmlFor="message">Error message:</label>
-            <pre id="message" className="overflow-auto text-base text-gray-400">{`${error.message}`}</pre>
-          </>
-        ) : null}
-        {error && error.stack ? (
-          <>
-            <label htmlFor="stack">Stack trace:</label>
-            <pre id="stack" className="overflow-auto text-base text-gray-400">{`${error.stack}`}</pre>
-          </>
-        ) : null}
-        {error && !error.message && !error.stack ? (
-          <pre className="overflow-auto text-base text-gray-400">{error.toString()}</pre>
-        ) : null}
-      </details>
-    </section>
-  );
-};
-
-function Chrome({ children, title, loading }) {
+export default function Chrome({ children, title, loading }) {
   return (
     <div className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
       <div className="px-4 py-6 sm:px-0">
@@ -69,5 +17,3 @@ function Chrome({ children, title, loading }) {
     </div>
   );
 }
-
-export default Chrome;

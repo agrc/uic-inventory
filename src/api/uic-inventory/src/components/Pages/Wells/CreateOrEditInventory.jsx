@@ -15,7 +15,8 @@ import {
   TextInput,
   WellSchema as schema,
 } from '../../FormElements';
-import { Chrome, toast, IncompleteSiteWarning, onRequestError, useParams, useNavigate } from '../../PageElements';
+import { Chrome, toast, onRequestError, useParams, useNavigate } from '../../PageElements';
+import { IncompleteSiteWarning } from '../ErrorPages';
 import { useOpenClosed } from '../../Hooks';
 import { wellTypes } from '../../../data/lookups';
 import { getInventory } from '../loaders';

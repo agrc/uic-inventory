@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Navigation, Navigate, ToastContainer, IncompleteSiteWarning } from './components/PageElements';
+import { Navigation, Navigate, ToastContainer } from './components/PageElements';
 import { Chrome } from './components/PageElements';
 import { AuthContext } from './AuthProvider';
 import { useQueryClient } from '@tanstack/react-query';
@@ -8,7 +8,7 @@ import { Outlet, createBrowserRouter, Route, createRoutesFromElements, RouterPro
 import { Suspense } from 'react';
 import { loggedInUserLoader } from './components/Pages/Profile';
 import { siteLoader, siteContactLoader, inventoryLoader, serContactLoader } from './components/Pages/loaders';
-import { RouterErrorPage } from './components/PageElements/Chrome';
+import { RouterErrorPage } from './components/Pages/ErrorPages';
 import { Component } from './components/Pages/LandingPage';
 
 function ApplicationRoutes() {
@@ -110,11 +110,6 @@ function AuthenticatedRoutes(elevated, completeProfile, queryClient) {
               path="create"
               loader={inventoryLoader(queryClient)}
               lazy={() => import('./components/Pages/Wells/CreateOrEditInventory')}
-              errorElement={
-                <Chrome>
-                  <IncompleteSiteWarning />
-                </Chrome>
-              }
             />
             <Route path=":inventoryId" element={<Outlet />}>
               <Route index element={<Navigate to="/" />}></Route>

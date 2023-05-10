@@ -10,7 +10,8 @@ import { Switch } from '@headlessui/react';
 
 import clsx from 'clsx';
 import { AuthContext } from '../../../AuthProvider';
-import { Chrome, onRequestError, IncompleteInventoryWarning, toast, useNavigate, useParams } from '../../PageElements';
+import { Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
+import { IncompleteInventoryWarning } from '../ErrorPages';
 import {
   FormGrid,
   PageGrid,

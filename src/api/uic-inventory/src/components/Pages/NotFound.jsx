@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { Chrome, Link } from '../PageElements';
+import { BackButton, Chrome, Link } from '../PageElements';
 
 export function Component() {
   return (
@@ -20,12 +20,10 @@ export function Component() {
             interest.
           </p>
           <p className="mt-4 text-center text-lg">
-            <Link type="button" data-style="primary" to="/">
-              Back to home
-            </Link>
+            <BackButton />
           </p>
           <p className="mt-4">Thank you,</p>
-          <p className="mt-4">The UIC Staff</p>
+          <p className="mt-1">The UIC Staff</p>
         </section>
       </Chrome>
     </main>
