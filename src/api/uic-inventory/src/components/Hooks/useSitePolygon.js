@@ -42,11 +42,7 @@ export function useInventoryWells(mapView, wells, { includeComplete }) {
   const { setViewPoint } = useViewPointZooming(mapView);
 
   useEffect(() => {
-    if (graphic || !wells) {
-      return;
-    }
-
-    const graphics = wells.map(
+    const graphics = wells?.map(
       (well) =>
         new Graphic({
           geometry: new Point(JSON.parse(well.geometry)),
@@ -56,7 +52,7 @@ export function useInventoryWells(mapView, wells, { includeComplete }) {
     );
 
     setGraphic(graphics);
-  }, [wells, graphic, setGraphic, setViewPoint, includeComplete]);
+  }, [wells, setGraphic, setViewPoint, includeComplete]);
 
   return graphic;
 }
