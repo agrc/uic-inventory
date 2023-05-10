@@ -16,7 +16,7 @@ import '@arcgis/core/assets/esri/themes/light/main.css';
 const reducer = (draft, action) => {
   switch (action.type) {
     case 'set-wells': {
-      draft.wellsRemaining = draft.graphics.filter((x) => !x.attributes.complete).length;
+      draft.wellsRemaining = action.payload?.filter((x) => !x.attributes.complete).length ?? 0;
 
       break;
     }
@@ -82,7 +82,7 @@ export function Component() {
 
   // update state with site wells
   useEffect(() => {
-    if (status !== 'success' || (wellGraphics?.length ?? 0) === 0) {
+    if (status !== 'success') {
       return;
     }
 
