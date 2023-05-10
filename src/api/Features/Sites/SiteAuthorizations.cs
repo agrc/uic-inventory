@@ -23,8 +23,8 @@ public class GetSiteByIdAuthorizer : AbstractRequestAuthorizer<GetSiteById.Query
 
     public override void BuildPolicy(GetSiteById.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustOwnSite(request.SiteId));
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -49,8 +49,8 @@ public class UpdateSiteAuthorizer : AbstractRequestAuthorizer<UpdateSite.Command
     public override void BuildPolicy(UpdateSite.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.Site.SiteId));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustHaveEditableSiteStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -63,7 +63,7 @@ public class DeleteSiteAuthorizer : AbstractRequestAuthorizer<DeleteSite.Command
     public override void BuildPolicy(DeleteSite.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustHaveEditableSiteStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }

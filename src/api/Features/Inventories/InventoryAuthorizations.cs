@@ -13,8 +13,8 @@ public class GetInventoriesBySiteAuthorizer : AbstractRequestAuthorizer<GetInven
 
     public override void BuildPolicy(GetInventoriesBySite.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustOwnSite(request.SiteId));
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -27,9 +27,9 @@ public class GetInventoryByIdAuthorizer : AbstractRequestAuthorizer<GetInventory
 
     public override void BuildPolicy(GetInventoryById.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustHaveCompleteSite());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -41,9 +41,9 @@ public class CreateInventoryAuthorizer : AbstractRequestAuthorizer<CreateInvento
     }
     public override void BuildPolicy(CreateInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustHaveCompleteSite());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -55,8 +55,8 @@ public class UpdateInventoryAuthorizer : AbstractRequestAuthorizer<UpdateInvento
     }
     public override void BuildPolicy(UpdateInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustHaveElevatedAccount());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -69,9 +69,9 @@ public class SubmitInventoryAuthorizer : AbstractRequestAuthorizer<SubmitInvento
     public override void BuildPolicy(SubmitInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
-        UseRequirement(new MustHaveCompleteProfile());
-        UseRequirement(new MustHaveEditableSiteStatus());
         UseRequirement(new MustHaveCompleteInventory(request.InventoryId));
+        UseRequirement(new MustHaveEditableSiteStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -85,9 +85,9 @@ public class DeleteInventoryAuthorizer : AbstractRequestAuthorizer<DeleteInvento
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustOwnInventory(request.InventoryId));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustHaveEditableSiteStatus());
         UseRequirement(new MustHaveEditableInventoryStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 

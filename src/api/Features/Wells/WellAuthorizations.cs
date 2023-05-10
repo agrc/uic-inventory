@@ -23,10 +23,10 @@ public class GetWellByIdAuthorizer : AbstractRequestAuthorizer<GetWellById.Query
 
     public override void BuildPolicy(GetWellById.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustOwnSite(request.SiteId));
-        UseRequirement(new MustHaveCompleteSite());
         UseRequirement(new MustOwnInventory(request.InventoryId));
+        UseRequirement(new MustHaveCompleteSite());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -38,26 +38,26 @@ public class CreateWellAuthorizer : AbstractRequestAuthorizer<CreateWell.Command
     }
     public override void BuildPolicy(CreateWell.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustOwnSite(request.Input.SiteId));
-        UseRequirement(new MustHaveCompleteSite());
         UseRequirement(new MustOwnInventory(request.Input.InventoryId));
+        UseRequirement(new MustHaveCompleteSite());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
-// public class UpdateWellAuthorizer : AbstractRequestAuthorizer<UpdateWell.Command> {
-//   private readonly IHttpContextAccessor _context;
+public class UpdateWellAuthorizer : AbstractRequestAuthorizer<UpdateWell.Command> {
+    private readonly IHttpContextAccessor _context;
 
-//   public UpdateWellAuthorizer(IHttpContextAccessor context) {
-//     _context = context;
-//   }
-//   public override void BuildPolicy(UpdateWell.Command request) {
-//     UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-//     UseRequirement(new MustOwnSite(request.Site.SiteId));
-//     UseRequirement(new MustHaveCompleteProfile());
-//     UseRequirement(new MustHaveEditableSiteStatus());
-//   }
-// }
+    public UpdateWellAuthorizer(IHttpContextAccessor context) {
+        _context = context;
+    }
+    public override void BuildPolicy(UpdateWell.Command request) {
+        UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustOwnSite(request.SiteId));
+        // UseRequirement(new MustHaveEditableSiteStatus());
+        UseRequirement(new MustHaveCompleteProfile());
+    }
+}
 
 public class DeleteWellAuthorizer : AbstractRequestAuthorizer<DeleteWell.Command> {
     private readonly IHttpContextAccessor _context;
@@ -68,10 +68,10 @@ public class DeleteWellAuthorizer : AbstractRequestAuthorizer<DeleteWell.Command
     public override void BuildPolicy(DeleteWell.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
-        UseRequirement(new MustHaveCompleteProfile());
-        UseRequirement(new MustHaveEditableSiteStatus());
         UseRequirement(new MustOwnInventory(request.InventoryId));
         UseRequirement(new MustOwnWell(request.WellId));
+        UseRequirement(new MustHaveEditableSiteStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -84,7 +84,7 @@ public class GetWellFilesAuthorizer : AbstractRequestAuthorizer<GetWellFiles.Com
     public override void BuildPolicy(GetWellFiles.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustOwnInventory(request.InventoryId));
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }

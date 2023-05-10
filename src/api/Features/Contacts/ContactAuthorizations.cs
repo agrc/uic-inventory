@@ -25,8 +25,8 @@ public class CreateContactAuthorizer : AbstractRequestAuthorizer<CreateContact.C
     public override void BuildPolicy(CreateContact.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustHaveEditableSiteStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -39,7 +39,7 @@ public class DeleteContactAuthorizer : AbstractRequestAuthorizer<DeleteContact.C
     public override void BuildPolicy(DeleteContact.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.Input.SiteId));
-        UseRequirement(new MustHaveCompleteProfile());
         UseRequirement(new MustHaveEditableSiteStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
