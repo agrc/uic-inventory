@@ -6,9 +6,10 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import ky from 'ky';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Facebook } from 'react-content-loader';
-import { Switch } from '@headlessui/react';
-import { Chrome, onRequestError, toast, useNavigate, useParams } from '../PageElements';
+import { Switch, Dialog } from '@headlessui/react';
 import { AuthContext } from '../../AuthProvider';
+import { useOpenClosed } from '../Hooks';
+import { Chrome, ConfirmationModal, onRequestError, toast, useNavigate, useParams } from '../PageElements';
 import {
   ErrorMessage,
   ErrorMessageTag,
@@ -65,6 +66,7 @@ export function Component() {
         <ProfileForm data={profileData} id={profileId} />
         {data.userData.access === 'elevated' && <NotificationForm data={profileData} id={profileId} />}
         {data.userData.access === 'elevated' && <AccessForm profileData={profileData} />}
+        <DangerZone profileData={profileData} />
       </Chrome>
     </main>
   );
@@ -310,7 +312,7 @@ const AccessForm = ({ profileData }) => {
   //* pull isDirty from form state to activate proxy
   const { isDirty } = formState;
 
-  const updateAccess = async (formData) => {
+  const updateAccess = (formData) => {
     if (!isDirty) {
       return toast.info("We've got your most current information");
     }
@@ -320,7 +322,7 @@ const AccessForm = ({ profileData }) => {
       access: formData.access ? 'elevated' : 'standard',
     };
 
-    await mutate(input);
+    mutate(input);
   };
 
   return (
@@ -365,6 +367,47 @@ const AccessForm = ({ profileData }) => {
             )}
           />
         </Switch.Group>
+      </PageGrid>
+    </form>
+  );
+};
+
+const DangerZone = ({ profileData }) => {
+  const [isOpen, { open, close }] = useOpenClosed();
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        open();
+      }}
+      className="mt-10 sm:mt-0"
+    >
+      <ConfirmationModal isOpen={isOpen} onClose={close} onYes={console.log}>
+        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">Delete Account Confirmation</Dialog.Title>
+        <Dialog.Description className="mt-1">Your account will be permanently deleted</Dialog.Description>
+        <p className="mt-1 text-sm text-gray-500">
+          Are you sure you want to delete your account? This action cannot be undone...
+        </p>
+      </ConfirmationModal>
+      <Separator />
+      <PageGrid
+        heading="Danger Zone"
+        subtext="Once you delete your account, there is no going back. Please be certain."
+        submit={true}
+        submitLabel="Delete my account"
+        // disabled={!isDirty}
+      >
+        <p className="font-semibold text-red-500">
+          Any data that you have submitted will be retained. The following information will be deleted:
+        </p>
+        <ul className="ml-2 mt-2 list-inside list-disc font-semibold text-red-500">
+          <li>All wells of draft inventories</li>
+          <li>All inventories with no wells</li>
+          <li>All draft inventories</li>
+          <li>All sites with no inventories</li>
+          <li>All non-essential profile information</li>
+        </ul>
       </PageGrid>
     </form>
   );
