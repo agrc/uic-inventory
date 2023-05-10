@@ -109,7 +109,7 @@ public class AccountController : ControllerBase {
             return NotFound(new AccountPayload(ex));
         } catch (Exception ex) {
             _log.ForContext("endpoint", "PUT:api/account")
-              .Error(ex, "Unhandled excpetion");
+              .Error(ex, "Unhandled exception");
 
             return StatusCode(500, new AccountPayload(ex));
         }
@@ -142,7 +142,7 @@ public class AccountController : ControllerBase {
             return NotFound(new AccountPayload(ex));
         } catch (Exception ex) {
             _log.ForContext("endpoint", "PATCH:/api/admin/account")
-              .Error(ex, "Unhandled excpetion");
+              .Error(ex, "Unhandled exception");
 
             return StatusCode(500, new AccountPayload(ex));
         }
