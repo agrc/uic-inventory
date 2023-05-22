@@ -86,7 +86,7 @@ public static class SiteNotifications {
 
         public RemoveCloudStorageHandler(CloudStorageService cloud, IConfiguration configuration, ILogger log) {
             _log = log;
-            _bucket = configuration["STORAGE_BUCKET"];
+            _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
             _client = cloud;
         }
 

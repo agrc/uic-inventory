@@ -256,7 +256,7 @@ public static class InventoryNotifications {
         public SendAdminSubmissionEmailHandler(EmailService client, IConfiguration configuration, ILogger log) {
             _client = client;
             _log = log;
-            _email = configuration.GetSection("App")["AdminEmail"];
+            _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
         }
 
         public async Task Handle(SubmitNotification notification, CancellationToken token) {
@@ -304,7 +304,7 @@ public static class InventoryNotifications {
         public SendSubmissionRejectionEmailHandler(EmailService client, IConfiguration configuration, ILogger log) {
             _client = client;
             _log = log;
-            _email = configuration.GetSection("App")["AdminEmail"];
+            _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
         }
 
         public async Task Handle(RejectNotification notification, CancellationToken token) {
@@ -345,7 +345,7 @@ public static class InventoryNotifications {
 
         public RemoveCloudStorageHandler(CloudStorageService cloud, IConfiguration configuration, ILogger log) {
             _log = log;
-            _bucket = configuration["STORAGE_BUCKET"];
+            _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
             _client = cloud;
         }
 

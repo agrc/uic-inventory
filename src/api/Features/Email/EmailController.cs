@@ -18,7 +18,7 @@ public class EmailController : ControllerBase {
     public EmailController(IMediator mediator, IConfiguration configuration, ILogger log) {
         _mediator = mediator;
         _log = log;
-        _email = configuration.GetSection("App")["AdminEmail"];
+        _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
     }
 
     [HttpPost("/api/notify/staff")]
