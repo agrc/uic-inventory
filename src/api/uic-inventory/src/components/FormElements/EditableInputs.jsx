@@ -164,6 +164,7 @@ export const EditableCellSelect = ({ status, wellId, items, onMutate, isValid, t
           <button
             onClick={(event) => {
               event.stopPropagation();
+              setSelected(getItemByLabel(items, status));
 
               toggle();
             }}
