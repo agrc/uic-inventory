@@ -11,14 +11,14 @@ using Serilog;
 
 namespace api.Features;
 public static class SiteNotifications {
-    public class EditNotification : INotification {
+    public record EditNotification : INotification {
         public EditNotification(int siteId) {
             SiteId = siteId;
         }
 
         public int SiteId { get; }
     }
-    public class DeleteNotification : INotification {
+    public record DeleteNotification : INotification {
         public DeleteNotification(int siteId) {
             SiteId = siteId;
         }
@@ -65,6 +65,13 @@ public static class SiteNotifications {
               .Include(x => x.Contacts)
               .Include(x => x.Inventories)
               .SingleOrDefaultAsync(s => s.Id == notification.SiteId, token);
+
+            if (site is null) {
+                _log.ForContext("siteId", notification.SiteId)
+                  .Warning("Site not found");
+
+                return;
+            }
 
             site.LocationStatus = GetLocationStatus(site);
             site.DetailStatus = GetDetailStatus(site);

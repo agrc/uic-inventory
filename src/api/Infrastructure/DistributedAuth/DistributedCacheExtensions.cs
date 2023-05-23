@@ -51,7 +51,7 @@ public static class DistributedCacheExtensions {
                   if (sendNotification) {
                       await mediator.Publish(new AccountNotifications.AccountNotification {
                           Account = computation.Account,
-                          Type = NotificationTypes.new_user_account_registration
+                          NotificationType = NotificationTypes.new_user_account_registration
                       });
                   }
               };

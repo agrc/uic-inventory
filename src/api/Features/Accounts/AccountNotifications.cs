@@ -11,12 +11,11 @@ namespace api.Features;
 public static class AccountNotifications {
     public record AccountNotification : INotification {
         public Account Account { get; set; } = default!;
-        public NotificationTypes Type { get; set; }
+        public NotificationTypes NotificationType { get; set; }
     }
-
     public record AdminAccountNotification : INotification {
         public Account Account { get; set; } = default!;
-        public NotificationTypes Type { get; set; }
+        public NotificationTypes NotificationType { get; set; }
     }
 
     public class AccountCreationNotificationHandler : INotificationHandler<AccountNotification> {
@@ -27,29 +26,23 @@ public static class AccountNotifications {
             _context = context;
             _log = log;
         }
-        public async Task Handle(AccountNotification notification, CancellationToken token) {
-            _log.Information("Handling new account creation notification");
+        private Notification CreateNotifications(AccountNotification metadata) {
+            var notification = NotificationHelpers.CreateBasicNotification(_context, metadata.NotificationType);
 
-            var ids = _context.Accounts.Where(x => x.ReceiveNotifications == true).Select(x => x.Id);
-            var recipients = new List<NotificationReceipt>();
+            notification.AdditionalData = new Dictionary<string, object> {
+                    { "name", $"{metadata.Account.FirstName} {metadata.Account.LastName}" }
+                };
+            notification.Url = $"/account/{metadata.Account.Id}/profile";
 
-            foreach (var id in ids) {
-                recipients.Add(new NotificationReceipt {
-                    RecipientId = id
-                });
-            }
+            return notification;
+        }
+        public async Task Handle(AccountNotification metadata, CancellationToken token) {
+            _log.ForContext("notification metadata", metadata)
+                .Information("Handling new account creation notification");
 
-            var item = new Notification {
-                CreatedAt = DateTime.UtcNow,
-                NotificationType = notification.Type,
-                AdditionalData = new Dictionary<string, object> {
-                    { "name", $"{notification.Account.FirstName} {notification.Account.LastName}" }
-                },
-                Url = $"/account/{notification.Account.Id}/profile",
-                NotificationReceipts = recipients
-            };
+            var notifications = CreateNotifications(metadata);
 
-            await _context.Notifications.AddAsync(item, token);
+            _context.Notifications.Add(notifications);
             await _context.SaveChangesAsync(token);
         }
     }
@@ -62,29 +55,23 @@ public static class AccountNotifications {
             _context = context;
             _log = log;
         }
-        public async Task Handle(AdminAccountNotification notification, CancellationToken token) {
-            _log.Information("Handling admin account promotion notification");
+        private Notification CreateNotifications(AdminAccountNotification metadata) {
+            var notification = NotificationHelpers.CreateBasicNotification(_context, metadata.NotificationType);
 
-            var ids = _context.Accounts.Where(x => x.ReceiveNotifications == true).Select(x => x.Id);
-            var recipients = new List<NotificationReceipt>();
+            notification.AdditionalData = new Dictionary<string, object> {
+                    { "name", $"{metadata.Account.FirstName} {metadata.Account.LastName}" }
+                };
+            notification.Url = $"/account/{metadata.Account.Id}/profile";
 
-            foreach (var id in ids) {
-                recipients.Add(new NotificationReceipt {
-                    RecipientId = id
-                });
-            }
+            return notification;
+        }
+        public async Task Handle(AdminAccountNotification metadata, CancellationToken token) {
+            _log.ForContext("notification metadata", metadata)
+                .Information("Handling admin account promotion notification");
 
-            var item = new Notification {
-                CreatedAt = DateTime.UtcNow,
-                NotificationType = notification.Type,
-                AdditionalData = new Dictionary<string, object> {
-                    { "name", $"{notification.Account.FirstName} {notification.Account.LastName}" }
-                },
-                Url = $"/account/{notification.Account.Id}/profile",
-                NotificationReceipts = recipients
-            };
+            var notifications = CreateNotifications(metadata);
 
-            await _context.Notifications.AddAsync(item, token);
+            _context.Notifications.Add(notifications);
             await _context.SaveChangesAsync(token);
         }
     }

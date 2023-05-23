@@ -89,7 +89,7 @@ public static class AdminUpdateAccount {
             if (promoted) {
                 await _publisher.Publish(new AccountNotifications.AdminAccountNotification {
                     Account = account,
-                    Type = NotificationTypes.admin_promotion
+                    NotificationType = NotificationTypes.admin_promotion
                 }, token);
             }
 

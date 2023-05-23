@@ -16,14 +16,14 @@ using Serilog;
 
 namespace api.Features;
 public static class InventoryNotifications {
-    public class EditNotification : INotification {
+    public record EditNotification : INotification {
         public EditNotification(int inventoryId) {
             Id = inventoryId;
         }
 
         public int Id { get; }
     }
-    public class SubmitNotification : INotification {
+    public record SubmitNotification : INotification {
         public SubmitNotification(Site site, Inventory inventory, Account account) {
             Inventory = inventory;
             Site = site;
@@ -35,7 +35,7 @@ public static class InventoryNotifications {
         public Account Account { get; set; }
         public NotificationTypes NotificationType { get; } = NotificationTypes.inventory_submission;
     }
-    public class RejectNotification : INotification {
+    public record RejectNotification : INotification {
         public RejectNotification(Site site, Inventory inventory, Account account, IEnumerable<string?> contacts) {
             Inventory = inventory;
             Site = site;
@@ -49,7 +49,7 @@ public static class InventoryNotifications {
         public Account Account { get; set; }
         public List<EmailAddress> Contacts { get; }
     }
-    public class DeleteNotification : INotification {
+    public record DeleteNotification : INotification {
         public DeleteNotification(Inventory inventory) {
             InventoryId = inventory.Id;
             SiteId = inventory.SiteFk;
@@ -163,38 +163,25 @@ public static class InventoryNotifications {
             _context = context;
             _log = log;
         }
+        private Notification CreateNotifications(SubmitNotification metadata) {
+            var notification = NotificationHelpers.CreateBasicNotification(_context, metadata.NotificationType);
+            var initials = NotificationHelpers.GetInitials(metadata.Account);
 
-        public async Task Handle(SubmitNotification notification, CancellationToken token) {
-            _log.ForContext("notification", notification)
+            notification.AdditionalData = new Dictionary<string, object> {
+                    { "name", initials },
+                    { "inventoryId", metadata.Inventory.Id },
+                };
+            notification.Url = $"/review/site/{metadata.Site.Id}/inventory/{metadata.Inventory.Id}";
+
+            return notification;
+        }
+        public async Task Handle(SubmitNotification metadata, CancellationToken token) {
+            _log.ForContext("notification", metadata)
               .Debug("Handling inventory submission notification");
 
-            var ids = _context.Accounts.Where(x => x.ReceiveNotifications == true).Select(x => x.Id);
-            var recipients = new List<NotificationReceipt>();
+            var notifications = CreateNotifications(metadata);
 
-            foreach (var id in ids) {
-                recipients.Add(new NotificationReceipt {
-                    RecipientId = id
-                });
-            }
-
-            var initials = "ID";
-            if (notification.Account?.FirstName != null && notification.Account?.LastName != null) {
-                initials = string.Concat(notification.Account.FirstName.AsSpan(0, 1), notification.Account.LastName.AsSpan(0, 1));
-            }
-
-            var item = new Notification {
-                CreatedAt = DateTime.UtcNow,
-                NotificationType = notification.NotificationType,
-                AdditionalData = new Dictionary<string, object> {
-                    { "name", initials },
-                    { "inventoryId", notification.Inventory.Id },
-                },
-                Url = $"/review/site/{notification.Site.Id}/inventory/{notification.Inventory.Id}",
-                NotificationReceipts = recipients
-            };
-
-            _context.Notifications.Add(item);
-
+            _context.Notifications.Add(notifications);
             await _context.SaveChangesAsync(token);
         }
     }
