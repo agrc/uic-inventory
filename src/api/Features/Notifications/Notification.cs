@@ -57,8 +57,8 @@ public enum NotificationTypes {
     admin_promotion,
     inventory_submission,
     facility_contact_modified,
-    approved_well_status_edit
     approved_well_status_edit,
+    approved_inventory_well_addition,
     approved_site_contact_addition,
     approved_site_contact_deletion,
 }

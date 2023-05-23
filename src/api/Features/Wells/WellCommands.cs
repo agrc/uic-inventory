@@ -60,7 +60,10 @@ public static class CreateWell {
 
             well.Id = result.Entity.Id;
 
-            await _publisher.Publish(new InventoryNotifications.EditNotification(message.Input.InventoryId), cancellationToken);
+            Task.WaitAll(new Task[] {
+                _publisher.Publish(new WellNotifications.WellCreationNotification(well), cancellationToken),
+                _publisher.Publish(new InventoryNotifications.EditNotification(message.Input.InventoryId), cancellationToken)
+            }, cancellationToken: cancellationToken);
 
             return well;
         }
