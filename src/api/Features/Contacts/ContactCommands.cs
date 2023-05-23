@@ -35,7 +35,10 @@ public static class CreateContact {
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                await _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken);
+                Task.WaitAll(new Task[] {
+                     _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken),
+                     _publisher.Publish(new ContactNotifications.AddContactNotification(request.Input.SiteId, request.Input.AccountId), cancellationToken)
+                }, cancellationToken);
 
                 return contact.Entity;
             }
@@ -46,10 +49,14 @@ public static class CreateContact {
 public static class DeleteContact {
     public class Command : IRequest {
         public Command(ContactInput input) {
-            Input = input;
+            AccountId = input.AccountId;
+            ContactId = input.ContactId;
+            SiteId = input.SiteId;
         }
 
-        public ContactInput Input { get; }
+        public int AccountId { get; }
+        public int ContactId { get; set; }
+        public int SiteId { get; set; }
 
         public class Handler : IRequestHandler<Command> {
             private readonly ILogger _log;
@@ -67,7 +74,7 @@ public static class DeleteContact {
                   .Debug("Deleting contact");
 
                 var contact = await _context.Contacts
-                 .FirstAsync(s => s.Id == request.Input.ContactId, cancellationToken);
+                 .FirstAsync(s => s.Id == request.ContactId, cancellationToken);
 
                 _context.Contacts.Remove(contact);
 
@@ -75,7 +82,10 @@ public static class DeleteContact {
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                await _publisher.Publish(new SiteNotifications.EditNotification(request.Input.SiteId), cancellationToken);
+                Task.WaitAll(new Task[] {
+                     _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken),
+                     _publisher.Publish(new ContactNotifications.DeleteContactNotification(request.AccountId, request.SiteId), cancellationToken)
+                }, cancellationToken);
 
                 return;
             }

@@ -410,6 +410,12 @@ function Notifications({ status, error, notifications, queryKey }) {
         return `${notification.additionalData.name} submitted inventory ${notification.additionalData.inventoryId}`;
       case 'approved_well_status_edit':
         return `${notification.additionalData.name} changed well status from ${notification.additionalData.oldStatus} to ${notification.additionalData.newStatus} for inventory ${notification.additionalData.inventoryId}`;
+      case 'approved_site_contact_addition':
+        return `${notification.additionalData.name} added a contact for the approved site ${notification.additionalData.siteId}`;
+      case 'approved_site_contact_deletion':
+        return `${notification.additionalData.name} removed a contact for the approved site ${notification.additionalData.siteId}`;
+      case 'approved_inventory_well_addition':
+        return `${notification.additionalData.name} added a well to the submitted inventory ${notification.additionalData.inventoryId}`;
       default:
         return `Other notification: ${notification.event}`;
     }
