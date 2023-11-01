@@ -61,6 +61,7 @@ export function Component() {
     queryKey: ['naicsCodes', naicsCode],
     queryFn: () => ky.get(`/api/naics/${naicsCode}/single`).json(),
     staleTime: Infinity,
+    gcTime: Infinity,
     enabled: naicsCode?.length > 0 ? true : false,
     onSuccess: (data) => {
       setValue('naicsPrimary', naicsCode, { shouldValidate: true, shouldDirty: true });

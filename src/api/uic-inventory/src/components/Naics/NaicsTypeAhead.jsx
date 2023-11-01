@@ -14,6 +14,7 @@ function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
     queryKey: ['naicsCodes'],
     queryFn: () => ky.get(`/api/naics/codes`).json(),
     staleTime: Infinity,
+    gcTime: Infinity,
     onSuccess: (data) => setCodes(data),
     onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),
   });
