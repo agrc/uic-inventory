@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import ky from 'ky';
 import { onRequestError } from '../PageElements';
 
@@ -30,8 +30,9 @@ function useNaicsCodes(naicsCode) {
     queryKey: ['naics', naicsCode],
     queryFn: () => ky.get(`/api/naics/${naicsCode}`).json(),
     initialData: naicsCode === undefined || naicsCode === null ? topLevelItems : undefined,
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     staleTime: Infinity,
+    gcTime: Infinity,
     onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),
     enabled: naicsCode !== undefined || naicsCode === null,
   });
