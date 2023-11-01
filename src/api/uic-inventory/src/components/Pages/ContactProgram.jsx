@@ -47,7 +47,7 @@ export function Component() {
           >
             <FormGrid>
               <ResponsiveGridColumn full={true}>
-                <TextInput id="message" register={register} errors={formState.errors} disabled={status === 'loading'} />
+                <TextInput id="message" register={register} errors={formState.errors} disabled={status === 'pending'} />
               </ResponsiveGridColumn>
             </FormGrid>
           </PageGrid>

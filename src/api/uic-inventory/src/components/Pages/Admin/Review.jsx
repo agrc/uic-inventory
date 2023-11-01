@@ -200,7 +200,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
   const orderNumberEditable = useEditableInput(data?.orderNumber, (orderNumber) => modify({ orderNumber }));
   const subClassEditable = useEditableSelect(data?.subClass, wellTypes, (value) => modify({ subClass: value?.value }));
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return <Code />;
   }
 
@@ -285,7 +285,7 @@ const ContactDetails = ({ siteId }) => {
     onError: (error) => onRequestError(error, 'We had some trouble finding the contacts.'),
   });
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return <Code />;
   }
 
@@ -347,7 +347,7 @@ const WellDetails = ({ siteId, inventoryId }) => {
     onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
   });
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return <Code />;
   }
 
@@ -543,7 +543,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
       <Section title="Location Details" height="print:h-auto" className="print:break-before-page">
         <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
           <div className="w-full">
-            {status === 'loading' ? <Code /> : <WellTable wells={data?.wells} state={state} dispatch={dispatch} />}
+            {status === 'pending' ? <Code /> : <WellTable wells={data?.wells} state={state} dispatch={dispatch} />}
             <WaterSystemContacts wells={data?.wells} />
           </div>
           <div className="aspect-[17/22] w-full rounded border shadow print:hidden" ref={mapDiv}></div>

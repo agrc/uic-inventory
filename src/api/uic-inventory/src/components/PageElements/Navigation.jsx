@@ -67,7 +67,7 @@ function Navigation({ authenticationStatus }) {
     refetchInterval: 1000 * 60 * 10,
   });
 
-  if (authenticationStatus === 'loading') {
+  if (authenticationStatus === 'pending') {
     return (
       <Disclosure as="nav" className="bg-gray-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -297,8 +297,8 @@ function NotificationBell({ status, error, items }) {
       <span className="sr-only">View notifications</span>
       <BellIcon
         className={clsx('h-6 w-6', {
-          'text-amber-400': status !== 'loading' && !error && items?.filter((x) => !x.read).length > 0,
-          'text-gray-300': status === 'loading',
+          'text-amber-400': status !== 'pending' && !error && items?.filter((x) => !x.read).length > 0,
+          'text-gray-300': status === 'pending',
           'text-red-400': error,
         })}
         aria-hidden="true"
@@ -381,7 +381,7 @@ function Notifications({ status, error, notifications, queryKey }) {
     },
   });
 
-  if (['idle', 'loading'].includes(status)) {
+  if (['idle', 'pending'].includes(status)) {
     return <Facebook />;
   }
 
@@ -446,13 +446,13 @@ function Notifications({ status, error, notifications, queryKey }) {
             <span>
               <EnvelopeIcon
                 className="ml-1 inline-block h-5 w-5 cursor-pointer text-blue-400"
-                onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'read' })}
+                onClick={() => mutateStatus !== 'pending' && mutate({ id: notification.id, key: 'read' })}
               />
             </span>
           )}
           <TrashIcon
             className="ml-1 inline-block h-5 w-5 cursor-pointer text-red-300"
-            onClick={() => mutateStatus !== 'loading' && mutate({ id: notification.id, key: 'deleted' })}
+            onClick={() => mutateStatus !== 'pending' && mutate({ id: notification.id, key: 'deleted' })}
           />
         </span>
       </span>

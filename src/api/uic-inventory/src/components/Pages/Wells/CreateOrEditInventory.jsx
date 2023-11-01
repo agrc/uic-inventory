@@ -91,7 +91,7 @@ export function Component() {
   };
 
   return (
-    <Chrome loading={status === 'loading'}>
+    <Chrome loading={status === 'pending'}>
       {data?.site?.status !== 'complete' ? (
         <IncompleteSiteWarning />
       ) : (

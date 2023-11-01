@@ -20,7 +20,7 @@ export function Component() {
   return (
     <>
       <Chrome title="Utah UIC Well Inventory Registered Users">
-        {status === 'loading' ? <BulletList height={240} /> : <UserTable accounts={data?.accounts} />}
+        {status === 'pending' ? <BulletList height={240} /> : <UserTable accounts={data?.accounts} />}
       </Chrome>
     </>
   );

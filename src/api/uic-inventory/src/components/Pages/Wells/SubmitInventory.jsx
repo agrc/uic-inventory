@@ -37,7 +37,7 @@ export function Component() {
 
   return (
     <main>
-      <Chrome loading={status === 'loading'}>
+      <Chrome loading={status === 'pending'}>
         <PageStatus status={status} data={data} error={error} />
       </Chrome>
     </main>
@@ -47,7 +47,7 @@ export function Component() {
 const PageStatus = ({ status, data, error }) => {
   const { siteId, inventoryId } = useParams();
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return <Facebook />;
   }
 

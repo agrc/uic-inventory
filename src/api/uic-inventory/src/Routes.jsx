@@ -15,7 +15,7 @@ function ApplicationRoutes() {
   const { status, isAuthenticated, isElevated, completeProfile } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return (
       <div>
         <Navigation authenticationStatus={status} />

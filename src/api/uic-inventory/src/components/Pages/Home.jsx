@@ -86,7 +86,7 @@ function InventoryCreationButton({ site, access, className = 'm-4 text-2xl' }) {
 
 function SiteList({ show, status, data }) {
   return show ? (
-    status === 'loading' ? (
+    status === 'pending' ? (
       <List animate={false} />
     ) : (
       <SiteTable data={data} />
@@ -570,7 +570,7 @@ function SiteTable({ data }) {
 }
 
 function SubRows({ row, rowProps, visibleColumns, data, status }) {
-  if (status === 'loading') {
+  if (status === 'pending') {
     return (
       <tr>
         <td />

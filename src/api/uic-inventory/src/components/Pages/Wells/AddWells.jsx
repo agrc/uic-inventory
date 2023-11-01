@@ -81,7 +81,7 @@ export function Component() {
 
   return (
     <main>
-      <Chrome loading={status === 'loading'}>
+      <Chrome loading={status === 'pending'}>
         <div className="md:grid md:grid-cols-3 md:gap-6">
           <GridHeading
             text="Well Location"

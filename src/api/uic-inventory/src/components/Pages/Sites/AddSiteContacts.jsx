@@ -34,15 +34,15 @@ export function Component() {
   const { status, error, data } = useQuery(getSiteContacts(siteId));
 
   return (
-    <Chrome loading={status === 'loading'}>
+    <Chrome loading={status === 'pending'}>
       <PageGrid
         heading="Site Contacts"
         subtext="At least one of the contacts listed must be the owner, owner/operator, or legal representative of the injection well system for which the UIC Well Inventory is being submitted. The owner, owner/operator, or legal representative must be the signatory of the form."
         site={data}
       >
         <div className="min-h-screen mt-5 md:col-span-2 md:mt-0">
-          {status === 'loading' && <BulletList style={{ height: '20em' }} />}
-          {status !== 'loading' && !error && (
+          {status === 'pending' && <BulletList style={{ height: '20em' }} />}
+          {status !== 'pending' && !error && (
             <div className="flex flex-col">
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">

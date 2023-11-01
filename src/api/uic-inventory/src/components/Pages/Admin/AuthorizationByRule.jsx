@@ -20,7 +20,7 @@ export function Component() {
   return (
     <Chrome title="Authorization by Rule">
       <section className="m-20 mx-auto max-w-prose space-y-4 rounded-sm outline outline-offset-[3rem] outline-gray-300">
-        {status === 'loading' && <List />}
+        {status === 'pending' && <List />}
         {status === 'success' && getAbrType(data)}
       </section>
       <section className="mt-10 flex flex-1 justify-center gap-6 print:hidden">
@@ -164,7 +164,7 @@ const ContactDetails = ({ siteId }) => {
     onError: (error) => onRequestError(error, 'We had some trouble finding the contacts.'),
   });
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return <List />;
   }
 
@@ -248,7 +248,7 @@ const Sincerely = ({ authInfo }) => {
     onError: (error) => onRequestError(error, 'We had some trouble finding your profile.'),
   });
 
-  if (status === 'loading') {
+  if (status === 'pending') {
     return <List />;
   }
   return (

@@ -47,10 +47,11 @@ export function Component() {
     queryFn: () => ky.get(`/api/account/${profileId}`).json(),
     enabled: true,
     staleTime: Infinity,
+    gcTime: Infinity,
     onError: (error) => onRequestError(error, 'We had some trouble finding your profile.'),
   });
 
-  const loading = status === 'loading' || profileStatus === 'loading';
+  const loading = status === 'pending' || profileStatus === 'pending';
 
   if (loading) {
     return (

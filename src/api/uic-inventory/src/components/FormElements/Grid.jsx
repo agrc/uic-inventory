@@ -48,9 +48,9 @@ const Buttons = ({ status, submit, submitLabel, back, disabled, primary }) => {
           <button
             type="submit"
             data-style={primary ? 'primary' : 'secondary'}
-            disabled={disabled || status === 'loading'}
+            disabled={disabled || status === 'pending'}
           >
-            {status === 'loading' && (
+            {status === 'pending' && (
               <svg
                 className="-ml-1 mr-2 h-5 w-5 animate-spin motion-reduce:hidden"
                 xmlns="http://www.w3.org/2000/svg"
