@@ -16,9 +16,9 @@ import {
   TextInput,
   InventorySubmissionSchema as schema,
 } from '../../FormElements';
+import ErrorMessageTag from '../../FormElements/ErrorMessage';
 import { Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { IncompleteInventoryWarning } from '../ErrorPages';
-import ErrorMessageTag from '../FormElements/ErrorMessage';
 import { getInventory } from '../loaders';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
