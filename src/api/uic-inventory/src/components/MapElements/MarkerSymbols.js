@@ -184,7 +184,7 @@ export const PinSymbol = new CIMSymbol({
         valueExpressionInfo: {
           type: 'CIMExpressionInfo',
           title: 'Color of pin based on completeness',
-          expression: 'iif($feature.complete, [31, 41, 55, .25], [31, 41, 55, 1]);',
+          expression: 'iif(hasKey($feature, "complete") && $feature.complete, [31, 41, 55, .25], [31, 41, 55, 1]);',
           returnType: 'Default',
         },
       },
@@ -195,7 +195,7 @@ export const PinSymbol = new CIMSymbol({
         valueExpressionInfo: {
           type: 'CIMExpressionInfo',
           title: 'Color of pin based on selected status',
-          expression: 'iif($feature.selected, [147, 197, 253, 1], [251, 251, 251, 1]);',
+          expression: 'iif(hasKey($feature, "selected") && $feature.selected, [147, 197, 253, 1], [251, 251, 251, 1]);',
           returnType: 'Default',
         },
       },
@@ -206,7 +206,7 @@ export const PinSymbol = new CIMSymbol({
         valueExpressionInfo: {
           type: 'CIMExpressionInfo',
           title: 'Color of pin based on selected status',
-          expression: 'iif($feature.selected, [255, 255, 255, 1], [251, 191, 36, 1]);',
+          expression: 'iif(hasKey($feature, "selected") && $feature.selected, [255, 255, 255, 1], [251, 191, 36, 1]);',
           returnType: 'Default',
         },
       },
