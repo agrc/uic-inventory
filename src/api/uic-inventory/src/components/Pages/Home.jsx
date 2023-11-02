@@ -396,18 +396,18 @@ function SiteTable({ data }) {
     useSortBy,
     useExpanded
   );
-  const queryKey = 'sites';
+  const queryKey = ['sites'];
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationFn: (siteId) => ky.delete(`/api/site`, { json: { siteId } }),
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey });
-      const previousValue = queryClient.getQueryData({ queryKey });
+      const previousValue = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData({ queryKey }, (old) => old.filter((x) => x.id !== id));
+      queryClient.setQueryData(queryKey, (old) => old.filter((x) => x.id !== id));
       closeSiteModal();
 
-      return previousValue;
+      return { previousValue };
     },
     onSuccess: () => {
       toast.success('Site deleted successfully!');
@@ -416,38 +416,45 @@ function SiteTable({ data }) {
       queryClient.invalidateQueries({ queryKey });
     },
     onError: (error, _, previousValue) => {
-      queryClient.setQueryData({ queryKey }, previousValue);
+      queryClient.setQueryData(queryKey, previousValue);
       onRequestError(error, 'We had some trouble deleting this site.');
     },
   });
 
-  const { mutate: mutateInventory } = useMutation(
-    ({ siteId, inventoryId }) => ky.delete(`/api/inventory`, { json: { siteId, inventoryId } }),
-    {
-      onMutate: async ({ siteId, inventoryId }) => {
-        closeInventoryModal();
+  const { mutate: mutateInventory } = useMutation({
+    mutationFn: ({ siteId, inventoryId }) =>
+      ky.delete(`/api/inventory`, { json: { siteId, inventoryId } }),
+    onMutate: async ({ siteId, inventoryId }) => {
+      closeInventoryModal();
 
-        await queryClient.cancelQueries({ queryKey: ['site-inventories', siteId] });
-        const previousValue = queryClient.getQueryData({ queryKey: ['site-inventories', siteId] });
+      await queryClient.cancelQueries({
+        queryKey: ['site-inventories', siteId],
+      });
+      const previousValue = queryClient.getQueryData([
+        'site-inventories',
+        siteId,
+      ]);
 
-        queryClient.setQueryData({ queryKey: ['site-inventories', siteId] }, (old) => {
-          return {
-            ...old,
-            inventories: old.inventories.filter((x) => x.id !== inventoryId),
-          };
-        });
+      queryClient.setQueryData(['site-inventories', siteId], (old) => {
+        return {
+          ...old,
+          inventories: old.inventories.filter((x) => x.id !== inventoryId),
+        };
+      });
 
-        return previousValue;
-      },
-      onSuccess: () => {
-        toast.success('Inventory deleted successfully!');
-      },
-      onError: (error, variables, previousValue) => {
-        queryClient.setQueryData({ queryKey: ['site-inventories', variables.siteId] }, previousValue);
-        onRequestError(error, 'We had some trouble deleting this inventory.');
-      },
-    }
-  );
+      return { previousValue };
+    },
+    onSuccess: () => {
+      toast.success('Inventory deleted successfully!');
+    },
+    onError: (error, variables, previousValue) => {
+      queryClient.setQueryData(
+        ['site-inventories', variables.siteId],
+        previousValue,
+      );
+      onRequestError(error, 'We had some trouble deleting this inventory.');
+    },
+  });
 
   return data?.length < 1 ? (
     <div className="flex flex-col items-center">

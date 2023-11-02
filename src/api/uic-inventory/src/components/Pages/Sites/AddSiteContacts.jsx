@@ -110,20 +110,20 @@ function CreateContactForm({ data }) {
     mutationFn: (json) => ky.post('/api/contact', { json }),
     onMutate: async (contact) => {
       await queryClient.cancelQueries({ queryKey });
-      const previousValue = queryClient.getQueryData({ queryKey });
+      const previousValue = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData({ queryKey }, (old) => ({
+      queryClient.setQueryData(queryKey, (old) => ({
         ...old,
         contacts: [...old.contacts, { ...contact, contactType: valueToLabel(contactTypes, contact.contactType) }],
       }));
 
-      return previousValue;
+      return { previousValue };
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
     },
     onError: async (error, _, previousValue) => {
-      queryClient.setQueryData({ queryKey }, previousValue);
+      queryClient.setQueryData(queryKey, previousValue);
       onRequestError(error, 'We had some trouble creating this contact.');
     },
   });
@@ -396,9 +396,9 @@ function ContactTable({ data }) {
     mutationFn: (json) => ky.delete(`/api/contact`, { json }),
     onMutate: async (mutationData) => {
       await queryClient.cancelQueries({ queryKey });
-      const previousValue = queryClient.getQueryData({ queryKey });
+      const previousValue = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData({ queryKey }, (old) => {
+      queryClient.setQueryData(queryKey, (old) => {
         return {
           ...old,
           contacts: old.contacts.filter((x) => x.id !== mutationData.contactId),
@@ -407,7 +407,7 @@ function ContactTable({ data }) {
 
       close();
 
-      return previousValue;
+      return { previousValue };
     },
     onSuccess: () => {
       toast.success('This contact was removed.');
@@ -416,7 +416,7 @@ function ContactTable({ data }) {
       queryClient.invalidateQueries({ queryKey });
     },
     onError: (error, _, previousValue) => {
-      queryClient.setQueryData({ queryKey }, previousValue);
+      queryClient.setQueryData(queryKey, previousValue);
       onRequestError(error, 'We had some trouble deleting this contact.');
     },
   });

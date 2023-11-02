@@ -79,8 +79,8 @@ const ProfileForm = ({ id, data }) => {
   const { mutate } = useMutation({
     mutationFn: (data) => ky.put('/api/account', { json: { ...data, id } }).json(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: 'auth' });
-      queryClient.invalidateQueries({ queryKey: 'all-accounts' });
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+      queryClient.invalidateQueries({ queryKey: ['all-accounts'] });
       navigate(-1);
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating your profile.'),
@@ -289,8 +289,8 @@ const AccessForm = ({ profileData }) => {
         access: data.access === 'elevated',
       });
 
-      queryClient.invalidateQueries({ queryKey: 'auth' });
-      queryClient.invalidateQueries({ queryKey: 'profile', profileId });
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+      queryClient.invalidateQueries({ queryKey: ['profile', profileId] });
 
       return toast.success('Settings updated successfully!');
     },

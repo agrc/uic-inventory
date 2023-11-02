@@ -351,9 +351,9 @@ function Notifications({ status, error, notifications, queryKey }) {
         .json(),
     onMutate: async ({ id, key }) => {
       await queryClient.cancelQueries({ queryKey });
-      const previousValue = queryClient.getQueryData({ queryKey });
+      const previousValue = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData({ queryKey }, (old) => {
+      queryClient.setQueryData(queryKey, (old) => {
         return {
           ...old,
           notifications: old.notifications.map((item) => {
@@ -370,10 +370,10 @@ function Notifications({ status, error, notifications, queryKey }) {
         };
       });
 
-      return previousValue;
+      return { previousValue };
     },
     onError: (err, variables, previousValue) => {
-      queryClient.setQueryData({ queryKey }, previousValue);
+      queryClient.setQueryData(queryKey, previousValue);
       //! TODO: toast error
     },
     onSettled: () => {

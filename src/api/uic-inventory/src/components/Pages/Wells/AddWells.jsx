@@ -368,9 +368,9 @@ function WellTable({ wells = [], state, dispatch }) {
     mutationFn: (json) => ky.delete(`/api/well`, { json }),
     onMutate: async (mutationData) => {
       await queryClient.cancelQueries({ queryKey });
-      const previousValue = queryClient.getQueryData({ queryKey });
+      const previousValue = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData({ queryKey }, (old) => {
+      queryClient.setQueryData(queryKey, (old) => {
         return {
           ...old,
           wells: old.wells.filter((x) => x.id !== mutationData.wellId),
@@ -379,7 +379,7 @@ function WellTable({ wells = [], state, dispatch }) {
 
       close();
 
-      return previousValue;
+      return { previousValue };
     },
     onSuccess: () => {
       toast.success('This well was removed.');
@@ -388,7 +388,7 @@ function WellTable({ wells = [], state, dispatch }) {
       queryClient.invalidateQueries({ queryKey });
     },
     onError: (error, previousValue) => {
-      queryClient.setQueryData({ queryKey }, previousValue);
+      queryClient.setQueryData(queryKey, previousValue);
       onRequestError(error, 'We had some trouble deleting this well.');
     },
   });
@@ -396,9 +396,9 @@ function WellTable({ wells = [], state, dispatch }) {
     mutationFn: (json) => ky.put(`/api/well`, { json }),
     onMutate: async (well) => {
       await queryClient.cancelQueries({ queryKey });
-      const previousValue = queryClient.getQueryData({ queryKey });
+      const previousValue = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData({ queryKey }, (old) => {
+      queryClient.setQueryData(queryKey, (old) => {
         const updatedWell = old.wells.find((w) => w.id === well.wellId);
         const originalWells = old.wells.filter((w) => w.id !== well.wellId);
 
@@ -417,14 +417,14 @@ function WellTable({ wells = [], state, dispatch }) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
-      queryClient.invalidateQueries({ queryKey: 'notifications' });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
     onSuccess: () => {
       toast.success('Well updated successfully!');
     },
     onError: (error, _, context) => {
       onRequestError(error, 'We had some trouble updating this well.');
-      queryClient.setQueryData({ queryKey }, context.previousValue);
+      queryClient.setQueryData(queryKey, context.previousValue);
     },
   });
 
