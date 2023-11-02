@@ -29,4 +29,7 @@ WORKDIR /app
 COPY --from=api-publish /app .
 COPY --from=vite-build /build/dist ./uic-inventory/dist
 
+RUN useradd -s /bin/bash dummy
+USER dummy
+
 ENTRYPOINT ["dotnet", "api.dll"]
