@@ -96,6 +96,7 @@
     ],
     "semi": true,
     "singleQuote": true,
+    "printWidth": 120,
     "tailwindFunctions": [
       "clsx"
     ]
