@@ -1,29 +1,29 @@
-import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { useForm } from 'react-hook-form';
-import clsx from 'clsx';
-import { BulletList } from 'react-content-loader';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { TrashIcon } from '@heroicons/react/24/outline';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import clsx from 'clsx';
 import ky from 'ky';
+import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
+import { BulletList } from 'react-content-loader';
+import { useForm } from 'react-hook-form';
 import { useTable } from 'react-table';
 import { AuthContext } from '../../../AuthProvider';
-import { BackButton, Chrome, onRequestError, toast, useParams, Link } from '../../PageElements';
+import { serContactTypes, serDivisions, valueToLabel } from '../../../data/lookups';
 import {
-  SerContactSchema as schema,
   ErrorMessage,
   ErrorMessageTag,
   FormGrid,
   PageGrid,
   PhoneInput,
   ResponsiveGridColumn,
-  Separator,
   SelectInput,
+  Separator,
   TextInput,
+  SerContactSchema as schema,
 } from '../../FormElements';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
-import { serContactTypes, serDivisions, valueToLabel } from '../../../data/lookups';
+import { BackButton, Chrome, Link, onRequestError, toast, useParams } from '../../PageElements';
 import { getSerContact } from '../loaders';
 
 export function Component() {
@@ -259,7 +259,7 @@ function ContactTable({ data }) {
         },
       },
     ],
-    [open]
+    [open],
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });
@@ -379,7 +379,7 @@ function ContactTable({ data }) {
                         'font-medium': ['action', 'id'].includes(cell.column.id),
                         'whitespace-nowrap text-right': cell.column.id === 'action',
                       },
-                      'px-3 py-4'
+                      'px-3 py-4',
                     )}
                     {...cell.getCellProps()}
                   >

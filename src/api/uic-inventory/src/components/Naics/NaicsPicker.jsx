@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import useNaicsCodes from './useNaicsCodes';
 import { ChevronLeftIcon } from '@heroicons/react/20/solid';
 import clsx from 'clsx';
+import { useState } from 'react';
+import useNaicsCodes from './useNaicsCodes';
 
 const getCodeLevel = (code) => {
   if (!code || code?.length < 2) {
@@ -88,7 +88,7 @@ export default function NaicsPicker({ updateWith }) {
               <span
                 className={clsx(
                   'relative inline-flex items-center border border-gray-300 bg-white px-4 py-2 text-sm font-medium hover:bg-gray-50',
-                  code?.toString().length === 6 ? 'font-semibold text-emerald-500' : 'text-gray-700'
+                  code?.toString().length === 6 ? 'font-semibold text-emerald-500' : 'text-gray-700',
                 )}
               >
                 {getCodeLevel(code)}
@@ -96,7 +96,7 @@ export default function NaicsPicker({ updateWith }) {
               <span
                 className={clsx(
                   'relative inline-flex items-center rounded-r-md border border-gray-300 bg-white px-2 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50',
-                  code?.toString().length === 6 ? 'font-semibold text-emerald-500' : 'text-gray-700'
+                  code?.toString().length === 6 ? 'font-semibold text-emerald-500' : 'text-gray-700',
                 )}
               >
                 {code || '?'}

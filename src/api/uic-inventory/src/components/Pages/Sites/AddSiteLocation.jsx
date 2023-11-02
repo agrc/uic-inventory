@@ -1,34 +1,34 @@
+import Graphic from '@arcgis/core/Graphic';
+import Viewpoint from '@arcgis/core/Viewpoint';
 import '@arcgis/core/assets/esri/themes/light/main.css';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import { difference, union } from '@arcgis/core/geometry/geometryEngine';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import clsx from 'clsx';
+import ky from 'ky';
+import { useContext, useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { useImmerReducer } from 'use-immer';
+import { AuthContext } from '../../../AuthProvider';
+import { TailwindDartboard } from '../../Dartboard/Dartboard';
+import { ErrorMessage, ErrorMessageTag, GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
+import { useGraphicManager, useViewPointZooming, useWebMap } from '../../Hooks';
+import { enablePolygonDrawing } from '../../MapElements/Drawing';
+import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import {
   BackButton,
   Chrome,
-  toast,
-  useParams,
-  PolygonIcon,
   OkNotToggle,
-  onRequestError,
   PointIcon,
+  PolygonIcon,
   SelectPolygonIcon,
+  onRequestError,
+  toast,
   useNavigate,
+  useParams,
 } from '../../PageElements';
-import { ErrorMessage, ErrorMessageTag, GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import Graphic from '@arcgis/core/Graphic';
-import Polygon from '@arcgis/core/geometry/Polygon';
-import Viewpoint from '@arcgis/core/Viewpoint';
-import { difference, union } from '@arcgis/core/geometry/geometryEngine';
-import { TailwindDartboard } from '../../Dartboard/Dartboard';
-import { useContext, useEffect, useRef } from 'react';
-import clsx from 'clsx';
-import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
-import { enablePolygonDrawing } from '../../MapElements/Drawing';
-import { AuthContext } from '../../../AuthProvider';
-import { useWebMap, useViewPointZooming, useGraphicManager } from '../../Hooks';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import ky from 'ky';
 import { getSites } from '../loaders';
-import { useImmerReducer } from 'use-immer';
 
 const pureReducer = (draft, action) => {
   switch (action.type) {
@@ -179,7 +179,7 @@ export function Component() {
           geometry: geometry,
           attributes: {},
           symbol: PolygonSymbol,
-        })
+        }),
       );
     } else {
       setPolygonGraphic(null);

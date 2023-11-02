@@ -1,12 +1,13 @@
-import { Fragment, useContext, useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Dialog, RadioGroup, Transition } from '@headlessui/react';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Dialog, Transition, RadioGroup } from '@headlessui/react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
+import { Fragment, useContext, useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { AuthContext } from '../../../AuthProvider';
+import { wellTypes } from '../../../data/lookups';
 import {
   ErrorMessageTag,
   FormGrid,
@@ -15,10 +16,9 @@ import {
   TextInput,
   WellSchema as schema,
 } from '../../FormElements';
-import { Chrome, toast, onRequestError, useParams, useNavigate } from '../../PageElements';
-import { IncompleteSiteWarning } from '../ErrorPages';
 import { useOpenClosed } from '../../Hooks';
-import { wellTypes } from '../../../data/lookups';
+import { Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
+import { IncompleteSiteWarning } from '../ErrorPages';
 import { getInventory } from '../loaders';
 
 export function Component() {
@@ -128,7 +128,7 @@ export function Component() {
                                       'bg-indigo-500 text-white': checked,
                                       'bg-white': !checked,
                                     },
-                                    'relative flex cursor-pointer rounded-lg border px-5 py-4 shadow-md focus:outline-none'
+                                    'relative flex cursor-pointer rounded-lg border px-5 py-4 shadow-md focus:outline-none',
                                   )
                                 }
                               >

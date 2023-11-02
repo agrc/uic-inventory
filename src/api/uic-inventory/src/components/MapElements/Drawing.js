@@ -1,7 +1,7 @@
-import { geodesicArea, geodesicLength, crosses } from '@arcgis/core/geometry/geometryEngine';
 import Graphic from '@arcgis/core/Graphic';
-import { PolygonSymbol, IncompletePolygonSymbol, InvalidPolygonSegmentSymbol } from './MarkerSymbols';
+import { crosses, geodesicArea, geodesicLength } from '@arcgis/core/geometry/geometryEngine';
 import Draw from '@arcgis/core/views/draw/Draw';
+import { IncompletePolygonSymbol, InvalidPolygonSegmentSymbol, PolygonSymbol } from './MarkerSymbols';
 
 const roundedNumbers = new Intl.NumberFormat({
   maximumFractionDigits: 3,
@@ -15,7 +15,7 @@ export const enablePolygonDrawing = (view, setGraphic) => {
   const action = draw.create('polygon', { mode: 'click' });
 
   const event = action.on(['vertex-add', 'vertex-remove', 'cursor-update', 'redo', 'undo', 'draw-complete'], (event) =>
-    drawPolygon(event, view, setGraphic)
+    drawPolygon(event, view, setGraphic),
   );
 
   action.on(['draw-complete'], () => {

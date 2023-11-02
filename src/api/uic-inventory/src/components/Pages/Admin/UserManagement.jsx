@@ -1,11 +1,11 @@
-import { useContext, useMemo } from 'react';
+import { ChevronDownIcon, ChevronUpIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
 import ky from 'ky';
-import { useTable, useSortBy } from 'react-table';
-import { ChevronDownIcon, ChevronUpIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { useContext, useMemo } from 'react';
+import { BulletList } from 'react-content-loader';
+import { useSortBy, useTable } from 'react-table';
 import { AuthContext } from '../../../AuthProvider';
 import { Chrome, onRequestError, useNavigate } from '../../PageElements';
-import { BulletList } from 'react-content-loader';
 
 export function Component() {
   const { authInfo } = useContext(AuthContext);
@@ -68,7 +68,7 @@ const UserTable = ({ accounts = [] }) => {
         },
       },
     ],
-    [navigate]
+    [navigate],
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
@@ -79,7 +79,7 @@ const UserTable = ({ accounts = [] }) => {
         hiddenColumns: ['id'],
       },
     },
-    useSortBy
+    useSortBy,
   );
 
   return (

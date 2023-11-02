@@ -1,44 +1,43 @@
-import { Fragment, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
-import { useImmerReducer } from 'use-immer';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useTable } from 'react-table';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import ky from 'ky';
-import { ErrorMessage } from '@hookform/error-message';
-import { Dialog, Transition } from '@headlessui/react';
-import { TrashIcon } from '@heroicons/react/24/outline';
 import Graphic from '@arcgis/core/Graphic';
 import Viewpoint from '@arcgis/core/Viewpoint';
-import throttle from 'lodash.throttle';
-import clsx from 'clsx';
+import { Dialog, Transition } from '@headlessui/react';
+import { TrashIcon } from '@heroicons/react/24/outline';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Tippy from '@tippyjs/react/headless';
+import clsx from 'clsx';
+import ky from 'ky';
+import throttle from 'lodash.throttle';
+import { Fragment, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { useTable } from 'react-table';
+import { useImmerReducer } from 'use-immer';
+import * as yup from 'yup';
+import { AuthContext } from '../../../AuthProvider';
+import { operatingStatusTypes, remediationTypes, valueToLabel } from '../../../data/lookups';
+import {
+  EditableCellSelect,
+  GridHeading,
+  Label,
+  SelectInput,
+  TextInput,
+  WellLocationSchema as schema,
+} from '../../FormElements';
+import ErrorMessageTag from '../../FormElements/ErrorMessage';
+import { useGraphicManager, useInventoryWells, useOpenClosed, useSitePolygon, useWebMap } from '../../Hooks';
+import { PinSymbol } from '../../MapElements/MarkerSymbols';
 import {
   BackButton,
   Chrome,
-  toast,
-  useParams,
   OkNotToggle,
-  onRequestError,
   PointIcon,
+  Tooltip,
+  onRequestError,
+  toast,
   useNavigate,
+  useParams,
 } from '../../PageElements';
-import {
-  Label,
-  EditableCellSelect,
-  GridHeading,
-  WellLocationSchema as schema,
-  SelectInput,
-  TextInput,
-} from '../../FormElements';
-import { PinSymbol } from '../../MapElements/MarkerSymbols';
-import { AuthContext } from '../../../AuthProvider';
-import { useInventoryWells, useSitePolygon, useWebMap, useGraphicManager } from '../../Hooks';
-import { useOpenClosed } from '../../Hooks';
-import ErrorMessageTag from '../../FormElements/ErrorMessage';
-import { Tooltip } from '../../PageElements';
-import { remediationTypes, operatingStatusTypes, valueToLabel } from '../../../data/lookups';
 import { getInventory } from '../loaders';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
@@ -326,7 +325,7 @@ function WellMap({ site, wells, state, dispatch }) {
 
           dispatch({ type: 'set-hover-graphic', payload: id });
         });
-      }, 100)
+      }, 100),
     );
 
     return () => {
@@ -441,7 +440,7 @@ function WellTable({ wells = [], state, dispatch }) {
 
       update(input);
     },
-    [authInfo, inventoryId, siteId, update]
+    [authInfo, inventoryId, siteId, update],
   );
   const onMutate = useCallback((well) => modify(well), [modify]);
   const columns = useMemo(
@@ -507,7 +506,7 @@ function WellTable({ wells = [], state, dispatch }) {
         },
       },
     ],
-    [open, onMutate]
+    [open, onMutate],
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
@@ -631,7 +630,7 @@ function WellTable({ wells = [], state, dispatch }) {
                   {
                     'bg-blue-100': row.original.id === state.highlighted,
                   },
-                  'hover:bg-blue-100'
+                  'hover:bg-blue-100',
                 )}
                 key={`${row.index}`}
                 {...row.getRowProps()}
@@ -647,7 +646,7 @@ function WellTable({ wells = [], state, dispatch }) {
                         'font-medium': ['action', 'id'].includes(cell.column.id),
                         'whitespace-nowrap text-right': cell.column.id === 'action',
                       },
-                      'px-3 py-4'
+                      'px-3 py-4',
                     )}
                     {...cell.getCellProps()}
                   >

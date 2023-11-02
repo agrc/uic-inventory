@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
 import ky from 'ky';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useFetch(url, options, ready = true) {
   const [status, setStatus] = useState('idle');

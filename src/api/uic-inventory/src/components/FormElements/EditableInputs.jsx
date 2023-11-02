@@ -1,8 +1,8 @@
+import Tippy from '@tippyjs/react/headless';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useOpenClosed } from '../Hooks';
-import { SelectListbox } from './SelectInput';
-import Tippy from '@tippyjs/react/headless';
 import { Tooltip } from '../PageElements';
+import { SelectListbox } from './SelectInput';
 
 const alternateClasses = 'mr-1 rounded-lg border h-6 px-1.5 py-0.5 text-xs hover:bg-red-800 hover:text-white';
 const secondaryClasses =
@@ -91,7 +91,7 @@ export const useEditableSelect = (value, items, onMutate) => {
       className: secondaryClasses,
       ...inputProps,
     }),
-    [selected, isEditing, toggle, onMutate]
+    [selected, isEditing, toggle, onMutate],
   );
   const getCancelButtonProps = useCallback(
     (inputProps) => ({
@@ -105,7 +105,7 @@ export const useEditableSelect = (value, items, onMutate) => {
       className: alternateClasses,
       ...inputProps,
     }),
-    [toggle]
+    [toggle],
   );
   const getSelectProps = useCallback(
     (inputProps) => ({
@@ -114,7 +114,7 @@ export const useEditableSelect = (value, items, onMutate) => {
       setSelected,
       ...inputProps,
     }),
-    [items, selected, setSelected]
+    [items, selected, setSelected],
   );
 
   return { getModifyButtonProps, getCancelButtonProps, isEditing, getSelectProps, label: selected?.label };

@@ -1,12 +1,12 @@
 import { Dialog } from '@headlessui/react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { useImmerReducer } from 'use-immer';
 import ky from 'ky';
 import throttle from 'lodash.throttle';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Code } from 'react-content-loader';
 import { useTable } from 'react-table';
+import { useImmerReducer } from 'use-immer';
 
 import { when } from '@arcgis/core/core/reactiveUtils';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
@@ -114,7 +114,7 @@ const Section = ({ gray, children, title, height = 'max-h-96', className }) => (
     <div
       className={clsx(
         'mb-3 ml-1 overflow-scroll border shadow sm:rounded-md print:max-h-full print:shadow-none',
-        height
+        height,
       )}
     >
       <div
@@ -123,7 +123,7 @@ const Section = ({ gray, children, title, height = 'max-h-96', className }) => (
             'bg-gray-50 print:bg-white': gray,
             'bg-white': !gray,
           },
-          'h-full px-4 py-5 sm:p-6'
+          'h-full px-4 py-5 sm:p-6',
         )}
       >
         <FormGrid>{children}</FormGrid>
@@ -455,7 +455,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
     new FeatureLayer({
       url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0',
       opacity: 0.25,
-    })
+    }),
   );
   const [state, dispatch] = useImmerReducer(reducer, {
     highlighted: undefined,
@@ -504,7 +504,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
 
             dispatch({ type: 'set-hover-graphic', payload: id });
           });
-        }, 100)
+        }, 100),
       );
     });
 
@@ -533,7 +533,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
           const screenshot = await mapView.current.takeScreenshot({ width: 850, height: 1100 });
 
           dispatch({ type: 'set-screenshot', payload: screenshot.dataUrl });
-        }
+        },
       );
     });
   }, [dispatch, mapView]);
@@ -559,7 +559,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
 };
 
 const Pill = ({ children, status }) => {
-  const classes = clsx('text-xs font-medium mx-1 rounded-lg border border-gray-400 shadow-md px-2 py-1', {
+  const classes = clsx('mx-1 rounded-lg border border-gray-400 px-2 py-1 text-xs font-medium shadow-md', {
     'bg-red-200': status === false,
     'bg-green-200': status === true,
     'bg-gray-100': status === undefined,
@@ -644,7 +644,7 @@ const WellTable = ({ wells = [], state, dispatch }) => {
         },
       },
     ],
-    []
+    [],
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
@@ -682,7 +682,7 @@ const WellTable = ({ wells = [], state, dispatch }) => {
                 {
                   'bg-blue-100': row.original.id === state.highlighted,
                 },
-                'hover:bg-blue-100'
+                'hover:bg-blue-100',
               )}
               key={`${row.index}`}
               {...row.getRowProps()}
@@ -709,7 +709,7 @@ const WellTable = ({ wells = [], state, dispatch }) => {
                       'font-medium': ['action', 'id'].includes(cell.column.id),
                       'whitespace-nowrap text-right': cell.column.id === 'action',
                     },
-                    'px-3 py-2'
+                    'px-3 py-2',
                   )}
                   {...cell.getCellProps()}
                 >
@@ -739,7 +739,7 @@ const WaterSystemContacts = ({ wells = [] }) => {
 
   contacts = contacts.filter(
     (contact, index, self) =>
-      index === self.findIndex((duplicate) => duplicate.system === contact.system && duplicate.email === contact.email)
+      index === self.findIndex((duplicate) => duplicate.system === contact.system && duplicate.email === contact.email),
   );
 
   return (

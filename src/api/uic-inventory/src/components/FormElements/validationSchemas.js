@@ -62,7 +62,7 @@ export const ContactSchema = yup.object().shape({
         'developer',
         'other',
       ],
-      'A valid selection must be made'
+      'A valid selection must be made',
     )
     .label('Contact Type'),
   firstName,
@@ -90,7 +90,7 @@ export const SerContactSchema = yup.object().shape({
         'Division of Waste Management and Radiation Control',
         'Division of Water Quality',
       ],
-      'A valid selection must be made'
+      'A valid selection must be made',
     )
     .required()
     .label('Oversight agency'),
@@ -166,7 +166,7 @@ export const WellDetailSchema = yup.object().shape({
     .array(
       yup.object().shape({
         id: yup.number().integer().positive().label('Select at least one well to set the details for'),
-      })
+      }),
     )
     .min(1, 'Select at least one well to set the details for')
     .typeError('You must select at least 1 well'),

@@ -12,7 +12,7 @@ const errorSchema = yup
           .shape({
             message: yup.string().required(),
           })
-          .required()
+          .required(),
       )
       .min(1)
       .required(),

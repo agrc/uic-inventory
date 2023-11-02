@@ -1,15 +1,13 @@
 /* eslint-disable no-unused-vars */
-import { Navigation, Navigate, ToastContainer } from './components/PageElements';
-import { Chrome } from './components/PageElements';
-import { AuthContext } from './AuthProvider';
 import { useQueryClient } from '@tanstack/react-query';
-import { useContext } from 'react';
-import { Outlet, createBrowserRouter, Route, createRoutesFromElements, RouterProvider } from 'react-router-dom';
-import { Suspense } from 'react';
-import { loggedInUserLoader } from './components/Pages/Profile';
-import { siteLoader, siteContactLoader, inventoryLoader, serContactLoader } from './components/Pages/loaders';
+import { Suspense, useContext } from 'react';
+import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
+import { AuthContext } from './AuthProvider';
+import { Chrome, Navigate, Navigation, ToastContainer } from './components/PageElements';
 import { RouterErrorPage } from './components/Pages/ErrorPages';
 import { Component } from './components/Pages/LandingPage';
+import { loggedInUserLoader } from './components/Pages/Profile';
+import { inventoryLoader, serContactLoader, siteContactLoader, siteLoader } from './components/Pages/loaders';
 
 function ApplicationRoutes() {
   const { status, isAuthenticated, isElevated, completeProfile } = useContext(AuthContext);
@@ -151,7 +149,7 @@ function AuthenticatedRoutes(elevated, completeProfile, queryClient) {
         }}
       />
       <Route path="*" lazy={() => import('./components/Pages/NotFound')} />
-    </Route>
+    </Route>,
   );
 }
 
@@ -168,7 +166,7 @@ function UnauthenticatedRoutes() {
     >
       <Route path="/" lazy={() => import('./components/Pages/LandingPage')} />
       <Route path="*" element={<Navigate to="/" />} />
-    </Route>
+    </Route>,
   );
 }
 

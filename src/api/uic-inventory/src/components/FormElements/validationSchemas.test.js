@@ -1,6 +1,6 @@
-import { WellDetailsCommonSchema } from './validationSchemas';
+import { describe, expect, test } from 'vitest';
 import * as yup from 'yup';
-import { describe, test, expect } from 'vitest';
+import { WellDetailsCommonSchema } from './validationSchemas';
 
 describe('schema tests', () => {
   describe('without context', () => {
@@ -13,7 +13,7 @@ describe('schema tests', () => {
       expect(
         schema.validateSync({
           a: 'a',
-        })
+        }),
       ).toStrictEqual({
         a: 'a',
       });
@@ -23,7 +23,7 @@ describe('schema tests', () => {
       expect(
         schema.validateSync({
           b: { name: 'b' },
-        })
+        }),
       ).toStrictEqual({
         b: { name: 'b' },
       });
@@ -35,8 +35,8 @@ describe('schema tests', () => {
           schema.validateSync({
             a: 'a',
             b: { name: 'b' },
-          })
-        )
+          }),
+        ),
       ).toThrowError(/type your response or upload a file/);
     });
   });
@@ -50,7 +50,7 @@ describe('schema tests', () => {
       [
         ['a', 'b'],
         ['c', 'd'],
-      ]
+      ],
     );
 
     test('throws when empty', () => {
@@ -64,8 +64,8 @@ describe('schema tests', () => {
             a: 'a',
             c: 'c',
           },
-          { context: { subClass: 5002 } }
-        )
+          { context: { subClass: 5002 } },
+        ),
       ).toStrictEqual({
         a: 'a',
         c: 'c',
@@ -79,8 +79,8 @@ describe('schema tests', () => {
             a: 'a',
             d: { name: 'd' },
           },
-          { context: { subClass: 5002 } }
-        )
+          { context: { subClass: 5002 } },
+        ),
       ).toStrictEqual({
         a: 'a',
         d: { name: 'd' },
@@ -94,8 +94,8 @@ describe('schema tests', () => {
             b: { name: 'b' },
             d: { name: 'd' },
           },
-          { context: { subClass: 5002 } }
-        )
+          { context: { subClass: 5002 } },
+        ),
       ).toStrictEqual({
         b: { name: 'b' },
         d: { name: 'd' },
@@ -109,8 +109,8 @@ describe('schema tests', () => {
             b: { name: 'File' },
             c: 'c',
           },
-          { context: { subClass: 5002 } }
-        )
+          { context: { subClass: 5002 } },
+        ),
       ).toStrictEqual({
         b: { name: 'File' },
         c: 'c',
@@ -126,8 +126,8 @@ describe('schema tests', () => {
             c: 'c',
             d: { name: 'File' },
           },
-          { context: { subClass: 5002 } }
-        )
+          { context: { subClass: 5002 } },
+        ),
       ).toThrow();
     });
 
@@ -137,8 +137,8 @@ describe('schema tests', () => {
           {
             a: 'a',
           },
-          { context: { subClass: 5002 } }
-        )
+          { context: { subClass: 5002 } },
+        ),
       ).toThrowError(/((d.name)|c) is a required field/);
     });
   });

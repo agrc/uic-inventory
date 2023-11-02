@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
 import Graphic from '@arcgis/core/Graphic';
-import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import { useEffect } from 'react';
 import { useGraphicManager, useViewPointZooming } from '.';
 import { PinSymbol, PolygonSymbol } from '../MapElements/MarkerSymbols';
 
@@ -26,7 +26,7 @@ export function useSitePolygon(mapView, site) {
         geometry: geometry,
         attributes: {},
         symbol: PolygonSymbol,
-      })
+      }),
     );
 
     setViewPoint(geometry.extent.expand(3));
@@ -48,7 +48,7 @@ export function useInventoryWells(mapView, wells, { includeComplete }) {
           geometry: new Point(JSON.parse(well.geometry)),
           attributes: { id: well.id, selected: false, complete: includeComplete ? well.wellDetailsComplete : false },
           symbol: PinSymbol,
-        })
+        }),
     );
 
     setGraphic(graphics);

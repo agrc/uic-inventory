@@ -1,6 +1,6 @@
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
+import { expect, test } from 'vitest';
 import { useOpenClosed } from './useOpenClosedHook';
-import { test, expect } from 'vitest';
 
 test('toggle should switch state', () => {
   const { result } = renderHook(() => useOpenClosed());

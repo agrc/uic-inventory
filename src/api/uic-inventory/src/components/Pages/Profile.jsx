@@ -1,26 +1,26 @@
 /* eslint-disable no-unused-vars */
-import { useContext, useEffect } from 'react';
-import clsx from 'clsx';
-import { Controller, useForm } from 'react-hook-form';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
-import ky from 'ky';
+import { Dialog, Switch } from '@headlessui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import clsx from 'clsx';
+import ky from 'ky';
+import { useContext, useEffect } from 'react';
 import { Facebook } from 'react-content-loader';
-import { Switch, Dialog } from '@headlessui/react';
+import { Controller, useForm } from 'react-hook-form';
 import { AuthContext } from '../../AuthProvider';
-import { useOpenClosed } from '../Hooks';
-import { Chrome, ConfirmationModal, onRequestError, toast, useNavigate, useParams } from '../PageElements';
 import {
   ErrorMessage,
   ErrorMessageTag,
   FormGrid,
   PageGrid,
   PhoneInput,
-  ProfileSchema as schema,
   ResponsiveGridColumn,
   Separator,
   TextInput,
+  ProfileSchema as schema,
 } from '../FormElements';
+import { useOpenClosed } from '../Hooks';
+import { Chrome, ConfirmationModal, onRequestError, toast, useNavigate, useParams } from '../PageElements';
 
 const getLoggedInUserQuery = () => ({
   queryKey: ['auth'],
@@ -255,7 +255,7 @@ const NotificationForm = ({ id, data }) => {
                     'bg-indigo-600 focus:ring-indigo-500': value,
                     'bg-gray-300 focus:ring-gray-300': !value,
                   },
-                  'relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
+                  'relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
                 )}
               >
                 <span
@@ -264,7 +264,7 @@ const NotificationForm = ({ id, data }) => {
                       'translate-x-8 border-indigo-700 bg-gray-100': value,
                       'translate-x-1 border-gray-400 bg-white': !value,
                     },
-                    'inline-block h-7 w-7 transform rounded-full border-2 border-gray-400 transition-transform'
+                    'inline-block h-7 w-7 transform rounded-full border-2 border-gray-400 transition-transform',
                   )}
                 />
               </Switch>
@@ -352,7 +352,7 @@ const AccessForm = ({ profileData }) => {
                     'bg-indigo-600 focus:ring-indigo-500': value,
                     'bg-gray-300 focus:ring-gray-300': !value,
                   },
-                  'relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
+                  'relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
                 )}
               >
                 <span
@@ -361,7 +361,7 @@ const AccessForm = ({ profileData }) => {
                       'translate-x-8 border-indigo-700 bg-gray-100': value,
                       'translate-x-1 border-gray-400 bg-white': !value,
                     },
-                    'inline-block h-7 w-7 transform rounded-full border-2 border-gray-400 transition-transform'
+                    'inline-block h-7 w-7 transform rounded-full border-2 border-gray-400 transition-transform',
                   )}
                 />
               </Switch>

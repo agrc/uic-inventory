@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { useCombobox } from 'downshift';
 import { ErrorMessage } from '@hookform/error-message';
 import { useQuery } from '@tanstack/react-query';
-import ky from 'ky';
 import clsx from 'clsx';
+import { useCombobox } from 'downshift';
+import ky from 'ky';
+import { useState } from 'react';
+import ErrorMessageTag from '../FormElements/ErrorMessage';
 import { Label } from '../FormElements/TextInput';
 import { onRequestError } from '../PageElements';
-import ErrorMessageTag from '../FormElements/ErrorMessage';
 
 function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
   const [codes, setCodes] = useState([]);

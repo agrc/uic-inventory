@@ -1,11 +1,4 @@
-import { Fragment, useContext, useMemo, useRef } from 'react';
-import { List } from 'react-content-loader';
-import clsx from 'clsx';
 import { Dialog } from '@headlessui/react';
-import { useExpanded, useSortBy, useTable } from 'react-table';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import ky from 'ky';
-import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/24/outline';
 import {
   CheckIcon,
   DocumentTextIcon,
@@ -15,11 +8,18 @@ import {
   UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/20/solid';
+import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
+import clsx from 'clsx';
+import ky from 'ky';
+import { Fragment, useContext, useMemo, useRef } from 'react';
+import { List } from 'react-content-loader';
+import { useExpanded, useSortBy, useTable } from 'react-table';
 import { AuthContext } from '../../AuthProvider';
-import { ConfirmationModal, Chrome, Header, Link, onRequestError, toast, Tooltip } from '../PageElements';
-import { useOpenClosed } from '../Hooks/useOpenClosedHook';
 import { wellTypes } from '../../data/lookups';
+import { useOpenClosed } from '../Hooks/useOpenClosedHook';
+import { Chrome, ConfirmationModal, Header, Link, Tooltip, onRequestError, toast } from '../PageElements';
 
 export function Component({ completeProfile }) {
   const { authInfo } = useContext(AuthContext);
@@ -109,7 +109,7 @@ const getStatusProps = (status, row) => {
     case 'incomplete':
       return {
         children: 'draft',
-        className: clsx(commonClasses, 'bg-gray-500 border-gray-700'),
+        className: clsx(commonClasses, 'border-gray-700 bg-gray-500'),
       };
     case 'submitted': {
       const { flagged, edocsNumber } = row;
@@ -123,16 +123,16 @@ const getStatusProps = (status, row) => {
       return {
         children: label,
         className: clsx(commonClasses, {
-          'bg-blue-500 border-blue-700': label === 'submitted',
-          'bg-red-500 border-red-700': label === 'flagged',
-          'bg-cyan-500 border-cyan-700': label === edocsNumber,
+          'border-blue-700 bg-blue-500': label === 'submitted',
+          'border-red-700 bg-red-500': label === 'flagged',
+          'border-cyan-700 bg-cyan-500': label === edocsNumber,
         }),
       };
     }
     case 'authorized': {
       return {
         children: 'approved',
-        className: clsx(commonClasses, 'bg-emerald-500 border-emerald-700'),
+        className: clsx(commonClasses, 'border-emerald-700 bg-emerald-500'),
       };
     }
   }
@@ -388,13 +388,13 @@ function SiteTable({ data }) {
         },
       },
     ],
-    [openSiteModal, openInventoryModal, target]
+    [openSiteModal, openInventoryModal, target],
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, visibleColumns } = useTable(
     { columns, data },
     useSortBy,
-    useExpanded
+    useExpanded,
   );
   const queryKey = ['sites'];
   const queryClient = useQueryClient();
@@ -422,18 +422,14 @@ function SiteTable({ data }) {
   });
 
   const { mutate: mutateInventory } = useMutation({
-    mutationFn: ({ siteId, inventoryId }) =>
-      ky.delete(`/api/inventory`, { json: { siteId, inventoryId } }),
+    mutationFn: ({ siteId, inventoryId }) => ky.delete(`/api/inventory`, { json: { siteId, inventoryId } }),
     onMutate: async ({ siteId, inventoryId }) => {
       closeInventoryModal();
 
       await queryClient.cancelQueries({
         queryKey: ['site-inventories', siteId],
       });
-      const previousValue = queryClient.getQueryData([
-        'site-inventories',
-        siteId,
-      ]);
+      const previousValue = queryClient.getQueryData(['site-inventories', siteId]);
 
       queryClient.setQueryData(['site-inventories', siteId], (old) => {
         return {
@@ -448,10 +444,7 @@ function SiteTable({ data }) {
       toast.success('Inventory deleted successfully!');
     },
     onError: (error, variables, previousValue) => {
-      queryClient.setQueryData(
-        ['site-inventories', variables.siteId],
-        previousValue,
-      );
+      queryClient.setQueryData(['site-inventories', variables.siteId], previousValue);
       onRequestError(error, 'We had some trouble deleting this inventory.');
     },
   });
@@ -552,7 +545,7 @@ function SiteTable({ data }) {
                                   'font-medium': ['action', 'id'].includes(cell.column.id),
                                   'whitespace-nowrap text-right': cell.column.id === 'action',
                                 },
-                                'px-3 pb-2 pt-4'
+                                'px-3 pb-2 pt-4',
                               )}
                               {...cell.getCellProps()}
                             >

@@ -1,11 +1,11 @@
-import { useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import ky from 'ky';
+import { useContext } from 'react';
 import { List } from 'react-content-loader';
 
 import { AuthContext } from '../../../AuthProvider';
-import { Chrome, useParams, onRequestError, useNavigate } from '../../PageElements';
 import { wellTypes } from '../../../data/lookups';
+import { Chrome, onRequestError, useNavigate, useParams } from '../../PageElements';
 
 export function Component() {
   const { inventoryId, siteId } = useParams();

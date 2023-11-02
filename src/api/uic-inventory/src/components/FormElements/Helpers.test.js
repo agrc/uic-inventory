@@ -1,5 +1,5 @@
+import { expect, test } from 'vitest';
 import { camelToProper } from './Helpers';
-import { test, expect } from 'vitest';
 
 test('one word', () => {
   expect(camelToProper('one')).toBe('One');

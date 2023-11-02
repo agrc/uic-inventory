@@ -1,15 +1,15 @@
-import { useContext, useEffect, useRef } from 'react';
-import { Controller, useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
-import { BackButton, Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
-import { GridHeading, LimitedTextarea, LimitedDropzone, Label, WellDetailSchema as schema } from '../../FormElements';
-import { useInventoryWells, useSitePolygon, useWebMap } from '../../Hooks';
-import { AuthContext } from '../../../AuthProvider';
-import { getInventory } from '../loaders';
+import { useContext, useEffect, useRef } from 'react';
+import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useImmerReducer } from 'use-immer';
+import { AuthContext } from '../../../AuthProvider';
+import { GridHeading, Label, LimitedDropzone, LimitedTextarea, WellDetailSchema as schema } from '../../FormElements';
+import { useInventoryWells, useSitePolygon, useWebMap } from '../../Hooks';
+import { BackButton, Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
+import { getInventory } from '../loaders';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
@@ -184,7 +184,7 @@ export function Component() {
                       'text-red-700': state.wellsRemaining !== 0,
                       'text-emerald-500': state.wellsRemaining === 0,
                     },
-                    'inline-flex h-32 w-32 items-center justify-center rounded-full border-4 border-gray-200 text-5xl font-extrabold'
+                    'inline-flex h-32 w-32 items-center justify-center rounded-full border-4 border-gray-200 text-5xl font-extrabold',
                   )}
                 >
                   {state.wellsRemaining}
@@ -206,7 +206,7 @@ export function Component() {
                               'text-red-700': state.selectedWells?.length < 1,
                               'text-emerald-500': state.selectedWells?.length > 0,
                             },
-                            'text-2xl font-extrabold'
+                            'text-2xl font-extrabold',
                           )}
                         >
                           {state.selectedWells?.length ?? 0} wells selected

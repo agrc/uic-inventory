@@ -1,7 +1,7 @@
-import GridHeading from './GridHeading';
-import { BackButton } from '../PageElements';
-import clsx from 'clsx';
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
+import clsx from 'clsx';
+import { BackButton } from '../PageElements';
+import GridHeading from './GridHeading';
 
 export function FormGrid({ children }) {
   return <div className="grid h-full grid-cols-6 gap-6">{children}</div>;

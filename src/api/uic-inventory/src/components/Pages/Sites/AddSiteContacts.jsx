@@ -1,32 +1,31 @@
-import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { useForm } from 'react-hook-form';
-import clsx from 'clsx';
-import { BulletList } from 'react-content-loader';
+import { Dialog, Switch, Transition } from '@headlessui/react';
+import { QuestionMarkCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { TrashIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
-import { Switch } from '@headlessui/react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import clsx from 'clsx';
 import ky from 'ky';
+import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
+import { BulletList } from 'react-content-loader';
+import { useForm } from 'react-hook-form';
 import { useTable } from 'react-table';
 import { AuthContext } from '../../../AuthProvider';
-import { BackButton, Chrome, onRequestError, toast, useParams, Link } from '../../PageElements';
+import { contactTypes, serDivisions, validSiteContactTypes, valueToLabel } from '../../../data/lookups';
 import {
   ContactSchema,
-  SerContactSchema,
   ErrorMessage,
   ErrorMessageTag,
   FormGrid,
   PageGrid,
   PhoneInput,
   ResponsiveGridColumn,
-  Separator,
   SelectInput,
+  Separator,
+  SerContactSchema,
   TextInput,
 } from '../../FormElements';
 import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
-import { contactTypes, serDivisions, validSiteContactTypes, valueToLabel } from '../../../data/lookups';
-import { DevTool } from '@hookform/devtools';
+import { BackButton, Chrome, Link, onRequestError, toast, useParams } from '../../PageElements';
 import { getSiteContacts } from '../loaders';
 
 export function Component() {
@@ -359,7 +358,7 @@ function ToggleSwitch({ label, value, onChange }) {
             'bg-indigo-600 focus:ring-indigo-500': value,
             'bg-gray-300 focus:ring-gray-300': !value,
           },
-          'relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2'
+          'relative inline-flex h-8 w-16 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
         )}
       >
         <span
@@ -368,7 +367,7 @@ function ToggleSwitch({ label, value, onChange }) {
               'translate-x-8 border-indigo-700 bg-gray-100': value,
               'translate-x-1 border-gray-400 bg-white': !value,
             },
-            'inline-block h-7 w-7 transform rounded-full border-2 border-gray-400 transition-transform'
+            'inline-block h-7 w-7 transform rounded-full border-2 border-gray-400 transition-transform',
           )}
         />
       </Switch>
@@ -479,7 +478,7 @@ function ContactTable({ data }) {
         },
       },
     ],
-    [open]
+    [open],
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });
@@ -599,7 +598,7 @@ function ContactTable({ data }) {
                         'font-medium': ['action', 'id'].includes(cell.column.id),
                         'whitespace-nowrap text-right': cell.column.id === 'action',
                       },
-                      'px-3 py-4'
+                      'px-3 py-4',
                     )}
                     {...cell.getCellProps()}
                   >

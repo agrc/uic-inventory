@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import PropTypes from 'prop-types';
 import { toQueryString } from '@agrc/helpers';
 import classNames from 'clsx';
-import { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import { useCallback, useState } from 'react';
 
 const ADDRESS_TYPE = 'single-address';
 const MILEPOST_TYPE = 'route-milepost';
@@ -248,7 +248,7 @@ const useDartboard = (userProps = {}) => {
         mode: 'cors',
       });
     },
-    [props.apiKey, props.wkid, props.address, props.milepost, props.type, props.format, props.callback, baseUrl]
+    [props.apiKey, props.wkid, props.address, props.milepost, props.type, props.format, props.callback, baseUrl],
   );
 
   const outputTransform = useCallback(
@@ -282,7 +282,7 @@ const useDartboard = (userProps = {}) => {
         popupTemplate,
       };
     },
-    [props.pointSymbol, props.type]
+    [props.pointSymbol, props.type],
   );
 
   const extractResponse = useCallback(
@@ -325,7 +325,7 @@ const useDartboard = (userProps = {}) => {
 
       return outputTransform(result, point);
     },
-    [outputTransform, props.wkid, props.format, props.events]
+    [outputTransform, props.wkid, props.format, props.events],
   );
 
   const find = useCallback(async () => {
@@ -345,7 +345,7 @@ const useDartboard = (userProps = {}) => {
         response?.text() || {
           message: err.message,
           status: 400,
-        }
+        },
       );
     }
 
@@ -364,7 +364,7 @@ const useDartboard = (userProps = {}) => {
 
       find();
     },
-    [find]
+    [find],
   );
 
   return {
@@ -413,4 +413,4 @@ BootstrapDartboard.propTypes = TailwindDartboard.propTypes = {
   callback: PropTypes.string,
 };
 
-export { useDartboard, BootstrapDartboard, TailwindDartboard };
+export { BootstrapDartboard, TailwindDartboard, useDartboard };

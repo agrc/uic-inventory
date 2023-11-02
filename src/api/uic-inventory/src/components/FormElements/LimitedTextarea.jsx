@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
+import { CheckIcon, CloudArrowUpIcon, QuestionMarkCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ErrorMessage } from '@hookform/error-message';
+import Tippy from '@tippyjs/react/headless';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { CloudArrowUpIcon, QuestionMarkCircleIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
+import { Tooltip } from '../PageElements';
 import ErrorMessageTag from './ErrorMessage';
 import { Label } from './TextInput';
-import Tippy from '@tippyjs/react/headless';
-import { Tooltip } from '../PageElements';
 
 export const LimitedTextarea = ({ rows, placeholder, value, maxLength, field, errors, className, disabled }) => {
   const { limit, remaining } = useMaxLength({ value: field.value, limit: maxLength });

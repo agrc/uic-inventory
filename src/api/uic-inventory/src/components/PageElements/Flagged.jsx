@@ -1,12 +1,12 @@
-import { useContext, useState } from 'react';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import clsx from 'clsx';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import ky from 'ky';
 import { Dialog } from '@headlessui/react';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import clsx from 'clsx';
+import ky from 'ky';
+import { useContext, useState } from 'react';
 import { AuthContext } from '../../AuthProvider';
-import { ConfirmationModal, onRequestError, toast } from '../PageElements';
 import { useOpenClosed } from '../Hooks';
+import { ConfirmationModal, onRequestError, toast } from '../PageElements';
 
 export default function Flagged({ reason, siteId, inventoryId }) {
   const { authInfo } = useContext(AuthContext);

@@ -1,9 +1,9 @@
 import {
+  DropzoneMessaging,
+  LimitedDropzone,
   LimitedTextarea,
   LimitedTextareaFileInput,
   useMaxLength,
-  LimitedDropzone,
-  DropzoneMessaging,
 } from './LimitedTextarea';
 
 export default {

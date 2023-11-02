@@ -1,5 +1,5 @@
-import { AuthProvider } from './AuthProvider';
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './AuthProvider';
 import ApplicationRoutes from './Routes';
 
 function App() {

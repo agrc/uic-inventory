@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 export function useOpenClosed(initial = false) {
   const [state, setState] = useState(initial);
@@ -15,7 +15,7 @@ export function useOpenClosed(initial = false) {
         setState((s) => (s ? false : true));
       },
     }),
-    []
+    [],
   );
 
   return [state, handlers];
