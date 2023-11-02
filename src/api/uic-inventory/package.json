@@ -47,10 +47,6 @@
     "yup": "^1.3.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.2",
-    "@babel/eslint-parser": "^7.22.15",
-    "@babel/preset-env": "^7.23.2",
-    "@babel/preset-react": "^7.22.15",
     "@hookform/devtools": "^4.3.1",
     "@storybook/addon-actions": "^7.5.2",
     "@storybook/addon-essentials": "^7.5.2",
@@ -147,7 +143,7 @@
         "warn"
       ],
       "react/prop-types": [
-        "warn"
+        "off"
       ]
     }
   }
