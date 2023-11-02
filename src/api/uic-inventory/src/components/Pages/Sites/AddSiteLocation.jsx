@@ -3,6 +3,7 @@ import Viewpoint from '@arcgis/core/Viewpoint';
 import '@arcgis/core/assets/esri/themes/light/main.css';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import { difference, union } from '@arcgis/core/geometry/geometryEngine';
+import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -66,10 +67,15 @@ const pureReducer = (draft, action) => {
       break;
     }
     case 'address-clicked': {
-      const coordinates = `${Math.round(action.payload.geometry.x)}, ${Math.round(action.payload.geometry.y)}`;
+      const decimalDegrees = webMercatorToGeographic(action.payload.geometry);
+      const decimalPlaces = 100000;
 
-      draft.address = coordinates;
+      draft.address = `${Math.round(decimalDegrees.x * decimalPlaces) / decimalPlaces}, ${
+        Math.round(decimalDegrees.y * decimalPlaces) / decimalPlaces
+      }`;
       draft.formStatus = 'allow-site-boundary-from-click';
+
+      console.log('draft', draft.address);
 
       break;
     }
