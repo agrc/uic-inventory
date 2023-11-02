@@ -2,13 +2,12 @@ import { Switch } from '@headlessui/react';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import clsx from 'clsx';
 import ky from 'ky';
+import PropTypes from 'prop-types';
 import { useContext } from 'react';
 import { Facebook } from 'react-content-loader';
 import { Controller, useForm } from 'react-hook-form';
-import ErrorMessageTag from '../../FormElements/ErrorMessage';
-
-import clsx from 'clsx';
 import { AuthContext } from '../../../AuthProvider';
 import {
   FormGrid,
@@ -19,6 +18,7 @@ import {
 } from '../../FormElements';
 import { Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { IncompleteInventoryWarning } from '../ErrorPages';
+import ErrorMessageTag from '../FormElements/ErrorMessage';
 import { getInventory } from '../loaders';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -89,7 +89,11 @@ const PageStatus = ({ status, data, error }) => {
 
   return <h1>Something went terribly wrong</h1>;
 };
-
+PageStatus.propTypes = {
+  status: PropTypes.string,
+  error: PropTypes.object,
+  data: PropTypes.object,
+};
 const SubmissionForm = ({ data }) => {
   const { authInfo } = useContext(AuthContext);
   const { siteId, inventoryId } = useParams();
@@ -184,7 +188,9 @@ const SubmissionForm = ({ data }) => {
     </form>
   );
 };
-
+SubmissionForm.propTypes = {
+  data: PropTypes.object,
+};
 const AlreadySubmitted = ({ data }) => {
   return (
     <PageGrid
@@ -203,4 +209,7 @@ const AlreadySubmitted = ({ data }) => {
       </ResponsiveGridColumn>
     </PageGrid>
   );
+};
+AlreadySubmitted.propTypes = {
+  data: PropTypes.object,
 };

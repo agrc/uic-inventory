@@ -9,6 +9,7 @@ import Tippy from '@tippyjs/react/headless';
 import clsx from 'clsx';
 import ky from 'ky';
 import throttle from 'lodash.throttle';
+import PropTypes from 'prop-types';
 import { Fragment, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTable } from 'react-table';
@@ -257,7 +258,11 @@ function AddWellForm({ data, state, dispatch }) {
     </form>
   );
 }
-
+AddWellForm.propTypes = {
+  dispatch: PropTypes.func,
+  state: PropTypes.object,
+  data: PropTypes.object,
+};
 function WellMap({ site, wells, state, dispatch }) {
   const mapDiv = useRef(null);
   const drawingEvent = useRef();
@@ -355,7 +360,12 @@ function WellMap({ site, wells, state, dispatch }) {
 
   return <div className="h-96 w-full" ref={mapDiv}></div>;
 }
-
+WellMap.propTypes = {
+  site: PropTypes.object,
+  dispatch: PropTypes.func,
+  state: PropTypes.object,
+  wells: PropTypes.array,
+};
 function WellTable({ wells = [], state, dispatch }) {
   const { inventoryId, siteId } = useParams();
   const { authInfo } = useContext(AuthContext);
@@ -661,3 +671,8 @@ function WellTable({ wells = [], state, dispatch }) {
     </>
   );
 }
+WellTable.propTypes = {
+  dispatch: PropTypes.func,
+  state: PropTypes.object,
+  wells: PropTypes.array,
+};

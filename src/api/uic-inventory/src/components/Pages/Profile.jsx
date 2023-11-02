@@ -1,9 +1,9 @@
-/* eslint-disable no-unused-vars */
 import { Dialog, Switch } from '@headlessui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
+import PropTypes from 'prop-types';
 import { useContext, useEffect } from 'react';
 import { Facebook } from 'react-content-loader';
 import { Controller, useForm } from 'react-hook-form';
@@ -192,6 +192,10 @@ const ProfileForm = ({ id, data }) => {
     </form>
   );
 };
+ProfileForm.propTypes = {
+  id: PropTypes.number,
+  data: PropTypes.object,
+};
 
 const NotificationForm = ({ id, data }) => {
   const { mutate } = useMutation({
@@ -274,6 +278,10 @@ const NotificationForm = ({ id, data }) => {
       </PageGrid>
     </form>
   );
+};
+NotificationForm.propTypes = {
+  id: PropTypes.number,
+  data: PropTypes.object,
 };
 
 const AccessForm = ({ profileData }) => {
@@ -372,8 +380,10 @@ const AccessForm = ({ profileData }) => {
     </form>
   );
 };
-
-const DangerZone = ({ profileData }) => {
+AccessForm.propTypes = {
+  profileData: PropTypes.object,
+};
+const DangerZone = () => {
   const [isOpen, { open, close }] = useOpenClosed();
 
   return (

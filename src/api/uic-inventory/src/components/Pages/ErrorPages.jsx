@@ -1,4 +1,5 @@
 import { CheckIcon, LockClosedIcon, XMarkIcon } from '@heroicons/react/20/solid';
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useRouteError } from 'react-router-dom';
 import { BackButton, Link, useNavigate } from '../PageElements';
@@ -12,6 +13,9 @@ export const RouterErrorPage = ({ error }) => {
   }
 
   return <UnhandledException error={error} routeError={routeError} />;
+};
+RouterErrorPage.propTypes = {
+  error: PropTypes.object,
 };
 
 const UnauthorizedRoute = ({ routeError }) => {
@@ -68,6 +72,9 @@ const UnauthorizedRoute = ({ routeError }) => {
     </section>
   );
 };
+UnauthorizedRoute.propTypes = {
+  routeError: PropTypes.object,
+};
 
 const UnhandledException = ({ error, routeError }) => {
   const navigate = useNavigate();
@@ -112,11 +119,15 @@ const UnhandledException = ({ error, routeError }) => {
           </>
         ) : null}
         {error && !error.message && !error.stack ? (
-          <pre className="overflow-auto text-base text-gray-400">{error.toString()}</pre>
+          <pre className="overflow-auto text-base text-gray-400">{error.tonumber()}</pre>
         ) : null}
       </details>
     </section>
   );
+};
+UnhandledException.propTypes = {
+  error: PropTypes.object,
+  routeError: PropTypes.object,
 };
 
 export const IncompleteSiteWarning = () => {
@@ -186,4 +197,9 @@ export const IncompleteInventoryWarning = ({ siteId, inventoryId, inventoryStatu
       </ul>
     </section>
   );
+};
+IncompleteInventoryWarning.propTypes = {
+  siteId: PropTypes.number,
+  inventoryId: PropTypes.number,
+  inventoryStatus: PropTypes.object,
 };

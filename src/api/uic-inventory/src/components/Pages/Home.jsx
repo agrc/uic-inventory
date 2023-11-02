@@ -13,6 +13,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import clsx from 'clsx';
 import ky from 'ky';
+import PropTypes from 'prop-types';
 import { Fragment, useContext, useMemo, useRef } from 'react';
 import { List } from 'react-content-loader';
 import { useExpanded, useSortBy, useTable } from 'react-table';
@@ -57,6 +58,9 @@ export function Component({ completeProfile }) {
     </main>
   );
 }
+Component.propTypes = {
+  completeProfile: PropTypes.func,
+};
 
 function CreationButton({ access, url = '/site/create', label = 'Create item', className = 'm-4 text-2xl' }) {
   return (
@@ -68,10 +72,20 @@ function CreationButton({ access, url = '/site/create', label = 'Create item', c
     </Link>
   );
 }
+CreationButton.propTypes = {
+  access: PropTypes.bool,
+  url: PropTypes.string,
+  label: PropTypes.string,
+  className: PropTypes.string,
+};
 
 function SiteCreationButton({ access, className = 'm-4 text-2xl' }) {
   return <CreationButton url="/site/create" label="Create site" access={access} className={className} />;
 }
+SiteCreationButton.propTypes = {
+  access: PropTypes.bool,
+  className: PropTypes.string,
+};
 
 function InventoryCreationButton({ site, access, className = 'm-4 text-2xl' }) {
   return (
@@ -83,6 +97,11 @@ function InventoryCreationButton({ site, access, className = 'm-4 text-2xl' }) {
     />
   );
 }
+InventoryCreationButton.propTypes = {
+  site: PropTypes.number,
+  access: PropTypes.bool,
+  className: PropTypes.string,
+};
 
 function SiteList({ show, status, data }) {
   return show ? (
@@ -102,6 +121,11 @@ function SiteList({ show, status, data }) {
     </p>
   );
 }
+SiteList.propTypes = {
+  show: PropTypes.bool,
+  status: PropTypes.string,
+  data: PropTypes.array,
+};
 
 const getStatusProps = (status, row) => {
   const commonClasses = 'uppercase text-xs border px-2 py-1 w-24 text-center rounded font-bold text-white select-none';
@@ -148,6 +172,12 @@ function InventoryStatus({ inventoryId, siteId, status, row }) {
 
   return <span {...statusProps} />;
 }
+InventoryStatus.propTypes = {
+  inventoryId: PropTypes.number,
+  siteId: PropTypes.number,
+  status: PropTypes.string,
+  row: PropTypes.object,
+};
 
 function SiteTable({ data }) {
   const [isSiteModalOpen, { open: openSiteModal, close: closeSiteModal }] = useOpenClosed();
@@ -568,6 +598,9 @@ function SiteTable({ data }) {
     </>
   );
 }
+SiteTable.propTypes = {
+  data: PropTypes.array,
+};
 
 function SubRows({ row, rowProps, visibleColumns, data, status }) {
   if (status === 'pending') {
@@ -642,6 +675,13 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
     </>
   );
 }
+SubRows.propTypes = {
+  row: PropTypes.object,
+  rowProps: PropTypes.object,
+  visibleColumns: PropTypes.array,
+  data: PropTypes.object,
+  status: PropTypes.string,
+};
 
 function WellInventorySubTable({ row, rowProps, visibleColumns }) {
   const { authInfo } = useContext(AuthContext);
@@ -654,3 +694,8 @@ function WellInventorySubTable({ row, rowProps, visibleColumns }) {
 
   return <SubRows row={row} rowProps={rowProps} visibleColumns={visibleColumns} {...wellQuery} />;
 }
+WellInventorySubTable.propTypes = {
+  row: PropTypes.object,
+  rowProps: PropTypes.object,
+  visibleColumns: PropTypes.array,
+};

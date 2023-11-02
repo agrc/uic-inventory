@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import ky from 'ky';
+import PropTypes from 'prop-types';
 import { createContext, useEffect, useState } from 'react';
 
 export const AuthContext = createContext();
@@ -45,3 +46,6 @@ export function AuthProvider({ children }) {
     </Provider>
   );
 }
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

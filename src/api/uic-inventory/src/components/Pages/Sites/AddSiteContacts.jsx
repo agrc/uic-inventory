@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
+import PropTypes from 'prop-types';
 import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { BulletList } from 'react-content-loader';
 import { useForm } from 'react-hook-form';
@@ -613,3 +614,6 @@ function ContactTable({ data }) {
     </>
   );
 }
+ContactTable.propTypes = {
+  data: PropTypes.array,
+};
