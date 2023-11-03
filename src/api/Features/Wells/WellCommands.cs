@@ -50,10 +50,10 @@ public static class CreateWell {
 
             well.Id = result.Entity.Id;
 
-            Task.WaitAll(new Task[] {
+            Task.WaitAll([
                 _publisher.Publish(new WellNotifications.WellCreationNotification(well), cancellationToken),
                 _publisher.Publish(new InventoryNotifications.EditNotification(message.Input.InventoryId), cancellationToken)
-            }, cancellationToken: cancellationToken);
+            ], cancellationToken: cancellationToken);
 
             return well;
         }
@@ -115,7 +115,7 @@ public static class UpdateWellDetails {
       ICloudFileNamer fileNamer,
       CloudStorageService cloudService,
       ILogger log) : IRequestHandler<Command, Well> {
-        private readonly string[] _acceptableFileTypes = new[] { "pdf", "png", "doc", "docx", "jpg", "jpeg" };
+        private readonly string[] _acceptableFileTypes = ["pdf", "png", "doc", "docx", "jpg", "jpeg"];
         private readonly IAppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;

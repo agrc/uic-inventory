@@ -24,10 +24,10 @@ public static class CreateContact {
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                Task.WaitAll(new Task[] {
+                Task.WaitAll([
                      _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken),
                      _publisher.Publish(new ContactNotifications.AddContactNotification(request.Input.SiteId, request.Input.AccountId), cancellationToken)
-                }, cancellationToken);
+                ], cancellationToken);
 
                 return contact.Entity;
             }
@@ -59,10 +59,10 @@ public static class DeleteContact {
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                Task.WaitAll(new Task[] {
+                Task.WaitAll([
                      _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken),
                      _publisher.Publish(new ContactNotifications.DeleteContactNotification(request.AccountId, request.SiteId), cancellationToken)
-                }, cancellationToken);
+                ], cancellationToken);
 
                 return;
             }

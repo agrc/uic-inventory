@@ -23,9 +23,9 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : DbCo
     public virtual DbSet<WaterSystemContacts> WaterSystemContacts { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
-        modelBuilder.HasDefaultSchema("public").HasPostgresEnum("access_levels", new[] { "elevated", "standard" })
-                  .HasPostgresEnum("contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager" })
-            .HasPostgresEnum("notification_types", new[] { "new_user_account_registration" })
+        modelBuilder.HasDefaultSchema("public").HasPostgresEnum("access_levels", ["elevated", "standard"])
+                  .HasPostgresEnum("contact_types", ["owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager"])
+            .HasPostgresEnum("notification_types", ["new_user_account_registration"])
             .HasAnnotation("Relational:Collation", "en_US.utf8");
 
         modelBuilder.Entity<Account>(entity => {

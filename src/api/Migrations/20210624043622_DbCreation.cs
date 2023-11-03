@@ -16,9 +16,9 @@ public partial class DbCreation : Migration {
     protected override void Up(MigrationBuilder migrationBuilder) {
         migrationBuilder.EnsureSchema(name: "public");
 
-        SafelyCreateEnum("public.\"access_level\"", new[] { "standard", "elevated" }, migrationBuilder);
-        SafelyCreateEnum("public.contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager" }, migrationBuilder);
-        SafelyCreateEnum("public.notification_types", new[] { "new_user_account_registration", "facility_contact_modified" }, migrationBuilder);
+        SafelyCreateEnum("public.\"access_level\"", ["standard", "elevated"], migrationBuilder);
+        SafelyCreateEnum("public.contact_types", ["owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager"], migrationBuilder);
+        SafelyCreateEnum("public.notification_types", ["new_user_account_registration", "facility_contact_modified"], migrationBuilder);
 
         migrationBuilder.CreateTable(
             name: "accounts",
