@@ -281,12 +281,9 @@ public static class GetWellFiles {
             var type = parts[0].ToLower();
             var match = $"{prefix}/{type}";
 
-            var stream = await _client.DownloadObjectAsync(_bucket, prefix, match, cancellationToken);
-            if (stream == null) {
-                throw new FileNotFoundException("If this file was just uploaded it is being scanned for malware. " +
+            var stream = await _client.DownloadObjectAsync(_bucket, prefix, match, cancellationToken) ?? throw new FileNotFoundException("If this file was just uploaded it is being scanned for malware. " +
                   "Please try again in a few moments. Otherwise, the upload was either flagged as malware and removed " +
                   "or something went terribly wrong.");
-            }
 
             return stream;
         }

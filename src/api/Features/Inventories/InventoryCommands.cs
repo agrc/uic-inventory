@@ -195,11 +195,7 @@ public static class RejectInventory {
 
             var inventory = await _context.Inventories
               .Include(i => i.Wells)
-              .FirstOrDefaultAsync(s => s.Id == request.InventoryId, cancellationToken);
-
-            if (inventory == null) {
-                throw new Exception("R01:Inventory not found");
-            }
+              .FirstOrDefaultAsync(s => s.Id == request.InventoryId, cancellationToken) ?? throw new Exception("R01:Inventory not found");
 
             _context.Inventories.Remove(inventory);
 

@@ -22,11 +22,7 @@ public static class UpdateAccount {
             _log.ForContext("input", request)
               .Debug("Updating account");
 
-            var account = await _context.Accounts.SingleOrDefaultAsync(a => a.Id == request.Input.Id, token);
-
-            if (account == null) {
-                throw new ArgumentNullException(nameof(request));
-            }
+            var account = await _context.Accounts.SingleOrDefaultAsync(a => a.Id == request.Input.Id, token) ?? throw new ArgumentNullException(nameof(request));
 
             account = request.Input.UpdateAccount(account);
 
@@ -54,11 +50,7 @@ public static class AdminUpdateAccount {
             _log.ForContext("input", request)
               .Debug("Updating account");
 
-            var account = await _context.Accounts.SingleOrDefaultAsync(a => a.Id == request.Input.Id, token);
-
-            if (account == null) {
-                throw new ArgumentNullException(nameof(request));
-            }
+            var account = await _context.Accounts.SingleOrDefaultAsync(a => a.Id == request.Input.Id, token) ?? throw new ArgumentNullException(nameof(request));
 
             var promoted = false;
             if (request.Input.Access == AccessLevels.elevated && account.Access == AccessLevels.standard) {

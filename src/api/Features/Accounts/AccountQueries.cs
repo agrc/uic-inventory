@@ -12,10 +12,7 @@ namespace api.Features;
 public static class GetMyAccount {
     public class Query : IRequest<Account> {
         public Query(ClaimsPrincipal user) {
-            var utahIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
-            if (utahIdClaim is null) {
-                throw new UnauthorizedAccessException("User must have a name identifier.");
-            }
+            var utahIdClaim = user.FindFirst(ClaimTypes.NameIdentifier) ?? throw new UnauthorizedAccessException("User must have a name identifier.");
 
             UtahId = utahIdClaim.Value;
         }
