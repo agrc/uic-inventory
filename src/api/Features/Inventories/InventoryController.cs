@@ -11,16 +11,10 @@ using Serilog;
 
 namespace api.Features;
 [ApiController]
-public class InventoryController : ControllerBase {
-    private readonly IMediator _mediator;
-    private readonly HasRequestMetadata _requestMetadata;
-    private readonly ILogger _log;
-
-    public InventoryController(IMediator mediator, HasRequestMetadata requestMetadata, ILogger log) {
-        _mediator = mediator;
-        _requestMetadata = requestMetadata;
-        _log = log;
-    }
+public class InventoryController(IMediator mediator, HasRequestMetadata requestMetadata, ILogger log) : ControllerBase {
+    private readonly IMediator _mediator = mediator;
+    private readonly HasRequestMetadata _requestMetadata = requestMetadata;
+    private readonly ILogger _log = log;
 
     [HttpGet("/api/site/{siteId:min(1)}/inventories")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]

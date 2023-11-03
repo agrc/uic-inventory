@@ -7,13 +7,10 @@ using Serilog;
 
 namespace api.Infrastructure;
 public class MustHaveEditableInventoryStatus : IAuthorizationRequirement {
-    private class Handler : IAuthorizationHandler<MustHaveEditableInventoryStatus> {
-        private readonly ILogger _log;
-        private readonly HasRequestMetadata _metadata;
-        public Handler(HasRequestMetadata metadata, ILogger log) {
-            _metadata = metadata;
-            _log = log;
-        }
+    private class Handler(HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveEditableInventoryStatus> {
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+
         public Task<AuthorizationResult> Handle(
           MustHaveEditableInventoryStatus requirement,
           CancellationToken token = default) {

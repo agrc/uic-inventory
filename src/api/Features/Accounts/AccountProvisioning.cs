@@ -32,12 +32,8 @@ public static class AccountProvisioning {
         }
     }
 
-    public class Handler : IRequestHandler<Computation, bool> {
-        private readonly IAppDbContext _context;
-
-        public Handler(IAppDbContext context) {
-            _context = context;
-        }
+    public class Handler(IAppDbContext context) : IRequestHandler<Computation, bool> {
+        private readonly IAppDbContext _context = context;
 
         public async Task<bool> Handle(Computation computation, CancellationToken token) {
             var account = await _context.Accounts.SingleOrDefaultAsync(x => x.UtahId == computation.Account.UtahId, token);

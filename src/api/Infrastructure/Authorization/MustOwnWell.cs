@@ -6,21 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Infrastructure;
-public class MustOwnWell : IAuthorizationRequirement {
-    public MustOwnWell(int id) {
-        WellId = id;
-    }
-    public int WellId { get; }
+public class MustOwnWell(int id) : IAuthorizationRequirement {
+    public int WellId { get; } = id;
 
-    private class Handler : IAuthorizationHandler<MustOwnWell> {
-        private readonly ILogger _log;
-        private readonly IAppDbContext _context;
-        private readonly HasRequestMetadata _metadata;
-        public Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) {
-            _context = context;
-            _metadata = metadata;
-            _log = log;
-        }
+    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnWell> {
+        private readonly ILogger _log = log;
+        private readonly IAppDbContext _context = context;
+        private readonly HasRequestMetadata _metadata = metadata;
+
         public async Task<AuthorizationResult> Handle(
           MustOwnWell requirement,
           CancellationToken token = default) {

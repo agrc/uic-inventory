@@ -9,30 +9,18 @@ using Serilog;
 
 namespace api.Features;
 public static class CreateInventory {
-    public class Command : IRequest<Inventory> {
-        public Command(InventoryCreationInput input) {
-            AccountId = input.AccountId;
-            SiteId = input.SiteId;
-            SubClass = input.SubClass;
-            OrderNumber = input.OrderNumber;
-        }
-
-        public int AccountId { get; init; }
-        public int SiteId { get; init; }
-        public int OrderNumber { get; init; }
-        public int SubClass { get; init; }
+    public class Command(InventoryCreationInput input) : IRequest<Inventory> {
+        public int AccountId { get; init; } = input.AccountId;
+        public int SiteId { get; init; } = input.SiteId;
+        public int OrderNumber { get; init; } = input.OrderNumber;
+        public int SubClass { get; init; } = input.SubClass;
         public DateTime? CreatedOn { get; } = DateTime.UtcNow;
     }
-    public class Handler : IRequestHandler<Command, Inventory> {
-        private readonly IAppDbContext _context;
-        private readonly IPublisher _publisher;
-        private readonly ILogger _log;
+    public class Handler(IAppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command, Inventory> {
+        private readonly IAppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
 
-        public Handler(IAppDbContext context, IPublisher publisher, ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-        }
         public async Task<Inventory> Handle(Command message, CancellationToken cancellationToken) {
             _log.ForContext("input", message)
               .Debug("Creating inventory");
@@ -57,34 +45,19 @@ public static class CreateInventory {
     }
 }
 public static class UpdateInventory {
-    public class Command : IRequest<Inventory> {
-        public Command(InventoryMutationInput input) {
-            AccountId = input.AccountId;
-            SiteId = input.SiteId;
-            SubClass = input.SubClass;
-            Edocs = input.Edocs;
-            InventoryId = input.InventoryId;
-            Flagged = input.Flagged;
-            OrderNumber = input.OrderNumber;
-        }
-
-        public int AccountId { get; init; }
-        public int SiteId { get; init; }
-        public int InventoryId { get; init; }
-        public int? SubClass { get; init; }
-        public string? Edocs { get; set; }
-        public string? Flagged { get; set; }
-        public int? OrderNumber { get; set; }
+    public class Command(InventoryMutationInput input) : IRequest<Inventory> {
+        public int AccountId { get; init; } = input.AccountId;
+        public int SiteId { get; init; } = input.SiteId;
+        public int InventoryId { get; init; } = input.InventoryId;
+        public int? SubClass { get; init; } = input.SubClass;
+        public string? Edocs { get; set; } = input.Edocs;
+        public string? Flagged { get; set; } = input.Flagged;
+        public int? OrderNumber { get; set; } = input.OrderNumber;
     }
-    public class Handler : IRequestHandler<Command, Inventory> {
-        private readonly IAppDbContext _context;
-        private readonly HasRequestMetadata _metadata;
-        private readonly ILogger _log;
-        public Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) {
-            _context = context;
-            _log = log;
-            _metadata = metadata;
-        }
+    public class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Command, Inventory> {
+        private readonly IAppDbContext _context = context;
+        private readonly HasRequestMetadata _metadata = metadata;
+        private readonly ILogger _log = log;
 
         public async Task<Inventory> Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
@@ -124,35 +97,22 @@ public static class UpdateInventory {
     }
 }
 public static class SubmitInventory {
-    public class Command : IRequest {
-        public Command(InventorySubmissionInput input) {
-            AccountId = input.AccountId;
-            SiteId = input.SiteId;
-            InventoryId = input.InventoryId;
-            Signature = input.Signature;
-        }
-
-        public int AccountId { get; set; }
-        public int SiteId { get; set; }
-        public int InventoryId { get; set; }
-        public string Signature { get; set; }
+    public class Command(InventorySubmissionInput input) : IRequest {
+        public int AccountId { get; set; } = input.AccountId;
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; set; } = input.InventoryId;
+        public string Signature { get; set; } = input.Signature;
     }
 
-    public class Handler : IRequestHandler<Command> {
-        private readonly IAppDbContext _context;
-        private readonly IPublisher _publisher;
-        private readonly ILogger _log;
-        private readonly HasRequestMetadata _metadata;
+    public class Handler(IAppDbContext context,
+            IPublisher publisher,
+            HasRequestMetadata metadata,
+            ILogger log) : IRequestHandler<Command> {
+        private readonly IAppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
 
-        public Handler(IAppDbContext context,
-                IPublisher publisher,
-                HasRequestMetadata metadata,
-                ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-            _metadata = metadata;
-        }
         async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Submitting Inventory");
@@ -167,6 +127,7 @@ public static class SubmitInventory {
             inventory.SubmittedOn = DateTime.UtcNow;
             inventory.Signature = request.Signature;
 
+            //? TODO: may already be tracked and all .updates are irrelevant (https://learn.microsoft.com/en-us/ef/core/change-tracking/explicit-tracking)
             _context.Inventories.Update(inventory);
 
             //! TODO: needs requirements
@@ -183,28 +144,17 @@ public static class SubmitInventory {
     }
 }
 public static class DeleteInventory {
-    public class Command : IRequest {
-        public Command(InventoryDeletionInput input) {
-            AccountId = input.AccountId;
-            SiteId = input.SiteId;
-            InventoryId = input.InventoryId;
-        }
-
-        public int AccountId { get; set; }
-        public int SiteId { get; set; }
-        public int InventoryId { get; set; }
+    public class Command(InventoryDeletionInput input) : IRequest {
+        public int AccountId { get; set; } = input.AccountId;
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; set; } = input.InventoryId;
     }
 
-    public class Handler : IRequestHandler<Command> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
-        private readonly IPublisher _publisher;
+    public class Handler(IAppDbContext context, ILogger log, IPublisher publisher) : IRequestHandler<Command> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
+        private readonly IPublisher _publisher = publisher;
 
-        public Handler(IAppDbContext context, ILogger log, IPublisher publisher) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-        }
         async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Deleting inventory");
@@ -224,33 +174,20 @@ public static class DeleteInventory {
     }
 }
 public static class RejectInventory {
-    public class Command : IRequest {
-        public Command(InventoryDeletionInput input) {
-            AccountId = input.AccountId;
-            SiteId = input.SiteId;
-            InventoryId = input.InventoryId;
-        }
-
-        public int AccountId { get; set; }
-        public int SiteId { get; set; }
-        public int InventoryId { get; set; }
+    public class Command(InventoryDeletionInput input) : IRequest {
+        public int AccountId { get; set; } = input.AccountId;
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; set; } = input.InventoryId;
     }
 
-    public class Handler : IRequestHandler<Command> {
-        private readonly IAppDbContext _context;
-        private readonly IPublisher _publisher;
-        private readonly ILogger _log;
-        private readonly HasRequestMetadata _metadata;
-
-        public Handler(IAppDbContext context,
-                IPublisher publisher,
-                HasRequestMetadata metadata,
-                ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-            _metadata = metadata;
-        }
+    public class Handler(IAppDbContext context,
+            IPublisher publisher,
+            HasRequestMetadata metadata,
+            ILogger log) : IRequestHandler<Command> {
+        private readonly IAppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
 
         async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)

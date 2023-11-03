@@ -4,12 +4,8 @@ using MediatR.Behaviors.Authorization;
 using Microsoft.AspNetCore.Http;
 
 namespace api.Features;
-public class GetInventoriesBySiteAuthorizer : AbstractRequestAuthorizer<GetInventoriesBySite.Query> {
-    private readonly IHttpContextAccessor _context;
-
-    public GetInventoriesBySiteAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
+public class GetInventoriesBySiteAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<GetInventoriesBySite.Query> {
+    private readonly IHttpContextAccessor _context = context;
 
     public override void BuildPolicy(GetInventoriesBySite.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
@@ -18,12 +14,8 @@ public class GetInventoriesBySiteAuthorizer : AbstractRequestAuthorizer<GetInven
     }
 }
 
-public class GetInventoryByIdAuthorizer : AbstractRequestAuthorizer<GetInventoryById.Query> {
-    private readonly IHttpContextAccessor _context;
-
-    public GetInventoryByIdAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
+public class GetInventoryByIdAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<GetInventoryById.Query> {
+    private readonly IHttpContextAccessor _context = context;
 
     public override void BuildPolicy(GetInventoryById.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
@@ -33,12 +25,9 @@ public class GetInventoryByIdAuthorizer : AbstractRequestAuthorizer<GetInventory
     }
 }
 
-public class CreateInventoryAuthorizer : AbstractRequestAuthorizer<CreateInventory.Command> {
-    private readonly IHttpContextAccessor _context;
+public class CreateInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<CreateInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public CreateInventoryAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(CreateInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
@@ -47,12 +36,9 @@ public class CreateInventoryAuthorizer : AbstractRequestAuthorizer<CreateInvento
     }
 }
 
-public class UpdateInventoryAuthorizer : AbstractRequestAuthorizer<UpdateInventory.Command> {
-    private readonly IHttpContextAccessor _context;
+public class UpdateInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<UpdateInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public UpdateInventoryAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(UpdateInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
@@ -60,12 +46,9 @@ public class UpdateInventoryAuthorizer : AbstractRequestAuthorizer<UpdateInvento
     }
 }
 
-public class SubmitInventoryAuthorizer : AbstractRequestAuthorizer<SubmitInventory.Command> {
-    private readonly IHttpContextAccessor _context;
+public class SubmitInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<SubmitInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public SubmitInventoryAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(SubmitInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
@@ -75,12 +58,9 @@ public class SubmitInventoryAuthorizer : AbstractRequestAuthorizer<SubmitInvento
     }
 }
 
-public class DeleteInventoryAuthorizer : AbstractRequestAuthorizer<DeleteInventory.Command> {
-    private readonly IHttpContextAccessor _context;
+public class DeleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public DeleteInventoryAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(DeleteInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
@@ -91,12 +71,9 @@ public class DeleteInventoryAuthorizer : AbstractRequestAuthorizer<DeleteInvento
     }
 }
 
-public class RejectInventoryAuthorizer : AbstractRequestAuthorizer<DeleteInventory.Command> {
-    private readonly IHttpContextAccessor _context;
+public class RejectInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public RejectInventoryAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(DeleteInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());

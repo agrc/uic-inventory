@@ -6,13 +6,10 @@ using Serilog;
 
 namespace api.Infrastructure;
 public class MustHaveElevatedAccount : IAuthorizationRequirement {
-    private class Handler : IAuthorizationHandler<MustHaveElevatedAccount> {
-        private readonly ILogger _log;
-        private readonly HasRequestMetadata _metadata;
-        public Handler(HasRequestMetadata metadata, ILogger log) {
-            _metadata = metadata;
-            _log = log;
-        }
+    private class Handler(HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveElevatedAccount> {
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+
         public async Task<AuthorizationResult> Handle(MustHaveElevatedAccount requirement, CancellationToken token = default) {
             if (_metadata.Account.Access == AccessLevels.elevated) {
                 return AuthorizationResult.Succeed();

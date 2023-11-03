@@ -12,29 +12,19 @@ using Serilog;
 
 namespace api.Features;
 public static class CreateWell {
-    public class Command : IRequest<Well> {
-        public Command(WellInput input) {
-            Input = input;
-        }
-
-        public WellInput Input { get; }
+    public class Command(WellInput input) : IRequest<Well> {
+        public WellInput Input { get; } = input;
     }
-    public class Handler : IRequestHandler<Command, Well> {
-        private readonly IAppDbContext _context;
-        private readonly IPublisher _publisher;
-        private readonly ILogger _log;
-        private readonly HasRequestMetadata _metadata;
+    public class Handler(
+      IAppDbContext context,
+      IPublisher publisher,
+      HasRequestMetadata metadata,
+      ILogger log) : IRequestHandler<Command, Well> {
+        private readonly IAppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
 
-        public Handler(
-          IAppDbContext context,
-          IPublisher publisher,
-          HasRequestMetadata metadata,
-          ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-            _metadata = metadata;
-        }
         public async Task<Well> Handle(Command message, CancellationToken cancellationToken) {
             _log.ForContext("input", message)
               .Debug("Creating well");
@@ -71,36 +61,23 @@ public static class CreateWell {
 }
 
 public static class UpdateWell {
-    public class Command : IRequest<Well> {
-        public Command(WellOperatingStatusInput input) {
-            AccountId = input.AccountId;
-            SiteId = input.SiteId;
-            InventoryId = input.InventoryId;
-            WellId = input.WellId;
-            Status = input.Status;
-            Description = input.Description;
-        }
-
-        public int AccountId { get; init; }
-        public int SiteId { get; init; }
-        public int InventoryId { get; init; }
-        public int WellId { get; init; }
-        public string Status { get; init; }
-        public string? Description { get; init; }
+    public class Command(WellOperatingStatusInput input) : IRequest<Well> {
+        public int AccountId { get; init; } = input.AccountId;
+        public int SiteId { get; init; } = input.SiteId;
+        public int InventoryId { get; init; } = input.InventoryId;
+        public int WellId { get; init; } = input.WellId;
+        public string Status { get; init; } = input.Status;
+        public string? Description { get; init; } = input.Description;
     }
 
-    public class Handler : IRequestHandler<Command, Well> {
-        private readonly IAppDbContext _context;
-        private readonly IPublisher _publisher;
-        private readonly ILogger _log;
-        public Handler(
-          IAppDbContext context,
-          IPublisher publisher,
-          ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-        }
+    public class Handler(
+      IAppDbContext context,
+      IPublisher publisher,
+      ILogger log) : IRequestHandler<Command, Well> {
+        private readonly IAppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
+
         public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Updating well");
@@ -127,37 +104,25 @@ public static class UpdateWell {
 }
 
 public static class UpdateWellDetails {
-    public class Command : IRequest<Well> {
-        public Command(WellDetailInput input) {
-            Wells = input;
-        }
-
-        public WellDetailInput Wells { get; }
+    public class Command(WellDetailInput input) : IRequest<Well> {
+        public WellDetailInput Wells { get; } = input;
     }
 
-    public class Handler : IRequestHandler<Command, Well> {
+    public class Handler(
+      IAppDbContext context,
+      IPublisher publisher,
+      IConfiguration configuration,
+      ICloudFileNamer fileNamer,
+      CloudStorageService cloudService,
+      ILogger log) : IRequestHandler<Command, Well> {
         private readonly string[] _acceptableFileTypes = new[] { "pdf", "png", "doc", "docx", "jpg", "jpeg" };
-        private readonly IAppDbContext _context;
-        private readonly IPublisher _publisher;
-        private readonly ILogger _log;
-        private readonly string _bucket;
-        private readonly ICloudFileNamer _fileNamerService;
-        private readonly CloudStorageService _client;
+        private readonly IAppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
+        private readonly string _bucket = configuration.GetValue<string>("UPLOAD_BUCKET") ?? string.Empty;
+        private readonly ICloudFileNamer _fileNamerService = fileNamer;
+        private readonly CloudStorageService _client = cloudService;
 
-        public Handler(
-          IAppDbContext context,
-          IPublisher publisher,
-          IConfiguration configuration,
-          ICloudFileNamer fileNamer,
-          CloudStorageService cloudService,
-          ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-            _fileNamerService = fileNamer;
-            _client = cloudService;
-            _bucket = configuration.GetValue<string>("UPLOAD_BUCKET") ?? string.Empty;
-        }
         public async Task<Well> Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Updating well details");
@@ -258,30 +223,18 @@ public static class UpdateWellDetails {
 }
 
 public static class DeleteWell {
-    public class Command : IRequest {
-        public Command(WellInput input) {
-            AccountId = input.AccountId;
-            SiteId = input.SiteId;
-            InventoryId = input.InventoryId;
-            WellId = input.WellId;
-        }
-
-        public int AccountId { get; set; }
-        public int SiteId { get; set; }
-        public int InventoryId { get; }
-        public int WellId { get; set; }
+    public class Command(WellInput input) : IRequest {
+        public int AccountId { get; set; } = input.AccountId;
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; } = input.InventoryId;
+        public int WellId { get; set; } = input.WellId;
     }
 
-    public class Handler : IRequestHandler<Command> {
-        private readonly IAppDbContext _context;
-        private readonly IPublisher _publisher;
-        private readonly ILogger _log;
+    public class Handler(IAppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command> {
+        private readonly IAppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
 
-        public Handler(IAppDbContext context, IPublisher publisher, ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-        }
         async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Deleting well");
@@ -303,30 +256,18 @@ public static class DeleteWell {
 }
 
 public static class GetWellFiles {
-    public class Command : IRequest<Stream> {
-        public Command(WellFileInput input) {
-            SiteId = input.SiteId;
-            InventoryId = input.InventoryId;
-            WellIdRange = input.WellIdRange;
-            File = input.File;
-        }
-
-        public string? File { get; set; }
-        public int SiteId { get; set; }
-        public int InventoryId { get; }
-        public string? WellIdRange { get; set; }
+    public class Command(WellFileInput input) : IRequest<Stream> {
+        public string? File { get; set; } = input.File;
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; } = input.InventoryId;
+        public string? WellIdRange { get; set; } = input.WellIdRange;
     }
 
-    public class Handler : IRequestHandler<Command, Stream> {
-        private readonly string _bucket;
-        private readonly ILogger _log;
-        private readonly CloudStorageService _client;
+    public class Handler(IConfiguration configuration, CloudStorageService service, ILogger log) : IRequestHandler<Command, Stream> {
+        private readonly string _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
+        private readonly ILogger _log = log;
+        private readonly CloudStorageService _client = service;
 
-        public Handler(IConfiguration configuration, CloudStorageService service, ILogger log) {
-            _log = log;
-            _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
-            _client = service;
-        }
         async Task<Stream> IRequestHandler<Command, Stream>.Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Fetching well files");

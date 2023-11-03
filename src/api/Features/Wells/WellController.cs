@@ -13,9 +13,9 @@ using Serilog;
 
 namespace api.Features;
 [ApiController]
-public class WellController : ControllerBase {
-    private readonly IMediator _mediator;
-    private readonly ILogger _log;
+public class WellController(IMediator mediator, ILogger log) : ControllerBase {
+    private readonly IMediator _mediator = mediator;
+    private readonly ILogger _log = log;
     private readonly Dictionary<string, string> _mimeTypes = new() {
         { "png", "image/png" },
         { "jpg", "image/jpeg" },
@@ -24,11 +24,6 @@ public class WellController : ControllerBase {
         { "doc", "application/msword" },
         { "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
     };
-
-    public WellController(IMediator mediator, ILogger log) {
-        _mediator = mediator;
-        _log = log;
-    }
 
     [HttpPost("/api/well")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]

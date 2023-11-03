@@ -14,14 +14,10 @@ public interface IWaterSystemContactService {
     Task<IEnumerable<WaterSystemContact>> GetContactsAsync(IReadOnlyList<string> items, CancellationToken cancellationToken);
 }
 
-public class WaterSystemContactService : IWaterSystemContactService {
-    private readonly ILogger _log;
-    private readonly string _connectionString;
+public class WaterSystemContactService(IConfiguration config, ILogger log) : IWaterSystemContactService {
+    private readonly ILogger _log = log;
+    private readonly string _connectionString = config.GetSection("GroundWaterContacts")["Connection"];
 
-    public WaterSystemContactService(IConfiguration config, ILogger log) {
-        _log = log;
-        _connectionString = config.GetSection("GroundWaterContacts")["Connection"];
-    }
     public async Task<IEnumerable<WaterSystemContact>> GetContactsAsync(IReadOnlyList<string> items, CancellationToken cancellationToken) {
         using var conn = new OracleConnection(_connectionString);
 

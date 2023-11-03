@@ -14,12 +14,7 @@ public abstract class ResponseContract {
     public IReadOnlyList<ApiError>? Errors { get; }
 }
 
-public class ApiError {
-    public ApiError(string message, string code) {
-        Message = message;
-        Code = code;
-    }
-
-    public string Message { get; }
-    public string Code { get; }
+public class ApiError(string message, string code) {
+    public string Message { get; } = message;
+    public string Code { get; } = code;
 }

@@ -11,15 +11,10 @@ using Serilog;
 
 namespace api.Features;
 [ApiController]
-public class EmailController : ControllerBase {
-    private readonly ILogger _log;
-    private readonly IMediator _mediator;
-    private readonly string _email;
-    public EmailController(IMediator mediator, IConfiguration configuration, ILogger log) {
-        _mediator = mediator;
-        _log = log;
-        _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
-    }
+public class EmailController(IMediator mediator, IConfiguration configuration, ILogger log) : ControllerBase {
+    private readonly ILogger _log = log;
+    private readonly IMediator _mediator = mediator;
+    private readonly string _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
 
     [HttpPost("/api/notify/staff")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]

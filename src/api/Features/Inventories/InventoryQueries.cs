@@ -9,23 +9,14 @@ using Serilog;
 
 namespace api.Features;
 public static class GetInventoryById {
-    public class Query : IRequest<Inventory> {
-        public Query(int siteId, int wellId) {
-            SiteId = siteId;
-            InventoryId = wellId;
-        }
-
-        public int SiteId { get; init; }
-        public int InventoryId { get; }
+    public class Query(int siteId, int wellId) : IRequest<Inventory> {
+        public int SiteId { get; init; } = siteId;
+        public int InventoryId { get; } = wellId;
     }
-    public class Handler : IRequestHandler<Query, Inventory?> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
+    public class Handler(IAppDbContext context, ILogger log) : IRequestHandler<Query, Inventory?> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
 
-        public Handler(IAppDbContext context, ILogger log) {
-            _context = context;
-            _log = log;
-        }
         public async Task<Inventory?> Handle(Query message, CancellationToken cancellationToken) =>
           await _context.Inventories
             .Include(x => x.Wells)
@@ -34,21 +25,14 @@ public static class GetInventoryById {
     }
 }
 public static class GetInventoriesBySite {
-    public class Query : IRequest<IEnumerable<Inventory>> {
-        public int SiteId { get; }
-        public Query(int siteId) {
-            SiteId = siteId;
-        }
+    public class Query(int siteId) : IRequest<IEnumerable<Inventory>> {
+        public int SiteId { get; } = siteId;
     }
 
-    public class Handler : IRequestHandler<Query, IEnumerable<Inventory>> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
+    public class Handler(IAppDbContext context, ILogger log) : IRequestHandler<Query, IEnumerable<Inventory>> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
 
-        public Handler(IAppDbContext context, ILogger log) {
-            _context = context;
-            _log = log;
-        }
         public async Task<IEnumerable<Inventory>> Handle(Query message, CancellationToken cancellationToken) =>
           await _context.Inventories.Where(x => x.SiteFk == message.SiteId).ToListAsync(cancellationToken);
     }

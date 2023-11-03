@@ -10,14 +10,9 @@ using Serilog;
 
 namespace api.Features;
 [ApiController]
-public class NotificationController : ControllerBase {
-    private readonly ILogger _log;
-    private readonly IMediator _mediator;
-
-    public NotificationController(IMediator mediator, ILogger log) {
-        _mediator = mediator;
-        _log = log;
-    }
+public class NotificationController(IMediator mediator, ILogger log) : ControllerBase {
+    private readonly ILogger _log = log;
+    private readonly IMediator _mediator = mediator;
 
     [HttpGet("/api/notifications/mine")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]

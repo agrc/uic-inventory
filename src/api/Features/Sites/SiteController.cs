@@ -10,14 +10,9 @@ using Serilog;
 
 namespace api.Features;
 [ApiController]
-public class SiteController : ControllerBase {
-    private readonly IMediator _mediator;
-    private readonly ILogger _log;
-
-    public SiteController(IMediator mediator, ILogger log) {
-        _mediator = mediator;
-        _log = log;
-    }
+public class SiteController(IMediator mediator, ILogger log) : ControllerBase {
+    private readonly IMediator _mediator = mediator;
+    private readonly ILogger _log = log;
 
     [HttpGet("/api/sites/mine")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]

@@ -184,19 +184,12 @@ public class AuthPayload : ResponseContract {
         Id = account.Id;
         UserData = new Extra(account);
     }
-    public class Extra {
-        public Extra(Account account) {
-            FirstName = account.FirstName ?? "";
-            LastName = account.LastName ?? "";
-            Access = account.Access;
-            ReceiveNotifications = account.ReceiveNotifications ?? false;
-            ProfileComplete = account.ProfileComplete;
-        }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public AccessLevels Access { get; set; }
-        public bool ReceiveNotifications { get; set; }
-        public bool ProfileComplete { get; set; }
+    public class Extra(Account account) {
+        public string FirstName { get; set; } = account.FirstName ?? "";
+        public string LastName { get; set; } = account.LastName ?? "";
+        public AccessLevels Access { get; set; } = account.Access;
+        public bool ReceiveNotifications { get; set; } = account.ReceiveNotifications ?? false;
+        public bool ProfileComplete { get; set; } = account.ProfileComplete;
     }
 
     public int Id { get; set; }

@@ -30,13 +30,9 @@ public static class ContactNotifications {
         public NotificationTypes NotificationType { get; } = NotificationTypes.approved_site_contact_deletion;
     }
 
-    public class ContactDeletedNotificationHandler : INotificationHandler<DeleteContactNotification> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
-        public ContactDeletedNotificationHandler(IAppDbContext context, ILogger log) {
-            _context = context;
-            _log = log;
-        }
+    public class ContactDeletedNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<DeleteContactNotification> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
 
         private Notification CreateNotifications(DeleteContactNotification metadata, Account? account) {
             var notification = NotificationHelpers.CreateBasicNotification(_context, metadata.NotificationType);
@@ -91,13 +87,9 @@ public static class ContactNotifications {
             await _context.SaveChangesAsync(cancellationToken);
         }
     }
-    public class ContactAddedNotificationHandler : INotificationHandler<AddContactNotification> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
-        public ContactAddedNotificationHandler(IAppDbContext context, ILogger log) {
-            _context = context;
-            _log = log;
-        }
+    public class ContactAddedNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<AddContactNotification> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
 
         private Notification CreateNotifications(AddContactNotification metadata, Account? account) {
             var notification = NotificationHelpers.CreateBasicNotification(_context, metadata.NotificationType);

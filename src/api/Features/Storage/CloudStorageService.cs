@@ -6,13 +6,9 @@ using Google.Cloud.Storage.V1;
 using Serilog;
 
 namespace api.Features;
-public class CloudStorageService {
-    private readonly ILogger _log;
-    private readonly StorageClient _client;
-    public CloudStorageService(ILogger log) {
-        _log = log;
-        _client = StorageClient.Create();
-    }
+public class CloudStorageService(ILogger log) {
+    private readonly ILogger _log = log;
+    private readonly StorageClient _client = StorageClient.Create();
 
     public async Task RemoveObjectsAsync(string bucket, string matchPattern, CancellationToken token) {
         var success = true;

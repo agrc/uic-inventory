@@ -5,21 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Infrastructure;
-public class MustOwnNotification : IAuthorizationRequirement {
-    public MustOwnNotification(int id) {
-        NotificationId = id;
-    }
-    public int NotificationId { get; set; }
+public class MustOwnNotification(int id) : IAuthorizationRequirement {
+    public int NotificationId { get; set; } = id;
 
-    private class Handler : IAuthorizationHandler<MustOwnNotification> {
-        private readonly ILogger _log;
-        private readonly IAppDbContext _context;
-        private readonly HasRequestMetadata _metadata;
-        public Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) {
-            _context = context;
-            _metadata = metadata;
-            _log = log;
-        }
+    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnNotification> {
+        private readonly ILogger _log = log;
+        private readonly IAppDbContext _context = context;
+        private readonly HasRequestMetadata _metadata = metadata;
+
         public async Task<AuthorizationResult> Handle(
           MustOwnNotification requirement,
           CancellationToken token = default) {

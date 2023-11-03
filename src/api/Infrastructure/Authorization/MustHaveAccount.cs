@@ -6,20 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Infrastructure;
-public class MustHaveAccount : IAuthorizationRequirement {
-    public MustHaveAccount(ClaimsPrincipal user) {
-        User = user;
-    }
-    public ClaimsPrincipal? User { get; }
-    private class Handler : IAuthorizationHandler<MustHaveAccount> {
-        private readonly ILogger _log;
-        private readonly IAppDbContext _context;
-        private readonly HasRequestMetadata _metadata;
-        public Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) {
-            _context = context;
-            _metadata = metadata;
-            _log = log;
-        }
+public class MustHaveAccount(ClaimsPrincipal user) : IAuthorizationRequirement {
+    public ClaimsPrincipal? User { get; } = user;
+    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveAccount> {
+        private readonly ILogger _log = log;
+        private readonly IAppDbContext _context = context;
+        private readonly HasRequestMetadata _metadata = metadata;
+
         public async Task<AuthorizationResult> Handle(
           MustHaveAccount requirement,
           CancellationToken token = default) {

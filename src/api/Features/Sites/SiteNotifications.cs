@@ -26,14 +26,10 @@ public static class SiteNotifications {
         public int SiteId { get; }
     }
 
-    public class UpdateSiteStatusHandler : INotificationHandler<EditNotification> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
+    public class UpdateSiteStatusHandler(IAppDbContext context, ILogger log) : INotificationHandler<EditNotification> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
 
-        public UpdateSiteStatusHandler(IAppDbContext context, ILogger log) {
-            _context = context;
-            _log = log;
-        }
         private static void UpdateAllSerInventoryContactStatus(Site entity) {
             var inventories = entity.Inventories
               .Where(x => x.SubClass == 5002)
@@ -86,16 +82,10 @@ public static class SiteNotifications {
             await _context.SaveChangesAsync(token);
         }
     }
-    public class RemoveCloudStorageHandler : INotificationHandler<DeleteNotification> {
-        private readonly ILogger _log;
-        private readonly CloudStorageService _client;
-        private readonly string _bucket;
-
-        public RemoveCloudStorageHandler(CloudStorageService cloud, IConfiguration configuration, ILogger log) {
-            _log = log;
-            _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
-            _client = cloud;
-        }
+    public class RemoveCloudStorageHandler(CloudStorageService cloud, IConfiguration configuration, ILogger log) : INotificationHandler<DeleteNotification> {
+        private readonly ILogger _log = log;
+        private readonly CloudStorageService _client = cloud;
+        private readonly string _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
 
         public async Task Handle(DeleteNotification notification, CancellationToken token) {
             _log.ForContext("notification", notification)

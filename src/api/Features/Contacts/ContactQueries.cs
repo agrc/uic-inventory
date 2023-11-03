@@ -9,26 +9,16 @@ using Serilog;
 
 namespace api.Features;
 public static class GetSiteContacts {
-    public class Query : IRequest<SiteContactPayload> {
-        public Query(int siteId) {
-            SiteId = siteId;
-        }
+    public class Query(int siteId) : IRequest<SiteContactPayload> {
+        public int SiteId { get; } = siteId;
 
-        public int SiteId { get; }
-
-        public class Handler : IRequestHandler<Query, SiteContactPayload> {
-            private readonly IAppDbContext _context;
-            private readonly HasRequestMetadata _metadata;
-            private readonly ILogger _log;
-
-            public Handler(
-              IAppDbContext context,
-              HasRequestMetadata metadata,
-              ILogger log) {
-                _context = context;
-                _metadata = metadata;
-                _log = log;
-            }
+        public class Handler(
+          IAppDbContext context,
+          HasRequestMetadata metadata,
+          ILogger log) : IRequestHandler<Query, SiteContactPayload> {
+            private readonly IAppDbContext _context = context;
+            private readonly HasRequestMetadata _metadata = metadata;
+            private readonly ILogger _log = log;
 
             public async Task<SiteContactPayload> Handle(Query request, CancellationToken cancellationToken) {
                 var site = await _context.Sites

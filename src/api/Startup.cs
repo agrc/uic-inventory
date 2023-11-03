@@ -23,14 +23,9 @@ using Polly;
 using SendGrid.Extensions.DependencyInjection;
 
 namespace api;
-public class Startup {
-    public Startup(IConfiguration configuration, IWebHostEnvironment env) {
-        Configuration = configuration;
-        Env = env;
-    }
-
-    public IConfiguration Configuration { get; }
-    public IWebHostEnvironment Env;
+public class Startup(IConfiguration configuration, IWebHostEnvironment env) {
+    public IConfiguration Configuration { get; } = configuration;
+    public IWebHostEnvironment Env = env;
 
     public void ConfigureServices(IServiceCollection services) {
         services.AddCors()

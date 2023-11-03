@@ -7,25 +7,14 @@ using Serilog;
 
 namespace api.Features;
 public static class CreateContact {
-    public class Command : IRequest<Contact> {
-        public Command(int siteId, ContactInput input) {
-            SiteId = siteId;
-            Input = input;
-        }
+    public class Command(int siteId, ContactInput input) : IRequest<Contact> {
+        public int SiteId { get; } = siteId;
+        public ContactInput Input { get; } = input;
 
-        public int SiteId { get; }
-        public ContactInput Input { get; }
-
-        public class Handler : IRequestHandler<Command, Contact> {
-            private readonly ILogger _log;
-            private readonly AppDbContext _context;
-            private readonly IPublisher _publisher;
-
-            public Handler(AppDbContext context, IPublisher publisher, ILogger log) {
-                _context = context;
-                _publisher = publisher;
-                _log = log;
-            }
+        public class Handler(AppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command, Contact> {
+            private readonly ILogger _log = log;
+            private readonly AppDbContext _context = context;
+            private readonly IPublisher _publisher = publisher;
 
             public async Task<Contact> Handle(Command request, CancellationToken cancellationToken) {
                 _log.ForContext("input", request)
@@ -47,27 +36,15 @@ public static class CreateContact {
 }
 
 public static class DeleteContact {
-    public class Command : IRequest {
-        public Command(ContactInput input) {
-            AccountId = input.AccountId;
-            ContactId = input.ContactId;
-            SiteId = input.SiteId;
-        }
+    public class Command(ContactInput input) : IRequest {
+        public int AccountId { get; } = input.AccountId;
+        public int ContactId { get; set; } = input.ContactId;
+        public int SiteId { get; set; } = input.SiteId;
 
-        public int AccountId { get; }
-        public int ContactId { get; set; }
-        public int SiteId { get; set; }
-
-        public class Handler : IRequestHandler<Command> {
-            private readonly ILogger _log;
-            private readonly AppDbContext _context;
-            private readonly IPublisher _publisher;
-
-            public Handler(AppDbContext context, IPublisher publisher, ILogger log) {
-                _context = context;
-                _publisher = publisher;
-                _log = log;
-            }
+        public class Handler(AppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command> {
+            private readonly ILogger _log = log;
+            private readonly AppDbContext _context = context;
+            private readonly IPublisher _publisher = publisher;
 
             async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
                 _log.ForContext("input", request)

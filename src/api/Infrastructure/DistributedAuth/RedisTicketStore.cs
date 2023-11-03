@@ -5,12 +5,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace api.Infrastructure;
-public class RedisTicketStore : ITicketStore {
+public class RedisTicketStore(IDistributedCache cache) : ITicketStore {
     private const string _keyPrefix = "authentication-ticket-";
-    private readonly IDistributedCache _cache;
-    public RedisTicketStore(IDistributedCache cache) {
-        _cache = cache;
-    }
+    private readonly IDistributedCache _cache = cache;
 
     public async Task<string> StoreAsync(AuthenticationTicket ticket) {
         var key = $"{_keyPrefix}{Guid.NewGuid()}";

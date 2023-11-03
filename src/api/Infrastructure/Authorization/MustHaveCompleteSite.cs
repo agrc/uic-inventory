@@ -6,13 +6,10 @@ using Serilog;
 
 namespace api.Infrastructure;
 public class MustHaveCompleteSite : IAuthorizationRequirement {
-    private class Handler : IAuthorizationHandler<MustHaveCompleteSite> {
-        private readonly ILogger _log;
-        private readonly HasRequestMetadata _metadata;
-        public Handler(HasRequestMetadata metadata, ILogger log) {
-            _metadata = metadata;
-            _log = log;
-        }
+    private class Handler(HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveCompleteSite> {
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+
         public Task<AuthorizationResult> Handle(
           MustHaveCompleteSite requirement,
           CancellationToken token = default) {

@@ -5,13 +5,10 @@ using Serilog;
 
 namespace api.Infrastructure;
 public class MustHaveCompleteProfile : IAuthorizationRequirement {
-    private class Handler : IAuthorizationHandler<MustHaveCompleteProfile> {
-        private readonly ILogger _log;
-        private readonly HasRequestMetadata _metadata;
-        public Handler(HasRequestMetadata metadata, ILogger log) {
-            _metadata = metadata;
-            _log = log;
-        }
+    private class Handler(HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveCompleteProfile> {
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+
         public Task<AuthorizationResult> Handle(
           MustHaveCompleteProfile requirement,
           CancellationToken token = default) {

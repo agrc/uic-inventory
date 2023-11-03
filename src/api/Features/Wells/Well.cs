@@ -44,16 +44,10 @@ public class WellCreationPayload : WellPayload {
 
     public SitePayload Site { get; }
 }
-public class WaterSystemContactPayload {
-    public WaterSystemContactPayload(WaterSystemContacts contact) {
-        Email = contact.Email;
-        Name = contact.Name;
-        System = contact.System;
-    }
-
-    public string? Email { get; set; }
-    public string? Name { get; set; }
-    public string? System { get; set; }
+public class WaterSystemContactPayload(WaterSystemContacts contact) {
+    public string? Email { get; set; } = contact.Email;
+    public string? Name { get; set; } = contact.Name;
+    public string? System { get; set; } = contact.System;
 }
 public class WellPayload : ResponseContract {
     public WellPayload(UnauthorizedAccessException error) : base(error.Message) { }
@@ -203,14 +197,9 @@ public class EsriQueryResponse : RestErrorable {
     public int Count { get; set; }
     public IReadOnlyList<Feature> Features { get; set; } = Array.Empty<Feature>();
 }
-public class EsriPoint {
-    public EsriPoint(double x, double y) {
-        X = x;
-        Y = y;
-    }
-
-    public double X { get; }
-    public double Y { get; }
+public class EsriPoint(double x, double y) {
+    public double X { get; } = x;
+    public double Y { get; } = y;
 }
 
 public record Feature(Attributes Attributes);

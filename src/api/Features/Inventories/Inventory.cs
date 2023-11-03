@@ -66,31 +66,18 @@ public class InventoryPayload : ResponseContract {
 }
 
 public class InventoriesForSitePayload : ResponseContract {
-    public class Payload {
-        public int SiteId { get; set; }
-        public int Id { get; set; }
-        public int SubClass { get; set; }
-        public int OrderNumber { get; set; }
-        public InventoryStatus Status { get; set; }
-        public bool DetailStatus { get; set; }
-        public bool ContactStatus { get; set; }
-        public bool LocationStatus { get; set; }
-        public bool SignatureStatus { get; set; }
-        public bool Flagged { get; set; }
-        public string? EdocsNumber { get; set; }
-        public Payload(Inventory inventory, Site site) {
-            SiteId = site.Id;
-            Id = inventory.Id;
-            SubClass = inventory.SubClass;
-            OrderNumber = inventory.OrderNumber;
-            Status = inventory.Status;
-            DetailStatus = inventory.DetailStatus;
-            ContactStatus = inventory.ContactStatus;
-            LocationStatus = inventory.LocationStatus;
-            SignatureStatus = inventory.SignatureStatus;
-            Flagged = !string.IsNullOrEmpty(inventory.Flagged);
-            EdocsNumber = inventory.Edocs;
-        }
+    public class Payload(Inventory inventory, Site site) {
+        public int SiteId { get; set; } = site.Id;
+        public int Id { get; set; } = inventory.Id;
+        public int SubClass { get; set; } = inventory.SubClass;
+        public int OrderNumber { get; set; } = inventory.OrderNumber;
+        public InventoryStatus Status { get; set; } = inventory.Status;
+        public bool DetailStatus { get; set; } = inventory.DetailStatus;
+        public bool ContactStatus { get; set; } = inventory.ContactStatus;
+        public bool LocationStatus { get; set; } = inventory.LocationStatus;
+        public bool SignatureStatus { get; set; } = inventory.SignatureStatus;
+        public bool Flagged { get; set; } = !string.IsNullOrEmpty(inventory.Flagged);
+        public string? EdocsNumber { get; set; } = inventory.Edocs;
     }
     public InventoriesForSitePayload(UnauthorizedException error) : base(error.Message) { }
     public InventoriesForSitePayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }

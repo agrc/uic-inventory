@@ -14,13 +14,10 @@ public static class RequiredContactTypes {
 public class MustHaveSiteContact : IAuthorizationRequirement {
     public int SiteId { get; set; }
 
-    private class Handler : IAuthorizationHandler<MustHaveSiteContact> {
-        private readonly ILogger _log;
-        private readonly IAppDbContext _context;
-        public Handler(IAppDbContext context, ILogger log) {
-            _context = context;
-            _log = log;
-        }
+    private class Handler(IAppDbContext context, ILogger log) : IAuthorizationHandler<MustHaveSiteContact> {
+        private readonly ILogger _log = log;
+        private readonly IAppDbContext _context = context;
+
         public async Task<AuthorizationResult> Handle(
           MustHaveSiteContact requirement,
           CancellationToken token = default) {

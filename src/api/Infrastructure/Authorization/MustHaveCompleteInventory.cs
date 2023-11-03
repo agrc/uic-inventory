@@ -8,23 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Infrastructure;
-public class MustHaveCompleteInventory : IAuthorizationRequirement {
-    public MustHaveCompleteInventory(int inventoryId) {
-        InventoryId = inventoryId;
-    }
+public class MustHaveCompleteInventory(int inventoryId) : IAuthorizationRequirement {
+    public int InventoryId { get; } = inventoryId;
 
-    public int InventoryId { get; }
+    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveCompleteInventory> {
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+        private readonly IAppDbContext _context = context;
 
-    private class Handler : IAuthorizationHandler<MustHaveCompleteInventory> {
-        private readonly ILogger _log;
-        private readonly HasRequestMetadata _metadata;
-        private readonly IAppDbContext _context;
-
-        public Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) {
-            _context = context;
-            _metadata = metadata;
-            _log = log;
-        }
         public async Task<AuthorizationResult> Handle(
           MustHaveCompleteInventory requirement,
           CancellationToken token = default) {

@@ -4,13 +4,9 @@ using MediatR;
 using Serilog;
 
 namespace api.Infrastructure;
-public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class LoggingBehavior<TRequest, TResponse>(ILogger logger) : IPipelineBehavior<TRequest, TResponse>
   where TRequest : IRequest<TResponse> {
-    private readonly ILogger _logger;
-
-    public LoggingBehavior(ILogger logger) {
-        _logger = logger;
-    }
+    private readonly ILogger _logger = logger;
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken) {
         var requestType = typeof(TRequest);

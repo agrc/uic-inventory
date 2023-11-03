@@ -4,22 +4,15 @@ using MediatR.Behaviors.Authorization;
 using Microsoft.AspNetCore.Http;
 
 namespace api.Features;
-public class GetSitesAuthorizer : AbstractRequestAuthorizer<GetSites.Query> {
-    private readonly IHttpContextAccessor _context;
+public class GetSitesAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<GetSites.Query> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public GetSitesAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(GetSites.Query request) =>
       UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
 }
 
-public class GetSiteByIdAuthorizer : AbstractRequestAuthorizer<GetSiteById.Query> {
-    private readonly IHttpContextAccessor _context;
-
-    public GetSiteByIdAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
+public class GetSiteByIdAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<GetSiteById.Query> {
+    private readonly IHttpContextAccessor _context = context;
 
     public override void BuildPolicy(GetSiteById.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
@@ -28,24 +21,18 @@ public class GetSiteByIdAuthorizer : AbstractRequestAuthorizer<GetSiteById.Query
     }
 }
 
-public class CreateSiteAuthorizer : AbstractRequestAuthorizer<CreateSite.Command> {
-    private readonly IHttpContextAccessor _context;
+public class CreateSiteAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<CreateSite.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public CreateSiteAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(CreateSite.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
-public class UpdateSiteAuthorizer : AbstractRequestAuthorizer<UpdateSite.Command> {
-    private readonly IHttpContextAccessor _context;
+public class UpdateSiteAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<UpdateSite.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public UpdateSiteAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(UpdateSite.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.Site.SiteId));
@@ -54,12 +41,9 @@ public class UpdateSiteAuthorizer : AbstractRequestAuthorizer<UpdateSite.Command
     }
 }
 
-public class DeleteSiteAuthorizer : AbstractRequestAuthorizer<DeleteSite.Command> {
-    private readonly IHttpContextAccessor _context;
+public class DeleteSiteAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteSite.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public DeleteSiteAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(DeleteSite.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));

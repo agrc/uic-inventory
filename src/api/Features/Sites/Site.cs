@@ -22,23 +22,14 @@ public class Site {
     public ICollection<Contact> Contacts { get; set; } = new HashSet<Contact>();
     public ICollection<Inventory> Inventories { get; set; } = new HashSet<Inventory>();
 }
-public class SiteListPayload : ResponseContract {
-    public SiteListPayload(Site site) {
-        Id = site.Id;
-        Name = site.Name ?? string.Empty;
-        NaicsTitle = site.NaicsTitle ?? string.Empty;
-        Status = site.Status;
-        DetailStatus = site.DetailStatus;
-        ContactStatus = site.ContactStatus;
-        LocationStatus = site.LocationStatus;
-    }
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public string NaicsTitle { get; set; }
-    public SiteStatus Status { get; set; }
-    public bool DetailStatus { get; set; }
-    public bool ContactStatus { get; set; }
-    public bool LocationStatus { get; set; }
+public class SiteListPayload(Site site) : ResponseContract {
+    public int Id { get; set; } = site.Id;
+    public string Name { get; set; } = site.Name ?? string.Empty;
+    public string NaicsTitle { get; set; } = site.NaicsTitle ?? string.Empty;
+    public SiteStatus Status { get; set; } = site.Status;
+    public bool DetailStatus { get; set; } = site.DetailStatus;
+    public bool ContactStatus { get; set; } = site.ContactStatus;
+    public bool LocationStatus { get; set; } = site.LocationStatus;
 }
 public class SitePayload : ResponseContract {
     public SitePayload(UnauthorizedException error) : base(error.Message) { }

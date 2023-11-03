@@ -8,24 +8,16 @@ using Serilog;
 
 namespace api.Features;
 public static class UpdateAccount {
-    public class Command : IRequest<Account> {
-        public AccountInput Input { get; }
-
-        public Command(AccountInput input) {
-            Input = input;
-        }
+    public class Command(AccountInput input) : IRequest<Account> {
+        public AccountInput Input { get; } = input;
     }
 
-    public class Handler : IRequestHandler<Command, Account> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
+    public class Handler(
+      IAppDbContext context,
+      ILogger log) : IRequestHandler<Command, Account> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
 
-        public Handler(
-          IAppDbContext context,
-          ILogger log) {
-            _context = context;
-            _log = log;
-        }
         public async Task<Account> Handle(Command request, CancellationToken token) {
             _log.ForContext("input", request)
               .Debug("Updating account");
@@ -46,27 +38,18 @@ public static class UpdateAccount {
 }
 
 public static class AdminUpdateAccount {
-    public class Command : IRequest<Account> {
-        public AdminAccountInput Input { get; }
-
-        public Command(AdminAccountInput input) {
-            Input = input;
-        }
+    public class Command(AdminAccountInput input) : IRequest<Account> {
+        public AdminAccountInput Input { get; } = input;
     }
 
-    public class Handler : IRequestHandler<Command, Account> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
-        private readonly IPublisher _publisher;
+    public class Handler(
+      IAppDbContext context,
+      IPublisher publisher,
+      ILogger log) : IRequestHandler<Command, Account> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
+        private readonly IPublisher _publisher = publisher;
 
-        public Handler(
-          IAppDbContext context,
-          IPublisher publisher,
-          ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-        }
         public async Task<Account> Handle(Command request, CancellationToken token) {
             _log.ForContext("input", request)
               .Debug("Updating account");

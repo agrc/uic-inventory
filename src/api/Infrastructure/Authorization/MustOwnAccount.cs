@@ -6,21 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Infrastructure;
-public class MustOwnAccount : IAuthorizationRequirement {
-    public MustOwnAccount(int id) {
-        AccountId = id;
-    }
-    public int AccountId { get; }
+public class MustOwnAccount(int id) : IAuthorizationRequirement {
+    public int AccountId { get; } = id;
 
-    private class Handler : IAuthorizationHandler<MustOwnAccount> {
-        private readonly ILogger _log;
-        private readonly IAppDbContext _context;
-        private readonly HasRequestMetadata _metadata;
-        public Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) {
-            _context = context;
-            _metadata = metadata;
-            _log = log;
-        }
+    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnAccount> {
+        private readonly ILogger _log = log;
+        private readonly IAppDbContext _context = context;
+        private readonly HasRequestMetadata _metadata = metadata;
+
         public async Task<AuthorizationResult> Handle(
           MustOwnAccount requirement,
           CancellationToken token = default) {

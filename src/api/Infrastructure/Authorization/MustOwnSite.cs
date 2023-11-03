@@ -6,21 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Infrastructure;
-public class MustOwnSite : IAuthorizationRequirement {
-    public MustOwnSite(int id) {
-        SiteId = id;
-    }
-    public int SiteId { get; }
+public class MustOwnSite(int id) : IAuthorizationRequirement {
+    public int SiteId { get; } = id;
 
-    private class Handler : IAuthorizationHandler<MustOwnSite> {
-        private readonly ILogger _log;
-        private readonly IAppDbContext _context;
-        private readonly HasRequestMetadata _metadata;
-        public Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) {
-            _context = context;
-            _metadata = metadata;
-            _log = log;
-        }
+    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnSite> {
+        private readonly ILogger _log = log;
+        private readonly IAppDbContext _context = context;
+        private readonly HasRequestMetadata _metadata = metadata;
+
         public async Task<AuthorizationResult> Handle(
           MustOwnSite requirement,
           CancellationToken token = default) {

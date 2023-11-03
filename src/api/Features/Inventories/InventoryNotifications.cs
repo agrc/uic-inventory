@@ -59,14 +59,10 @@ public static class InventoryNotifications {
         public int SiteId { get; set; }
     }
 
-    public class EditNotificationHandler : INotificationHandler<EditNotification> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
+    public class EditNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<EditNotification> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
 
-        public EditNotificationHandler(IAppDbContext context, ILogger log) {
-            _context = context;
-            _log = log;
-        }
         private static bool GetWellContactStatus(Inventory entity) {
             if (entity.SubClass == 5002) {
                 return entity.Site?.Contacts.Any(x => x.SerContact) ?? false;
@@ -156,13 +152,10 @@ public static class InventoryNotifications {
             await _context.SaveChangesAsync(token);
         }
     }
-    public class CreateSubmissionNotificationHandler : INotificationHandler<SubmitNotification> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
-        public CreateSubmissionNotificationHandler(IAppDbContext context, ILogger log) {
-            _context = context;
-            _log = log;
-        }
+    public class CreateSubmissionNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<SubmitNotification> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
+
         private Notification CreateNotifications(SubmitNotification metadata) {
             var notification = NotificationHelpers.CreateBasicNotification(_context, metadata.NotificationType);
             var initials = NotificationHelpers.GetInitials(metadata.Account);
@@ -185,14 +178,9 @@ public static class InventoryNotifications {
             await _context.SaveChangesAsync(token);
         }
     }
-    public class SendRegulatorySubmissionEmailHandler : INotificationHandler<SubmitNotification> {
-        private readonly EmailService _client;
-        private readonly ILogger _log;
-
-        public SendRegulatorySubmissionEmailHandler(EmailService client, ILogger log) {
-            _client = client;
-            _log = log;
-        }
+    public class SendRegulatorySubmissionEmailHandler(EmailService client, ILogger log) : INotificationHandler<SubmitNotification> {
+        private readonly EmailService _client = client;
+        private readonly ILogger _log = log;
 
         public async Task Handle(SubmitNotification notification, CancellationToken token) {
             _log.ForContext("notification", notification)
@@ -235,16 +223,10 @@ public static class InventoryNotifications {
             }
         }
     }
-    public class SendAdminSubmissionEmailHandler : INotificationHandler<SubmitNotification> {
-        private readonly EmailService _client;
-        private readonly ILogger _log;
-        public readonly string _email;
-
-        public SendAdminSubmissionEmailHandler(EmailService client, IConfiguration configuration, ILogger log) {
-            _client = client;
-            _log = log;
-            _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
-        }
+    public class SendAdminSubmissionEmailHandler(EmailService client, IConfiguration configuration, ILogger log) : INotificationHandler<SubmitNotification> {
+        private readonly EmailService _client = client;
+        private readonly ILogger _log = log;
+        public readonly string _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
 
         public async Task Handle(SubmitNotification notification, CancellationToken token) {
             _log.ForContext("notification", notification)
@@ -283,16 +265,10 @@ public static class InventoryNotifications {
             }
         }
     }
-    public class SendSubmissionRejectionEmailHandler : INotificationHandler<RejectNotification> {
-        private readonly EmailService _client;
-        private readonly ILogger _log;
-        public readonly string _email;
-
-        public SendSubmissionRejectionEmailHandler(EmailService client, IConfiguration configuration, ILogger log) {
-            _client = client;
-            _log = log;
-            _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
-        }
+    public class SendSubmissionRejectionEmailHandler(EmailService client, IConfiguration configuration, ILogger log) : INotificationHandler<RejectNotification> {
+        private readonly EmailService _client = client;
+        private readonly ILogger _log = log;
+        public readonly string _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
 
         public async Task Handle(RejectNotification notification, CancellationToken token) {
             _log.ForContext("notification", notification)
@@ -325,16 +301,10 @@ public static class InventoryNotifications {
             }
         }
     }
-    public class RemoveCloudStorageHandler : INotificationHandler<DeleteNotification> {
-        private readonly ILogger _log;
-        private readonly string _bucket;
-        private readonly CloudStorageService _client;
-
-        public RemoveCloudStorageHandler(CloudStorageService cloud, IConfiguration configuration, ILogger log) {
-            _log = log;
-            _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
-            _client = cloud;
-        }
+    public class RemoveCloudStorageHandler(CloudStorageService cloud, IConfiguration configuration, ILogger log) : INotificationHandler<DeleteNotification> {
+        private readonly ILogger _log = log;
+        private readonly string _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
+        private readonly CloudStorageService _client = cloud;
 
         public async Task Handle(DeleteNotification notification, CancellationToken token) {
             _log.ForContext("notification", notification)
@@ -343,24 +313,17 @@ public static class InventoryNotifications {
             await _client.RemoveObjectsAsync(_bucket, $"site_{notification.SiteId}/inventory_{notification.InventoryId}/", token);
         }
     }
-    public class GroundWaterProtectionsHandler : INotificationHandler<SubmitNotification> {
+    public class GroundWaterProtectionsHandler(IHttpClientFactory clientFactory, IAppDbContext context, IWaterSystemContactService service, ILogger log) : INotificationHandler<SubmitNotification> {
         public record ProtectionResult(int WellId, string Service, bool Intersects, IReadOnlyList<Feature> Features);
         public record ProtectionQuery(int WellId, string Service, string Url);
         public record Protections(bool Aquifers, bool GroundWater);
 
         private const string AquiferRechargeDischargeAreas = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Aquifer_RechargeDischargeAreas/FeatureServer/0";
         private const string GroundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0";
-        private readonly HttpClient _client;
-        private readonly IWaterSystemContactService _service;
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
-
-        public GroundWaterProtectionsHandler(IHttpClientFactory clientFactory, IAppDbContext context, IWaterSystemContactService service, ILogger log) {
-            _client = clientFactory.CreateClient("esri");
-            _context = context;
-            _service = service;
-            _log = log;
-        }
+        private readonly HttpClient _client = clientFactory.CreateClient("esri");
+        private readonly IWaterSystemContactService _service = service;
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
 
         public async Task Handle(SubmitNotification notification, CancellationToken token) {
             _log.ForContext("notification", notification)

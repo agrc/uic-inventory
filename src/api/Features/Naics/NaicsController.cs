@@ -7,12 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace api.Features;
 [ApiController]
-public class NaicsController : ControllerBase {
-    private readonly Lazy<NaicsProvider> _naicsProvider;
-
-    public NaicsController(Lazy<NaicsProvider> naicsProvider) {
-        _naicsProvider = naicsProvider;
-    }
+public class NaicsController(Lazy<NaicsProvider> naicsProvider) : ControllerBase {
+    private readonly Lazy<NaicsProvider> _naicsProvider = naicsProvider;
 
     [HttpGet("/api/naics/{naicsCode}")]
     [ResponseCache(Duration = 2592000)]

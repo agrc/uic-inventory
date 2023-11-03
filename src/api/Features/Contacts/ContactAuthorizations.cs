@@ -4,24 +4,18 @@ using MediatR.Behaviors.Authorization;
 using Microsoft.AspNetCore.Http;
 
 namespace api.Features;
-public class GetSiteContactsAuthorizer : AbstractRequestAuthorizer<GetSiteContacts.Query> {
-    private readonly IHttpContextAccessor _context;
+public class GetSiteContactsAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<GetSiteContacts.Query> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public GetSiteContactsAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(GetSiteContacts.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
     }
 }
 
-public class CreateContactAuthorizer : AbstractRequestAuthorizer<CreateContact.Command> {
-    private readonly IHttpContextAccessor _context;
+public class CreateContactAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<CreateContact.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public CreateContactAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(CreateContact.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
@@ -30,12 +24,9 @@ public class CreateContactAuthorizer : AbstractRequestAuthorizer<CreateContact.C
     }
 }
 
-public class DeleteContactAuthorizer : AbstractRequestAuthorizer<DeleteContact.Command> {
-    private readonly IHttpContextAccessor _context;
+public class DeleteContactAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteContact.Command> {
+    private readonly IHttpContextAccessor _context = context;
 
-    public DeleteContactAuthorizer(IHttpContextAccessor context) {
-        _context = context;
-    }
     public override void BuildPolicy(DeleteContact.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));

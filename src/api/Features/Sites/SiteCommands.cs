@@ -8,31 +8,18 @@ using Serilog;
 
 namespace api.Features;
 public static class CreateSite {
-    public class Command : IRequest<Site> {
-        public Command(SiteInput input) {
-            AccountId = input.AccountId;
-            Name = input.Name;
-            Ownership = input.Ownership;
-            Naics = input.NaicsPrimary;
-            NaicsTitle = input.NaicsTitle;
-        }
-
-        public int AccountId { get; init; }
-        public string? Name { get; init; }
-        public string? Ownership { get; init; }
-        public string? Naics { get; init; }
-        public string? NaicsTitle { get; init; }
+    public class Command(SiteInput input) : IRequest<Site> {
+        public int AccountId { get; init; } = input.AccountId;
+        public string? Name { get; init; } = input.Name;
+        public string? Ownership { get; init; } = input.Ownership;
+        public string? Naics { get; init; } = input.NaicsPrimary;
+        public string? NaicsTitle { get; init; } = input.NaicsTitle;
     }
-    public class Handler : IRequestHandler<Command, Site> {
-        private readonly IAppDbContext _context;
-        private readonly IPublisher _publisher;
-        private readonly ILogger _log;
+    public class Handler(IAppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command, Site> {
+        private readonly IAppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
 
-        public Handler(IAppDbContext context, IPublisher publisher, ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-        }
         public async Task<Site> Handle(Command message, CancellationToken cancellationToken) {
             _log.ForContext("input", message)
               .Debug("Creating site");
@@ -59,26 +46,16 @@ public static class CreateSite {
 }
 
 public static class UpdateSite {
-    public class Command : IRequest<Site> {
-        public Command(SiteInput input) {
-            Site = input;
-        }
-
-        public SiteInput Site { get; }
+    public class Command(SiteInput input) : IRequest<Site> {
+        public SiteInput Site { get; } = input;
     }
 
-    public class Handler : IRequestHandler<Command, Site> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
-        private readonly HasRequestMetadata _metadata;
-        private readonly IPublisher _publisher;
+    public class Handler(IAppDbContext context, HasRequestMetadata metadata, IPublisher publisher, ILogger log) : IRequestHandler<Command, Site> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+        private readonly IPublisher _publisher = publisher;
 
-        public Handler(IAppDbContext context, HasRequestMetadata metadata, IPublisher publisher, ILogger log) {
-            _context = context;
-            _metadata = metadata;
-            _publisher = publisher;
-            _log = log;
-        }
         public async Task<Site> Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Updating site");
@@ -98,29 +75,18 @@ public static class UpdateSite {
 }
 
 public static class DeleteSite {
-    public class Command : IRequest {
-        public Command(SiteInput input) {
-            AccountId = input.AccountId;
-            SiteId = input.SiteId;
-        }
-
-        public int AccountId { get; set; }
-        public int SiteId { get; set; }
+    public class Command(SiteInput input) : IRequest {
+        public int AccountId { get; set; } = input.AccountId;
+        public int SiteId { get; set; } = input.SiteId;
         public string? Address { get; set; }
         public string? Geometry { get; set; }
     }
 
-    public class Handler : IRequestHandler<Command> {
-        private readonly IAppDbContext _context;
-        private readonly ILogger _log;
-        private readonly IPublisher _publisher;
+    public class Handler(IAppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command> {
+        private readonly IAppDbContext _context = context;
+        private readonly ILogger _log = log;
+        private readonly IPublisher _publisher = publisher;
 
-
-        public Handler(IAppDbContext context, IPublisher publisher, ILogger log) {
-            _context = context;
-            _publisher = publisher;
-            _log = log;
-        }
         async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Deleting site");

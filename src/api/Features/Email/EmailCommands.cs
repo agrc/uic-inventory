@@ -8,24 +8,14 @@ using Serilog;
 
 namespace api.Features;
 public static class SendEmail {
-    public class Command : IRequest<EmailPayload> {
-        public Command(string to, string message) {
-            Message = message;
-            To = to;
-        }
+    public class Command(string to, string message) : IRequest<EmailPayload> {
+        public string Message { get; } = message;
+        public string To { get; } = to;
 
-        public string Message { get; }
-        public string To { get; }
-
-        public class Handler : IRequestHandler<Command, EmailPayload> {
-            private readonly ILogger _log;
-            private readonly HasRequestMetadata _metadata;
-            private readonly EmailService _client;
-            public Handler(EmailService client, HasRequestMetadata metadata, ILogger log) {
-                _log = log;
-                _metadata = metadata;
-                _client = client;
-            }
+        public class Handler(EmailService client, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Command, EmailPayload> {
+            private readonly ILogger _log = log;
+            private readonly HasRequestMetadata _metadata = metadata;
+            private readonly EmailService _client = client;
 
             public async Task<EmailPayload> Handle(Command request, CancellationToken token) {
                 _log.ForContext("content", request)
