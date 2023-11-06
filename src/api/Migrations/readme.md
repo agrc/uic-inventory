@@ -14,3 +14,7 @@ Make sure the entity framework tools match the installed version
 ## Apply a migration
 
 `dotnet ef database update --connection "database;host;port;username;password;"`
+
+You may have to start the cloud sql proxy
+
+`./cloud_sql_proxy -instances=ut-dts-agrc-uic-inventory-dev:us-central1:app=tcp:5432`
