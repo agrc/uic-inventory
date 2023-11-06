@@ -213,6 +213,10 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
           <Value>{data?.site.name}</Value>
         </ResponsiveGridColumn>
         <ResponsiveGridColumn full={true} half={true} third={true}>
+          <Label>Id</Label>
+          <Value>{data?.site.siteId}</Value>
+        </ResponsiveGridColumn>
+        <ResponsiveGridColumn full={true} half={true} third={true}>
           <Label>Location</Label>
           <Value>{data?.site.address}</Value>
         </ResponsiveGridColumn>
