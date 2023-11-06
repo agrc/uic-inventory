@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Linq;
+using api.Infrastructure;
 using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Http;
 
@@ -184,24 +185,10 @@ public static class WellDetailInputExtension {
     }
 }
 
-public class RestEndpointError {
-    public int Code { get; set; }
-    public string? Message { get; set; }
-    public IReadOnlyCollection<object> Details { get; set; } = Array.Empty<object>();
-}
-public abstract class RestErrorable {
-    public virtual RestEndpointError Error { get; set; } = default!;
-    public virtual bool IsSuccessful => Error == null;
-}
-public class EsriQueryResponse : RestErrorable {
+public record ArcGisRestFeatureWell(ArcGisRestWellAttributes Attributes);
+public record ArcGisRestWellAttributes(string SysNumber);
+public class WellEsriQueryResponse : RestErrorable {
     public int Count { get; set; }
-    public IReadOnlyList<Feature> Features { get; set; } = Array.Empty<Feature>();
+    public IReadOnlyList<ArcGisRestFeatureWell> Features { get; set; } = Array.Empty<ArcGisRestFeatureWell>();
 }
-public class EsriPoint(double x, double y) {
-    public double X { get; } = x;
-    public double Y { get; } = y;
-}
-
-public record Feature(Attributes Attributes);
-public record Attributes(string SysNumber);
 public record WellOperatingStatusInput(int AccountId, int SiteId, int InventoryId, int WellId, string Status, string? Description);

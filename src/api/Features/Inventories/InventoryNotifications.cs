@@ -314,7 +314,7 @@ public static class InventoryNotifications {
         }
     }
     public class GroundWaterProtectionsHandler(IHttpClientFactory clientFactory, IAppDbContext context, IWaterSystemContactService service, ILogger log) : INotificationHandler<SubmitNotification> {
-        public record ProtectionResult(int WellId, string Service, bool Intersects, IReadOnlyList<Feature> Features);
+        public record ProtectionResult(int WellId, string Service, bool Intersects, IReadOnlyList<ArcGisRestFeatureWell> Features);
         public record ProtectionQuery(int WellId, string Service, string Url);
         public record Protections(bool Aquifers, bool GroundWater);
 
@@ -381,7 +381,7 @@ public static class InventoryNotifications {
                 using var response = await _client.GetAsync(item.Url, token);
                 using var content = await response.Content.ReadAsStreamAsync(token);
 
-                var queryResult = await JsonSerializer.DeserializeAsync<EsriQueryResponse>(content, options, cancellationToken: token);
+                var queryResult = await JsonSerializer.DeserializeAsync<WellEsriQueryResponse>(content, options, cancellationToken: token);
 
                 if (queryResult is null || queryResult?.IsSuccessful != true) {
                     _log.ForContext("queryResult", queryResult)
