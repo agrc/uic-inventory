@@ -221,7 +221,7 @@ export function Component() {
                           data-style="primary"
                           href="https://secure.utah.gov/cart/dwq_cart/details.html?productId=205"
                           target="_blank"
-                          rel="noreferrer noopener"
+                          rel="noreferrer noopener nofollow"
                         >
                           https://secure.utah.gov/cart/dwq_cart/details.html?productId=205
                         </a>

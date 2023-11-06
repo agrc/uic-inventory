@@ -78,12 +78,12 @@ function General({ inventory }) {
       <p className="text-lg font-black text-red-700">
         NOTICE - You are required to report any well operating status changes (e.g. date constructed, date active, date
         closed, etc.) within the{' '}
-        <a data-style="link" href="https://uic-inventory.utah.gov/">
+        <a data-style="link" href="https://uic-inventory.utah.gov/" rel="nofollow">
           UIC Web Application
         </a>{' '}
         (https://uic-inventory.utah.gov/). The well is currently entered as{' '}
         <span className="text-gray-900">{wellStatus}</span>. You must update the well operating status within the{' '}
-        <a data-style="link" href="https://uic-inventory.utah.gov/">
+        <a data-style="link" href="https://uic-inventory.utah.gov/" rel="nofollow">
           UIC Web Application
         </a>{' '}
         (https://uic-inventory.utah.gov/) if the well status changes.

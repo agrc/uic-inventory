@@ -8,7 +8,7 @@ export function Component() {
           <p>
             Owners or operators of all Class V injection wells, existing and new, must submit inventory information
             according to Section{' '}
-            <a href="https://adminrules.utah.gov/public/rule/R317-7/Current%20Rules" data-style="link">
+            <a href="https://adminrules.utah.gov/public/rule/R317-7/Current%20Rules" data-style="link" rel="nofollow">
               R317-7- 6.4(C)
             </a>{' '}
             of the Utah Administrative Rules for the Underground Injection Control Program. This web application is
@@ -24,6 +24,7 @@ export function Component() {
             <a
               href="https://axaemarchives.utah.gov/cgi-bin/appxretcget.cgi?WEBINPUT_RUNWHAT=HTML_1SERIES&WEBINPUT_BIBLGRPC_RID=81505&A=B"
               data-style="link"
+              rel="nofollow"
             >
               81505 – Underground Injection Control Program Files
             </a>
