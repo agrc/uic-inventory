@@ -148,6 +148,7 @@ public class SiteContactPayload : ResponseContract {
     }
     public SiteContactPayload(Site site, IReadOnlyCollection<ContactPayload> contacts) {
         Name = site.Name ?? "unknown";
+        SiteId = site.SiteId ?? "unknown";
         NaicsTitle = site.NaicsTitle ?? "unknown";
         Owner = new AccountPayload(site.Account);
         Contacts = contacts;
@@ -155,6 +156,7 @@ public class SiteContactPayload : ResponseContract {
 
     public string Name { get; set; }
     public string NaicsTitle { get; set; }
+    public string SiteId { get; set; }
     public AccountPayload Owner { get; set; }
     public IReadOnlyCollection<ContactPayload> Contacts { get; }
 }

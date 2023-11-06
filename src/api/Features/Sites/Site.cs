@@ -38,6 +38,7 @@ public class SitePayload : ResponseContract {
     public SitePayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
     public SitePayload(Site site) {
         Id = site.Id;
+        SiteId = site.SiteId ?? string.Empty;
         Name = site.Name ?? string.Empty;
         NaicsTitle = site.NaicsTitle ?? string.Empty;
         Ownership = site.Ownership;
@@ -48,6 +49,7 @@ public class SitePayload : ResponseContract {
     }
 
     public int? Id { get; }
+    public string SiteId { get; }
     public string? Name { get; }
     public string? Ownership { get; }
     public string? NaicsTitle { get; }
