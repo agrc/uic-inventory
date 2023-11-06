@@ -40,6 +40,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment env) {
 
         services.AddScoped<HasRequestMetadata>();
         services.AddScoped<IWaterSystemContactService, WaterSystemContactService>();
+        services.AddScoped<ISiteIdService, SiteIdService>();
         services.AddScoped<CloudStorageService>();
 
         services.AddSingleton(new Lazy<NaicsProvider>(() => new NaicsProvider()));

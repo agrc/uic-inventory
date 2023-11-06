@@ -50,7 +50,7 @@ public static class UpdateSite {
         public SiteInput Site { get; } = input;
     }
 
-    public class Handler(IAppDbContext context, HasRequestMetadata metadata, IPublisher publisher, ILogger log) : IRequestHandler<Command, Site> {
+    public class Handler(IAppDbContext context, HasRequestMetadata metadata, ISiteIdService siteIdService, IPublisher publisher, ILogger log) : IRequestHandler<Command, Site> {
         private readonly IAppDbContext _context = context;
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;
@@ -64,6 +64,8 @@ public static class UpdateSite {
             var site = _metadata.Site;
 
             request.Site.Update(site);
+
+            site.SiteId = await siteIdService.GetSiteId(site, cancellationToken);
 
             await _context.SaveChangesAsync(cancellationToken);
 
