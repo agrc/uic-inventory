@@ -24,10 +24,8 @@ public static class CreateContact {
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                Task.WaitAll([
-                     _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken),
-                     _publisher.Publish(new ContactNotifications.AddContactNotification(request.Input.SiteId, request.Input.AccountId), cancellationToken)
-                ], cancellationToken);
+                await _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken);
+                await _publisher.Publish(new ContactNotifications.AddContactNotification(request.Input.SiteId, request.Input.AccountId), cancellationToken);
 
                 return contact.Entity;
             }
@@ -59,10 +57,8 @@ public static class DeleteContact {
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                Task.WaitAll([
-                     _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken),
-                     _publisher.Publish(new ContactNotifications.DeleteContactNotification(request.AccountId, request.SiteId), cancellationToken)
-                ], cancellationToken);
+                await _publisher.Publish(new SiteNotifications.EditNotification(request.SiteId), cancellationToken);
+                await _publisher.Publish(new ContactNotifications.DeleteContactNotification(request.AccountId, request.SiteId), cancellationToken);
 
                 return;
             }

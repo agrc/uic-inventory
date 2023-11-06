@@ -134,10 +134,8 @@ public static class SubmitInventory {
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            Task.WaitAll([
-                _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken),
-                _publisher.Publish(new InventoryNotifications.SubmitNotification(_metadata.Site, _metadata.Inventory, _metadata.Account), cancellationToken),
-            ], cancellationToken: cancellationToken);
+            await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
+            await _publisher.Publish(new InventoryNotifications.SubmitNotification(_metadata.Site, _metadata.Inventory, _metadata.Account), cancellationToken);
 
             return;
         }
@@ -214,10 +212,8 @@ public static class RejectInventory {
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            Task.WaitAll([
-                _publisher.Publish(new InventoryNotifications.RejectNotification(site, inventory, _metadata.Account, contacts), cancellationToken),
-                _publisher.Publish(new InventoryNotifications.DeleteNotification(inventory), cancellationToken),
-            ], cancellationToken: cancellationToken);
+            await _publisher.Publish(new InventoryNotifications.RejectNotification(site, inventory, _metadata.Account, contacts), cancellationToken);
+            await _publisher.Publish(new InventoryNotifications.DeleteNotification(inventory), cancellationToken);
 
             return;
         }

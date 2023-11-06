@@ -50,10 +50,8 @@ public static class CreateWell {
 
             well.Id = result.Entity.Id;
 
-            Task.WaitAll([
-                _publisher.Publish(new WellNotifications.WellCreationNotification(well), cancellationToken),
-                _publisher.Publish(new InventoryNotifications.EditNotification(message.Input.InventoryId), cancellationToken)
-            ], cancellationToken: cancellationToken);
+            await _publisher.Publish(new WellNotifications.WellCreationNotification(well), cancellationToken);
+            await _publisher.Publish(new InventoryNotifications.EditNotification(message.Input.InventoryId), cancellationToken);
 
             return well;
         }
