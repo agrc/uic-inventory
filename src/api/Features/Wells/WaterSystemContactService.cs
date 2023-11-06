@@ -16,7 +16,7 @@ public interface IWaterSystemContactService {
 
 public class WaterSystemContactService(IConfiguration config, ILogger log) : IWaterSystemContactService {
     private readonly ILogger _log = log;
-    private readonly string _connectionString = config.GetSection("GroundWaterContacts")["Connection"];
+    private readonly string _connectionString = config.GetSection("GroundWaterContacts")["Connection"] ?? throw new ArgumentNullException(nameof(config));
 
     public async Task<IEnumerable<WaterSystemContact>> GetContactsAsync(IReadOnlyList<string> items, CancellationToken cancellationToken) {
         using var conn = new OracleConnection(_connectionString);

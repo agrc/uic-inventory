@@ -23,9 +23,8 @@ using Polly;
 using SendGrid.Extensions.DependencyInjection;
 
 namespace api;
-public class Startup(IConfiguration configuration, IWebHostEnvironment env) {
+public class Startup(IConfiguration configuration) {
     public IConfiguration Configuration { get; } = configuration;
-    public IWebHostEnvironment Env = env;
 
     public void ConfigureServices(IServiceCollection services) {
         services.AddCors()
@@ -50,7 +49,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment env) {
         var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
 
         services.AddDbContext<AppDbContext>(options => options
-            .UseNpgsql(database.ConnectionString)
+            .UseNpgsql(database?.ConnectionString ?? throw new ArgumentNullException(nameof(database.ConnectionString)))
             .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IAppDbContext, AppDbContext>();
