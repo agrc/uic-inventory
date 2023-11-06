@@ -409,15 +409,39 @@ const DangerZone = () => {
         submitLabel="Delete my account"
         // disabled={!isDirty}
       >
-        <p className="font-semibold text-red-500">
-          Any data that you have submitted will be retained. The following information will be deleted:
+        <p className="font-semibold">
+          The following information associated with your account will be retained according to retention schedule{' '}
+          <a
+            href="https://axaemarchives.utah.gov/cgi-bin/appxretcget.cgi?WEBINPUT_RUNWHAT=HTML_1SERIES&amp;WEBINPUT_BIBLGRPC_RID=81505&amp;A=B"
+            rel="nofollow"
+            data-style="link"
+          >
+            81505 - Underground injection control program files
+          </a>
+          :
         </p>
-        <ul className="ml-2 mt-2 list-inside list-disc font-semibold text-red-500">
-          <li>All wells of draft inventories</li>
-          <li>All inventories with no wells</li>
-          <li>All draft inventories</li>
-          <li>All sites with no inventories</li>
-          <li>All non-essential profile information</li>
+        <ul className="ml-2 mt-2 list-inside list-decimal">
+          <li>
+            All submitted sites/well inventories and associated data will be retained for the retention period
+            including:
+            <ul className="ml-4 mt-2 list-inside list-disc">
+              <li>Site name, location, and ownership</li>
+              <li>Name, email, phone number, organization, and address of associated site contacts/signatories</li>
+              <li>Type, details, operating status, and location of injection wells</li>
+            </ul>
+          </li>
+        </ul>
+        <p className="mt-4 font-semibold text-red-500">
+          The following information associated with your account will be deleted after the retention period is up:
+        </p>
+        <ul className="ml-2 mt-2 list-inside list-decimal text-red-500">
+          <li>All sites with no well inventories</li>
+          <li>All sites with only draft inventories</li>
+          <li>All draft well inventories</li>
+          <li>
+            All profile information (i.e., name, email, phone number, organization, and address) not associated with any
+            submitted sites/well inventories.
+          </li>
         </ul>
       </PageGrid>
     </form>
