@@ -124,7 +124,7 @@ public class WellFileInput {
 }
 
 public class WellDetailInput : WellInput {
-    public int[] SelectedWells { get; set; } = Array.Empty<int>();
+    public int[] SelectedWells { get; set; } = [];
     public IFormFile? ConstructionDetailsFile { get; set; }
     public IFormFile? InjectateCharacterizationFile { get; set; }
 }
