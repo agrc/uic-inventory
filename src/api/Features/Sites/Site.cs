@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using api.Infrastructure;
 using MediatR.Behaviors.Authorization.Exceptions;
 
 namespace api.Features;
 public class Site {
     public int Id { get; set; }
+    public string? SiteId { get; set; }
     public string? Name { get; set; }
     public string? Ownership { get; set; }
     public int? NaicsPrimary { get; set; }
@@ -99,4 +101,11 @@ public enum SiteStatus {
     Submitted,
     Authorized,
     Ingested,
+}
+
+public record ArcGisRestFeatureSite(ArcGisRestSiteAttributes Attributes);
+public record ArcGisRestSiteAttributes(int Fips);
+public class SiteEsriQueryResponse : RestErrorable {
+    public int Count { get; set; }
+    public IReadOnlyList<ArcGisRestFeatureSite> Features { get; set; } = Array.Empty<ArcGisRestFeatureSite>();
 }
