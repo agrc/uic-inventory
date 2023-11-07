@@ -101,7 +101,7 @@ export const DropzoneMessaging = ({ isDragActive, files = [], reset = () => {} }
     );
   }
 
-  return <p className="self-center text-center">Drag a file here or</p>;
+  return <p className="self-center text-center">Drag a PDF here or</p>;
 };
 
 export const CharactersRemaining = ({ remaining, limit }) => {
@@ -133,10 +133,7 @@ export const LimitedDropzone = ({ textarea, forms, helpText }) => {
     multiple: false,
     maxFiles: 1,
     accept: {
-      'image/*': ['.jpg', '.jpeg', '.png'],
       'application/pdf': ['.pdf'],
-      'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },
     onDropRejected: () => {
       toast.error('File type not accepted');
@@ -225,9 +222,9 @@ export const LimitedDropzone = ({ textarea, forms, helpText }) => {
             <>
               <button className="items-center pl-0" type="button" data-style="secondary" onClick={open}>
                 <CloudArrowUpIcon className="mx-2 h-6 w-6 text-white" />
-                Pick a file
+                Pick a PDF
               </button>
-              <div className="self-center text-sm text-gray-600">(pdf, doc, docx, jpg, jpeg, png)</div>
+              <div className="self-center text-sm text-gray-600">(pdf&apos;s only)</div>
             </>
           )}
         </div>
