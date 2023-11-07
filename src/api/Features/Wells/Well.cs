@@ -80,6 +80,8 @@ public class WellPayload : ResponseContract {
         Count = well.Quantity ?? 0;
         Geometry = well.Geometry ?? "{}";
         Description = well.Description ?? "";
+        RemediationType = WellLookup.RemediationType(well.RemediationType);
+        RemediationProjectId = well.RemediationProjectId;
         ConstructionDetails = well.ConstructionDetails;
         InjectateCharacterization = well.InjectateCharacterization;
         HydrogeologicCharacterization = well.HydrogeologicCharacterization;
@@ -90,6 +92,8 @@ public class WellPayload : ResponseContract {
     public int Id { get; }
     public string? WellName { get; }
     public string Description { get; set; }
+    public string? RemediationType { get; }
+    public string? RemediationProjectId { get; }
     public int SubClass { get; }
     public int Count { get; }
     public string Geometry { get; }
@@ -170,6 +174,17 @@ public static class WellLookup {
         5101 => "UIC - Regulated large underground wastewater disposal systems",
         5026 => "Veterinary, kennel, or pet grooming wastewater disposal systems",
         _ => "Unknown",
+    };
+    public static string RemediationType(int? type) => type switch {
+        1 => "Brownfield",
+        2 => "LUST",
+        3 => "NPL",
+        4 => "RCRA",
+        5 => "Superfund",
+        6 => "TRI",
+        7 => "VPP",
+        8 => "DSHW",
+        _ => "Other",
     };
 }
 
