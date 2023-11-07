@@ -142,4 +142,25 @@ public class AccountController(IMediator mediator, ILogger log) : ControllerBase
             return StatusCode(500, new AccountPayload(ex));
         }
     }
+
+    [HttpDelete("/api/account")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult> DeleteAccount(CancellationToken token) {
+        try {
+            await _mediator.Send(new DeleteAccount.Command(Request.HttpContext.User), token);
+
+            return Accepted();
+        } catch (UnauthorizedException ex) {
+            _log.ForContext("endpoint", "DELETE:api/account")
+              .ForContext("requirement", ex.Message)
+              .Warning("DeleteAccount requirements failure");
+
+            return Unauthorized(new AccountPayload(ex));
+        } catch (Exception ex) {
+            _log.ForContext("endpoint", "DELETE:api/account")
+              .Fatal(ex, "Unhandled exception");
+
+            return StatusCode(500, new AccountPayload(ex));
+        }
+    }
 }
