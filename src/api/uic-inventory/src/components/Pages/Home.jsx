@@ -174,7 +174,7 @@ function InventoryStatus({ inventoryId, siteId, status, row }) {
 }
 InventoryStatus.propTypes = {
   inventoryId: PropTypes.number,
-  siteId: PropTypes.number,
+  siteId: PropTypes.string,
   status: PropTypes.string,
   row: PropTypes.object,
 };
