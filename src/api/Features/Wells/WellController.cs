@@ -17,12 +17,7 @@ public class WellController(IMediator mediator, ILogger log) : ControllerBase {
     private readonly IMediator _mediator = mediator;
     private readonly ILogger _log = log;
     private readonly Dictionary<string, string> _mimeTypes = new() {
-        { "png", "image/png" },
-        { "jpg", "image/jpeg" },
-        { "jpeg", "image/jpeg" },
         { "pdf", "application/pdf" },
-        { "doc", "application/msword" },
-        { "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
     };
 
     [HttpPost("/api/well")]

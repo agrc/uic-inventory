@@ -113,7 +113,7 @@ public static class UpdateWellDetails {
       ICloudFileNamer fileNamer,
       CloudStorageService cloudService,
       ILogger log) : IRequestHandler<Command, Well> {
-        private readonly string[] _acceptableFileTypes = ["pdf", "png", "doc", "docx", "jpg", "jpeg"];
+        private readonly string[] _acceptableFileTypes = ["pdf"];
         private readonly IAppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
