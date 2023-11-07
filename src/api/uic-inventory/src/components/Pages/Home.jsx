@@ -20,7 +20,7 @@ import { useExpanded, useSortBy, useTable } from 'react-table';
 import { AuthContext } from '../../AuthProvider';
 import { wellTypes } from '../../data/lookups';
 import { useOpenClosed } from '../Hooks/useOpenClosedHook';
-import { Chrome, ConfirmationModal, Header, Link, Tooltip, onRequestError, toast } from '../PageElements';
+import { Chrome, ConfirmationModal, Header, Link, TableLoader, Tooltip, onRequestError, toast } from '../PageElements';
 
 export function Component({ completeProfile }) {
   const { authInfo } = useContext(AuthContext);
@@ -606,15 +606,21 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
   if (status === 'pending') {
     return (
       <tr>
-        <td />
-        <td colSpan={visibleColumns.length - 1}>Loading...</td>
+        <td colSpan={visibleColumns.length - 1}>
+          <TableLoader className="ml-14" />
+          <div className="flex justify-center">
+            <InventoryCreationButton site={row.original.id} className="my-4" />
+          </div>
+        </td>
       </tr>
     );
   } else if (status === 'error') {
     return (
       <tr>
         <td />
-        <td colSpan={visibleColumns.length - 1}>There was a problem finding the inventories for this site</td>
+        <td colSpan={visibleColumns.length - 1} className="p-4 text-red-500">
+          There was a problem finding the inventories for this site.
+        </td>
       </tr>
     );
   }
