@@ -20,8 +20,10 @@ public static class GetMyAccount {
         public class Handler(IAppDbContext context) : IRequestHandler<Query, Account> {
             private readonly IAppDbContext _context = context;
 
-            public async Task<Account> Handle(Query request, CancellationToken cancellationToken) =>
-              await _context.Accounts.SingleOrDefaultAsync(x => x.UtahId == request.UtahId, cancellationToken);
+            public async Task<Account> Handle(Query request, CancellationToken cancellationToken) {
+                var account = await _context.Accounts.SingleOrDefaultAsync(x => x.UtahId == request.UtahId, cancellationToken);
+                return account ?? throw new ArgumentNullException(nameof(account));
+            }
         }
     }
 }
@@ -32,8 +34,10 @@ public static class GetAccountById {
         public class Handler(IAppDbContext context) : IRequestHandler<Query, Account> {
             private readonly IAppDbContext _context = context;
 
-            public async Task<Account> Handle(Query request, CancellationToken cancellationToken) =>
-              await _context.Accounts.SingleOrDefaultAsync(x => x.Id == request.AccountId, cancellationToken);
+            public async Task<Account> Handle(Query request, CancellationToken cancellationToken) {
+                var account = await _context.Accounts.SingleOrDefaultAsync(x => x.Id == request.AccountId, cancellationToken);
+                return account ?? throw new ArgumentNullException(nameof(account));
+            }
         }
     }
 }

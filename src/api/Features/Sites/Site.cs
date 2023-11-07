@@ -49,7 +49,7 @@ public class SitePayload : ResponseContract {
     }
 
     public int? Id { get; }
-    public string SiteId { get; }
+    public string? SiteId { get; }
     public string? Name { get; }
     public string? Ownership { get; }
     public string? NaicsTitle { get; }

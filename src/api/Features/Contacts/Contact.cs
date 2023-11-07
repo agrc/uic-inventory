@@ -138,11 +138,15 @@ public class ContactPayload : ResponseContract {
 public class SiteContactPayload : ResponseContract {
     public SiteContactPayload(UnauthorizedException error) : base(error.Message) {
         Name = "unknown";
+        SiteId = "unknown";
+        NaicsTitle = "unknown";
         Contacts = Array.Empty<ContactPayload>();
         Owner = new AccountPayload(new Account());
     }
     public SiteContactPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") {
         Name = "unknown";
+        SiteId = "unknown";
+        NaicsTitle = "unknown";
         Contacts = Array.Empty<ContactPayload>();
         Owner = new AccountPayload(new Account());
     }

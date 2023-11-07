@@ -34,9 +34,11 @@ public class Well {
 }
 public class WellCreationPayload : WellPayload {
     public WellCreationPayload(UnauthorizedException error) : base(error) {
+        Site = new SitePayload(error);
     }
 
     public WellCreationPayload(Exception error) : base(error) {
+        Site = new SitePayload(error);
     }
 
     public WellCreationPayload(Well well, Site site) : base(well) {
@@ -51,9 +53,25 @@ public class WaterSystemContactPayload(WaterSystemContacts contact) {
     public string? System { get; set; } = contact.System;
 }
 public class WellPayload : ResponseContract {
-    public WellPayload(UnauthorizedAccessException error) : base(error.Message) { }
-    public WellPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
-    public WellPayload(string error) : base($"UP01:{error}") { }
+    private const string Unknown = "unknown";
+    public WellPayload(UnauthorizedAccessException error) : base(error.Message) {
+        WaterSystemContacts = [];
+        Status = Unknown;
+        Geometry = "{}";
+        Description = Unknown;
+    }
+    public WellPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") {
+        WaterSystemContacts = [];
+        Status = Unknown;
+        Geometry = "{}";
+        Description = Unknown;
+    }
+    public WellPayload(string error) : base($"UP01:{error}") {
+        WaterSystemContacts = [];
+        Status = Unknown;
+        Geometry = "{}";
+        Description = Unknown;
+    }
     public WellPayload(Well well) {
         Id = well.Id;
         WellName = well.WellName;

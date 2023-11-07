@@ -197,9 +197,15 @@ public class AuthPayload : ResponseContract {
 }
 
 public class MinimalAccountPayload : ResponseContract {
-    public MinimalAccountPayload(UnauthorizedAccessException _) : base("A01:You are not allowed to access this resource.") { }
-    public MinimalAccountPayload(UnauthorizedException error) : base(error.Message) { }
-    public MinimalAccountPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public MinimalAccountPayload(UnauthorizedAccessException _) : base("A01:You are not allowed to access this resource.") {
+        Accounts = [];
+    }
+    public MinimalAccountPayload(UnauthorizedException error) : base(error.Message) {
+        Accounts = [];
+    }
+    public MinimalAccountPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") {
+        Accounts = [];
+    }
     public record MinimalAccount(int Id, string FirstName, string LastName, string Email, AccessLevels Access);
     public IList<MinimalAccount> Accounts { get; set; }
     public MinimalAccountPayload(IEnumerable<Account> input) {

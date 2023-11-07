@@ -35,11 +35,16 @@ public class RedisTicketStore(IDistributedCache cache) : ITicketStore {
         return Task.FromResult(0);
     }
 
-    public Task<AuthenticationTicket> RetrieveAsync(string key) {
+    public Task<AuthenticationTicket?> RetrieveAsync(string key) {
         var bytes = _cache.Get(key);
+
+        if (bytes is null) {
+            return Task.FromResult(null as AuthenticationTicket);
+        }
+
         var ticket = DeserializeFromBytes(bytes);
 
-        return Task.FromResult(ticket ?? default!);
+        return Task.FromResult(ticket ?? null);
     }
 
     public Task RemoveAsync(string key) {
