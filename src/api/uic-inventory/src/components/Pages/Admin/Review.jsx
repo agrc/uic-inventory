@@ -373,6 +373,14 @@ const WellDetails = ({ siteId, inventoryId }) => {
             <Value>{well.wellName}</Value>
             <Label>Construction</Label>
             <Value>{handleLink(well.constructionDetails, siteId, inventoryId)}</Value>
+            {well.subClass === 5002 && (
+              <>
+                <Label>Remediation</Label>
+                <Value>
+                  {well.remediationType} Project {well.remediationProjectId}
+                </Value>
+              </>
+            )}
           </Panel>
         ))}
       </Section>
