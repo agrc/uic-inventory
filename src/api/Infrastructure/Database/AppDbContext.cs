@@ -1,17 +1,10 @@
 using System;
 using api.Features;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 
 namespace api.Infrastructure;
 public partial class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext {
-    static AppDbContext() {
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<AccessLevels>();
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<NotificationTypes>();
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<ContactTypes>();
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<SiteStatus>();
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<InventoryStatus>();
-    }
+    static AppDbContext() { }
 
     public virtual DbSet<Account> Accounts { get; set; } = default!;
     public virtual DbSet<Contact> Contacts { get; set; } = default!;

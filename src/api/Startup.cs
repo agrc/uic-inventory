@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Npgsql;
 using Polly;
 using SendGrid.Extensions.DependencyInjection;
 
@@ -48,8 +49,16 @@ public class Startup(IConfiguration configuration) {
 
         var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
 
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(database?.ConnectionString ?? throw new ArgumentNullException(nameof(database.ConnectionString)));
+        dataSourceBuilder.MapEnum<AccessLevels>();
+        dataSourceBuilder.MapEnum<NotificationTypes>();
+        dataSourceBuilder.MapEnum<ContactTypes>();
+        dataSourceBuilder.MapEnum<SiteStatus>();
+        dataSourceBuilder.MapEnum<InventoryStatus>();
+        var dataSource = dataSourceBuilder.Build();
+
         services.AddDbContext<AppDbContext>(options => options
-            .UseNpgsql(database?.ConnectionString ?? throw new ArgumentNullException(nameof(database.ConnectionString)))
+            .UseNpgsql(dataSource)
             .UseSnakeCaseNamingConvention());
 
         services.AddScoped<IAppDbContext, AppDbContext>();
