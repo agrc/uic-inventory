@@ -120,7 +120,7 @@ const ProfileForm = ({ id, data }) => {
     reset();
   }, [formState, reset]);
 
-  const mutateAccount = async (form, formData) => {
+  const mutateAccount = (form, formData) => {
     if (!isDirty) {
       return toast.info("We've got your most current information");
     }
@@ -134,7 +134,7 @@ const ProfileForm = ({ id, data }) => {
       input[key] = formData[key];
     }
 
-    await mutate(input);
+    mutate(input);
   };
 
   return (
@@ -385,6 +385,17 @@ AccessForm.propTypes = {
 };
 const DangerZone = () => {
   const [isOpen, { open, close }] = useOpenClosed();
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: () => ky.delete('/api/account'),
+    onSuccess: () => {
+      close();
+
+      queryClient.clear();
+      window.location.href = '/api/logout';
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble deleting your account.'),
+  });
 
   return (
     <form
@@ -394,7 +405,7 @@ const DangerZone = () => {
       }}
       className="mt-10 sm:mt-0"
     >
-      <ConfirmationModal isOpen={isOpen} onClose={close} onYes={console.log}>
+      <ConfirmationModal isOpen={isOpen} onClose={close} onYes={mutate}>
         <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">Delete Account Confirmation</Dialog.Title>
         <Dialog.Description className="mt-1">Your account will be permanently deleted</Dialog.Description>
         <p className="mt-1 text-sm text-gray-500">
