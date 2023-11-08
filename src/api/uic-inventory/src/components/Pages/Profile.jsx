@@ -449,10 +449,7 @@ const DangerZone = () => {
           <li>All sites (including all associated information) with no well inventories</li>
           <li>All sites (including all associated information) with only draft inventories</li>
           <li>All draft well inventories</li>
-          <li>
-            All profile information (i.e., name, email, phone number, organization, and address) not associated with any
-            submitted sites/well inventories.
-          </li>
+          <li>All profile information</li>
         </ul>
       </PageGrid>
     </form>
