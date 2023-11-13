@@ -23,7 +23,7 @@ export function Component() {
         {status === 'pending' && <List />}
         {status === 'success' && getAbrType(data)}
       </section>
-      <section className="mt-10 flex flex-1 justify-center gap-6 print:hidden">
+      <section className="mt-10 flex flex-1 justify-center gap-6">
         <button onClick={() => navigate(-1)} data-style="alternate" className="sm:col-span-6 md:col-span-2">
           Back
         </button>

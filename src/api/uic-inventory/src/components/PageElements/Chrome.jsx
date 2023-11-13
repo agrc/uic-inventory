@@ -8,7 +8,7 @@ export default function Chrome({ children, title, loading }) {
         <div
           className={`${
             loading ? 'min-h-screen md:min-h-profile' : 'h-full'
-          } rounded-lg border-4 border-dashed border-gray-200 p-4 print:border-none`}
+          } rounded-lg border-4 border-dashed border-gray-200 p-4`}
         >
           {title && <h1 className="mb-3 text-2xl font-medium">{title}</h1>}
           <ErrorBoundary FallbackComponent={RouterErrorPage}>{children}</ErrorBoundary>

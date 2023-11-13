@@ -3,8 +3,8 @@ import clsx from 'clsx';
 export function ResponsiveGridColumn({ full, half, third, className, children }) {
   const classes = clsx(className, {
     'col-span-6': full,
-    'sm:col-span-3 print:col-span-3': half,
-    'lg:col-span-2 print:col-span-2': third,
+    'sm:col-span-3': half,
+    'lg:col-span-2': third,
   });
   return <div className={classes}>{children}</div>;
 }

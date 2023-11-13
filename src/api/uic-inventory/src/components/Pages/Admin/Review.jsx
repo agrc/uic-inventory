@@ -83,7 +83,7 @@ export function Component() {
         <LocationDetails siteId={siteId} inventoryId={inventoryId} />
         <ContactDetails siteId={siteId} />
         <WellDetails siteId={siteId} inventoryId={inventoryId} />
-        <Section className="print:hidden">
+        <Section>
           <button onClick={open} data-style="primary" className="hover:bg-red-600 sm:col-span-6 md:col-span-2">
             Reject
           </button>
@@ -111,16 +111,11 @@ const Value = ({ children, className }) => <span className={clsx('ml-2 block', c
 const Section = ({ gray, children, title, height = 'max-h-96', className }) => (
   <div className={className}>
     <h1 className="mb-2 text-xl font-medium">{title}</h1>
-    <div
-      className={clsx(
-        'mb-3 ml-1 overflow-scroll border shadow sm:rounded-md print:max-h-full print:shadow-none',
-        height,
-      )}
-    >
+    <div className={clsx('mb-3 ml-1 overflow-scroll border shadow sm:rounded-md', height)}>
       <div
         className={clsx(
           {
-            'bg-gray-50 print:bg-white': gray,
+            'bg-gray-50': gray,
             'bg-white': !gray,
           },
           'h-full px-4 py-5 sm:p-6',
@@ -298,7 +293,7 @@ const ContactDetails = ({ siteId }) => {
       {data?.contacts.map((contact) => (
         <Panel key={contact.id}>
           <ResponsiveGridColumn full={true} half={true}>
-            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
               {valueToLabel(contactTypes, contact.contactType)}
             </Value>
           </ResponsiveGridColumn>
@@ -362,11 +357,11 @@ const WellDetails = ({ siteId, inventoryId }) => {
           <Panel key={well.id}>
             <div
               title="Well count"
-              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700 print:block print:border-0 print:bg-transparent"
+              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700"
             >
               {well.count}
             </div>
-            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
               {well.status}
             </Value>
             <Label>Well Name</Label>
@@ -389,11 +384,11 @@ const WellDetails = ({ siteId, inventoryId }) => {
           <Panel key={well.id}>
             <div
               title="Well count"
-              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700 print:block print:border-0 print:bg-transparent"
+              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700"
             >
               {well.count}
             </div>
-            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
               {well.status}
             </Value>
             <Label>Well Name</Label>
@@ -408,11 +403,11 @@ const WellDetails = ({ siteId, inventoryId }) => {
           <Panel key={well.id}>
             <div
               title="Well count"
-              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700 print:block print:border-0 print:bg-transparent"
+              className="absolute inset-1 inline-flex h-8 w-8 items-center justify-center rounded-full border border-gray-800 bg-white/90 text-xs font-bold text-gray-700"
             >
               {well.count}
             </div>
-            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow print:mx-0 print:mb-1 print:border-0 print:bg-white print:px-0 print:text-left print:text-gray-800 print:shadow-none">
+            <Value className="-mx-3 mb-3 border border-r-0 border-blue-500 bg-blue-200 px-2 py-1 text-center font-bold text-blue-700 shadow">
               {well.status}
             </Value>
             <Label>Well Name</Label>
@@ -427,7 +422,7 @@ const WellDetails = ({ siteId, inventoryId }) => {
 };
 
 const Panel = ({ children }) => (
-  <div className="relative col-span-6 max-h-72 overflow-auto rounded border bg-white px-3 py-2 shadow md:col-span-2 print:col-span-6 print:max-h-full print:shadow-none">
+  <div className="relative col-span-6 max-h-72 overflow-auto rounded border bg-white px-3 py-2 shadow md:col-span-2">
     {children}
   </div>
 );
@@ -537,6 +532,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
   }, [mapView, state.highlighted]);
 
   // sync image for printing
+  // TODO figure out if this is needed for new export
   useEffect(() => {
     mapView.current?.when(() => {
       when(
@@ -552,20 +548,16 @@ const LocationDetails = ({ siteId, inventoryId }) => {
 
   return (
     <>
-      <Section title="Location Details" height="print:h-auto" className="print:break-before-page">
+      <Section title="Location Details">
         <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
           <div className="w-full">
             {status === 'pending' ? <Code /> : <WellTable wells={data?.wells} state={state} dispatch={dispatch} />}
             <WaterSystemContacts wells={data?.wells} />
           </div>
-          <div className="aspect-[17/22] w-full rounded border shadow print:hidden" ref={mapDiv}></div>
+          <div className="aspect-[17/22] w-full rounded border shadow" ref={mapDiv}></div>
         </div>
       </Section>
-      <img
-        className="hidden aspect-[17/22] rounded border shadow print:block print:break-after-page"
-        alt=""
-        src={state.screenshot}
-      />
+      <img className="hidden aspect-[17/22] rounded border shadow" alt="" src={state.screenshot} />
     </>
   );
 };
@@ -775,7 +767,7 @@ const titleCase = (value) =>
 
 const WaterSystemContact = ({ contact }) => {
   return (
-    <div className="grid grid-cols-[1fr,3fr] rounded-lg border px-3 py-1 leading-snug print:border-none">
+    <div className="grid grid-cols-[1fr,3fr] rounded-lg border px-3 py-1 leading-snug">
       <span className="text-right font-bold">Contact:</span> <span className="pl-1">{titleCase(contact.name)}</span>
       <span className="text-right font-bold">Email:</span> <span className="pl-1">{contact.email.toLowerCase()}</span>
       <span className="text-right font-bold">Name:</span> <span className="pl-1">{titleCase(contact.system)}</span>

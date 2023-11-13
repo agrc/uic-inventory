@@ -92,73 +92,33 @@ function Navigation({ authenticationStatus }) {
   }
 
   return (
-    <div className="print:hidden">
-      <Disclosure as="nav" className="bg-gray-800">
-        {({ open }) => (
-          <>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="flex h-16 items-center justify-between">
-                <div className="flex items-center">
-                  <div className="shrink-0">
-                    <img className="hidden h-12 w-auto sm:block" src="/logo-alternate.svg" alt="Workflow" />
-                    <img className="h-12 w-auto sm:hidden" src="/logo.svg" alt="Workflow" />
-                  </div>
-                  <div className="hidden md:block">
-                    <div className="ml-10 flex items-baseline space-x-4">
-                      <Links links={navigation} isAuthenticated={isAuthenticated} isElevated={isElevated} />
-                    </div>
+    <Disclosure as="nav" className="bg-gray-800">
+      {({ open }) => (
+        <>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex h-16 items-center justify-between">
+              <div className="flex items-center">
+                <div className="shrink-0">
+                  <img className="hidden h-12 w-auto sm:block" src="/logo-alternate.svg" alt="Workflow" />
+                  <img className="h-12 w-auto sm:hidden" src="/logo.svg" alt="Workflow" />
+                </div>
+                <div className="hidden md:block">
+                  <div className="ml-10 flex items-baseline space-x-4">
+                    <Links links={navigation} isAuthenticated={isAuthenticated} isElevated={isElevated} />
                   </div>
                 </div>
-                {isAuthenticated() ? (
-                  <>
-                    <div className="hidden md:block">
-                      <div className="ml-4 flex items-center md:ml-6">
-                        {receiveNotifications() ? (
-                          <Popover className="relative ml-3">
-                            {({ open }) => (
-                              <>
-                                <Popover.Button className="flex rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                  <NotificationBell items={data?.notifications} status={status} error={error} />
-                                </Popover.Button>
-                                <Transition
-                                  show={open}
-                                  as={Fragment}
-                                  enter="transition ease-out duration-100"
-                                  enterFrom="opacity-0 scale-95"
-                                  enterTo="opacity-100 scale-100"
-                                  leave="transition ease-in duration-75"
-                                  leaveFrom="opacity-100 scale-100"
-                                  leaveTo="opacity-0 scale-95"
-                                >
-                                  <Popover.Panel
-                                    static
-                                    className="absolute right-0 z-20 mt-2 max-h-64 w-96 origin-top-right overflow-scroll rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                                  >
-                                    <Notifications
-                                      notifications={data?.notifications}
-                                      queryKey={['notifications', authInfo.id]}
-                                      status={status}
-                                      error={error}
-                                      refetch={refetch}
-                                    />
-                                  </Popover.Panel>
-                                </Transition>
-                              </>
-                            )}
-                          </Popover>
-                        ) : null}
-                        {/* Profile dropdown */}
-                        <Menu as="div" className="relative ml-3">
+              </div>
+              {isAuthenticated() ? (
+                <>
+                  <div className="hidden md:block">
+                    <div className="ml-4 flex items-center md:ml-6">
+                      {receiveNotifications() ? (
+                        <Popover className="relative ml-3">
                           {({ open }) => (
                             <>
-                              <div>
-                                <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                  <span className="sr-only">Open user menu</span>
-                                  <p className="h-8 w-8 rounded-full text-2xl font-black uppercase tracking-tighter text-gray-400">
-                                    {getInitials(data)}
-                                  </p>
-                                </Menu.Button>
-                              </div>
+                              <Popover.Button className="flex rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                <NotificationBell items={data?.notifications} status={status} error={error} />
+                              </Popover.Button>
                               <Transition
                                 show={open}
                                 as={Fragment}
@@ -169,53 +129,79 @@ function Navigation({ authenticationStatus }) {
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                               >
-                                <Menu.Items
+                                <Popover.Panel
                                   static
-                                  className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                  className="absolute right-0 z-20 mt-2 max-h-64 w-96 origin-top-right overflow-scroll rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                 >
-                                  {profile.map((item) => (
-                                    <Menu.Item key={item.key}>
-                                      {() =>
-                                        item.clientSide ? (
-                                          <Link
-                                            key={item.key}
-                                            to={item.to}
-                                            className="block px-4 py-2 text-sm text-gray-700"
-                                          >
-                                            {item.text}
-                                          </Link>
-                                        ) : (
-                                          <a
-                                            href={item.to}
-                                            key={item.key}
-                                            className="block px-4 py-2 text-sm text-gray-700"
-                                          >
-                                            {item.text}
-                                          </a>
-                                        )
-                                      }
-                                    </Menu.Item>
-                                  ))}
-                                </Menu.Items>
+                                  <Notifications
+                                    notifications={data?.notifications}
+                                    queryKey={['notifications', authInfo.id]}
+                                    status={status}
+                                    error={error}
+                                    refetch={refetch}
+                                  />
+                                </Popover.Panel>
                               </Transition>
                             </>
                           )}
-                        </Menu>
-                      </div>
-                    </div>
-                    <div className="-mr-2 flex md:hidden">
-                      {/* Mobile menu button */}
-                      <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                        <span className="sr-only">Open main menu</span>
-                        {open ? (
-                          <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                        ) : (
-                          <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                        </Popover>
+                      ) : null}
+                      {/* Profile dropdown */}
+                      <Menu as="div" className="relative ml-3">
+                        {({ open }) => (
+                          <>
+                            <div>
+                              <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                <span className="sr-only">Open user menu</span>
+                                <p className="h-8 w-8 rounded-full text-2xl font-black uppercase tracking-tighter text-gray-400">
+                                  {getInitials(data)}
+                                </p>
+                              </Menu.Button>
+                            </div>
+                            <Transition
+                              show={open}
+                              as={Fragment}
+                              enter="transition ease-out duration-100"
+                              enterFrom="opacity-0 scale-95"
+                              enterTo="opacity-100 scale-100"
+                              leave="transition ease-in duration-75"
+                              leaveFrom="opacity-100 scale-100"
+                              leaveTo="opacity-0 scale-95"
+                            >
+                              <Menu.Items
+                                static
+                                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                              >
+                                {profile.map((item) => (
+                                  <Menu.Item key={item.key}>
+                                    {() =>
+                                      item.clientSide ? (
+                                        <Link
+                                          key={item.key}
+                                          to={item.to}
+                                          className="block px-4 py-2 text-sm text-gray-700"
+                                        >
+                                          {item.text}
+                                        </Link>
+                                      ) : (
+                                        <a
+                                          href={item.to}
+                                          key={item.key}
+                                          className="block px-4 py-2 text-sm text-gray-700"
+                                        >
+                                          {item.text}
+                                        </a>
+                                      )
+                                    }
+                                  </Menu.Item>
+                                ))}
+                              </Menu.Items>
+                            </Transition>
+                          </>
                         )}
-                      </Disclosure.Button>
+                      </Menu>
                     </div>
-                  </>
-                ) : (
+                  </div>
                   <div className="-mr-2 flex md:hidden">
                     {/* Mobile menu button */}
                     <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
@@ -227,67 +213,79 @@ function Navigation({ authenticationStatus }) {
                       )}
                     </Disclosure.Button>
                   </div>
-                )}
-              </div>
-            </div>
-
-            <Disclosure.Panel className="md:hidden">
-              <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
-                <Links links={navigation} isAuthenticated={isAuthenticated} isElevated={isElevated} />
-              </div>
-              {isAuthenticated() ? (
-                <div className="border-t border-gray-700 pb-3 pt-4">
-                  <Popover>
-                    <div className="flex items-center px-5">
-                      <div className="shrink-0">
-                        <p className="h-10 w-10 rounded-full text-3xl font-black uppercase tracking-tighter text-gray-300">
-                          {`${data?.firstName[0]}${data?.lastName[0]}`}
-                        </p>
-                      </div>
-                      <div className="ml-3">
-                        <div className="text-base font-medium leading-none text-white">
-                          {`${data?.firstName} ${data?.lastName}`}
-                        </div>
-                        <div className="text-sm font-medium leading-none text-gray-400">{data?.email}</div>
-                      </div>
-                      <div className="ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                        {receiveNotifications() ? (
-                          <Popover.Button>
-                            <NotificationBell items={data?.notifications} status={status} error={error} />
-                          </Popover.Button>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className="mt-3 space-y-1 px-2">
-                      <Popover.Panel className="max-h-36 overflow-scroll rounded-sm bg-white">
-                        <Notifications
-                          notifications={data?.notifications}
-                          queryKey={['notifications', authInfo.id]}
-                          status={status}
-                          error={error}
-                          refetch={refetch}
-                        />
-                      </Popover.Panel>
-                    </div>
-                    <div className="mt-3 space-y-1 px-2">
-                      {profile.map((item) => (
-                        <Link
-                          key={item.key}
-                          to={item.to}
-                          className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                        >
-                          {item.text}
-                        </Link>
-                      ))}
-                    </div>
-                  </Popover>
+                </>
+              ) : (
+                <div className="-mr-2 flex md:hidden">
+                  {/* Mobile menu button */}
+                  <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                    <span className="sr-only">Open main menu</span>
+                    {open ? (
+                      <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                    ) : (
+                      <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                    )}
+                  </Disclosure.Button>
                 </div>
-              ) : null}
-            </Disclosure.Panel>
-          </>
-        )}
-      </Disclosure>
-    </div>
+              )}
+            </div>
+          </div>
+
+          <Disclosure.Panel className="md:hidden">
+            <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
+              <Links links={navigation} isAuthenticated={isAuthenticated} isElevated={isElevated} />
+            </div>
+            {isAuthenticated() ? (
+              <div className="border-t border-gray-700 pb-3 pt-4">
+                <Popover>
+                  <div className="flex items-center px-5">
+                    <div className="shrink-0">
+                      <p className="h-10 w-10 rounded-full text-3xl font-black uppercase tracking-tighter text-gray-300">
+                        {`${data?.firstName[0]}${data?.lastName[0]}`}
+                      </p>
+                    </div>
+                    <div className="ml-3">
+                      <div className="text-base font-medium leading-none text-white">
+                        {`${data?.firstName} ${data?.lastName}`}
+                      </div>
+                      <div className="text-sm font-medium leading-none text-gray-400">{data?.email}</div>
+                    </div>
+                    <div className="ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                      {receiveNotifications() ? (
+                        <Popover.Button>
+                          <NotificationBell items={data?.notifications} status={status} error={error} />
+                        </Popover.Button>
+                      ) : null}
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-1 px-2">
+                    <Popover.Panel className="max-h-36 overflow-scroll rounded-sm bg-white">
+                      <Notifications
+                        notifications={data?.notifications}
+                        queryKey={['notifications', authInfo.id]}
+                        status={status}
+                        error={error}
+                        refetch={refetch}
+                      />
+                    </Popover.Panel>
+                  </div>
+                  <div className="mt-3 space-y-1 px-2">
+                    {profile.map((item) => (
+                      <Link
+                        key={item.key}
+                        to={item.to}
+                        className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                      >
+                        {item.text}
+                      </Link>
+                    ))}
+                  </div>
+                </Popover>
+              </div>
+            ) : null}
+          </Disclosure.Panel>
+        </>
+      )}
+    </Disclosure>
   );
 }
 
