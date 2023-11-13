@@ -97,12 +97,6 @@ public static class DeleteAccount {
                     throw new ArgumentNullException(nameof(request));
                 }
 
-                _log.ForContext("input", request)
-                  .ForContext("Person", $"{account.FirstName} {account.LastName}")
-                  .Warning("Removing all account information: {utahid}", request.UtahId);
-
-                account.Delete();
-
                 // get all draft inventories
                 var draftInventories = _context.Inventories.Include(x => x.Wells).Where(x => x.Status == InventoryStatus.Incomplete && x.AccountFk == account.Id).ToList();
                 var draftInventoryIds = draftInventories.Select(x => x.Id).ToArray();
@@ -130,7 +124,7 @@ public static class DeleteAccount {
                 var emptySiteInventories = _context.Sites
                     .Include(x => x.Inventories)
                     .Include(x => x.Contacts)
-                    .Where(x => !x.Inventories.Any()).ToList();
+                    .Where(x => !x.Inventories.Any() && x.AccountFk == account.Id).ToList();
 
                 _log.ForContext("account", request.UtahId)
                     .Warning("Deleting empty sites {@ids}", emptySiteInventories.Select(x => x.Id));
@@ -150,6 +144,11 @@ public static class DeleteAccount {
 
                 _context.NotificationReceipts.RemoveRange(_context.NotificationReceipts.Where(x => x.RecipientId == account.Id));
 
+                _log.ForContext("input", request)
+                  .ForContext("Person", $"{account.FirstName} {account.LastName}")
+                  .Warning("Removing all account information: {utahid}", request.UtahId);
+
+                account.Delete();
                 // TODO! send a notification to remove site and inventory cloud storage
                 await _context.SaveChangesAsync(token);
 
