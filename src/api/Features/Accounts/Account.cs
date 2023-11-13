@@ -25,7 +25,7 @@ public class Account {
 
     internal void Delete() {
         // set every property to null except the id
-        UtahId = null;
+        UtahId = "deleted";
         FirstName = null;
         LastName = null;
         Organization = null;
