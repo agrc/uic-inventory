@@ -144,6 +144,12 @@ public static class DeleteAccount {
                 _context.Contacts.RemoveRange(emptySiteContacts);
                 _context.Sites.RemoveRange(emptySiteInventories);
 
+                // remove all notifications for account
+                _log.ForContext("account", request.UtahId)
+                    .Warning("Deleting notifications");
+
+                _context.NotificationReceipts.RemoveRange(_context.NotificationReceipts.Where(x => x.RecipientId == account.Id));
+
                 // TODO! send a notification to remove site and inventory cloud storage
                 await _context.SaveChangesAsync(token);
 
