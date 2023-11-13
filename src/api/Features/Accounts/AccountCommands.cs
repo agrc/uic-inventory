@@ -99,7 +99,9 @@ public static class DeleteAccount {
 
                 _log.ForContext("input", request)
                   .ForContext("Person", $"{account.FirstName} {account.LastName}")
-                  .Warning("Deleting account: {utahid}", request.UtahId);
+                  .Warning("Removing all account information: {utahid}", request.UtahId);
+
+                account.Delete();
 
                 // get all draft inventories
                 var draftInventories = _context.Inventories.Include(x => x.Wells).Where(x => x.Status == InventoryStatus.Incomplete && x.AccountFk == account.Id).ToList();
@@ -141,7 +143,6 @@ public static class DeleteAccount {
 
                 _context.Contacts.RemoveRange(emptySiteContacts);
                 _context.Sites.RemoveRange(emptySiteInventories);
-                _context.Accounts.Remove(account);
 
                 // TODO! send a notification to remove site and inventory cloud storage
                 await _context.SaveChangesAsync(token);

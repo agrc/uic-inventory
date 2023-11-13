@@ -22,6 +22,23 @@ public class Account {
     public ICollection<Site> Sites { get; set; } = new HashSet<Site>();
     public ICollection<Well> Wells { get; set; } = new HashSet<Well>();
     public ICollection<Inventory> Inventories { get; set; } = new HashSet<Inventory>();
+
+    internal void Delete() {
+        // set every property to null except the id
+        UtahId = null;
+        FirstName = null;
+        LastName = null;
+        Organization = null;
+        Email = null;
+        PhoneNumber = null;
+        MailingAddress = null;
+        City = null;
+        State = null;
+        ZipCode = null;
+        ReceiveNotifications = false;
+        ProfileComplete = false;
+        Access = AccessLevels.standard;
+    }
 }
 
 public enum AccessLevels {
