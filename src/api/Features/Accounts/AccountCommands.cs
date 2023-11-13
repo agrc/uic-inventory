@@ -98,45 +98,46 @@ public static class DeleteAccount {
                 }
 
                 _log.ForContext("input", request)
-                  .Warning("Deleting account for {utahid}, {first} {last}", request.UtahId, account.FirstName, account.LastName);
+                  .ForContext("Person", $"{account.FirstName} {account.LastName}")
+                  .Warning("Deleting account: {utahid}", request.UtahId);
 
                 // get all draft inventories
                 var draftInventories = _context.Inventories.Include(x => x.Wells).Where(x => x.Status == InventoryStatus.Incomplete && x.AccountFk == account.Id).ToList();
                 var draftInventoryIds = draftInventories.Select(x => x.Id).ToArray();
 
-                _log.ForContext("account", account)
+                _log.ForContext("account", request.UtahId)
                   .Warning("Deleting draft inventories {@ids}", draftInventoryIds);
 
                 // remove all wells from draft inventories
                 draftInventories.ForEach(x => _context.Wells.RemoveRange(x.Wells));
                 var wellIds = draftInventories.SelectMany(x => x.Wells).Select(x => x.Id).ToArray();
 
-                _log.ForContext("account", account)
+                _log.ForContext("account", request.UtahId)
                   .Warning("Deleting draft inventory wells {@ids}", draftInventories.SelectMany(x => x.Wells).Select(x => x.Id));
 
                 // remove all inventories with no wells
                 var emptyInventories = draftInventories.Where(x => !x.Wells.Any()).ToList();
 
-                _log.ForContext("account", account)
-                  .Warning("Deleting empty inventories {@ids}", emptyInventories);
+                _log.ForContext("account", request.UtahId)
+                  .Warning("Deleting inventories with no wells {@ids}", emptyInventories.Select(x => x.Id));
 
                 _context.Inventories.RemoveRange(emptyInventories);
                 _context.Inventories.RemoveRange(draftInventories);
 
-                // remove all sites with no well inventories
+                // remove all sites with no inventories
                 var emptySiteInventories = _context.Sites
                     .Include(x => x.Inventories)
                     .Include(x => x.Contacts)
                     .Where(x => !x.Inventories.Any()).ToList();
 
-                _log.ForContext("account", account)
-                    .Warning("Deleting empty sites {@ids}", emptySiteInventories);
+                _log.ForContext("account", request.UtahId)
+                    .Warning("Deleting empty sites {@ids}", emptySiteInventories.Select(x => x.Id));
 
                 // delete site contacts
                 var emptySiteContacts = emptySiteInventories.SelectMany(x => x.Contacts);
 
-                _log.ForContext("account", account)
-                    .Warning("Deleting empty sites {@ids}", emptySiteContacts);
+                _log.ForContext("account", request.UtahId)
+                    .Warning("Deleting empty site contacts {@ids}", emptySiteContacts.Select(x => x.Id));
 
                 _context.Contacts.RemoveRange(emptySiteContacts);
                 _context.Sites.RemoveRange(emptySiteInventories);
