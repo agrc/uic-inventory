@@ -99,10 +99,9 @@ public static class DeleteAccount {
 
                 // get all draft inventories
                 var draftInventories = _context.Inventories.Include(x => x.Wells).Where(x => x.Status == InventoryStatus.Incomplete && x.AccountFk == account.Id).ToList();
-                var draftInventoryIds = draftInventories.Select(x => x.Id).ToArray();
 
                 _log.ForContext("account", request.UtahId)
-                  .Warning("Deleting draft inventories {@ids}", draftInventoryIds);
+                  .Warning("Deleting draft inventories {@ids}", draftInventories.Select(x => x.Id));
 
                 // remove all wells from draft inventories
                 draftInventories.ForEach(x => _context.Wells.RemoveRange(x.Wells));
