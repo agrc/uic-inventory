@@ -87,8 +87,8 @@ export function Component() {
           <button onClick={open} data-style="primary" className="hover:bg-red-600 sm:col-span-6 md:col-span-2">
             Reject
           </button>
-          <button data-style="secondary" onClick={window.print} className="rounded border sm:col-span-6 md:col-span-2">
-            Print
+          <button data-style="secondary" className="rounded border sm:col-span-6 md:col-span-2">
+            Download
           </button>
           <Link
             to={`/review/site/${siteId}/inventory/${inventoryId}/authorization`}
