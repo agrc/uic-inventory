@@ -21,6 +21,7 @@ public static class GetInventoryById {
           await _context.Inventories
             .Include(x => x.Wells)
             .ThenInclude(x => x.WaterSystemContacts)
+            .AsSplitQuery()
             .SingleOrDefaultAsync(x => x.Id == message.InventoryId, cancellationToken);
     }
 }

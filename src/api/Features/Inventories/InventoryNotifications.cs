@@ -132,6 +132,7 @@ public static class InventoryNotifications {
               .Include(x => x.Wells)
               .Include(x => x.Site)
               .Include(x => x.Site.Contacts)
+              .AsSplitQuery()
               .SingleOrDefaultAsync(s => s.Id == notification.Id, token);
 
             if (entity == null) {
