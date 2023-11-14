@@ -91,33 +91,36 @@ public static class DeleteAccount {
             private readonly ILogger _log = log;
 
             public async Task<Account> Handle(Command request, CancellationToken token) {
+                using var transaction = await _context.Database.BeginTransactionAsync();
                 var account = await _context.Accounts.SingleOrDefaultAsync(x => x.UtahId == request.UtahId, token);
 
                 if (account is null) {
                     throw new ArgumentNullException(nameof(request));
                 }
 
-                // get all draft inventories
-                var draftInventories = _context.Inventories.Include(x => x.Wells).Where(x => x.Status == InventoryStatus.Incomplete && x.AccountFk == account.Id).ToList();
+                // get all draft inventories for the account
+                var incompleteInventories = _context.Inventories.Include(x => x.Wells)
+                  .Where(x => x.Status == InventoryStatus.Incomplete && x.AccountFk == account.Id).ToList();
 
                 _log.ForContext("account", request.UtahId)
-                  .Warning("Deleting draft inventories {@ids}", draftInventories.Select(x => x.Id));
+                  .Warning("Deleting draft inventories {@ids}", incompleteInventories.Select(x => x.Id));
 
                 // remove all wells from draft inventories
-                draftInventories.ForEach(x => _context.Wells.RemoveRange(x.Wells));
-                var wellIds = draftInventories.SelectMany(x => x.Wells).Select(x => x.Id).ToArray();
-
                 _log.ForContext("account", request.UtahId)
-                  .Warning("Deleting draft inventory wells {@ids}", draftInventories.SelectMany(x => x.Wells).Select(x => x.Id));
+                  .Warning("Deleting draft inventory wells {@ids}", incompleteInventories.SelectMany(x => x.Wells).Select(x => x.Id));
+
+                incompleteInventories.ForEach(x => _context.Wells.RemoveRange(x.Wells));
+                _context.SaveChanges();
 
                 // remove all inventories with no wells
-                var emptyInventories = draftInventories.Where(x => !x.Wells.Any()).ToList();
+                var inventoriesWithoutWells = incompleteInventories.Where(x => !x.Wells.Any()).ToList();
 
                 _log.ForContext("account", request.UtahId)
-                  .Warning("Deleting inventories with no wells {@ids}", emptyInventories.Select(x => x.Id));
+                  .Warning("Deleting inventories with no wells {@ids}", inventoriesWithoutWells.Select(x => x.Id));
 
-                _context.Inventories.RemoveRange(emptyInventories);
-                _context.Inventories.RemoveRange(draftInventories);
+                _context.Inventories.RemoveRange(inventoriesWithoutWells);
+                _context.Inventories.RemoveRange(incompleteInventories);
+                _context.SaveChanges();
 
                 // remove all sites with no inventories
                 var emptySiteInventories = _context.Sites
@@ -135,21 +138,27 @@ public static class DeleteAccount {
                     .Warning("Deleting empty site contacts {@ids}", emptySiteContacts.Select(x => x.Id));
 
                 _context.Contacts.RemoveRange(emptySiteContacts);
+                _context.SaveChanges();
+
                 _context.Sites.RemoveRange(emptySiteInventories);
+                _context.SaveChanges();
 
                 // remove all notifications for account
                 _log.ForContext("account", request.UtahId)
                     .Warning("Deleting notifications");
 
                 _context.NotificationReceipts.RemoveRange(_context.NotificationReceipts.Where(x => x.RecipientId == account.Id));
+                _context.SaveChanges();
 
                 _log.ForContext("input", request)
                   .ForContext("Person", $"{account.FirstName} {account.LastName}")
                   .Warning("Removing all account information: {utahid}", request.UtahId);
 
                 account.Delete();
+                _context.SaveChanges();
+
                 // TODO! send a notification to remove site and inventory cloud storage
-                await _context.SaveChangesAsync(token);
+                await transaction.CommitAsync(token);
 
                 return account;
             }
