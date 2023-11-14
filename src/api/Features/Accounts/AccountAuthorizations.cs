@@ -46,3 +46,12 @@ public class AdminUpdateAccountAuthorizer(IHttpContextAccessor context) : Abstra
         UseRequirement(new MustHaveElevatedAccount());
     }
 }
+
+public class DeleteAccountAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteAccount.Command> {
+    private readonly IHttpContextAccessor _context = context;
+
+    public override void BuildPolicy(DeleteAccount.Command request) {
+        UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustOwnAccount(request.AccountId));
+    }
+}
