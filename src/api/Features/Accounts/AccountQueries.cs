@@ -48,7 +48,10 @@ public static class GetAllAccounts {
             private readonly AppDbContext _context = context;
 
             public async Task<IReadOnlyList<Account>> Handle(Query request, CancellationToken cancellationToken) =>
-              await _context.Accounts.OrderBy(x => x.FirstName).ToListAsync(cancellationToken);
+              await _context.Accounts
+                .Where(x => x.Email != null && x.LastName != "deleted")
+                .OrderBy(x => x.FirstName)
+                .ToListAsync(cancellationToken);
         }
     }
 }

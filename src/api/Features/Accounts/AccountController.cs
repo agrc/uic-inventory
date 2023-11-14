@@ -143,11 +143,11 @@ public class AccountController(IMediator mediator, ILogger log) : ControllerBase
         }
     }
 
-    [HttpDelete("/api/account")]
+    [HttpDelete("/api/account/{id}")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult> DeleteAccount(CancellationToken token) {
+    public async Task<ActionResult> DeleteAccount(int id, CancellationToken token) {
         try {
-            await _mediator.Send(new DeleteAccount.Command(Request.HttpContext.User), token);
+            await _mediator.Send(new DeleteAccount.Command(id), token);
 
             return Accepted();
         } catch (UnauthorizedException ex) {

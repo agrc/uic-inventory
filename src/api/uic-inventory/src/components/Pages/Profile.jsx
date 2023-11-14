@@ -385,14 +385,22 @@ AccessForm.propTypes = {
 };
 const DangerZone = () => {
   const [isOpen, { open, close }] = useOpenClosed();
+  const { id } = useParams();
+  const { authInfo } = useContext(AuthContext);
+  const profileId = parseInt(id || authInfo?.id || false);
+
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
-    mutationFn: () => ky.delete('/api/account'),
+    mutationFn: () => ky.delete(`/api/account/${profileId}`),
     onSuccess: () => {
       close();
 
-      queryClient.clear();
-      window.location.href = '/api/logout';
+      if (!id) {
+        queryClient.clear();
+        window.location.href = '/api/logout';
+      } else {
+        window.location.href = '/';
+      }
     },
     onError: (error) => onRequestError(error, 'We had some trouble deleting your account.'),
   });

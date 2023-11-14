@@ -15,6 +15,8 @@ public class MustHaveElevatedAccount : IAuthorizationRequirement {
                 return AuthorizationResult.Succeed();
             }
 
+            await Task.FromResult(0);
+
             _log.ForContext("accessed by", _metadata.Account)
                .Warning("access to elevated item not permitted");
 
