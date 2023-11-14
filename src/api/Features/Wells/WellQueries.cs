@@ -12,8 +12,8 @@ public static class GetWellById {
         public int WellId { get; } = wellId;
         public int InventoryId { get; } = inventoryId;
     }
-    public class Handler(IAppDbContext context, ILogger log) : IRequestHandler<Query, Well> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, ILogger log) : IRequestHandler<Query, Well> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         public async Task<Well> Handle(Query message, CancellationToken cancellationToken) {

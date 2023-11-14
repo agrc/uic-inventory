@@ -11,10 +11,10 @@ namespace api.Infrastructure;
 public class MustHaveCompleteInventory(int inventoryId) : IAuthorizationRequirement {
     public int InventoryId { get; } = inventoryId;
 
-    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveCompleteInventory> {
+    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveCompleteInventory> {
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
 
         public async Task<AuthorizationResult> Handle(
           MustHaveCompleteInventory requirement,

@@ -8,9 +8,9 @@ using Serilog;
 namespace api.Infrastructure;
 public class MustHaveAccount(ClaimsPrincipal user) : IAuthorizationRequirement {
     public ClaimsPrincipal? User { get; } = user;
-    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveAccount> {
+    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveAccount> {
         private readonly ILogger _log = log;
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly HasRequestMetadata _metadata = metadata;
 
         public async Task<AuthorizationResult> Handle(

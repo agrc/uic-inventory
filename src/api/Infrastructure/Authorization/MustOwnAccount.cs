@@ -9,9 +9,9 @@ namespace api.Infrastructure;
 public class MustOwnAccount(int id) : IAuthorizationRequirement {
     public int AccountId { get; } = id;
 
-    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnAccount> {
+    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnAccount> {
         private readonly ILogger _log = log;
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly HasRequestMetadata _metadata = metadata;
 
         public async Task<AuthorizationResult> Handle(

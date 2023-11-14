@@ -16,8 +16,8 @@ public static class CreateInventory {
         public int SubClass { get; init; } = input.SubClass;
         public DateTime? CreatedOn { get; } = DateTime.UtcNow;
     }
-    public class Handler(IAppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command, Inventory> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command, Inventory> {
+        private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
 
@@ -54,8 +54,8 @@ public static class UpdateInventory {
         public string? Flagged { get; set; } = input.Flagged;
         public int? OrderNumber { get; set; } = input.OrderNumber;
     }
-    public class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Command, Inventory> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Command, Inventory> {
+        private readonly AppDbContext _context = context;
         private readonly HasRequestMetadata _metadata = metadata;
         private readonly ILogger _log = log;
 
@@ -104,11 +104,11 @@ public static class SubmitInventory {
         public string Signature { get; set; } = input.Signature;
     }
 
-    public class Handler(IAppDbContext context,
+    public class Handler(AppDbContext context,
             IPublisher publisher,
             HasRequestMetadata metadata,
             ILogger log) : IRequestHandler<Command> {
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;
@@ -148,8 +148,8 @@ public static class DeleteInventory {
         public int InventoryId { get; set; } = input.InventoryId;
     }
 
-    public class Handler(IAppDbContext context, ILogger log, IPublisher publisher) : IRequestHandler<Command> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, ILogger log, IPublisher publisher) : IRequestHandler<Command> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
         private readonly IPublisher _publisher = publisher;
 
@@ -178,11 +178,11 @@ public static class RejectInventory {
         public int InventoryId { get; set; } = input.InventoryId;
     }
 
-    public class Handler(IAppDbContext context,
+    public class Handler(AppDbContext context,
             IPublisher publisher,
             HasRequestMetadata metadata,
             ILogger log) : IRequestHandler<Command> {
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;

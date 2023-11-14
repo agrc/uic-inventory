@@ -15,9 +15,9 @@ public static class UpdateAccount {
     }
 
     public class Handler(
-      IAppDbContext context,
+      AppDbContext context,
       ILogger log) : IRequestHandler<Command, Account> {
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         public async Task<Account> Handle(Command request, CancellationToken token) {
@@ -41,10 +41,10 @@ public static class AdminUpdateAccount {
     }
 
     public class Handler(
-      IAppDbContext context,
+      AppDbContext context,
       IPublisher publisher,
       ILogger log) : IRequestHandler<Command, Account> {
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
         private readonly IPublisher _publisher = publisher;
 
@@ -85,9 +85,9 @@ public static class DeleteAccount {
         public string UtahId { get; }
 
         public class Handler(
-          IAppDbContext context,
+          AppDbContext context,
           ILogger log) : IRequestHandler<Command, Account> {
-            private readonly IAppDbContext _context = context;
+            private readonly AppDbContext _context = context;
             private readonly ILogger _log = log;
 
             public async Task<Account> Handle(Command request, CancellationToken token) {

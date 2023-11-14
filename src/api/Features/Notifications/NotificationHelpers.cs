@@ -6,7 +6,7 @@ using api.Infrastructure;
 namespace api.Features;
 
 public static class NotificationHelpers {
-    public static Notification CreateBasicNotification(IAppDbContext context, NotificationTypes notificationType) {
+    public static Notification CreateBasicNotification(AppDbContext context, NotificationTypes notificationType) {
         var ids = context.Accounts.Where(x => x.ReceiveNotifications == true).Select(x => x.Id);
         var recipients = new List<NotificationReceipt>();
 

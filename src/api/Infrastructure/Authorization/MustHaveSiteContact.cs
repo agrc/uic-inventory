@@ -14,9 +14,9 @@ public static class RequiredContactTypes {
 public class MustHaveSiteContact : IAuthorizationRequirement {
     public int SiteId { get; set; }
 
-    private class Handler(IAppDbContext context, ILogger log) : IAuthorizationHandler<MustHaveSiteContact> {
+    private class Handler(AppDbContext context, ILogger log) : IAuthorizationHandler<MustHaveSiteContact> {
         private readonly ILogger _log = log;
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
 
         public async Task<AuthorizationResult> Handle(
           MustHaveSiteContact requirement,

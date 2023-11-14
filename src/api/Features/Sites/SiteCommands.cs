@@ -15,8 +15,8 @@ public static class CreateSite {
         public string? Naics { get; init; } = input.NaicsPrimary;
         public string? NaicsTitle { get; init; } = input.NaicsTitle;
     }
-    public class Handler(IAppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command, Site> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command, Site> {
+        private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
 
@@ -50,8 +50,8 @@ public static class UpdateSite {
         public SiteInput Site { get; } = input;
     }
 
-    public class Handler(IAppDbContext context, HasRequestMetadata metadata, ISiteIdService siteIdService, IPublisher publisher, ILogger log) : IRequestHandler<Command, Site> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, HasRequestMetadata metadata, ISiteIdService siteIdService, IPublisher publisher, ILogger log) : IRequestHandler<Command, Site> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;
         private readonly IPublisher _publisher = publisher;
@@ -84,8 +84,8 @@ public static class DeleteSite {
         public string? Geometry { get; set; }
     }
 
-    public class Handler(IAppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
         private readonly IPublisher _publisher = publisher;
 

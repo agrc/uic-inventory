@@ -9,9 +9,9 @@ using Serilog;
 namespace api.Features;
 public static class GetNotifications {
     public class Query : IRequest<ProfileNotificationPayload> {
-        public class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Query, ProfileNotificationPayload> {
+        public class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Query, ProfileNotificationPayload> {
             private readonly ILogger _log = log;
-            private readonly IAppDbContext _context = context;
+            private readonly AppDbContext _context = context;
             private readonly HasRequestMetadata _metadata = metadata;
 
             public async Task<ProfileNotificationPayload> Handle(Query request, CancellationToken token) {

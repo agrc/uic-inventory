@@ -12,10 +12,10 @@ public static class GetSiteContacts {
     public int SiteId { get; } = siteId;
 
     public class Handler(
-      IAppDbContext context,
+      AppDbContext context,
       HasRequestMetadata metadata,
       ILogger log) : IRequestHandler<Query, SiteContactPayload> {
-      private readonly IAppDbContext _context = context;
+      private readonly AppDbContext _context = context;
       private readonly HasRequestMetadata _metadata = metadata;
       private readonly ILogger _log = log;
 

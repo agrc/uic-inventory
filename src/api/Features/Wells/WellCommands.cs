@@ -16,11 +16,11 @@ public static class CreateWell {
         public WellInput Input { get; } = input;
     }
     public class Handler(
-      IAppDbContext context,
+      AppDbContext context,
       IPublisher publisher,
       HasRequestMetadata metadata,
       ILogger log) : IRequestHandler<Command, Well> {
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;
@@ -69,10 +69,10 @@ public static class UpdateWell {
     }
 
     public class Handler(
-      IAppDbContext context,
+      AppDbContext context,
       IPublisher publisher,
       ILogger log) : IRequestHandler<Command, Well> {
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
 
@@ -107,14 +107,14 @@ public static class UpdateWellDetails {
     }
 
     public class Handler(
-      IAppDbContext context,
+      AppDbContext context,
       IPublisher publisher,
       IConfiguration configuration,
       ICloudFileNamer fileNamer,
       CloudStorageService cloudService,
       ILogger log) : IRequestHandler<Command, Well> {
         private readonly string[] _acceptableFileTypes = ["pdf"];
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
         private readonly string _bucket = configuration.GetValue<string>("UPLOAD_BUCKET") ?? string.Empty;
@@ -228,8 +228,8 @@ public static class DeleteWell {
         public int WellId { get; set; } = input.WellId;
     }
 
-    public class Handler(IAppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command> {
+        private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
 

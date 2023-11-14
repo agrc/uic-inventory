@@ -59,8 +59,8 @@ public static class InventoryNotifications {
         public int SiteId { get; set; }
     }
 
-    public class EditNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<EditNotification> {
-        private readonly IAppDbContext _context = context;
+    public class EditNotificationHandler(AppDbContext context, ILogger log) : INotificationHandler<EditNotification> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         private static bool GetWellContactStatus(Inventory entity) {
@@ -153,8 +153,8 @@ public static class InventoryNotifications {
             await _context.SaveChangesAsync(token);
         }
     }
-    public class CreateSubmissionNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<SubmitNotification> {
-        private readonly IAppDbContext _context = context;
+    public class CreateSubmissionNotificationHandler(AppDbContext context, ILogger log) : INotificationHandler<SubmitNotification> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         private Notification CreateNotifications(SubmitNotification metadata) {
@@ -314,7 +314,7 @@ public static class InventoryNotifications {
             await _client.RemoveObjectsAsync(_bucket, $"site_{notification.SiteId}/inventory_{notification.InventoryId}/", token);
         }
     }
-    public class GroundWaterProtectionsHandler(IHttpClientFactory clientFactory, IAppDbContext context, IWaterSystemContactService service, ILogger log) : INotificationHandler<SubmitNotification> {
+    public class GroundWaterProtectionsHandler(IHttpClientFactory clientFactory, AppDbContext context, IWaterSystemContactService service, ILogger log) : INotificationHandler<SubmitNotification> {
         public record ProtectionResult(int WellId, string Service, bool Intersects, IReadOnlyList<ArcGisRestFeatureWell> Features);
         public record ProtectionQuery(int WellId, string Service, string Url);
         public record Protections(bool Aquifers, bool GroundWater);
@@ -323,7 +323,7 @@ public static class InventoryNotifications {
         private const string GroundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0";
         private readonly HttpClient _client = clientFactory.CreateClient("esri");
         private readonly IWaterSystemContactService _service = service;
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         public async Task Handle(SubmitNotification notification, CancellationToken token) {

@@ -9,9 +9,9 @@ namespace api.Infrastructure;
 public class MustOwnInventory(int id) : IAuthorizationRequirement {
     public int InventoryId { get; } = id;
 
-    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnInventory> {
+    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnInventory> {
         private readonly ILogger _log = log;
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly HasRequestMetadata _metadata = metadata;
 
         public async Task<AuthorizationResult> Handle(

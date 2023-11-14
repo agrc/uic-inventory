@@ -13,8 +13,8 @@ public static class GetInventoryById {
         public int SiteId { get; init; } = siteId;
         public int InventoryId { get; } = wellId;
     }
-    public class Handler(IAppDbContext context, ILogger log) : IRequestHandler<Query, Inventory?> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, ILogger log) : IRequestHandler<Query, Inventory?> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         public async Task<Inventory?> Handle(Query message, CancellationToken cancellationToken) =>
@@ -30,8 +30,8 @@ public static class GetInventoriesBySite {
         public int SiteId { get; } = siteId;
     }
 
-    public class Handler(IAppDbContext context, ILogger log) : IRequestHandler<Query, IEnumerable<Inventory>> {
-        private readonly IAppDbContext _context = context;
+    public class Handler(AppDbContext context, ILogger log) : IRequestHandler<Query, IEnumerable<Inventory>> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         public async Task<IEnumerable<Inventory>> Handle(Query message, CancellationToken cancellationToken) =>

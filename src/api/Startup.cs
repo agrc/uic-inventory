@@ -61,8 +61,6 @@ public class Startup(IConfiguration configuration) {
             .UseNpgsql(dataSource)
             .UseSnakeCaseNamingConvention());
 
-        services.AddScoped<IAppDbContext, AppDbContext>();
-
         var redis = Configuration.GetSection("Redis").Get<RedisOptions>();
 
         ArgumentException.ThrowIfNullOrEmpty(redis?.Configuration, "UtahId:Redis:Configuration");

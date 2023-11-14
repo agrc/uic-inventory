@@ -8,9 +8,9 @@ namespace api.Infrastructure;
 public class MustOwnNotification(int id) : IAuthorizationRequirement {
     public int NotificationId { get; set; } = id;
 
-    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnNotification> {
+    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnNotification> {
         private readonly ILogger _log = log;
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly HasRequestMetadata _metadata = metadata;
 
         public async Task<AuthorizationResult> Handle(

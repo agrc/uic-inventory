@@ -16,8 +16,8 @@ public static class AccountNotifications {
         public NotificationTypes NotificationType { get; set; }
     }
 
-    public class AccountCreationNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<AccountNotification> {
-        private readonly IAppDbContext _context = context;
+    public class AccountCreationNotificationHandler(AppDbContext context, ILogger log) : INotificationHandler<AccountNotification> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         private Notification CreateNotifications(AccountNotification metadata) {
@@ -41,8 +41,8 @@ public static class AccountNotifications {
         }
     }
 
-    public class AdminCreationNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<AdminAccountNotification> {
-        private readonly IAppDbContext _context = context;
+    public class AdminCreationNotificationHandler(AppDbContext context, ILogger log) : INotificationHandler<AdminAccountNotification> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         private Notification CreateNotifications(AdminAccountNotification metadata) {

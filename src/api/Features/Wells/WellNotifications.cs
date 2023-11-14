@@ -41,8 +41,8 @@ public static class WellNotifications {
         public NotificationTypes NotificationType { get; } = NotificationTypes.approved_well_status_edit;
     }
 
-    public class WellCreationNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<WellCreationNotification> {
-        private readonly IAppDbContext _context = context;
+    public class WellCreationNotificationHandler(AppDbContext context, ILogger log) : INotificationHandler<WellCreationNotification> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         private Notification CreateNotifications(WellCreationNotification metadata) {
@@ -75,8 +75,8 @@ public static class WellNotifications {
             await _context.SaveChangesAsync(cancellationToken);
         }
     }
-    public class WellStatusEditNotificationHandler(IAppDbContext context, ILogger log) : INotificationHandler<WellStatusEditNotification> {
-        private readonly IAppDbContext _context = context;
+    public class WellStatusEditNotificationHandler(AppDbContext context, ILogger log) : INotificationHandler<WellStatusEditNotification> {
+        private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
         private Notification CreateNotifications(WellStatusEditNotification metadata) {

@@ -9,9 +9,9 @@ namespace api.Infrastructure;
 public class MustOwnWell(int id) : IAuthorizationRequirement {
     public int WellId { get; } = id;
 
-    private class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnWell> {
+    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustOwnWell> {
         private readonly ILogger _log = log;
-        private readonly IAppDbContext _context = context;
+        private readonly AppDbContext _context = context;
         private readonly HasRequestMetadata _metadata = metadata;
 
         public async Task<AuthorizationResult> Handle(

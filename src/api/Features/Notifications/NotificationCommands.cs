@@ -10,9 +10,9 @@ public static class UpdateNotification {
     public class Command(NotificationInput input) : IRequest<NotificationMutationPayload> {
         public NotificationInput Input { get; } = input;
 
-        public class Handler(IAppDbContext context, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Command, NotificationMutationPayload> {
+        public class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Command, NotificationMutationPayload> {
             private readonly ILogger _log = log;
-            private readonly IAppDbContext _context = context;
+            private readonly AppDbContext _context = context;
             private readonly HasRequestMetadata _metadata = metadata;
 
             public async Task<NotificationMutationPayload> Handle(Command request, CancellationToken token) {
