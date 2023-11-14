@@ -119,6 +119,7 @@ public static class DeleteAccount {
                 var emptySiteInventories = _context.Sites
                     .Include(x => x.Inventories)
                     .Include(x => x.Contacts)
+                    .AsSplitQuery()
                     .Where(x => !x.Inventories.Any() && x.AccountFk == account.Id).ToList();
 
                 _log.ForContext("account", request.AccountId)
