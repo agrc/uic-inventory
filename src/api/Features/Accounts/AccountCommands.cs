@@ -95,11 +95,11 @@ public static class DeleteAccount {
                 var incompleteInventories = _context.Inventories.Include(x => x.Wells)
                   .Where(x => x.Status == InventoryStatus.Incomplete && x.AccountFk == account.Id).ToList();
 
-                _log.ForContext("account", request.AccountId)
+                _log.ForContext("account", account.UtahId)
                   .Warning("Deleting draft inventories {@ids}", incompleteInventories.Select(x => x.Id));
 
                 // remove all wells from draft inventories
-                _log.ForContext("account", request.AccountId)
+                _log.ForContext("account", account.UtahId)
                   .Warning("Deleting draft inventory wells {@ids}", incompleteInventories.SelectMany(x => x.Wells).Select(x => x.Id));
 
                 incompleteInventories.ForEach(x => _context.Wells.RemoveRange(x.Wells));
@@ -108,7 +108,7 @@ public static class DeleteAccount {
                 // remove all inventories with no wells
                 var inventoriesWithoutWells = incompleteInventories.Where(x => !x.Wells.Any()).ToList();
 
-                _log.ForContext("account", request.AccountId)
+                _log.ForContext("account", account.UtahId)
                   .Warning("Deleting inventories with no wells {@ids}", inventoriesWithoutWells.Select(x => x.Id));
 
                 _context.Inventories.RemoveRange(inventoriesWithoutWells);
@@ -122,13 +122,13 @@ public static class DeleteAccount {
                     .AsSplitQuery()
                     .Where(x => !x.Inventories.Any() && x.AccountFk == account.Id).ToList();
 
-                _log.ForContext("account", request.AccountId)
+                _log.ForContext("account", account.UtahId)
                     .Warning("Deleting empty sites {@ids}", emptySiteInventories.Select(x => x.Id));
 
                 // delete site contacts
                 var emptySiteContacts = emptySiteInventories.SelectMany(x => x.Contacts);
 
-                _log.ForContext("account", request.AccountId)
+                _log.ForContext("account", account.UtahId)
                     .Warning("Deleting empty site contacts {@ids}", emptySiteContacts.Select(x => x.Id));
 
                 _context.Contacts.RemoveRange(emptySiteContacts);
@@ -138,7 +138,7 @@ public static class DeleteAccount {
                 _context.SaveChanges();
 
                 // remove all notifications for account
-                _log.ForContext("account", request.AccountId)
+                _log.ForContext("account", account.UtahId)
                     .Warning("Deleting notifications");
 
                 _context.NotificationReceipts.RemoveRange(_context.NotificationReceipts.Where(x => x.RecipientId == account.Id));
@@ -146,7 +146,7 @@ public static class DeleteAccount {
 
                 _log.ForContext("input", request)
                   .ForContext("Person", $"{account.FirstName} {account.LastName}")
-                  .Warning("Removing all account information: {utahid}", request.AccountId);
+                  .Warning("Removing all account information: {utahid}", account.UtahId);
 
                 account.Delete();
                 _context.SaveChanges();
