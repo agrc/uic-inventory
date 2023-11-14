@@ -425,7 +425,7 @@ const DangerZone = () => {
         heading="Danger Zone"
         subtext="Once you delete your account, there is no going back. Please be certain."
         submit={true}
-        submitLabel="Delete my account"
+        submitLabel={!id ? 'Delete my account' : 'Delete this account'}
         // disabled={!isDirty}
       >
         <p className="font-semibold">
