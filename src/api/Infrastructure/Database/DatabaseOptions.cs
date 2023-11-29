@@ -8,4 +8,7 @@ public class DatabaseOptions {
 
     public string ConnectionString =>
         $"Host={Host};Port={Port};Username={Username};Password={Password};Database={Db};Enlist=false";
+
+    public string SqlServerConnectionString =>
+        $"Data Source={Host},{Port};Initial Catalog={Db};User Id={Username};Password={Password};Encrypt=false";
 }
