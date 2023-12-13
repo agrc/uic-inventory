@@ -1,0 +1,21 @@
+{
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "cloud functions to support the UIC application",
+  "type": "module",
+  "main": "report.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@arcgis/core": "^4.28.10",
+    "@google-cloud/functions-framework": "^3.3.0",
+    "base64-stream": "^1.0.0",
+    "ky": "^1.1.3",
+    "lodash.startcase": "^4.4.0",
+    "pdf-lib": "^1.17.1",
+    "pdfmake": "^0.2.8"
+  }
+}
