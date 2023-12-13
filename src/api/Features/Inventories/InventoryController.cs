@@ -181,4 +181,28 @@ public class InventoryController(IMediator mediator, HasRequestMetadata requestM
             return StatusCode(500, new InventoryPayload(ex));
         }
     }
+
+    [HttpPost("/api/inventory/download")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult> DownloadInventoryAsync(InventoryDeletionInput input, CancellationToken token) {
+        try {
+            var result = await _mediator.Send(new DownloadInventory.Command(input), token);
+
+            return File(await result.ReadAsByteArrayAsync(token), "application/pdf", $"site{input.SiteId}-inventory{input.InventoryId}.pdf");
+            // return Ok(result);
+        } catch (UnauthorizedException ex) {
+            _log.ForContext("endpoint", "POST:api/inventory/download")
+              .ForContext("input", input)
+              .ForContext("requirement", ex.Message)
+              .Warning("DownloadInventoryAsync requirements failure");
+
+            return Unauthorized(new InventoryPayload(ex));
+        } catch (Exception ex) {
+            _log.ForContext("endpoint", "POST:api/inventory/download")
+              .ForContext("input", input)
+              .Fatal(ex, "Unhandled exception");
+
+            return StatusCode(500, new InventoryPayload(ex));
+        }
+    }
 }

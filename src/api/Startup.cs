@@ -82,9 +82,16 @@ public class Startup(IConfiguration configuration) {
               });
         });
 
-        var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(10);
+        var quickTimeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(10);
+        var longTimeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(90);
+
         services.AddHttpClient("esri")
-          .AddPolicyHandler(timeoutPolicy)
+          .AddPolicyHandler(quickTimeoutPolicy)
+          .AddTransientHttpErrorPolicy(policyBuilder =>
+            policyBuilder.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600)));
+
+        services.AddHttpClient("google")
+          .AddPolicyHandler(longTimeoutPolicy)
           .AddTransientHttpErrorPolicy(policyBuilder =>
             policyBuilder.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600)));
 

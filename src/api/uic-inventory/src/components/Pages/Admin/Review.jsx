@@ -1,4 +1,5 @@
 import { Dialog } from '@headlessui/react';
+import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
@@ -57,6 +58,27 @@ export function Component() {
     onError: (error) => onRequestError(error, 'We had some trouble rejecting this inventory.'),
   });
 
+  const { mutate: generate, status } = useMutation({
+    mutationFn: (json) => ky.post(`/api/inventory/download`, { json, timeout: 90000 }),
+    onSuccess: async (data) => {
+      console.log(data);
+      const blob = await data.blob();
+
+      const url = URL.createObjectURL(blob);
+      window.open(url);
+      URL.revokeObjectURL(url);
+    },
+  });
+
+  const download = () => {
+    const input = {
+      siteId: parseInt(siteId),
+      inventoryId: parseInt(inventoryId),
+    };
+
+    generate(input);
+  };
+
   const reject = () => {
     const input = {
       accountId: parseInt(authInfo.id),
@@ -87,7 +109,28 @@ export function Component() {
           <button onClick={open} data-style="primary" className="hover:bg-red-600 sm:col-span-6 md:col-span-2">
             Reject
           </button>
-          <button data-style="secondary" className="rounded border sm:col-span-6 md:col-span-2">
+          <button
+            onClick={download}
+            data-style="secondary"
+            className="rounded border sm:col-span-6 md:col-span-2"
+            disabled={status === 'pending'}
+          >
+            {status === 'pending' && (
+              <svg
+                className="-ml-1 mr-2 h-5 w-5 animate-spin motion-reduce:hidden"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            )}
+            {status === 'error' && <ExclamationCircleIcon className="-ml-1 mr-2 h-5 w-5 text-red-500" />}
             Download
           </button>
           <Link

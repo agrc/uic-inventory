@@ -34,6 +34,7 @@
     <PackageReference Include="Serilog.Sinks.GoogleCloudLogging" />
     <PackageReference Include="System.Text.Encoding.CodePages" />
     <PackageReference Include="Google.Cloud.Storage.V1" />
+    <PackageReference Include="Google.Apis.Auth" />
     <PackageReference Include="SendGrid" />
     <PackageReference Include="SendGrid.Extensions.DependencyInjection" />
   </ItemGroup>

@@ -1,10 +1,17 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
+using Google.Apis.Auth.OAuth2;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Net.Http.Headers;
 using Serilog;
 
 namespace api.Features;
@@ -216,6 +223,51 @@ public static class RejectInventory {
             await _publisher.Publish(new InventoryNotifications.DeleteNotification(inventory), cancellationToken);
 
             return;
+        }
+    }
+}
+public static class DownloadInventory {
+    public class Command(InventoryDeletionInput input) : IRequest<HttpContent> {
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; set; } = input.InventoryId;
+    }
+
+    public record ReportPayload(InventoryPayload inventory, IEnumerable<ContactPayload> contacts);
+    public class Handler(AppDbContext context, IHttpClientFactory clientFactory, IConfiguration configuration, ILogger log) : IRequestHandler<Command, HttpContent> {
+        private readonly ILogger _log = log;
+        private readonly AppDbContext _context = context;
+        private readonly HttpClient _client = clientFactory.CreateClient("google");
+        private readonly string _functionUrl = configuration.GetSection("ReportFunction").GetValue<string>("Url") ?? string.Empty;
+
+        public async Task<HttpContent> Handle(Command request, CancellationToken cancellationToken) {
+            _log.ForContext("input", request)
+              .Debug("Downloading inventory");
+
+            var site = await _context.Sites
+                .Include(c => c.Contacts)
+                .Include(x => x.Inventories.Where(i => i.Id == request.InventoryId))
+                .ThenInclude(x => x.Wells)
+                .AsSplitQuery()
+                .Where(s => s.Id == request.SiteId)
+                .SingleAsync(cancellationToken);
+
+            var payload = new ReportPayload(new InventoryPayload(site.Inventories.Single(), site), site.Contacts.Select(x => new ContactPayload(x)));
+
+            _log.Debug("Requesting Application Default Credentials");
+
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development") {
+                var credential = await GoogleCredential.GetApplicationDefaultAsync(cancellationToken);
+                var oidcToken = await credential.GetOidcTokenAsync(OidcTokenOptions.FromTargetAudience(_functionUrl), cancellationToken);
+                var idToken = await oidcToken.GetAccessTokenAsync(cancellationToken);
+
+                _client.DefaultRequestHeaders.Add(HeaderNames.Authorization, $"Bearer {idToken}");
+            }
+
+            var response = await _client.PostAsJsonAsync(_functionUrl, payload, cancellationToken);
+
+            response.EnsureSuccessStatusCode();
+
+            return response.Content;
         }
     }
 }

@@ -79,3 +79,12 @@ public class RejectInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
         UseRequirement(new MustHaveElevatedAccount());
     }
 }
+
+public class DownloadInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DownloadInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
+
+    public override void BuildPolicy(DownloadInventory.Command request) {
+        UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustHaveElevatedAccount());
+    }
+}

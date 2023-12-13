@@ -35,6 +35,7 @@
 
     <!-- Cloud -->
     <PackageReference Update="Google.Cloud.Storage.V1" Version="4.7.0" />
+    <PackageReference Update="Google.Apis.Auth" Version ="1.64.0" />
 
     <!-- Email -->
     <PackageReference Update="SendGrid" Version="9.28.1" />
