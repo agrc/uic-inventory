@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -232,7 +231,7 @@ public static class DownloadInventory {
         public int InventoryId { get; set; } = input.InventoryId;
     }
 
-    public record ReportPayload(InventoryPayload inventory, IEnumerable<ContactPayload> contacts);
+    public record ReportPayload(InventoryPayload inventory, IEnumerable<ContactPayload> contacts, IEnumerable<string> cloudFiles);
     public class Handler(AppDbContext context, IHttpClientFactory clientFactory, IConfiguration configuration, ILogger log) : IRequestHandler<Command, HttpContent> {
         private readonly ILogger _log = log;
         private readonly AppDbContext _context = context;
@@ -251,7 +250,21 @@ public static class DownloadInventory {
                 .Where(s => s.Id == request.SiteId)
                 .SingleAsync(cancellationToken);
 
-            var payload = new ReportPayload(new InventoryPayload(site.Inventories.Single(), site), site.Contacts.Select(x => new ContactPayload(x)));
+            var inventoryPayload = new InventoryPayload(site.Inventories.Single(), site);
+
+            string decodeFile(string details) {
+                var wellRange = details[6..details.IndexOf('_')];
+
+                return GetWellFiles.DecodeFilePath(site.Id, inventoryPayload.Id, wellRange, details[(details.IndexOf('_') + 1)..]).Item2;
+            }
+
+            var cloudFiles = inventoryPayload.Wells
+                .SelectMany(well => new[] { well.ConstructionDetails, well.InjectateCharacterization, well.HydrogeologicCharacterization })
+                .Where(details => (details ?? "").StartsWith("file::"))
+                .Select(details => decodeFile(details!))
+                .Distinct();
+
+            var payload = new ReportPayload(inventoryPayload, site.Contacts.Select(x => new ContactPayload(x)), cloudFiles);
 
             _log.Debug("Requesting Application Default Credentials");
 
