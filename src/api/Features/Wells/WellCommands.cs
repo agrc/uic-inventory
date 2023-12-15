@@ -261,6 +261,15 @@ public static class GetWellFiles {
         public string? WellIdRange { get; set; } = input.WellIdRange;
     }
 
+    public static Tuple<string, string> DecodeFilePath(int siteId, int inventoryId, string? wellRange, string fileName) {
+        var prefix = $"site_{siteId}/inventory_{inventoryId}/well_{wellRange}";
+        var parts = fileName.Split('.');
+        var type = parts[0].ToLower();
+        var path = $"{prefix}/{type}";
+
+        return new(prefix, path);
+    }
+
     public class Handler(IConfiguration configuration, CloudStorageService service, ILogger log) : IRequestHandler<Command, Stream> {
         private readonly string _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
         private readonly ILogger _log = log;
@@ -274,10 +283,7 @@ public static class GetWellFiles {
                 throw new ArgumentNullException(request.File, "Invalid url");
             }
 
-            var prefix = $"site_{request.SiteId}/inventory_{request.InventoryId}/well_{request.WellIdRange}";
-            var parts = request.File.Split('.');
-            var type = parts[0].ToLower();
-            var match = $"{prefix}/{type}";
+            var (prefix, match) = DecodeFilePath(request.SiteId, request.InventoryId, request.WellIdRange, request.File);
 
             var stream = await _client.DownloadObjectAsync(_bucket, prefix, match, cancellationToken) ?? throw new FileNotFoundException("If this file was just uploaded it is being scanned for malware. " +
                   "Please try again in a few moments. Otherwise, the upload was either flagged as malware and removed " +
