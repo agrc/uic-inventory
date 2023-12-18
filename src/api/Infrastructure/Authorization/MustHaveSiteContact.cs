@@ -29,7 +29,7 @@ public class MustHaveSiteContact : IAuthorizationRequirement {
                 return AuthorizationResult.Fail("SC01:This site is missing a contact.");
             }
 
-            var contactTypes = site.Contacts.Select(x => x.ContactType).ToList() ?? new();
+            var contactTypes = site.Contacts.Select(x => x.ContactType).ToList() ?? [];
 
             if (!RequiredContactTypes.Types.Any(x => contactTypes.Contains(x))) {
                 return AuthorizationResult.Fail("SC02:This site is missing a contact of the type owner, operator or legal representative.");

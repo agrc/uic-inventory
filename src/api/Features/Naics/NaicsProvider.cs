@@ -8,8 +8,8 @@ using Serilog;
 
 namespace api.Features;
 public class NaicsProvider {
-    public List<NaicsModel> NaicsCodes { get; set; } = new List<NaicsModel>();
-    public List<NaicsModel> AllNaicsCodes { get; set; } = new List<NaicsModel>();
+    public List<NaicsModel> NaicsCodes { get; set; } = [];
+    public List<NaicsModel> AllNaicsCodes { get; set; } = [];
     private readonly string _allNaicsPath;
     private readonly string _twoDigitCodesPath;
     private readonly int _codeColumn = 1;

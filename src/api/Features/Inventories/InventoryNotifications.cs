@@ -41,7 +41,7 @@ public static class InventoryNotifications {
             Site = site;
             Account = account;
             Contacts = contacts?.Where(x => !string.IsNullOrEmpty(x))
-              .Select(c => new EmailAddress(c)).ToList() ?? new List<EmailAddress>(0);
+              .Select(c => new EmailAddress(c)).ToList() ?? [];
         }
 
         public Inventory Inventory { get; }
@@ -371,7 +371,7 @@ public static class InventoryNotifications {
                   $"{GroundWaterFeatureServiceUrl}/query?{gwzQueryString}")
                 );
 
-                queryResults[well.Id] = new List<ProtectionResult>();
+                queryResults[well.Id] = [];
             }
 
             var options = new JsonSerializerOptions {

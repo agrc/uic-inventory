@@ -78,7 +78,7 @@ public class NotificationPayload {
         ReadAt = receipt.ReadAt;
         NotificationType = notification.NotificationType ?? NotificationTypes.new_user_account_registration;
         Url = notification.Url ?? "#";
-        AdditionalData = notification.AdditionalData ?? new Dictionary<string, object>();
+        AdditionalData = notification.AdditionalData ?? [];
         Deleted = receipt.DeletedAt.HasValue;
 
         foreach (var key in AdditionalData.Keys) {
