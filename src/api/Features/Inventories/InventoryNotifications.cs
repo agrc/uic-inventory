@@ -320,7 +320,7 @@ public static class InventoryNotifications {
         public record Protections(bool Aquifers, bool GroundWater);
 
         private const string AquiferRechargeDischargeAreas = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Aquifer_RechargeDischargeAreas/FeatureServer/0";
-        private const string GroundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0";
+        private const string GroundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/4";
         private readonly HttpClient _client = clientFactory.CreateClient("esri");
         private readonly IWaterSystemContactService _service = service;
         private readonly AppDbContext _context = context;

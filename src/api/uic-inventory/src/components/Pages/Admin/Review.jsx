@@ -503,7 +503,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
   const mapDiv = useRef();
   const groundWaterProtectionZones = useRef(
     new FeatureLayer({
-      url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/0',
+      url: 'https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/4',
       opacity: 0.25,
     }),
   );
