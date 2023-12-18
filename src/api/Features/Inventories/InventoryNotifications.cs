@@ -385,8 +385,8 @@ public static class InventoryNotifications {
                 var queryResult = await JsonSerializer.DeserializeAsync<WellEsriQueryResponse>(content, options, cancellationToken: token);
 
                 if (queryResult is null || queryResult?.IsSuccessful != true) {
-                    _log.ForContext("queryResult", queryResult)
-                      .Error("Failed to query {id} for water protection intersections", item.WellId);
+                    _log.ForContext("queryResult", queryResult?.Error)
+                      .Error("Failed to query well {id} for water protection intersections {@error}", item.WellId, queryResult?.Error);
 
                     return;
                 }
