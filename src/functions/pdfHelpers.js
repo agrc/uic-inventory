@@ -463,7 +463,7 @@ export const generatePdfDefinition = (inventory, contacts, image, watermark) => 
         inventory.wells.map((well) => {
           return {
             count: well.count,
-            construction: well.description,
+            construction: well.wellName,
             operatingStatus: well.status,
             groundWater: well.surfaceWaterProtection,
           };
