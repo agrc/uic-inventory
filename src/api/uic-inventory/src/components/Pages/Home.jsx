@@ -136,12 +136,10 @@ const getStatusProps = (status, row) => {
         className: clsx(commonClasses, 'border-gray-700 bg-gray-500'),
       };
     case 'submitted': {
-      const { flagged, edocsNumber } = row;
+      const { flagged } = row;
       let label = 'submitted';
       if (flagged) {
         label = 'flagged';
-      } else if (edocsNumber) {
-        label = edocsNumber;
       }
 
       return {
@@ -149,7 +147,6 @@ const getStatusProps = (status, row) => {
         className: clsx(commonClasses, {
           'border-blue-700 bg-blue-500': label === 'submitted',
           'border-red-700 bg-red-500': label === 'flagged',
-          'border-cyan-700 bg-cyan-500': label === edocsNumber,
         }),
       };
     }
