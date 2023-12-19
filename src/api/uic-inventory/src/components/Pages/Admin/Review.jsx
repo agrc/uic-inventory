@@ -16,16 +16,7 @@ import { AuthContext } from '../../../AuthProvider';
 import { contactTypes, ownershipTypes, valueToLabel, wellTypes } from '../../../data/lookups';
 import { FormGrid, ResponsiveGridColumn, SelectListbox, useEditableInput, useEditableSelect } from '../../FormElements';
 import { useInventoryWells, useOpenClosed, useSitePolygon, useWebMap } from '../../Hooks';
-import {
-  Chrome,
-  ConfirmationModal,
-  Flagged,
-  Link,
-  onRequestError,
-  toast,
-  useNavigate,
-  useParams,
-} from '../../PageElements';
+import { Chrome, ConfirmationModal, Flagged, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
 
@@ -44,6 +35,7 @@ export function Component() {
   const { inventoryId, siteId } = useParams();
   const queryClient = useQueryClient();
   const [isOpen, { open, close }] = useOpenClosed();
+  const [approveIsOpen, { open: openApprove, close: closeApprove }] = useOpenClosed();
 
   const { mutate } = useMutation({
     mutationFn: (json) => ky.delete('/api/inventory/reject', { json }),
@@ -89,6 +81,8 @@ export function Component() {
     mutate(input);
   };
 
+  const approve = () => {};
+
   return (
     <>
       <ConfirmationModal isOpen={isOpen} onClose={close} onYes={reject}>
@@ -99,6 +93,15 @@ export function Component() {
         <p className="mt-1 text-sm text-gray-500">
           Are you sure you want to reject this submission? This action cannot be undone...
         </p>
+      </ConfirmationModal>
+      <ConfirmationModal isOpen={approveIsOpen} onClose={closeApprove} onYes={approve}>
+        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+          Approve Submission Confirmation
+        </Dialog.Title>
+        <Dialog.Description className="mt-1">
+          This inventory will be loaded into the internal UIC database
+        </Dialog.Description>
+        <p className="mt-1 text-sm text-gray-500">Are you sure you want to approve this submission?</p>
       </ConfirmationModal>
       <Chrome title="Inventory Review">
         <SiteAndInventoryDetails siteId={siteId} inventoryId={inventoryId} />
@@ -133,14 +136,9 @@ export function Component() {
             {status === 'error' && <ExclamationCircleIcon className="-ml-1 mr-2 h-5 w-5 text-red-500" />}
             Download
           </button>
-          <Link
-            to={`/review/site/${siteId}/inventory/${inventoryId}/authorization`}
-            type="button"
-            data-style="primary"
-            className="sm:col-span-6 md:col-span-2"
-          >
+          <button onClick={openApprove} type="button" data-style="primary" className="sm:col-span-6 md:col-span-2">
             Approve
-          </Link>
+          </button>
         </Section>
       </Chrome>
     </>

@@ -64,12 +64,6 @@ function AuthenticatedRoutes(elevated, completeProfile, queryClient) {
           lazy={() => import('./components/Pages/Admin/Review')}
         />
       )}
-      {elevated && (
-        <Route
-          path="/review/site/:siteId/inventory/:inventoryId/authorization"
-          lazy={() => import('./components/Pages/Admin/AuthorizationByRule')}
-        />
-      )}
       {elevated && <Route path="/admin/accounts" lazy={() => import('./components/Pages/Admin/UserManagement')} />}
       <Route path="/contact" lazy={() => import('./components/Pages/ContactProgram')} />
       <Route
