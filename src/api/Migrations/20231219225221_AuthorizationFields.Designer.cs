@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.Features;
@@ -13,9 +14,11 @@ using api.Infrastructure;
 namespace api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231219225221_AuthorizationFields")]
+    partial class AuthorizationFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,10 +212,6 @@ namespace api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("account_fk");
 
-                    b.Property<int?>("AuthorizedByAccountId")
-                        .HasColumnType("integer")
-                        .HasColumnName("authorized_by_account_id");
-
                     b.Property<DateTime?>("AuthorizedOn")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("authorized_on");
@@ -282,9 +281,6 @@ namespace api.Migrations
 
                     b.HasIndex("AccountFk")
                         .HasDatabaseName("ix_inventory_account_fk");
-
-                    b.HasIndex("AuthorizedByAccountId")
-                        .HasDatabaseName("ix_inventories_authorized_by_account_id");
 
                     b.HasIndex("SiteFk")
                         .HasDatabaseName("ix_inventory_site_fk");
@@ -610,11 +606,6 @@ namespace api.Migrations
                         .IsRequired()
                         .HasConstraintName("inventory_to_account_fk");
 
-                    b.HasOne("api.Features.Account", "AuthorizedByAccount")
-                        .WithMany()
-                        .HasForeignKey("AuthorizedByAccountId")
-                        .HasConstraintName("fk_inventories_accounts_authorized_by_account_id");
-
                     b.HasOne("api.Features.Site", "Site")
                         .WithMany("Inventories")
                         .HasForeignKey("SiteFk")
@@ -623,8 +614,6 @@ namespace api.Migrations
                         .HasConstraintName("inventory_to_site_fk");
 
                     b.Navigation("Account");
-
-                    b.Navigation("AuthorizedByAccount");
 
                     b.Navigation("Site");
                 });

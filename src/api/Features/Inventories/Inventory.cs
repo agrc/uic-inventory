@@ -21,6 +21,7 @@ public class Inventory {
     public string? Flagged { get; set; }
     public DateTime? CreatedOn { get; set; }
     public DateTime? SubmittedOn { get; set; }
+    public DateTime? AuthorizedOn { get; set; }
     public Account? Account { get; set; }
     public Site? Site { get; set; }
     public ICollection<Well> Wells { get; set; } = new HashSet<Well>();
