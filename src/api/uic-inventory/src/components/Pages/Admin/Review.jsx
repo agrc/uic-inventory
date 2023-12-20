@@ -37,7 +37,15 @@ export function Component() {
   const [isOpen, { open, close }] = useOpenClosed();
   const [approveIsOpen, { open: openApprove, close: closeApprove }] = useOpenClosed();
 
-  const { mutate } = useMutation({
+  const queryKey = ['site', siteId, 'inventory', inventoryId];
+  const { data } = useQuery({
+    queryKey,
+    queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
+    enabled: siteId > 0,
+    onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
+  });
+
+  const { mutate: rejectMutation } = useMutation({
     mutationFn: (json) => ky.delete('/api/inventory/reject', { json }),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
@@ -130,7 +138,12 @@ export function Component() {
         <ContactDetails siteId={siteId} />
         <WellDetails siteId={siteId} inventoryId={inventoryId} />
         <Section>
-          <button onClick={open} data-style="primary" className="hover:bg-red-600 sm:col-span-6 md:col-span-2">
+          <button
+            onClick={open}
+            disabled={data?.status == 'authorized'}
+            data-style="primary"
+            className="hover:bg-red-600 sm:col-span-6 md:col-span-2"
+          >
             Reject
           </button>
           <button
@@ -158,6 +171,7 @@ export function Component() {
             Download
           </button>
           <button
+            disabled={data?.status == 'authorized'}
             onClick={openApprove}
             type="button"
             data-style="primary"
