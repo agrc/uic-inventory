@@ -50,6 +50,19 @@ export function Component() {
     onError: (error) => onRequestError(error, 'We had some trouble rejecting this inventory.'),
   });
 
+  const { mutate: approveMutation } = useMutation({
+    mutationFn: (json) => ky.post('/api/inventory/approve', { json }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
+      queryClient.invalidateQueries({ queryKey: ['sites'] });
+    },
+    onSuccess: () => {
+      toast.success('Inventory approved successfully!');
+      navigate('/', { replace: true });
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble approving this inventory.'),
+  });
+
   const { mutate: generate, status } = useMutation({
     mutationFn: (json) => ky.post(`/api/inventory/download`, { json, timeout: 90000 }),
     onSuccess: async (data) => {
@@ -78,10 +91,18 @@ export function Component() {
       inventoryId: parseInt(inventoryId),
     };
 
-    mutate(input);
+    rejectMutation(input);
   };
 
-  const approve = () => {};
+  const approve = () => {
+    const input = {
+      accountId: parseInt(authInfo.id),
+      siteId: parseInt(siteId),
+      inventoryId: parseInt(inventoryId),
+    };
+
+    approveMutation(input);
+  };
 
   return (
     <>
@@ -136,7 +157,12 @@ export function Component() {
             {status === 'error' && <ExclamationCircleIcon className="-ml-1 mr-2 h-5 w-5 text-red-500" />}
             Download
           </button>
-          <button onClick={openApprove} type="button" data-style="primary" className="sm:col-span-6 md:col-span-2">
+          <button
+            onClick={openApprove}
+            type="button"
+            data-style="primary"
+            className="sm:col-span-6 md:col-span-2"
+          >
             Approve
           </button>
         </Section>
