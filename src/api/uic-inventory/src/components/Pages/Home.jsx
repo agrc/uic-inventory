@@ -163,7 +163,7 @@ function InventoryStatus({ inventoryId, siteId, status, row }) {
   const { isElevated } = useContext(AuthContext);
   const statusProps = getStatusProps(status, row);
 
-  if (isElevated() && status === 'submitted') {
+  if (isElevated() && ['authorized', 'submitted'].includes(status)) {
     return <Link to={`/review/site/${siteId}/inventory/${inventoryId}`} {...statusProps} />;
   }
 
