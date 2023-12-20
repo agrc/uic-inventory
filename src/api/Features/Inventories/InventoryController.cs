@@ -138,7 +138,7 @@ public class InventoryController(IMediator mediator, HasRequestMetadata requestM
 
     [HttpDelete("/api/inventory")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<InventoryPayload>> DeleteInventoryAsync(InventoryDeletionInput input, CancellationToken token) {
+    public async Task<ActionResult<InventoryPayload>> DeleteInventoryAsync(ExistingInventoryInput input, CancellationToken token) {
         try {
             await _mediator.Send(new DeleteInventory.Command(input), token);
 
@@ -161,7 +161,7 @@ public class InventoryController(IMediator mediator, HasRequestMetadata requestM
 
     [HttpDelete("/api/inventory/reject")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult<InventoryPayload>> RejectInventoryAsync(InventoryDeletionInput input, CancellationToken token) {
+    public async Task<ActionResult<InventoryPayload>> RejectInventoryAsync(ExistingInventoryInput input, CancellationToken token) {
         try {
             await _mediator.Send(new RejectInventory.Command(input), token);
 
@@ -184,7 +184,7 @@ public class InventoryController(IMediator mediator, HasRequestMetadata requestM
 
     [HttpPost("/api/inventory/download")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
-    public async Task<ActionResult> DownloadInventoryAsync(InventoryDeletionInput input, CancellationToken token) {
+    public async Task<ActionResult> DownloadInventoryAsync(ExistingInventoryInput input, CancellationToken token) {
         try {
             var result = await _mediator.Send(new DownloadInventory.Command(input), token);
 
@@ -198,6 +198,29 @@ public class InventoryController(IMediator mediator, HasRequestMetadata requestM
             return Unauthorized(new InventoryPayload(ex));
         } catch (Exception ex) {
             _log.ForContext("endpoint", "POST:api/inventory/download")
+              .ForContext("input", input)
+              .Fatal(ex, "Unhandled exception");
+
+            return StatusCode(500, new InventoryPayload(ex));
+        }
+    }
+
+    [HttpPost("/api/inventory/approve")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<InventoryPayload>> ApproveInventoryAsync(ExistingInventoryInput input, CancellationToken token) {
+        try {
+            await _mediator.Send(new AuthorizeInventory.Command(input), token);
+
+            return Accepted();
+        } catch (UnauthorizedException ex) {
+            _log.ForContext("endpoint", "POST:api/inventory/approve")
+              .ForContext("input", input)
+              .ForContext("requirement", ex.Message)
+              .Warning("ApproveInventoryAsync requirements failure");
+
+            return Unauthorized(new InventoryPayload(ex));
+        } catch (Exception ex) {
+            _log.ForContext("endpoint", "POST:api/inventory/approve")
               .ForContext("input", input)
               .Fatal(ex, "Unhandled exception");
 

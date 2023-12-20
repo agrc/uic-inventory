@@ -23,6 +23,7 @@ public class Inventory {
     public DateTime? SubmittedOn { get; set; }
     public DateTime? AuthorizedOn { get; set; }
     public Account? Account { get; set; }
+    public Account? AuthorizedByAccount { get; set; }
     public Site? Site { get; set; }
     public ICollection<Well> Wells { get; set; } = new HashSet<Well>();
 }
@@ -39,6 +40,7 @@ public class InventoryPayload : ResponseContract {
         OrderNumber = inventory.OrderNumber;
         Signature = inventory.Signature;
         SubmittedOn = inventory.SubmittedOn;
+        AuthorizedOn = inventory.AuthorizedOn;
         Status = inventory.Status;
         DetailStatus = inventory.DetailStatus;
         ContactStatus = inventory.ContactStatus;
@@ -48,12 +50,14 @@ public class InventoryPayload : ResponseContract {
         Edocs = inventory.Edocs;
         Flagged = inventory.Flagged;
         Wells = inventory.Wells.Select(x => new WellPayload(x)).ToList();
+        AuthorizedBy = inventory.AuthorizedByAccount is null ? null : new(inventory.AuthorizedByAccount);
     }
     public int Id { get; set; }
     public int SubClass { get; set; }
     public int OrderNumber { get; set; }
     public string? Signature { get; set; }
     public DateTime? SubmittedOn { get; set; }
+    public DateTime? AuthorizedOn { get; set; }
     public InventoryStatus Status { get; set; }
     public bool DetailStatus { get; set; }
     public bool ContactStatus { get; set; }
@@ -63,6 +67,7 @@ public class InventoryPayload : ResponseContract {
     public string? Edocs { get; set; }
     public string? Flagged { get; set; }
     public SitePayload? Site { get; set; }
+    public AccountPayload? AuthorizedBy { get; set; }
     public IReadOnlyCollection<WellPayload> Wells { get; set; } = Array.Empty<WellPayload>();
 }
 
@@ -101,7 +106,7 @@ public class InventoryCreationInput : InventoryInput {
     public int SubClass { get; set; }
     public int OrderNumber { get; set; }
 }
-public class InventoryDeletionInput : InventoryInput {
+public class ExistingInventoryInput : InventoryInput {
     public int InventoryId { get; set; }
 }
 public class InventoryMutationInput : InventoryInput {

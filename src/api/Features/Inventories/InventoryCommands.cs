@@ -133,11 +133,6 @@ public static class SubmitInventory {
             inventory.SubmittedOn = DateTime.UtcNow;
             inventory.Signature = request.Signature;
 
-            //? TODO: may already be tracked and all .updates are irrelevant (https://learn.microsoft.com/en-us/ef/core/change-tracking/explicit-tracking)
-            _context.Inventories.Update(inventory);
-
-            //! TODO: needs requirements
-
             await _context.SaveChangesAsync(cancellationToken);
 
             await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
@@ -148,7 +143,7 @@ public static class SubmitInventory {
     }
 }
 public static class DeleteInventory {
-    public class Command(InventoryDeletionInput input) : IRequest {
+    public class Command(ExistingInventoryInput input) : IRequest {
         public int AccountId { get; set; } = input.AccountId;
         public int SiteId { get; set; } = input.SiteId;
         public int InventoryId { get; set; } = input.InventoryId;
@@ -178,7 +173,7 @@ public static class DeleteInventory {
     }
 }
 public static class RejectInventory {
-    public class Command(InventoryDeletionInput input) : IRequest {
+    public class Command(ExistingInventoryInput input) : IRequest {
         public int AccountId { get; set; } = input.AccountId;
         public int SiteId { get; set; } = input.SiteId;
         public int InventoryId { get; set; } = input.InventoryId;
@@ -226,7 +221,7 @@ public static class RejectInventory {
     }
 }
 public static class DownloadInventory {
-    public class Command(InventoryDeletionInput input) : IRequest<HttpContent> {
+    public class Command(ExistingInventoryInput input) : IRequest<HttpContent> {
         public int SiteId { get; set; } = input.SiteId;
         public int InventoryId { get; set; } = input.InventoryId;
     }
@@ -281,6 +276,41 @@ public static class DownloadInventory {
             response.EnsureSuccessStatusCode();
 
             return response.Content;
+        }
+    }
+}
+public static class AuthorizeInventory {
+    public class Command(ExistingInventoryInput input) : IRequest {
+        public int AccountId { get; set; } = input.AccountId;
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; set; } = input.InventoryId;
+    }
+
+    public class Handler(AppDbContext context,
+            IPublisher publisher,
+            HasRequestMetadata metadata,
+            ILogger log) : IRequestHandler<Command> {
+        private readonly AppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+
+        async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
+            _log.ForContext("input", request)
+              .Debug("Authorizing Inventory");
+
+            var inventory = await _context.Inventories
+              .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
+
+            inventory.AuthorizedOn = DateTime.UtcNow;
+            inventory.AuthorizedByAccount = _metadata.Account;
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
+            await _publisher.Publish(new InventoryNotifications.AuthorizeNotification(inventory.SiteFk, inventory.Id, _metadata.Account), cancellationToken);
+
+            return;
         }
     }
 }

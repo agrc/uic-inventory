@@ -13,7 +13,6 @@ public class GetInventoriesBySiteAuthorizer(IHttpContextAccessor context) : Abst
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
-
 public class GetInventoryByIdAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<GetInventoryById.Query> {
     private readonly IHttpContextAccessor _context = context;
 
@@ -24,7 +23,6 @@ public class GetInventoryByIdAuthorizer(IHttpContextAccessor context) : Abstract
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
-
 public class CreateInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<CreateInventory.Command> {
     private readonly IHttpContextAccessor _context = context;
 
@@ -35,7 +33,6 @@ public class CreateInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
-
 public class UpdateInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<UpdateInventory.Command> {
     private readonly IHttpContextAccessor _context = context;
 
@@ -45,7 +42,6 @@ public class UpdateInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
-
 public class SubmitInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<SubmitInventory.Command> {
     private readonly IHttpContextAccessor _context = context;
 
@@ -57,7 +53,6 @@ public class SubmitInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
-
 public class DeleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteInventory.Command> {
     private readonly IHttpContextAccessor _context = context;
 
@@ -70,21 +65,29 @@ public class DeleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
-
 public class RejectInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteInventory.Command> {
     private readonly IHttpContextAccessor _context = context;
 
     public override void BuildPolicy(DeleteInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
+        UseRequirement(new MustHaveSubmittedInventory(request.InventoryId));
     }
 }
-
 public class DownloadInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DownloadInventory.Command> {
     private readonly IHttpContextAccessor _context = context;
 
     public override void BuildPolicy(DownloadInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
+    }
+}
+public class AuthorizeInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<AuthorizeInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
+
+    public override void BuildPolicy(AuthorizeInventory.Command request) {
+        UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustHaveElevatedAccount());
+        UseRequirement(new MustHaveSubmittedInventory(request.InventoryId));
     }
 }

@@ -58,6 +58,18 @@ public static class InventoryNotifications {
         public int InventoryId { get; }
         public int SiteId { get; set; }
     }
+    public record AuthorizeNotification : INotification {
+        public AuthorizeNotification(int siteId, int inventoryId, Account account) {
+            InventoryId = inventoryId;
+            SiteId = siteId;
+            Account = account;
+        }
+
+        public int InventoryId { get; }
+        public int SiteId { get; set; }
+        public Account Account { get; set; }
+        public NotificationTypes NotificationType { get; } = NotificationTypes.inventory_authorized;
+    }
 
     public class EditNotificationHandler(AppDbContext context, ILogger log) : INotificationHandler<EditNotification> {
         private readonly AppDbContext _context = context;
@@ -120,6 +132,10 @@ public static class InventoryNotifications {
 
             if (status == InventoryStatus.Complete && entity.SubmittedOn.HasValue) {
                 status = InventoryStatus.Submitted;
+            }
+
+            if (status == InventoryStatus.Submitted && entity.AuthorizedOn.HasValue) {
+                status = InventoryStatus.Authorized;
             }
 
             return status;
@@ -462,5 +478,31 @@ public static class InventoryNotifications {
             (Aquifers: false, GroundWater: false) => "N",
             _ => "U",
         };
+    }
+    public class AuthorizeSubmissionNotificationHandler(AppDbContext context, ILogger log) : INotificationHandler<AuthorizeNotification> {
+        private readonly AppDbContext _context = context;
+        private readonly ILogger _log = log;
+
+        private Notification CreateNotifications(AuthorizeNotification metadata) {
+            var notification = NotificationHelpers.CreateBasicNotification(_context, metadata.NotificationType);
+            var initials = NotificationHelpers.GetInitials(metadata.Account);
+
+            notification.AdditionalData = new Dictionary<string, object> {
+                    { "name", initials },
+                    { "inventoryId", metadata.InventoryId },
+                };
+            notification.Url = $"/review/site/{metadata.SiteId}/inventory/{metadata.InventoryId}";
+
+            return notification;
+        }
+        public async Task Handle(AuthorizeNotification metadata, CancellationToken token) {
+            _log.ForContext("notification", metadata)
+              .Debug("Handling inventory approved notification");
+
+            var notifications = CreateNotifications(metadata);
+
+            _context.Notifications.Add(notifications);
+            await _context.SaveChangesAsync(token);
+        }
     }
 }
