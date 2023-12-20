@@ -406,6 +406,8 @@ function Notifications({ status, error, notifications, queryKey }) {
         return `${notification.additionalData.name} is now an administrator`;
       case 'inventory_submission':
         return `${notification.additionalData.name} submitted inventory ${notification.additionalData.inventoryId}`;
+      case 'inventory_authorized':
+        return `${notification.additionalData.name} authorized inventory ${notification.additionalData.inventoryId}`;
       case 'approved_well_status_edit':
         return `${notification.additionalData.name} changed well status from ${notification.additionalData.oldStatus} to ${notification.additionalData.newStatus} for inventory ${notification.additionalData.inventoryId}`;
       case 'approved_site_contact_addition':
