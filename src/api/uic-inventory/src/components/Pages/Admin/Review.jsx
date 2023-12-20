@@ -1,5 +1,5 @@
 import { Dialog } from '@headlessui/react';
-import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
+import { ExclamationCircleIcon, InformationCircleIcon } from '@heroicons/react/20/solid';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
@@ -282,7 +282,10 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
 
   return (
     <>
-      <Flagged reason={data?.flagged} siteId={siteId} inventoryId={inventoryId} />
+      <div className="sticky top-4 z-10 flex items-start justify-between">
+        {data?.status === 'authorized' && <Approved date={data.authorizedOn} data={data.authorizedBy} />}
+        <Flagged reason={data?.flagged} siteId={siteId} inventoryId={inventoryId} />
+      </div>
       <Section title="Site Details">
         <ResponsiveGridColumn full={true} half={true} third={true}>
           <Label>Name</Label>
@@ -852,6 +855,47 @@ const WaterSystemContact = ({ contact }) => {
       <span className="text-right font-bold">Contact:</span> <span className="pl-1">{titleCase(contact.name)}</span>
       <span className="text-right font-bold">Email:</span> <span className="pl-1">{contact.email.toLowerCase()}</span>
       <span className="text-right font-bold">Name:</span> <span className="pl-1">{titleCase(contact.system)}</span>
+    </div>
+  );
+};
+
+const Approved = ({ date, data }) => {
+  const [isOpen, { toggle }] = useOpenClosed();
+
+  return (
+    <div className="mb-4 flex justify-start">
+      {isOpen ? (
+        <div className="flex gap-4 rounded border bg-white px-3 py-2 shadow">
+          {data.firstName && (
+            <div>
+              <Label>Admin approver</Label>
+              <Value>
+                <div>{`${data?.firstName ?? 'Unknown'} ${data?.lastName ?? 'User'}`}</div>
+                <div>{data?.organization ?? 'Unknown'}</div>
+                <div>{data?.phoneNumber ?? 'Unknown'}</div>
+                <div>{data?.email ?? 'Unknown'}</div>
+              </Value>
+            </div>
+          )}
+          <div className="flex flex-col justify-between">
+            <div>
+              <Label>Approval date</Label>
+              <Value>{dateFormatter.format(Date.parse(date))}</Value>
+            </div>
+            <button onClick={toggle} data-style="alternate">
+              close
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={toggle}
+          className="inline-flex select-none items-center justify-center self-center rounded rounded-l-md border border-transparent bg-emerald-700 px-4 py-2 font-medium text-white shadow-md hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
+        >
+          <InformationCircleIcon className="-ml-1 mr-2 h-5 w-5 text-emerald-100" />
+          Approved
+        </button>
+      )}
     </div>
   );
 };

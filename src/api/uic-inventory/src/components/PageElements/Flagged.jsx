@@ -84,12 +84,12 @@ export default function Flagged({ reason, siteId, inventoryId }) {
 }
 
 const flagClasses =
-  'inline-flex justify-center self-center border border-transparent bg-red-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2';
+  'inline-flex justify-center self-center border border-transparent bg-red-800 px-4 py-2 font-medium text-white shadow-md hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2';
 const CreateFlag = ({ text, update, onSubmit }) => {
   const [isOpen, { toggle }] = useOpenClosed();
 
   return (
-    <div className="sticky right-4 top-4 z-10 flex justify-end">
+    <div className="flex grow justify-end">
       {isOpen && <Reason reason={text} update={update} />}
       {isOpen ? (
         <>
@@ -156,7 +156,7 @@ const HasFlag = ({ reason, onResolve }) => {
 
 const Reason = ({ reason, update }) => {
   return (
-    <section className="mr-4 flex w-64 max-w-xl justify-end rounded border bg-white px-4 py-2 shadow">
+    <section className="mr-4 flex w-64 max-w-xl justify-end self-center rounded border bg-white px-4 py-2 shadow">
       <input
         type="text"
         placeholder="reason for flagging"
