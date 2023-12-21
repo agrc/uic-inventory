@@ -66,6 +66,7 @@ export function Component() {
     },
     onSuccess: () => {
       toast.success('Inventory approved successfully!');
+      closeApprove();
     },
     onError: (error) => onRequestError(error, 'We had some trouble approving this inventory.'),
   });
