@@ -244,6 +244,7 @@ public static class DownloadInventory {
                 .Include(c => c.Contacts)
                 .Include(x => x.Inventories.Where(i => i.Id == request.InventoryId))
                 .ThenInclude(x => x.Wells)
+                .ThenInclude(x => x.WaterSystemContacts)
                 .AsSplitQuery()
                 .Where(s => s.Id == request.SiteId)
                 .SingleAsync(cancellationToken);
