@@ -49,3 +49,4 @@ jobs:
           service_account_email: cloud-function-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
           https_trigger_security_level: "secure_always"
           timeout: "2m"
+          env_vars: BUCKET=${{ vars.BUCKET }}
