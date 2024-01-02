@@ -1,5 +1,7 @@
 import { http } from "@google-cloud/functions-framework";
-import { createPdfDocument, generatePdfDefinition, getBinaryPdfs } from "./pdfHelpers.js";
+import { appendPdfPages, createPdfDocument, getBinaryPdfs } from "./pdfHelpers.js";
+import { generateInventoryReportPdfDefinition } from "./inventoryPdf.js";
+import { generateAuthorizationByRule, getMostImportantContact } from "./authorizationByRulePdf.js";
 import { getPrintMapImageAsync } from "./printService.js";
 import { Storage } from "@google-cloud/storage";
 

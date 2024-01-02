@@ -133,7 +133,7 @@ export const remediationTypes = [
 ];
 
 export const wellTypes = [
-  { value: -1, label: "General", primary: true, epa: "NO CODE" },
+  { value: -1, label: -1, primary: true, epa: "NO CODE" },
   { value: 5000, label: "Agricultural Drainage", epa: "5H2" },
   { value: 5001, label: "Aquifer Recharge", epa: "5B1" },
   { value: 5002, label: "Subsurface environmental remediation wells", epa: "5B6", primary: true },
