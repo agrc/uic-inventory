@@ -138,12 +138,14 @@ const addWellInformation = (data) => {
 const addWaterSystemInformation = (data) => {
   console.debug("adding water system information");
 
-  const columnDefinitions = buildSubTableDefinitionFor(data);
+  let columnDefinitions = buildSubTableDefinitionFor(data);
 
   if (columnDefinitions.length === 0) {
     console.debug("no water system information found");
 
-    return [];
+    columnDefinitions = [
+      "Not applicable. The well(s) in this inventory do not intersect a source water protection zone.",
+    ];
   }
 
   return [
