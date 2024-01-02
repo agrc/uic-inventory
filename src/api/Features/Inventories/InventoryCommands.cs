@@ -226,12 +226,15 @@ public static class DownloadInventory {
         public int InventoryId { get; set; } = input.InventoryId;
     }
 
-    public record ReportPayload(InventoryPayload inventory, IEnumerable<ContactPayload> contacts, IEnumerable<string> cloudFiles);
-    public class Handler(AppDbContext context, IHttpClientFactory clientFactory, IConfiguration configuration, ILogger log) : IRequestHandler<Command, HttpContent> {
+    public record ReportPayload(InventoryPayload inventory, IEnumerable<ContactPayload> contacts, IEnumerable<string> cloudFiles, AccountPayload approver);
+    public class Handler(AppDbContext context, IHttpClientFactory clientFactory, IConfiguration configuration, ILogger log,
+            HasRequestMetadata metadata
+    ) : IRequestHandler<Command, HttpContent> {
         private readonly ILogger _log = log;
         private readonly AppDbContext _context = context;
         private readonly HttpClient _client = clientFactory.CreateClient("google");
         private readonly string _functionUrl = configuration.GetSection("ReportFunction").GetValue<string>("Url") ?? string.Empty;
+        private readonly HasRequestMetadata _metadata = metadata;
 
         public async Task<HttpContent> Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
@@ -259,7 +262,7 @@ public static class DownloadInventory {
                 .Select(details => decodeFile(details!))
                 .Distinct();
 
-            var payload = new ReportPayload(inventoryPayload, site.Contacts.Select(x => new ContactPayload(x)), cloudFiles);
+            var payload = new ReportPayload(inventoryPayload, site.Contacts.Select(x => new ContactPayload(x)), cloudFiles, new AccountPayload(_metadata.Account));
 
             _log.Debug("Requesting Application Default Credentials");
 

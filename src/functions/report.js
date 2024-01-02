@@ -6,7 +6,7 @@ import { getPrintMapImageAsync } from "./printService.js";
 import { Storage } from "@google-cloud/storage";
 
 const storage = new Storage();
-const bucket = storage.bucket("ut-dts-agrc-uic-inventory-dev-documents");
+const bucket = storage.bucket(process.env.BUCKET);
 
 const symbol = {
   type: "CIMSymbolReference",
@@ -197,7 +197,7 @@ const symbol = {
 };
 
 http("generate", async (req, res) => {
-  const { contacts, inventory, cloudFiles } = req.body;
+  const { contacts, inventory, cloudFiles, approver } = req.body;
 
   if (!contacts || !inventory) {
     res.status(400).send("Missing required data");
@@ -239,10 +239,36 @@ http("generate", async (req, res) => {
     getPrintMapImageAsync(siteGraphic, wellGraphics),
   ]);
 
-  const definition = generatePdfDefinition(inventory, contacts, image, true);
+  let abrPdf;
+  let inventoryPdf;
 
-  const pdf = await createPdfDocument(definition, files);
-  console.debug("finished");
+  const definition = generateInventoryReportPdfDefinition(inventory, contacts, image, true);
+
+  if (inventory.status >= 3) {
+    console.debug("creating abr pdf", inventory.subClass);
+
+    const abrDefinition = generateAuthorizationByRule(inventory, getMostImportantContact(contacts), approver);
+
+    abrPdf = await createPdfDocument(abrDefinition);
+
+    console.debug("abr finished");
+  }
+
+  console.debug("creating inventory pdf");
+  inventoryPdf = await createPdfDocument(definition);
+  console.debug("inventory pdf finished");
+
+  let pdf;
+
+  if (abrPdf) {
+    console.debug("appending inventory pdf and appendix items", files.length);
+
+    pdf = await appendPdfPages(abrPdf, [inventoryPdf, ...files]);
+  } else {
+    console.debug("appending appendix items", files.length);
+
+    pdf = await appendPdfPages(inventoryPdf, files);
+  }
 
   res.contentType("application/pdf");
   res.send(Buffer.from(pdf, "binary"));
