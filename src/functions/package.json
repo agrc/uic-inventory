@@ -5,6 +5,8 @@
   "type": "module",
   "main": "report.js",
   "scripts": {
+    "start": "BUCKET=ut-dts-agrc-uic-inventory-dev-documents functions-framework --target=generate",
+    "watch": "nodemon --exec \"npm run start\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -18,5 +20,8 @@
     "lodash.startcase": "^4.4.0",
     "pdf-lib": "^1.17.1",
     "pdfmake": "^0.2.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }
