@@ -9,7 +9,6 @@ import { Code } from 'react-content-loader';
 import { useTable } from 'react-table';
 import { useImmerReducer } from 'use-immer';
 
-import { when } from '@arcgis/core/core/reactiveUtils';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 
 import { AuthContext } from '../../../AuthProvider';
@@ -522,11 +521,6 @@ function Address({ mailingAddress, city, state, zipCode }) {
 
 const reducer = (draft, action) => {
   switch (action.type) {
-    case 'set-screenshot': {
-      draft.screenshot = action.payload;
-
-      break;
-    }
     case 'set-hover-graphic': {
       if (action?.meta === 'toggle') {
         action.payload == draft.highlighted ? null : action.payload;
@@ -550,7 +544,6 @@ const LocationDetails = ({ siteId, inventoryId }) => {
   );
   const [state, dispatch] = useImmerReducer(reducer, {
     highlighted: undefined,
-    screenshot: '',
   });
 
   const queryKey = ['site', siteId, 'inventory', inventoryId];
@@ -615,34 +608,16 @@ const LocationDetails = ({ siteId, inventoryId }) => {
     });
   }, [mapView, state.highlighted]);
 
-  // sync image for printing
-  // TODO figure out if this is needed for new export
-  useEffect(() => {
-    mapView.current?.when(() => {
-      when(
-        () => mapView.current.stationary === true,
-        async () => {
-          const screenshot = await mapView.current.takeScreenshot({ width: 850, height: 1100 });
-
-          dispatch({ type: 'set-screenshot', payload: screenshot.dataUrl });
-        },
-      );
-    });
-  }, [dispatch, mapView]);
-
   return (
-    <>
-      <Section title="Location Details">
-        <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
-          <div className="w-full">
-            {status === 'pending' ? <Code /> : <WellTable wells={data?.wells} state={state} dispatch={dispatch} />}
-            <WaterSystemContacts wells={data?.wells} />
-          </div>
-          <div className="aspect-[17/22] w-full rounded border shadow" ref={mapDiv}></div>
+    <Section title="Location Details">
+      <div className="md:auto-rows-none col-span-6 grid grid-rows-[.5fr,1.5fr] items-start gap-5 lg:auto-cols-min lg:grid-cols-2 lg:grid-rows-none">
+        <div className="w-full">
+          {status === 'pending' ? <Code /> : <WellTable wells={data?.wells} state={state} dispatch={dispatch} />}
+          <WaterSystemContacts wells={data?.wells} />
         </div>
-      </Section>
-      <img className="hidden aspect-[17/22] rounded border shadow" alt="" src={state.screenshot} />
-    </>
+        <div className="aspect-[17/22] w-full rounded border shadow" ref={mapDiv}></div>
+      </div>
+    </Section>
   );
 };
 
