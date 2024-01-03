@@ -139,7 +139,9 @@ const addWellInformation = (data) => {
 const addWaterSystemInformation = (data) => {
   console.debug("adding water system information");
 
-  const distinctContacts = [...new Set(data.map((contact) => contact))];
+  let distinctContacts = [...new Set(data.map((contact) => JSON.stringify(contact)))].map((contact) =>
+    JSON.parse(contact)
+  );
 
   let columnDefinitions = buildSubTableDefinitionFor(distinctContacts);
 
