@@ -139,7 +139,9 @@ const addWellInformation = (data) => {
 const addWaterSystemInformation = (data) => {
   console.debug("adding water system information");
 
-  let columnDefinitions = buildSubTableDefinitionFor(data);
+  const distinctContacts = [...new Set(data.map((contact) => contact))];
+
+  let columnDefinitions = buildSubTableDefinitionFor(distinctContacts);
 
   if (columnDefinitions.length === 0) {
     console.debug("no water system information found");
