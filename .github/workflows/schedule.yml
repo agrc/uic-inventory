@@ -54,9 +54,6 @@ jobs:
           workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
 
-      - name: ☁️ Set up Cloud SDK
-        uses: "google-github-actions/setup-gcloud@v2"
-
       - name: 🔄 Update database
         working-directory: ./cloudrun-malware-scanner
         run: ./updateCvdMirror.sh "${{ secrets.PROJECT_ID }}-cvd-mirror"
