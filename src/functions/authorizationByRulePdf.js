@@ -47,7 +47,7 @@ const addIntro = (date, inventory, contact) => {
     `${contact.firstName} ${contact.lastName}`,
     contact.organization,
     contact.address,
-    `${contact.city}, ${contact.state} ${contact.zip}\n\n`,
+    `${contact.city}, ${contact.state} ${contact.zipCode}\n\n`,
     `Dear ${contact.firstName} ${contact.lastName}\n\n`,
     {
       columns: [
@@ -60,7 +60,7 @@ const addIntro = (date, inventory, contact) => {
             "Approval of Class V Injection Well Authorization by Rule",
             addSubject(inventory.subClass),
             site.name,
-            `${site.address}; ${site.city}; Utah`,
+            `${site.address}; Utah`,
             `Utah UIC Site ID: ${site.siteId}\n\n`,
           ],
         },
