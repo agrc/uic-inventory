@@ -306,8 +306,8 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
           .flat()
           .map((contact) => {
             return {
-              name: startCase(contact.system),
-              contact: startCase(contact.name),
+              name: startCase(contact.system.toLowerCase()),
+              contact: startCase(contact.name.toLowerCase()),
               email: contact.email.toLowerCase(),
             };
           })
