@@ -6,6 +6,7 @@ import {
   constants,
   spacer,
 } from "./pdfHelpers.js";
+import startCase from "lodash.startcase";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "numeric",
@@ -302,7 +303,11 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
           .map((well) => well.waterSystemContacts)
           .flat()
           .map((contact) => {
-            return { name: contact.system, contact: contact.name, email: contact.email };
+            return {
+              name: startCase(contact.system),
+              contact: startCase(contact.name),
+              email: contact.email.toLowerCase(),
+            };
           })
       ),
       addConstructionDetails(
