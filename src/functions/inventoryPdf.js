@@ -65,6 +65,32 @@ const addLocationDetails = () => {
 const addWellInformation = (data) => {
   console.debug("adding well information");
 
+  const addRemediationType = (well) => {
+    console.debug("well subclass for remediation", well);
+
+    return well.subClass === 5002
+      ? [
+          {
+            text: well.remediationType,
+            style: constants.value,
+          },
+          {
+            text: well.remediationProjectId,
+            style: constants.value,
+          },
+        ]
+      : [
+          {
+            text: "-",
+            style: constants.value,
+          },
+          {
+            text: "-",
+            style: constants.value,
+          },
+        ];
+  };
+
   return [
     spacer(),
     {
@@ -79,7 +105,7 @@ const addWellInformation = (data) => {
         dontBreakRows: true,
         keepWithHeaderRows: true,
         pageBreak: "before",
-        widths: ["10%", "35%", "30%", "25%"],
+        widths: ["6%", "32%", "25%", "15%", "11%", "11%"],
         headerRows: 1,
         body: [
           [
@@ -97,6 +123,14 @@ const addWellInformation = (data) => {
             },
             {
               text: "Ground Water",
+              style: constants.label,
+            },
+            {
+              text: "Rem Type",
+              style: constants.label,
+            },
+            {
+              text: "Rem Id",
               style: constants.label,
             },
           ],
@@ -128,7 +162,9 @@ const addWellInformation = (data) => {
                   style: ["text-normal"],
                 },
               ],
+              columnGap: 3,
             },
+            ...addRemediationType(well),
           ]),
         ],
       },
@@ -299,6 +335,9 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
             construction: well.wellName,
             operatingStatus: well.status,
             groundWater: well.surfaceWaterProtection,
+            remediationType: well?.remediationType,
+            remediationProjectId: well?.remediationProjectId,
+            subClass: well.subClass,
           };
         })
       ),
