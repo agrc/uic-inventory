@@ -49,6 +49,7 @@ export function Component() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
       queryClient.invalidateQueries({ queryKey: ['sites'] });
+      queryClient.invalidateQueries({ queryKey });
     },
     onSuccess: () => {
       toast.success('Inventory rejected successfully!');
@@ -62,6 +63,7 @@ export function Component() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
       queryClient.invalidateQueries({ queryKey: ['sites'] });
+      queryClient.invalidateQueries({ queryKey });
     },
     onSuccess: () => {
       toast.success('Inventory approved successfully!');
