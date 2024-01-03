@@ -5,7 +5,7 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import { difference, union } from '@arcgis/core/geometry/geometryEngine';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
 import { useContext, useEffect, useRef } from 'react';
@@ -114,21 +114,23 @@ export function Component() {
   const { siteId } = useParams();
   const navigate = useNavigate();
   const mapDiv = useRef(null);
-  const isDirty = useRef(false);
   const pointAddressClickEvent = useRef(null);
   const parcelClickEvent = useRef(null);
   const siteDrawingEvents = useRef(null);
   const parcelIds = useRef([]);
+  const queryClient = useQueryClient();
   const { status, data } = useQuery(getSites(siteId));
   const { mutate } = useMutation({
     mutationFn: (input) => ky.put('/api/site', { json: input }).json(),
     onSuccess: () => {
       toast.success('Site location updated successfully!');
       navigate(`/site/${siteId}/inventory/create`);
+      queryClient.invalidateQueries({ queryKey: ['site', siteId] });
     },
     onError: (error) => onRequestError(error, 'We had some trouble updating your site location.'),
   });
-  const { formState, handleSubmit, setValue } = useForm({ resolver: yupResolver(schema) });
+  const { formState, handleSubmit, reset, setValue } = useForm({ resolver: yupResolver(schema) });
+  const { isDirty } = formState;
   const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
   // zoom map on geocode
   const { setViewPoint } = useViewPointZooming(mapView);
@@ -166,12 +168,14 @@ export function Component() {
 
         setViewPoint(geometry.extent.expand(3));
       }
+
+      reset({ geometry: JSON.parse(data?.geometry), address: data?.address });
     }
   }, [data, status, setViewPoint, dispatch]);
 
   // synchronizes the form with the state for sites with a geometry
   useEffect(() => {
-    setValue('geometry', state.geometry);
+    setValue('geometry', state.geometry, { shouldDirty: true });
 
     if (state.geometry) {
       const geometry = new Polygon({
@@ -195,7 +199,7 @@ export function Component() {
 
   // synchronizes the form with the state for sites with an address
   useEffect(() => {
-    setValue('address', state.address);
+    setValue('address', state.address, { shouldDirty: true });
   }, [setValue, state.address]);
 
   // activate point clicking for selecting an address
@@ -216,8 +220,6 @@ export function Component() {
         });
 
         dispatch({ type: 'address-clicked', payload: graphic });
-
-        isDirty.current = true;
         setPointGraphic(graphic);
 
         if (mapView.current.scale > 10489.34) {
@@ -275,8 +277,6 @@ export function Component() {
             }
 
             dispatch({ type: 'set-site-boundary', payload: geometry, meta: 'selecting-a-parcel' });
-
-            isDirty.current = true;
           });
       });
     }
@@ -316,7 +316,7 @@ export function Component() {
 
       siteDrawingEvents.current = [drawingEvent, finishEvent];
     }
-  }, [state.activeTool, setPolygonGraphic, setDrawingGraphic, mapView, dispatch]);
+  }, [state.activeTool, setDrawingGraphic, mapView, dispatch]);
 
   // clear polygons when drawing tool changes
   useEffect(() => {
@@ -331,8 +331,7 @@ export function Component() {
     }
 
     dispatch({ type: 'geocode-success', payload: result });
-    isDirty.current = true;
-    setValue('address', result.attributes.InputAddress);
+    setValue('address', result.attributes.InputAddress, { shouldDirty: true });
     setPointGraphic(new Graphic(result));
     setViewPoint(new Viewpoint({ targetGeometry: result.geometry, scale: 1500 }));
   };
@@ -340,7 +339,7 @@ export function Component() {
   const geocodeError = () => dispatch({ type: 'skip-geocoding', payload: false });
 
   const addSiteLocation = (formData) => {
-    if (!isDirty.current) {
+    if (!isDirty) {
       return navigate(1) || navigate(`/site/${siteId}/inventory/create`);
     }
 
