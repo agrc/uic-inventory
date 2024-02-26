@@ -3,5 +3,5 @@ cd "$(dirname "$0")/.."
 
 echo "rebuilding database"
 
-podman-compose down --volumes
-podman-compose build --no-cache db
+docker-compose down --volumes
+docker-compose build --no-cache db
