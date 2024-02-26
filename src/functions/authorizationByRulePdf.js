@@ -1,3 +1,15 @@
+import { ToWords } from "to-words";
+
+const toWords = new ToWords({
+  localeCode: "en-US",
+  converterOptions: {
+    currency: false,
+    ignoreDecimal: true,
+    ignoreZeroCurrency: true,
+    doNotAddOnly: true,
+  },
+});
+
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "numeric",
   day: "numeric",
@@ -69,12 +81,14 @@ const addIntro = (date, inventory, contact) => {
   ];
 };
 
-const getApprovalText = (type, subClass, wellCount) => {
-  const getBasicApprovalText = (subClass) => {
+const getApprovalText = (subClass, wellCount) => {
+  const getBasicApprovalText = (wellCount) => {
     return [
       {
         text: [
-          `Approval is hereby granted to construct and operate ${wellCount} Class V well(s) under Authorization by Rule according to the Administrative Rules for the Utah UIC Program (Utah UIC Program Rules), `,
+          `Approval is hereby granted to construct and operate ${toWords
+            .convert(wellCount)
+            .toLowerCase()} (${wellCount}) Class V well(s) under Authorization by Rule according to the Administrative Rules for the Utah UIC Program (Utah UIC Program Rules), `,
           {
             text: "R317-7",
             link: "http://rules.utah.gov/publicat/code/r317/r317-007.htm",
@@ -86,29 +100,29 @@ const getApprovalText = (type, subClass, wellCount) => {
     ];
   };
 
-  switch (type) {
+  switch (subClass) {
     case -1: {
       return [
-        ...getBasicApprovalText(subClass),
+        ...getBasicApprovalText(wellCount),
         `The Class V well(s) associated with this authorization are authorized as ${subClass}. The subject site is authorized to dispose of wastewater in accordance with the activities defined in the submitted well inventory application associated with this Authorization by Rule approval.\n\n`,
       ];
     }
     case 5047: {
       return [
-        ...getBasicApprovalText(subClass),
+        ...getBasicApprovalText(wellCount),
         "The Class V well(s) associated with this authorization are authorized as Stormwater Drainage Wells to manage stormwater for the subject property.\n\n",
         "The construction and operation of any storm water drainage wells at this site may be subject to additional requirements established by local ordinances and/or a Storm Water Pollution Prevention Plan (SWPPP), if applicable.\n\n",
       ];
     }
     case 5026: {
       return [
-        ...getBasicApprovalText(subClass),
+        ...getBasicApprovalText(wellCount),
         "The Class V well(s) associated with this authorization are authorized as Veterinary, Kennel, Pet Grooming Wastewater Disposal System to dispose of wastewater from the subject property.\n\n",
       ];
     }
     case 5002: {
       return [
-        ...getBasicApprovalText(subClass),
+        ...getBasicApprovalText(wellCount),
         "The Class V well(s) associated with this authorization are authorized as Subsurface Environmental Remediation Wells for remediation of the subject property as defined in the submitted well inventory application associated with this Authorization by Rule approval.\n\n",
         "If the SER Wells are more than 29 feet deep, the operator must meet the requirements of the Division of Water Rights. Please contact the Division of Water Rights at (801) 538-7240 or waterrights@utah.gov for further information.\n\n",
         "The construction and operation of any injection wells at this site for subsurface environmental remediation may be subject to additional requirements established by the Utah Division of Environmental Response and Remediation (DERR) or The Utah Division of Waste Management and Radiation Control (WMRC).\n\n",
@@ -164,7 +178,10 @@ export const generateAuthorizationByRule = (inventory, contact, approver) => {
             style: ["bold", "italic", "text-lg"],
           },
           "The Division of Water Quality (DWQ) has reviewed the information submitted on the Utah Underground Injection Control (UIC) Inventory Information form along with any additional details that may have been provided pertaining to the proposed Class V well(s) at the subject property.\n\n",
-          getApprovalText(inventory.subClass),
+          getApprovalText(
+            inventory.subClass,
+            inventory.wells.reduce((sum, well) => sum + well.count, 0)
+          ),
           "If any of the injection wells in your well inventory application are within an aquifer recharge discharge area or one or more groundwater-based source water protection zones, the well(s) may be subject to additional requirements and/or restrictions established by local ordinances and/or a Source Water Protection Plan. Please refer to the Location Details section within the following Inventory Review Report link for a summary of any wells that are within an aquifer recharge discharge area or a source water protection zone. Wells in an aquifer recharge discharge area will be indicated by a green “ARDA” box. Wells in a source water protection zone will be indicated by a green “GWZ” box and include the associated Water System contact person.\n\n",
           {
             text: "**NOTICE - You are required to report any changes related to the site and/or associated well inventories. See the “Class V Forms and Applications” section on the UIC web page (link below) to report changes to well operating status (e.g., date constructed, date active, date closed, etc.), add new wells to the site, or report changes to site contacts.\n",
