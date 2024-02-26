@@ -1,4 +1,5 @@
 import { ToWords } from "to-words";
+import { valueToLabel, wellTypes } from "./lookups.js";
 
 const toWords = new ToWords({
   localeCode: "en-US",
@@ -21,8 +22,6 @@ const contactPreference = ["facility_owner", "owner_operator", "legal_rep"];
 
 const getSubject = (type) => {
   switch (type) {
-    case -1:
-      return "Class V Wells";
     case 5047:
       return "Storm Water Drainage";
     case 5101:
@@ -31,25 +30,16 @@ const getSubject = (type) => {
       return "Veterinary, Kennel, Pet Grooming Wastewater Disposal Systems";
     case 5002:
       return "Subsurface Environmental Remediation Wells";
+    default:
+      return "Class V Wells";
   }
 };
 
 const addIntro = (date, inventory, contact) => {
   const addSubject = (subClass) => {
-    switch (subClass) {
-      case -1:
-        return `General - EPA Well Code - NO CODE`;
-      case 5047:
-        return "Storm Water Drainage Wells - EPA Well Code - 5H1";
-      case 5101:
-        return "Large Underground Waste Disposal System - EPA Well Code - 5F";
-      case 5026:
-        return "Veterinary, Kennel, Pet Grooming Wastewater Disposal Systems - EPA Well Code - 5A15";
-      case 5002:
-        return "Subsurface Environmental Remediation Wells - EPA Well Code - 5B6";
-      default:
-        return "unknown type";
-    }
+    const type = wellTypes.find((type) => type.value === subClass);
+
+    return `${type?.label ?? "Unknown"} - EPA Well Code - ${type?.epa ?? "NO CODE"}`;
   };
 
   const site = inventory.site;
@@ -101,12 +91,6 @@ const getApprovalText = (subClass, wellCount) => {
   };
 
   switch (subClass) {
-    case -1: {
-      return [
-        ...getBasicApprovalText(wellCount),
-        `The Class V well(s) associated with this authorization are authorized as ${subClass}. The subject site is authorized to dispose of wastewater in accordance with the activities defined in the submitted well inventory application associated with this Authorization by Rule approval.\n\n`,
-      ];
-    }
     case 5047: {
       return [
         ...getBasicApprovalText(wellCount),
@@ -132,6 +116,15 @@ const getApprovalText = (subClass, wellCount) => {
       return [
         "This Large Underground Wastewater Disposal System is authorized by rule under the Utah 1422 UIC Program provided it remains in compliance with the construction and operating permits issued by the Division of Water Quality. However, if any noncompliance with these permits results in the potential for or demonstration of actual exceedance of any Utah Maximum Contaminant Levels (MCLs) in a receiving ground water, the noncompliance will also be a violation of the Utah UIC administrative rules and therefore be subject to enforcement action. It is therefore important to service, maintain, and operate this system within the requirements of the construction and operating permits. Periodic maintenance will keep the system in optimal operating condition thereby reducing unnecessary expenses and possible enforcement penalties.\n\n",
         "The Class V well(s) associated with this authorization are authorized as Large Onsite Underground Disposal System (LUWDS) to dispose of wastewater from the subject property.\n\n",
+      ];
+    }
+    default: {
+      return [
+        ...getBasicApprovalText(wellCount),
+        `The Class V well(s) associated with this authorization are authorized as ${valueToLabel(
+          wellTypes,
+          subClass
+        )}. The subject site is authorized to dispose of wastewater in accordance with the activities defined in the submitted well inventory application associated with this Authorization by Rule approval.\n\n`,
       ];
     }
   }
