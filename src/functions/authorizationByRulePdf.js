@@ -109,7 +109,7 @@ const getApprovalText = (subClass, wellCount) => {
         ...getBasicApprovalText(wellCount),
         "The Class V well(s) associated with this authorization are authorized as Subsurface Environmental Remediation Wells for remediation of the subject property as defined in the submitted well inventory application associated with this Authorization by Rule approval.\n\n",
         "If the SER Wells are more than 29 feet deep, the operator must meet the requirements of the Division of Water Rights. Please contact the Division of Water Rights at (801) 538-7240 or waterrights@utah.gov for further information.\n\n",
-        "The construction and operation of any injection wells at this site for subsurface environmental remediation may be subject to additional requirements established by the Utah Division of Environmental Response and Remediation (DERR) or The Utah Division of Waste Management and Radiation Control (WMRC).\n\n",
+        "The construction and operation of any injection wells at this site for subsurface environmental remediation may be subject to additional requirements established by the Utah Division of Environmental Response and Remediation (DERR) or the Utah Division of Waste Management and Radiation Control (DWMRC).\n\n",
       ];
     }
     case 5101: {
