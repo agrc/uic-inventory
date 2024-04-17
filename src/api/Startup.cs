@@ -55,6 +55,7 @@ public class Startup(IConfiguration configuration) {
         dataSourceBuilder.MapEnum<ContactTypes>();
         dataSourceBuilder.MapEnum<SiteStatus>();
         dataSourceBuilder.MapEnum<InventoryStatus>();
+        dataSourceBuilder.EnableDynamicJson();
         var dataSource = dataSourceBuilder.Build();
 
         services.AddDbContext<AppDbContext>(options => options
