@@ -16,6 +16,8 @@ chmod +x ./scripts/yada yada
 
 ## Secrets
 
+### API secrets
+
 ```sh
 dotnet user-secrets init
 dotnet user-secrets set "Redis:Configuration" "localhost:6379"
@@ -39,3 +41,7 @@ dotnet user-secrets set "STORAGE_BUCKET" "the gcp bucket where scanned files are
 
 dotnet user-secrets set "GroundWaterContacts:Connection" "the connection string for the ground water contacts database"
 ```
+
+### App secrets
+
+1. Duplicate `./src/api/uic-inventory/.env` to `./src/api/uic-inventory/.env.local` and add an API key.
