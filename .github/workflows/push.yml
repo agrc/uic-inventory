@@ -74,7 +74,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: 🔍️ Set Image Name
+      - name: 🔍️ Set image name
         run: |
           IMAGE_ID=$(echo $DOCKER_METADATA_OUTPUT_TAGS | cut -d ' ' -f 1)
           echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
