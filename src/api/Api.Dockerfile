@@ -1,6 +1,6 @@
 FROM node:lts-alpine AS nodejs
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS dotnet
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS dotnet-sdk
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS dotnet
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dotnet-sdk
 
 FROM nodejs as vite-build
 WORKDIR /build
