@@ -49,7 +49,7 @@ public class Startup(IConfiguration configuration) {
 
         var database = Configuration.GetSection("CloudSql").Get<DatabaseOptions>();
 
-        var dataSourceBuilder = new NpgsqlDataSourceBuilder(database?.ConnectionString ?? throw new ArgumentNullException(nameof(database.ConnectionString)));
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(database?.ConnectionString ?? throw new ArgumentNullException(nameof(database)));
         dataSourceBuilder.MapEnum<AccessLevels>();
         dataSourceBuilder.MapEnum<NotificationTypes>();
         dataSourceBuilder.MapEnum<ContactTypes>();
