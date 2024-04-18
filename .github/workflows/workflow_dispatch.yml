@@ -60,7 +60,7 @@ jobs:
             type=raw,value=latest
 
       - name: 🗝️ Authenticate Docker to Google Cloud
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           registry: us-central1-docker.pkg.dev
           username: oauth2accesstoken
@@ -85,7 +85,7 @@ jobs:
 
       - name: 🚀 Deploy to Cloud Run
         id: deploy
-        uses: google-github-actions/deploy-cloudrun@v1
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: malware-scanner
           image: ${{ env.IMAGE_ID }}
