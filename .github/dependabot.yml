@@ -1,6 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: nuget
+    target-branch: dev
     directory: /src/api
     schedule:
       interval: monthly
@@ -10,6 +11,7 @@ updates:
       major-api-dependencies:
         update-types: ['major']
   - package-ecosystem: npm
+    target-branch: dev
     directory: /src/api/uic-inventory
     schedule:
       interval: monthly
@@ -22,6 +24,7 @@ updates:
       prefix: deps
       prefix-development: deps(dev)
   - package-ecosystem: github-actions
+    target-branch: dev
     directory: /
     schedule:
       interval: monthly
