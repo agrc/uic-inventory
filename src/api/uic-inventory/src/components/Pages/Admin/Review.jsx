@@ -246,6 +246,10 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
           updated.orderNumber = inventory.orderNumber;
         }
 
+        if (inventory.siteIdentifier) {
+          updated.siteIdentifier = inventory.siteIdentifier;
+        }
+
         return updated;
       });
 
@@ -260,7 +264,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
     onError: (error) => onRequestError(error, 'We had some trouble updating this inventory.'),
   });
 
-  const modify = ({ subClass, orderNumber, edocs }) => {
+  const modify = ({ subClass, orderNumber, edocs, siteIdentifier }) => {
     const input = {
       accountId: parseInt(authInfo.id),
       inventoryId: parseInt(inventoryId),
@@ -268,11 +272,13 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
       subClass,
       orderNumber,
       edocs,
+      siteIdentifier,
     };
 
     mutate(input);
   };
 
+  const siteIdentifierEditable = useEditableInput(data?.site?.siteId, (siteIdentifier) => modify({ siteIdentifier }));
   const edocsEditable = useEditableInput(data?.edocs, (edocs) => modify({ edocs }));
   const orderNumberEditable = useEditableInput(data?.orderNumber, (orderNumber) => modify({ orderNumber }));
   const subClassEditable = useEditableSelect(data?.subClass, wellTypes, (value) => modify({ subClass: value?.value }));
@@ -293,8 +299,16 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
           <Value>{data?.site.name}</Value>
         </ResponsiveGridColumn>
         <ResponsiveGridColumn full={true} half={true} third={true}>
-          <Label>Id</Label>
-          <Value>{data?.site.siteId}</Value>
+          <Label>
+            Id
+            <button {...siteIdentifierEditable.getModifyButtonProps()} />
+            {siteIdentifierEditable.isEditing && <button {...siteIdentifierEditable.getCancelButtonProps()} />}
+          </Label>
+          {siteIdentifierEditable.isEditing ? (
+            <input value={data?.site.siteId ?? '-'} {...siteIdentifierEditable.getInputProps()} />
+          ) : (
+            <Value>{data?.site.siteId ?? '-'}</Value>
+          )}
         </ResponsiveGridColumn>
         <ResponsiveGridColumn full={true} half={true} third={true}>
           <Label>Location</Label>
@@ -343,7 +357,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
             {orderNumberEditable.isEditing && <button {...orderNumberEditable.getCancelButtonProps()} />}
           </Label>
           {orderNumberEditable.isEditing ? (
-            <input {...orderNumberEditable.getInputProps()} />
+            <input value={data?.orderNumber} {...orderNumberEditable.getInputProps()} />
           ) : (
             <Value>{data?.orderNumber ?? '-'}</Value>
           )}
