@@ -48,7 +48,7 @@ const addIntro = (date, inventory, contact) => {
     `Date: ${dateFormatter.format(date)}\n\n`,
     `${contact.firstName} ${contact.lastName}`,
     contact.organization,
-    contact.address,
+    contact.mailingAddress,
     `${contact.city}, ${contact.state} ${contact.zipCode}\n\n`,
     `Dear ${contact.firstName} ${contact.lastName}\n\n`,
     {
