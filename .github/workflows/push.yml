@@ -16,34 +16,46 @@ concurrency:
 
 jobs:
   analyze:
-    name: Analyze C#
+    name: Analyze (${{ matrix.language }})
     runs-on: ubuntu-latest
+    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
     permissions:
-      id-token: write
-      contents: read
       security-events: write
     environment:
       name: dev
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - language: csharp
+          build-mode: manual
+        - language: javascript-typescript
+          build-mode: none
 
     steps:
-      - name: ⬇️ Set up code
-        uses: actions/checkout@v4
-        with:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
           show-progress: false
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: csharp
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}
+    - if: matrix.build-mode == 'manual'
+      run: |
+        echo 'If you are using a "manual" build mode for one or more of the' \
+          'languages you are analyzing, replace this with the commands to build' \
+          'your code, for example:'
+        echo '  dotnet restore ./src/api/api.csproj'
+        echo '  dotnet build ./src/api/api.csproj'
+        exit 1
 
-      - name: Restore dependencies
-        run: dotnet restore ./src/api/api.csproj
-
-      - name: Build
-        run: dotnet build ./src/api/api.csproj
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
 
   deploy-dev:
     name: Deploy to dev
