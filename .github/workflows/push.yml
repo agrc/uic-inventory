@@ -45,12 +45,8 @@ jobs:
         build-mode: ${{ matrix.build-mode }}
     - if: matrix.build-mode == 'manual'
       run: |
-        echo 'If you are using a "manual" build mode for one or more of the' \
-          'languages you are analyzing, replace this with the commands to build' \
-          'your code, for example:'
-        echo '  dotnet restore ./src/api/api.csproj'
-        echo '  dotnet build ./src/api/api.csproj'
-        exit 1
+        dotnet restore ./src/api/api.csproj
+        dotnet build ./src/api/api.csproj
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
