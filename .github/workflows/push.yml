@@ -15,6 +15,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  codeql:
+    name: Deploy to dev
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    environment:
+      name: dev
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: csharp
+
+      - name: Restore dependencies
+        run: dotnet restore ./src/api/api.csproj
+
+      - name: Build
+        run: dotnet build ./src/api/api.csproj
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
   deploy-dev:
     name: Deploy to dev
     runs-on: ubuntu-latest
