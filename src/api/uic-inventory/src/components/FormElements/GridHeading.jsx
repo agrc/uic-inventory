@@ -31,10 +31,6 @@ const SiteInformation = ({ site }) => {
       <div className="truncate" title={site?.name}>
         {site?.name ?? 'unknown'}
       </div>
-      <div className="mx-2 font-semibold">Id</div>
-      <div className="truncate" title={site?.sideId}>
-        {(site?.siteId?.length ?? 0) < 1 ? 'unknown' : site.siteId}
-      </div>
       <div className="mx-2 font-semibold">Type</div>
       <div className="truncate" title={site?.naicsTitle}>
         {site?.naicsTitle ?? 'unknown'}
