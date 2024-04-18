@@ -128,9 +128,6 @@ export function Component() {
         <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
           Approve Submission Confirmation
         </Dialog.Title>
-        <Dialog.Description className="mt-1">
-          This inventory will be loaded into the internal UIC database
-        </Dialog.Description>
         <p className="mt-1 text-sm text-gray-500">Are you sure you want to approve this submission?</p>
       </ConfirmationModal>
       <Chrome title="Inventory Review">
