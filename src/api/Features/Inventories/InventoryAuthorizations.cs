@@ -89,5 +89,6 @@ public class AuthorizeInventoryAuthorizer(IHttpContextAccessor context) : Abstra
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
         UseRequirement(new MustHaveSubmittedInventory(request.InventoryId));
+        UseRequirement(new MustHaveCompleteAdminInventory());
     }
 }
