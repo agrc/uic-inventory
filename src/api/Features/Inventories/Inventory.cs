@@ -115,6 +115,7 @@ public class InventoryMutationInput : InventoryInput {
     public int? OrderNumber { get; set; }
     public string? Edocs { get; set; }
     public string? Flagged { get; set; }
+    public string? SiteIdentifier { get; set; }
 }
 public class InventorySubmissionInput : InventoryInput {
     public int InventoryId { get; set; }

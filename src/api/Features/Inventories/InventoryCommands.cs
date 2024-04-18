@@ -59,6 +59,7 @@ public static class UpdateInventory {
         public string? Edocs { get; set; } = input.Edocs;
         public string? Flagged { get; set; } = input.Flagged;
         public int? OrderNumber { get; set; } = input.OrderNumber;
+        public string? SiteIdentifier { get; init; } = input.SiteIdentifier;
     }
     public class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Command, Inventory> {
         private readonly AppDbContext _context = context;
@@ -70,6 +71,7 @@ public static class UpdateInventory {
               .Debug("Updating inventory");
 
             var inventory = await _context.Inventories
+              .Include(x => x.Site)
               .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
 
             if (request.SubClass.HasValue) {
@@ -94,6 +96,14 @@ public static class UpdateInventory {
 
             if (request.OrderNumber.HasValue) {
                 inventory.OrderNumber = request.OrderNumber.Value;
+            }
+
+            if (request.SiteIdentifier != null && inventory.Site is not null) {
+                inventory.Site.SiteId = request.SiteIdentifier;
+            }
+
+            if (request.SiteIdentifier?.Length == 0 && inventory.Site is not null) {
+                inventory.Site.SiteId = null;
             }
 
             await _context.SaveChangesAsync(cancellationToken);
