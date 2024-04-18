@@ -9,6 +9,7 @@
     "fix": "npm run format:fix && npm run lint:fix",
     "lint": "eslint ./src --ext .jsx,.js --ignore-path ./.gitignore",
     "lint:fix": "eslint ./src --ext .jsx,.js --quiet --fix --ignore-path ./.gitignore",
+    "postinstall": "cd functions && npm install",
     "serve": "vite preview",
     "test": "vitest",
     "storybook": "start-storybook -p 6006",
