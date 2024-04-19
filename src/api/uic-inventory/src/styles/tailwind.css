@@ -49,4 +49,11 @@
   .Toastify__toast-container--top-right {
     top: 4em;
   }
+  @font-face {
+    font-family: 'SourceSansPro-Regular';
+    src: url('/fonts/SourceSans3-Regular.otf.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
 }
