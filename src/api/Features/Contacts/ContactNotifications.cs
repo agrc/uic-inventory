@@ -69,7 +69,7 @@ public static class ContactNotifications {
                 return;
             }
 
-            var hasApprovedInventory = site.Inventories.Any(i => i.Status == InventoryStatus.Authorized);
+            var hasApprovedInventory = site.Inventories.Any(i => i.Status.IsApproved());
 
             if (!hasApprovedInventory) {
                 _log.ForContext("notification", metadata)

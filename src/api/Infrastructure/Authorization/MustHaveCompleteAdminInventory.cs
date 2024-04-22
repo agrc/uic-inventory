@@ -25,7 +25,7 @@ public class MustHaveCompleteAdminInventory() : IAuthorizationRequirement {
 
             _metadata.Inventory = inventory;
 
-            if (_metadata.Inventory.Status == InventoryStatus.Authorized) {
+            if (_metadata.Inventory.Status.IsApproved()) {
                 return AuthorizationResult.Fail("I02:This inventory has already been authorized.");
             }
 
