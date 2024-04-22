@@ -21,9 +21,15 @@ public class Inventory {
     public string? Flagged { get; set; }
     public DateTime? CreatedOn { get; set; }
     public DateTime? SubmittedOn { get; set; }
+    public DateTime? UnderReviewOn { get; set; }
+    public Account? UnderReviewByAccount { get; set; }
+    public DateTime? ApprovedOn { get; set; }
+    public Account? ApprovedByAccount { get; set; }
     public DateTime? AuthorizedOn { get; set; }
-    public Account? Account { get; set; }
     public Account? AuthorizedByAccount { get; set; }
+    public DateTime? CompletedOn { get; set; }
+    public Account? CompletedByAccount { get; set; }
+    public Account? Account { get; set; }
     public Site? Site { get; set; }
     public ICollection<Well> Wells { get; set; } = new HashSet<Well>();
 }
@@ -39,25 +45,40 @@ public class InventoryPayload : ResponseContract {
         SubClass = inventory.SubClass;
         OrderNumber = inventory.OrderNumber;
         Signature = inventory.Signature;
-        SubmittedOn = inventory.SubmittedOn;
-        AuthorizedOn = inventory.AuthorizedOn;
+
         Status = inventory.Status;
         DetailStatus = inventory.DetailStatus;
         ContactStatus = inventory.ContactStatus;
         LocationStatus = inventory.LocationStatus;
         PaymentStatus = inventory.PaymentStatus;
         SignatureStatus = inventory.SignatureStatus;
+
         Edocs = inventory.Edocs;
         Flagged = inventory.Flagged;
         Wells = inventory.Wells.Select(x => new WellPayload(x)).ToList();
+
+        SubmittedOn = inventory.SubmittedOn;
+        UnderReviewOn = inventory.UnderReviewOn;
+        SubmittedOn = inventory.SubmittedOn;
+        ApprovedOn = inventory.ApprovedOn;
+        AuthorizedOn = inventory.AuthorizedOn;
+        CompletedOn = inventory.CompletedOn;
+
+
+        UnderReviewBy = inventory.UnderReviewByAccount is null ? null : new(inventory.UnderReviewByAccount);
+        ApprovedBy = inventory.ApprovedByAccount is null ? null : new(inventory.ApprovedByAccount);
         AuthorizedBy = inventory.AuthorizedByAccount is null ? null : new(inventory.AuthorizedByAccount);
+        CompletedBy = inventory.CompletedByAccount is null ? null : new(inventory.CompletedByAccount);
     }
     public int Id { get; set; }
     public int SubClass { get; set; }
     public int OrderNumber { get; set; }
     public string? Signature { get; set; }
     public DateTime? SubmittedOn { get; set; }
+    public DateTime? UnderReviewOn { get; set; }
+    public DateTime? ApprovedOn { get; set; }
     public DateTime? AuthorizedOn { get; set; }
+    public DateTime? CompletedOn { get; set; }
     public InventoryStatus Status { get; set; }
     public bool DetailStatus { get; set; }
     public bool ContactStatus { get; set; }
@@ -67,8 +88,11 @@ public class InventoryPayload : ResponseContract {
     public string? Edocs { get; set; }
     public string? Flagged { get; set; }
     public SitePayload? Site { get; set; }
+    public AccountPayload? UnderReviewBy { get; set; }
+    public AccountPayload? ApprovedBy { get; set; }
     public AccountPayload? AuthorizedBy { get; set; }
-    public IReadOnlyCollection<WellPayload> Wells { get; set; } = Array.Empty<WellPayload>();
+    public AccountPayload? CompletedBy { get; set; }
+    public IReadOnlyCollection<WellPayload> Wells { get; set; } = [];
 }
 
 public class InventoriesForSitePayload : ResponseContract {
@@ -89,7 +113,7 @@ public class InventoriesForSitePayload : ResponseContract {
     public InventoriesForSitePayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
     public InventoriesForSitePayload(string error) : base($"SI01:{error}") { }
     public InventoriesForSitePayload(IEnumerable<Inventory> inventories, Site site) {
-        Inventories = new List<Payload>();
+        Inventories = [];
 
         foreach (var item in inventories) {
             Inventories.Add(new Payload(item, site));
@@ -134,5 +158,7 @@ public enum InventoryStatus {
 
 public static class InventoryExtensions {
     private static readonly InventoryStatus[] _approvedStatus = [InventoryStatus.Approved, InventoryStatus.Authorized, InventoryStatus.Completed];
+    private static readonly InventoryStatus[] _reviewingStatus = [InventoryStatus.Submitted, InventoryStatus.UnderReview];
     public static bool IsApproved(this InventoryStatus status) => _approvedStatus.Contains(status);
+    public static bool IsReviewable(this InventoryStatus status) => _reviewingStatus.Contains(status);
 }
