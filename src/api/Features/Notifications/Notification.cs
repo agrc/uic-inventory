@@ -10,13 +10,13 @@ public class ProfileNotificationPayload : ResponseContract {
         FirstName = string.Empty;
         LastName = string.Empty;
         Email = string.Empty;
-        Notifications = Array.Empty<NotificationPayload>();
+        Notifications = [];
     }
     public ProfileNotificationPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") {
         FirstName = string.Empty;
         LastName = string.Empty;
         Email = string.Empty;
-        Notifications = Array.Empty<NotificationPayload>();
+        Notifications = [];
     }
 
     public ProfileNotificationPayload(Account account, List<NotificationPayload> notifications) {
@@ -56,7 +56,10 @@ public enum NotificationTypes {
     new_user_account_registration,
     admin_promotion,
     inventory_submission,
+    inventory_under_review,
+    inventory_approved,
     inventory_authorized,
+    inventory_completed,
     facility_contact_modified,
     approved_well_status_edit,
     approved_inventory_well_addition,

@@ -293,6 +293,76 @@ public static class DownloadInventory {
         }
     }
 }
+public static class ApproveInventory {
+    public class Command(ExistingInventoryInput input) : IRequest {
+        public int AccountId { get; set; } = input.AccountId;
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; set; } = input.InventoryId;
+    }
+
+    public class Handler(AppDbContext context,
+            IPublisher publisher,
+            HasRequestMetadata metadata,
+            ILogger log) : IRequestHandler<Command> {
+        private readonly AppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+
+        async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
+            _log.ForContext("input", request)
+              .Debug("Approving inventory");
+
+            var inventory = await _context.Inventories
+              .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
+
+            inventory.ApprovedOn = DateTime.UtcNow;
+            inventory.ApprovedByAccount = _metadata.Account;
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
+            await _publisher.Publish(new InventoryNotifications.ApproveNotification(inventory.SiteFk, inventory.Id, _metadata.Account), cancellationToken);
+
+            return;
+        }
+    }
+}
+public static class UnderReviewInventory {
+    public class Command(ExistingInventoryInput input) : IRequest {
+        public int AccountId { get; set; } = input.AccountId;
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; set; } = input.InventoryId;
+    }
+
+    public class Handler(AppDbContext context,
+            IPublisher publisher,
+            HasRequestMetadata metadata,
+            ILogger log) : IRequestHandler<Command> {
+        private readonly AppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+
+        async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
+            _log.ForContext("input", request)
+              .Debug("Setting inventory as under review");
+
+            var inventory = await _context.Inventories
+              .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
+
+            inventory.UnderReviewOn = DateTime.UtcNow;
+            inventory.UnderReviewByAccount = _metadata.Account;
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
+            await _publisher.Publish(new InventoryNotifications.UnderReviewNotification(inventory.SiteFk, inventory.Id, _metadata.Account), cancellationToken);
+
+            return;
+        }
+    }
+}
 public static class AuthorizeInventory {
     public class Command(ExistingInventoryInput input) : IRequest {
         public int AccountId { get; set; } = input.AccountId;
@@ -323,6 +393,41 @@ public static class AuthorizeInventory {
 
             await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
             await _publisher.Publish(new InventoryNotifications.AuthorizeNotification(inventory.SiteFk, inventory.Id, _metadata.Account), cancellationToken);
+
+            return;
+        }
+    }
+}
+public static class CompleteInventory {
+    public class Command(ExistingInventoryInput input) : IRequest {
+        public int AccountId { get; set; } = input.AccountId;
+        public int SiteId { get; set; } = input.SiteId;
+        public int InventoryId { get; set; } = input.InventoryId;
+    }
+
+    public class Handler(AppDbContext context,
+            IPublisher publisher,
+            HasRequestMetadata metadata,
+            ILogger log) : IRequestHandler<Command> {
+        private readonly AppDbContext _context = context;
+        private readonly IPublisher _publisher = publisher;
+        private readonly ILogger _log = log;
+        private readonly HasRequestMetadata _metadata = metadata;
+
+        async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
+            _log.ForContext("input", request)
+              .Debug("Completing inventory");
+
+            var inventory = await _context.Inventories
+              .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
+
+            inventory.CompletedOn = DateTime.UtcNow;
+            inventory.CompletedByAccount = _metadata.Account;
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await _publisher.Publish(new InventoryNotifications.EditNotification(request.InventoryId), cancellationToken);
+            await _publisher.Publish(new InventoryNotifications.CompleteNotification(inventory.SiteFk, inventory.Id, _metadata.Account), cancellationToken);
 
             return;
         }
