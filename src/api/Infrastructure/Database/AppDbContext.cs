@@ -351,6 +351,12 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : DbCo
               .HasForeignKey(d => d.SiteFk)
               .HasConstraintName("inventory_to_site_fk")
               .IsRequired();
+
+            entity.HasOne(c => c.ApprovedByAccount);
+            entity.HasOne(c => c.AuthorizedByAccount);
+            entity.HasOne(c => c.CompletedByAccount);
+
+
         });
 
         OnModelCreatingPartial(modelBuilder);
