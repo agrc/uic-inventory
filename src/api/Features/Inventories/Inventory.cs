@@ -126,6 +126,9 @@ public enum InventoryStatus {
     Incomplete,
     Complete,
     Submitted,
+    UnderReview,
+    Approved,
     Authorized,
-    Ingested,
+    Completed,
+}
 }
