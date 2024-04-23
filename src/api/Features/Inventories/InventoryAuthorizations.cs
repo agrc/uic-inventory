@@ -71,7 +71,7 @@ public class RejectInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
     public override void BuildPolicy(DeleteInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
-        UseRequirement(new MustHaveSubmittedInventory(request.InventoryId));
+        UseRequirement(new MustHaveReviewableInventory(request.InventoryId));
     }
 }
 public class DownloadInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DownloadInventory.Command> {
@@ -82,13 +82,46 @@ public class DownloadInventoryAuthorizer(IHttpContextAccessor context) : Abstrac
         UseRequirement(new MustHaveElevatedAccount());
     }
 }
+public class UnderReviewInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<UnderReviewInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
+
+    public override void BuildPolicy(UnderReviewInventory.Command request) {
+        UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustHaveElevatedAccount());
+        UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Submitted, InventoryStatus.UnderReview]));
+    }
+}
+public class ApproveInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<ApproveInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
+
+    public override void BuildPolicy(ApproveInventory.Command request) {
+        UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustHaveElevatedAccount());
+        UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Submitted, InventoryStatus.UnderReview]));
+        UseRequirement(new MustHaveInventoryAdminAdditions());
+        UseRequirement(new MustHaveNoFlaggedIssues());
+    }
+}
+
 public class AuthorizeInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<AuthorizeInventory.Command> {
     private readonly IHttpContextAccessor _context = context;
 
     public override void BuildPolicy(AuthorizeInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
-        UseRequirement(new MustHaveSubmittedInventory(request.InventoryId));
-        UseRequirement(new MustHaveCompleteAdminInventory());
+        UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Approved]));
+        UseRequirement(new MustHaveInventoryAdminAdditions());
+        UseRequirement(new MustHaveNoFlaggedIssues());
+    }
+}
+public class CompleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<CompleteInventory.Command> {
+    private readonly IHttpContextAccessor _context = context;
+
+    public override void BuildPolicy(CompleteInventory.Command request) {
+        UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustHaveElevatedAccount());
+        UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Authorized]));
+        UseRequirement(new MustHaveInventoryAdminAdditions());
+        UseRequirement(new MustHaveNoFlaggedIssues());
     }
 }

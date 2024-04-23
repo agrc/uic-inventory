@@ -7,14 +7,14 @@ using MediatR.Behaviors.Authorization;
 using Serilog;
 
 namespace api.Infrastructure;
-public class MustHaveCompleteAdminInventory() : IAuthorizationRequirement {
-    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveCompleteAdminInventory> {
+public class MustHaveInventoryAdminAdditions() : IAuthorizationRequirement {
+    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveInventoryAdminAdditions> {
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;
         private readonly AppDbContext _context = context;
 
         public async Task<AuthorizationResult> Handle(
-          MustHaveCompleteAdminInventory requirement,
+          MustHaveInventoryAdminAdditions requirement,
           CancellationToken token = default) {
             var inventory = _metadata.Inventory;
             var site = _context.Sites.Single(x => x.Id == inventory.SiteFk);
@@ -25,15 +25,9 @@ public class MustHaveCompleteAdminInventory() : IAuthorizationRequirement {
 
             _metadata.Inventory = inventory;
 
-            if (_metadata.Inventory.Status.IsApproved()) {
-                return AuthorizationResult.Fail("I02:This inventory has already been authorized.");
-            }
-
             await Task.FromResult(0);
 
             var status = new List<string?> { inventory.Edocs, site.SiteId };
-
-            _log.Information("{@status}", status);
 
             if (status.Any(string.IsNullOrEmpty)) {
                 _log.ForContext("inventory", _metadata.Inventory)

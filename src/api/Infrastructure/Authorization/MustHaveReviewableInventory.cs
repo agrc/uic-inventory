@@ -8,16 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Infrastructure;
-public class MustHaveSubmittedInventory(int inventoryId) : IAuthorizationRequirement {
+public class MustHaveReviewableInventory(int inventoryId) : IAuthorizationRequirement {
     public int InventoryId { get; } = inventoryId;
 
-    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveSubmittedInventory> {
+    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveReviewableInventory> {
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;
         private readonly AppDbContext _context = context;
 
         public async Task<AuthorizationResult> Handle(
-          MustHaveSubmittedInventory requirement,
+          MustHaveReviewableInventory requirement,
           CancellationToken token = default) {
             var inventory = await _context.Inventories.SingleOrDefaultAsync(x => x.Id == requirement.InventoryId, token);
 
@@ -27,8 +27,8 @@ public class MustHaveSubmittedInventory(int inventoryId) : IAuthorizationRequire
 
             _metadata.Inventory = inventory;
 
-            if (_metadata.Inventory.Status != InventoryStatus.Submitted) {
-                return AuthorizationResult.Fail("IS02:This is not submitted.");
+            if (!_metadata.Inventory.Status.IsReviewable()) {
+                return AuthorizationResult.Fail("IS02:This inventory is not reviewable.");
             }
 
             var status = new List<bool> { _metadata.Inventory.DetailStatus, _metadata.Inventory.LocationStatus };
