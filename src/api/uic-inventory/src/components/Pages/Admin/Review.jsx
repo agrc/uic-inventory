@@ -35,6 +35,9 @@ export function Component() {
   const queryClient = useQueryClient();
   const [isOpen, { open, close }] = useOpenClosed();
   const [approveIsOpen, { open: openApprove, close: closeApprove }] = useOpenClosed();
+  const [reviewIsOpen, { open: openReview, close: closeReview }] = useOpenClosed();
+  const [authorizeIsOpen, { open: openAuthorize, close: closeAuthorize }] = useOpenClosed();
+  const [completeIsOpen, { open: openComplete, close: closeComplete }] = useOpenClosed();
 
   const queryKey = ['site', siteId, 'inventory', inventoryId];
   const { data } = useQuery({
@@ -42,6 +45,71 @@ export function Component() {
     queryFn: () => ky.get(`/api/site/${siteId}/inventory/${inventoryId}`).json(),
     enabled: siteId > 0,
     onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
+  });
+
+  const { mutate: reviewMutation } = useMutation({
+    mutationFn: (json) => ky.post('/api/inventory/review', { json }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
+      queryClient.invalidateQueries({ queryKey: ['sites'] });
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Inventory updated successfully!');
+      closeReview();
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble approving this inventory.'),
+  });
+
+  const { mutate: approveMutation } = useMutation({
+    mutationFn: (json) => ky.post('/api/inventory/approve', { json }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
+      queryClient.invalidateQueries({ queryKey: ['sites'] });
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Inventory approved successfully!');
+      closeApprove();
+    },
+    onError: (error) => {
+      onRequestError(error, 'We had some trouble approving this inventory.');
+      closeApprove();
+    },
+  });
+
+  const { mutate: authorizeMutation } = useMutation({
+    mutationFn: (json) => ky.post('/api/inventory/authorize', { json }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
+      queryClient.invalidateQueries({ queryKey: ['sites'] });
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Inventory authorized successfully!');
+      closeAuthorize();
+    },
+    onError: (error) => {
+      onRequestError(error, 'We had some trouble authorizing this inventory.');
+      closeAuthorize();
+    },
+  });
+
+  const { mutate: completeMutation } = useMutation({
+    mutationFn: (json) => ky.post('/api/inventory/complete', { json }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
+      queryClient.invalidateQueries({ queryKey: ['sites'] });
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Inventory Completed successfully!');
+      closeComplete();
+    },
+    onError: (error) => {
+      onRequestError(error, 'We had some trouble authorizing this inventory.');
+      closeComplete();
+    },
   });
 
   const { mutate: rejectMutation } = useMutation({
@@ -56,20 +124,6 @@ export function Component() {
       navigate('/', { replace: true });
     },
     onError: (error) => onRequestError(error, 'We had some trouble rejecting this inventory.'),
-  });
-
-  const { mutate: approveMutation } = useMutation({
-    mutationFn: (json) => ky.post('/api/inventory/approve', { json }),
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['site-inventories', inventoryId] });
-      queryClient.invalidateQueries({ queryKey: ['sites'] });
-      queryClient.invalidateQueries({ queryKey });
-    },
-    onSuccess: () => {
-      toast.success('Inventory approved successfully!');
-      closeApprove();
-    },
-    onError: (error) => onRequestError(error, 'We had some trouble approving this inventory.'),
   });
 
   const { mutate: generate, status } = useMutation({
@@ -113,25 +167,91 @@ export function Component() {
     approveMutation(input);
   };
 
+  const authorize = () => {
+    const input = {
+      accountId: parseInt(authInfo.id),
+      siteId: parseInt(siteId),
+      inventoryId: parseInt(inventoryId),
+    };
+
+    authorizeMutation(input);
+  };
+
+  const complete = () => {
+    const input = {
+      accountId: parseInt(authInfo.id),
+      siteId: parseInt(siteId),
+      inventoryId: parseInt(inventoryId),
+    };
+
+    completeMutation(input);
+  };
+
+  const review = () => {
+    const input = {
+      accountId: parseInt(authInfo.id),
+      siteId: parseInt(siteId),
+      inventoryId: parseInt(inventoryId),
+    };
+
+    reviewMutation(input);
+  };
+
   return (
     <>
-      <ConfirmationModal isOpen={isOpen} onClose={close} onYes={reject}>
-        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
-          Reject Submission Confirmation
-        </Dialog.Title>
-        <Dialog.Description className="mt-1">This inventory will be permanently deleted</Dialog.Description>
-        <p className="mt-1 text-sm text-gray-500">
-          Are you sure you want to reject this submission? This action cannot be undone...
-        </p>
-      </ConfirmationModal>
-      <ConfirmationModal isOpen={approveIsOpen} onClose={closeApprove} onYes={approve}>
-        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
-          Approve Submission Confirmation
-        </Dialog.Title>
-        <p className="mt-1 text-sm text-gray-500">Are you sure you want to approve this submission?</p>
-      </ConfirmationModal>
+      <>
+        <ConfirmationModal isOpen={isOpen} onClose={close} onYes={reject}>
+          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+            Reject Submission Confirmation
+          </Dialog.Title>
+          <Dialog.Description className="mt-1">This inventory will be permanently deleted</Dialog.Description>
+          <p className="mt-1 text-sm text-gray-500">
+            Are you sure you want to reject this submission? This action cannot be undone...
+          </p>
+        </ConfirmationModal>
+        <ConfirmationModal isOpen={reviewIsOpen} onClose={closeReview} onYes={review}>
+          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+            Review Submission Confirmation
+          </Dialog.Title>
+          <Dialog.Description>You will be responsible for reviewing and approving this inventory.</Dialog.Description>
+          <p className="mt-1 text-sm text-gray-500">
+            Are you sure you want to assign yourself as the reviewer of this inventory?
+          </p>
+        </ConfirmationModal>
+        <ConfirmationModal isOpen={approveIsOpen} onClose={closeApprove} onYes={approve}>
+          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+            Approve Submission Confirmation
+          </Dialog.Title>
+          <Dialog.Description>
+            Was the inventory reviewed and an Authorization by Rule (ABR) letter was submitted?
+          </Dialog.Description>
+          <p className="mt-1 text-sm text-gray-500">Are you sure you want to approve this submission?</p>
+        </ConfirmationModal>
+        <ConfirmationModal isOpen={authorizeIsOpen} onClose={closeAuthorize} onYes={authorize}>
+          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+            Authorize Submission Confirmation
+          </Dialog.Title>
+          <Dialog.Description>
+            Has the inventory information has been entered into the UIC geodatabase?
+          </Dialog.Description>
+          <p className="mt-1 text-sm text-gray-500">Are you sure you want to authorize this submission?</p>
+        </ConfirmationModal>
+        <ConfirmationModal isOpen={completeIsOpen} onClose={closeComplete} onYes={complete}>
+          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+            Complete Submission Confirmation
+          </Dialog.Title>
+          <Dialog.Description>
+            Has the the Authorization by Rule (ABR) letter been sent and is the inventory processing complete?
+          </Dialog.Description>
+          <p className="mt-1 text-sm text-gray-500">Are you sure you want to complete this submission?</p>
+        </ConfirmationModal>
+      </>
       <Chrome title="Inventory Review">
-        <SiteAndInventoryDetails siteId={siteId} inventoryId={inventoryId} />
+        <SiteAndInventoryDetails
+          siteId={siteId}
+          inventoryId={inventoryId}
+          confirmations={{ openApprove, openReview, openAuthorize, openComplete }}
+        />
         <LocationDetails siteId={siteId} inventoryId={inventoryId} />
         <ContactDetails siteId={siteId} />
         <WellDetails siteId={siteId} inventoryId={inventoryId} />
@@ -169,7 +289,7 @@ export function Component() {
             Download
           </button>
           <button
-            disabled={data?.status == 'authorized'}
+            disabled={data?.status != 'underReview'}
             onClick={openApprove}
             type="button"
             data-style="primary"
@@ -206,7 +326,7 @@ const Section = ({ gray, children, title, height = 'max-h-96', className }) => (
   </div>
 );
 
-const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
+const SiteAndInventoryDetails = ({ siteId, inventoryId, confirmations }) => {
   const { authInfo } = useContext(AuthContext);
   const queryKey = ['site', siteId, 'inventory', inventoryId];
   const { status, data } = useQuery({
@@ -287,7 +407,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId }) => {
   return (
     <>
       <div className="sticky top-4 z-10 flex items-start justify-between">
-        {data?.status === 'authorized' && <Approved date={data.authorizedOn} data={data.authorizedBy} />}
+        <Status data={data} confirmations={confirmations} />
         <Flagged reason={data?.flagged} siteId={siteId} inventoryId={inventoryId} />
       </div>
       <Section title="Site Details">
@@ -847,41 +967,165 @@ const WaterSystemContact = ({ contact }) => {
   );
 };
 
-const Approved = ({ date, data }) => {
+const whatIsNeeded = (status) => {
+  switch (status) {
+    case 'submitted':
+      return 'Submitted, needs review';
+    case 'underReview':
+      return 'Under review, awaiting approval';
+    case 'approved':
+      return 'Approved, needs authorization';
+    case 'authorized':
+      return 'Authorized, needs completion';
+    case 'rejected':
+      return 'Rejected';
+    case 'completed':
+      return 'Completed';
+    default:
+      return '';
+  }
+};
+
+const Status = ({ data, confirmations }) => {
   const [isOpen, { toggle }] = useOpenClosed();
 
   return (
     <div className="mb-4 flex justify-start">
       {isOpen ? (
         <div className="flex gap-4 rounded border bg-white px-3 py-2 shadow">
-          {data.firstName && (
-            <div>
-              <Label>Admin approver</Label>
-              <Value>
-                <div>{`${data?.firstName ?? 'Unknown'} ${data?.lastName ?? 'User'}`}</div>
-                <div>{data?.organization ?? 'Unknown'}</div>
-                <div>{data?.phoneNumber ?? 'Unknown'}</div>
-                <div>{data?.email ?? 'Unknown'}</div>
-              </Value>
-            </div>
+          {['submitted', 'underReview'].includes(data?.status) && (
+            <>
+              <div className="flex flex-col justify-between">
+                <div className="mb-4">
+                  <Label>Reviewer</Label>
+                  <Value>
+                    {data?.underReviewBy?.firstName ? (
+                      <>
+                        <div>{`${data?.underReviewBy?.firstName ?? 'Unknown'} ${data?.underReviewBy?.lastName ?? 'User'}`}</div>
+                        <div>{data?.underReviewBy?.organization ?? 'Unknown'}</div>
+                        <div>{data?.underReviewBy?.phoneNumber ?? 'Unknown'}</div>
+                        <div>{data?.underReviewBy?.email ?? 'Unknown'}</div>
+                      </>
+                    ) : (
+                      '-'
+                    )}
+                  </Value>
+                </div>
+                {['submitted', 'underReview'].includes(data?.status) && (
+                  <button onClick={confirmations.openReview} data-style="primary">
+                    Assign me
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-col justify-between">
+                <div className="mb-4">
+                  <Label>Review started</Label>
+                  <Value>{data?.underReviewOn ? dateFormatter.format(Date.parse(data.underReviewOn)) : '-'}</Value>
+                </div>
+                <button onClick={toggle} data-style="alternate">
+                  close
+                </button>
+              </div>
+            </>
           )}
-          <div className="flex flex-col justify-between">
-            <div>
-              <Label>Approval date</Label>
-              <Value>{dateFormatter.format(Date.parse(date))}</Value>
-            </div>
-            <button onClick={toggle} data-style="alternate">
-              close
-            </button>
-          </div>
+          {data?.status === 'approved' && (
+            <>
+              <div className="flex flex-col justify-between">
+                <div className="mb-4">
+                  <Label>Approver</Label>
+                  <Value>
+                    <div>{`${data?.approvedBy?.firstName ?? 'Unknown'} ${data?.approvedBy?.lastName ?? 'User'}`}</div>
+                    <div>{data?.approvedBy?.organization ?? 'Unknown'}</div>
+                    <div>{data?.approvedBy?.phoneNumber ?? 'Unknown'}</div>
+                    <div>{data?.approvedBy?.email ?? 'Unknown'}</div>
+                  </Value>
+                </div>
+                {data?.status === 'approved' && (
+                  <button onClick={confirmations.openAuthorize} data-style="primary">
+                    Authorize inventory
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-col justify-between">
+                <div>
+                  <Label>Approval date</Label>
+                  <Value>{dateFormatter.format(Date.parse(data.approvedOn))}</Value>
+                </div>
+                <button onClick={toggle} data-style="alternate">
+                  close
+                </button>
+              </div>
+            </>
+          )}
+          {data?.status === 'authorized' && (
+            <>
+              <div className="flex flex-col justify-between">
+                <div className="mb-4">
+                  <Label>Authorizer</Label>
+                  <Value>
+                    <div>{`${data?.authorizedBy?.firstName ?? 'Unknown'} ${data?.authorizedBy?.lastName ?? 'User'}`}</div>
+                    <div>{data?.authorizedBy?.organization ?? 'Unknown'}</div>
+                    <div>{data?.authorizedBy?.phoneNumber ?? 'Unknown'}</div>
+                    <div>{data?.authorizedBy?.email ?? 'Unknown'}</div>
+                  </Value>
+                </div>
+                {data?.status === 'authorized' && (
+                  <button onClick={confirmations.openComplete} data-style="primary">
+                    Complete inventory
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-col justify-between">
+                <div>
+                  <Label>Authorization date</Label>
+                  <Value>{dateFormatter.format(Date.parse(data.authorizedOn))}</Value>
+                </div>
+                <button onClick={toggle} data-style="alternate">
+                  close
+                </button>
+              </div>
+            </>
+          )}
+          {data?.status === 'completed' && (
+            <>
+              <div className="flex flex-col justify-between">
+                <div className="mb-4">
+                  <Label>Completed by</Label>
+                  <Value>
+                    <div>{`${data?.completedBy?.firstName ?? 'Unknown'} ${data?.completedBy?.lastName ?? 'User'}`}</div>
+                    <div>{data?.completedBy?.organization ?? 'Unknown'}</div>
+                    <div>{data?.completedBy?.phoneNumber ?? 'Unknown'}</div>
+                    <div>{data?.completedBy?.email ?? 'Unknown'}</div>
+                  </Value>
+                </div>
+              </div>
+              <div className="flex flex-col justify-between">
+                <div>
+                  <Label>Completion date</Label>
+                  <Value>{dateFormatter.format(Date.parse(data.completedOn))}</Value>
+                </div>
+                <button onClick={toggle} data-style="alternate">
+                  close
+                </button>
+              </div>
+            </>
+          )}
         </div>
       ) : (
         <button
           onClick={toggle}
-          className="inline-flex select-none items-center justify-center self-center rounded rounded-l-md border border-transparent bg-emerald-700 px-4 py-2 font-medium text-white shadow-md hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
+          className={clsx(
+            'inline-flex select-none items-center justify-center self-center rounded rounded-l-md border border-transparent px-4 py-2 font-medium text-white shadow-md focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2',
+            data?.status === 'submitted' && 'bg-blue-500 text-blue-100 hover:bg-blue-700',
+            data?.status === 'underReview' && 'bg-amber-500 text-amber-100 hover:bg-amber-700',
+            data?.status === 'approved' && 'bg-fuchsia-500 text-fuchsia-100 hover:bg-fuchsia-700',
+            data?.status === 'authorized' && 'bg-emerald-500 text-emerald-100 hover:bg-emerald-700',
+            data?.status === 'rejected' && 'bg-rose-500 text-rose-100 hover:bg-rose-700',
+            data?.status === 'completed' && 'bg-sky-500 text-sky-100 hover:bg-sky-700',
+          )}
         >
-          <InformationCircleIcon className="-ml-1 mr-2 h-5 w-5 text-emerald-100" />
-          Approved
+          <InformationCircleIcon className="-ml-1 mr-2 h-5 w-5 text-current" />
+          {whatIsNeeded(data?.status)}
         </button>
       )}
     </div>
