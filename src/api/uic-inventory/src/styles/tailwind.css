@@ -29,10 +29,10 @@
   }
 
   [data-style='primary'] {
-    @apply inline-flex select-none justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-700 disabled:opacity-50;
+    @apply inline-flex select-none justify-center rounded-md border border-transparent bg-gray-800 px-4 py-2 font-medium text-white shadow-sm hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-zinc-500;
   }
   [data-style='secondary'] {
-    @apply inline-flex select-none justify-center rounded-md border border-indigo-700 bg-indigo-500 px-4 py-2 font-medium text-white shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:blur-xs;
+    @apply inline-flex select-none justify-center rounded-md border border-indigo-700 bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 disabled:blur-xs;
   }
   [data-style='alternate'] {
     @apply inline-flex select-none justify-center rounded-md border border-gray-300 bg-gray-50 px-4 py-2 font-medium text-gray-900 shadow-sm hover:border-slate-400 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50;
