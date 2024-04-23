@@ -150,10 +150,43 @@ const getStatusProps = (status, row) => {
         }),
       };
     }
-    case 'authorized': {
+    case 'underReview': {
+      const { flagged } = row;
+      let label = 'under review';
+      if (flagged) {
+        label = 'flagged';
+      }
+
+      return {
+        children: label,
+        className: clsx(commonClasses, {
+          'border-amber-700 bg-amber-500': label === 'under review',
+          'border-red-700 bg-red-500': label === 'flagged',
+        }),
+      };
+    }
+    case 'approved': {
       return {
         children: 'approved',
+        className: clsx(commonClasses, 'border-fuchsia-700 bg-fuchsia-500'),
+      };
+    }
+    case 'authorized': {
+      return {
+        children: 'authorized',
         className: clsx(commonClasses, 'border-emerald-700 bg-emerald-500'),
+      };
+    }
+    case 'rejected': {
+      return {
+        children: 'rejected',
+        className: clsx(commonClasses, 'border-rose-700 bg-rose-500'),
+      };
+    }
+    case 'completed': {
+      return {
+        children: 'completed',
+        className: clsx(commonClasses, 'border-sky-700 bg-sky-500'),
       };
     }
   }
@@ -163,7 +196,7 @@ function InventoryStatus({ inventoryId, siteId, status, row }) {
   const { isElevated } = useContext(AuthContext);
   const statusProps = getStatusProps(status, row);
 
-  if (isElevated() && ['authorized', 'submitted'].includes(status)) {
+  if (isElevated()) {
     return <Link to={`/review/site/${siteId}/inventory/${inventoryId}`} {...statusProps} />;
   }
 
