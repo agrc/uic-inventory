@@ -244,7 +244,8 @@ http("generate", async (req, res) => {
 
   const definition = generateInventoryReportPdfDefinition(inventory, contacts, image, true);
 
-  if (inventory.status >= 3) {
+  // 4 === Approved
+  if (inventory.status >= 4) {
     console.debug("creating abr pdf", inventory.subClass);
 
     const abrDefinition = generateAuthorizationByRule(inventory, getMostImportantContact(contacts), approver);
