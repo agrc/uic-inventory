@@ -75,8 +75,6 @@ const pureReducer = (draft, action) => {
       }`;
       draft.formStatus = 'allow-site-boundary-from-click';
 
-      console.log('draft', draft.address);
-
       break;
     }
     case 'select-site-from-parcel': {

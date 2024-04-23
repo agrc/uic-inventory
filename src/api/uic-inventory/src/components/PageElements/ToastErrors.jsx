@@ -20,8 +20,6 @@ const errorSchema = yup
   .required();
 
 const onRequestError = async (error, defaultMessage = 'Something went terribly wrong that we did not expect.') => {
-  // TODO: log error
-  console.error(error);
   let toastMessage = defaultMessage;
   let response = { message: undefined };
 

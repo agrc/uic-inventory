@@ -11,13 +11,10 @@ export function useFetch(url, options, ready = true) {
     setStatus('loading');
     try {
       const json = await ky(url, JSON.parse(stringOptions)).json();
-      console.info(json);
 
       setData(json);
       setStatus('success');
     } catch (error) {
-      console.error('useFetch', error);
-
       setError(error);
       setStatus('error');
     }
@@ -43,10 +40,8 @@ export function useManualFetch() {
       const json = await ky(url, options).json();
 
       setData(json);
-      console.info(json);
       setStatus('success');
     } catch (error) {
-      console.error('useManualFetch', error);
       setError(error);
       setStatus('error');
     }

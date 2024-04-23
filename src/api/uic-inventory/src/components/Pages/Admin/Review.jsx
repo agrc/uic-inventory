@@ -129,7 +129,6 @@ export function Component() {
   const { mutate: generate, status } = useMutation({
     mutationFn: (json) => ky.post(`/api/inventory/download`, { json, timeout: 90000 }),
     onSuccess: async (data) => {
-      console.log(data);
       const blob = await data.blob();
 
       const url = URL.createObjectURL(blob);
