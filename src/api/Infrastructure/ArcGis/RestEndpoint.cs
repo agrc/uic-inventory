@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 
 namespace api.Infrastructure;
 public class RestEndpointError {
     public int Code { get; set; }
     public string? Message { get; set; }
-    public IReadOnlyCollection<object> Details { get; set; } = Array.Empty<object>();
+    public IReadOnlyCollection<object> Details { get; set; } = [];
 }
 public abstract class RestErrorable {
     public virtual RestEndpointError Error { get; set; } = default!;

@@ -86,7 +86,7 @@ public class WellPayload : ResponseContract {
         InjectateCharacterization = well.InjectateCharacterization;
         HydrogeologicCharacterization = well.HydrogeologicCharacterization;
         SurfaceWaterProtection = well.SurfaceWaterProtection;
-        WaterSystemContacts = well.WaterSystemContacts?.Select(x => new WaterSystemContactPayload(x)) ?? Array.Empty<WaterSystemContactPayload>();
+        WaterSystemContacts = well.WaterSystemContacts?.Select(x => new WaterSystemContactPayload(x)) ?? [];
     }
 
     public int Id { get; }
@@ -222,6 +222,6 @@ public record ArcGisRestFeatureWell(ArcGisRestWellAttributes Attributes);
 public record ArcGisRestWellAttributes(string SysNumber);
 public class WellEsriQueryResponse : RestErrorable {
     public int Count { get; set; }
-    public IReadOnlyList<ArcGisRestFeatureWell> Features { get; set; } = Array.Empty<ArcGisRestFeatureWell>();
+    public IReadOnlyList<ArcGisRestFeatureWell> Features { get; set; } = [];
 }
 public record WellOperatingStatusInput(int AccountId, int SiteId, int InventoryId, int WellId, string Status, string? Description);

@@ -109,5 +109,5 @@ public record ArcGisRestFeatureSite(ArcGisRestSiteAttributes Attributes);
 public record ArcGisRestSiteAttributes(int Fips);
 public class SiteEsriQueryResponse : RestErrorable {
     public int Count { get; set; }
-    public IReadOnlyList<ArcGisRestFeatureSite> Features { get; set; } = Array.Empty<ArcGisRestFeatureSite>();
+    public IReadOnlyList<ArcGisRestFeatureSite> Features { get; set; } = [];
 }

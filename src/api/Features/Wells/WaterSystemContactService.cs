@@ -54,6 +54,6 @@ public class WaterSystemContactService(IConfiguration config, ILogger log) : IWa
             _log.Fatal("Error querying oracle {message}", e.Message);
         }
 
-        return Array.Empty<WaterSystemContact>();
+        return [];
     }
 }

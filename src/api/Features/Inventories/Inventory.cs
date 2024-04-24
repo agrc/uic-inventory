@@ -120,7 +120,7 @@ public class InventoriesForSitePayload : ResponseContract {
         }
     }
 
-    public IList<Payload> Inventories { get; } = Array.Empty<Payload>();
+    public IList<Payload> Inventories { get; } = [];
 }
 public class InventoryInput {
     public int SiteId { get; set; }

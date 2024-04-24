@@ -140,14 +140,14 @@ public class SiteContactPayload : ResponseContract {
         Name = "unknown";
         SiteId = "unknown";
         NaicsTitle = "unknown";
-        Contacts = Array.Empty<ContactPayload>();
+        Contacts = [];
         Owner = new AccountPayload(new Account());
     }
     public SiteContactPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") {
         Name = "unknown";
         SiteId = "unknown";
         NaicsTitle = "unknown";
-        Contacts = Array.Empty<ContactPayload>();
+        Contacts = [];
         Owner = new AccountPayload(new Account());
     }
     public SiteContactPayload(Site site, IReadOnlyCollection<ContactPayload> contacts) {
