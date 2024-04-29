@@ -503,8 +503,11 @@ function SiteTable({ data }) {
     onSuccess: () => {
       toast.success('Inventory deleted successfully!');
     },
-    onError: (error, variables, previousValue) => {
-      queryClient.setQueryData(['site-inventories', variables.siteId], previousValue);
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['site-inventories', deleteSite.current] });
+    },
+    onError: (error, variables, context) => {
+      queryClient.setQueryData(['site-inventories', variables.siteId], context.previousValue);
       onRequestError(error, 'We had some trouble deleting this inventory.');
     },
   });
