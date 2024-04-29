@@ -49,7 +49,6 @@ public class SubmitInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustHaveCompleteInventory(request.InventoryId));
-        UseRequirement(new MustHaveEditableSiteStatus());
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
