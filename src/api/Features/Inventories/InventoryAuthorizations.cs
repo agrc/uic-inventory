@@ -59,7 +59,6 @@ public class DeleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustOwnInventory(request.InventoryId));
-        UseRequirement(new MustHaveEditableSiteStatus());
         UseRequirement(new MustHaveEditableInventoryStatus());
         UseRequirement(new MustHaveCompleteProfile());
     }
