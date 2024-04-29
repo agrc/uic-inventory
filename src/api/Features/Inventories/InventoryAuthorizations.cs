@@ -63,10 +63,10 @@ public class DeleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
-public class RejectInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteInventory.Command> {
+public class RejectInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<RejectInventory.Command> {
     private readonly IHttpContextAccessor _context = context;
 
-    public override void BuildPolicy(DeleteInventory.Command request) {
+    public override void BuildPolicy(RejectInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
         UseRequirement(new MustHaveReviewableInventory(request.InventoryId));
