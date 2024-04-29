@@ -48,8 +48,8 @@ public class SubmitInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
     public override void BuildPolicy(SubmitInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
-        UseRequirement(new MustHaveCompleteInventory(request.InventoryId));
         UseRequirement(new MustHaveCompleteProfile());
+        UseRequirement(new MustHaveCompleteInventory(request.InventoryId));
     }
 }
 public class DeleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteInventory.Command> {
@@ -97,7 +97,6 @@ public class ApproveInventoryAuthorizer(IHttpContextAccessor context) : Abstract
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
         UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Submitted, InventoryStatus.UnderReview]));
-        UseRequirement(new MustHaveInventoryAdminAdditions());
         UseRequirement(new MustHaveNoFlaggedIssues());
     }
 }
