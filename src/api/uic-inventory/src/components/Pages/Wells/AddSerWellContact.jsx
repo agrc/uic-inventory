@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
 import PropTypes from 'prop-types';
-import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
+import { Fragment, useContext, useMemo, useRef } from 'react';
 import { BulletList } from 'react-content-loader';
 import { useForm } from 'react-hook-form';
 import { useTable } from 'react-table';
@@ -35,7 +35,7 @@ export function Component() {
   });
 
   //* pull value from form state to activate proxy
-  const { isDirty, isSubmitSuccessful } = formState;
+  const { isDirty } = formState;
 
   const queryClient = useQueryClient();
   const queryKey = ['ser-contacts', siteId];
@@ -53,24 +53,18 @@ export function Component() {
 
       return { previousValue };
     },
+    onSuccess: () => {
+      toast.success('Contact created successfully!');
+      reset();
+    },
+    onError: async (error, _, context) => {
+      queryClient.setQueryData(queryKey, context.previousValue);
+      onRequestError(error, 'We had some trouble creating this contact.');
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
     },
-    onError: async (error, _, previousValue) => {
-      queryClient.setQueryData(queryKey, previousValue);
-      onRequestError(error, 'We had some trouble creating this contact.');
-    },
   });
-
-  useEffect(() => {
-    if (!isSubmitSuccessful) {
-      return;
-    }
-
-    toast.success('Contact created successfully!');
-
-    reset();
-  }, [isSubmitSuccessful, reset]);
 
   const create = (formData) => {
     if (!isDirty) {
@@ -207,8 +201,8 @@ function ContactTable({ data }) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error, _, previousValue) => {
-      queryClient.setQueryData(queryKey, previousValue);
+    onError: (error, _, context) => {
+      queryClient.setQueryData(queryKey, context.previousValue);
       onRequestError(error, 'We had some trouble deleting this contact.');
     },
   });

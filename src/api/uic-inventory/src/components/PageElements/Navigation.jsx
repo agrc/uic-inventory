@@ -15,6 +15,7 @@ import { Fragment, useContext } from 'react';
 import { Facebook } from 'react-content-loader';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider';
+import onRequestError from './ToastErrors';
 import { UtahHeader } from './UtahHeader';
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
@@ -438,9 +439,9 @@ function Notifications({ status, error, notifications, queryKey }) {
 
       return { previousValue };
     },
-    onError: (err, variables, previousValue) => {
-      queryClient.setQueryData(queryKey, previousValue);
-      //! TODO: toast error
+    onError: (error, _, context) => {
+      queryClient.setQueryData(queryKey, context.previousValue);
+      onRequestError(error, 'We had some trouble updating this notification.');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });

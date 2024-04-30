@@ -475,8 +475,8 @@ function SiteTable({ data }) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error, _, previousValue) => {
-      queryClient.setQueryData(queryKey, previousValue);
+    onError: (error, _, context) => {
+      queryClient.setQueryData(queryKey, context.previousValue);
       onRequestError(error, 'We had some trouble deleting this site.');
     },
   });

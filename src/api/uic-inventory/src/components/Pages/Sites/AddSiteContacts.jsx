@@ -101,7 +101,7 @@ function CreateContactForm({ data }) {
   });
 
   //* pull value from form state to activate proxy
-  const { isDirty, isSubmitSuccessful } = formState;
+  const { isDirty } = formState;
 
   const queryClient = useQueryClient();
   const queryKey = ['contacts', siteId];
@@ -119,25 +119,19 @@ function CreateContactForm({ data }) {
 
       return { previousValue };
     },
+    onSuccess: () => {
+      toast.success('Contact created successfully!');
+
+      reset();
+    },
+    onError: async (error, _, context) => {
+      queryClient.setQueryData(queryKey, context.previousValue);
+      onRequestError(error, 'We had some trouble creating this contact.');
+    },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
     },
-    onError: async (error, _, previousValue) => {
-      queryClient.setQueryData(queryKey, previousValue);
-      onRequestError(error, 'We had some trouble creating this contact.');
-    },
   });
-
-  // reset form on submit
-  useEffect(() => {
-    if (!isSubmitSuccessful) {
-      return;
-    }
-
-    toast.success('Contact created successfully!');
-
-    reset();
-  }, [isSubmitSuccessful, reset]);
 
   // toggle form fields for different contact types
   useEffect(() => {
@@ -415,8 +409,8 @@ function ContactTable({ data }) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error, _, previousValue) => {
-      queryClient.setQueryData(queryKey, previousValue);
+    onError: (error, _, context) => {
+      queryClient.setQueryData(queryKey, context.previousValue);
       onRequestError(error, 'We had some trouble deleting this contact.');
     },
   });

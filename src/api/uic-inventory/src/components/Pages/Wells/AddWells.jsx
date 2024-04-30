@@ -396,8 +396,8 @@ function WellTable({ wells = [], state, dispatch }) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error, previousValue) => {
-      queryClient.setQueryData(queryKey, previousValue);
+    onError: (error, _, context) => {
+      queryClient.setQueryData(queryKey, context.previousValue);
       onRequestError(error, 'We had some trouble deleting this well.');
     },
   });
@@ -432,6 +432,7 @@ function WellTable({ wells = [], state, dispatch }) {
       toast.success('Well updated successfully!');
     },
     onError: (error, _, context) => {
+      console.log('here');
       onRequestError(error, 'We had some trouble updating this well.');
       queryClient.setQueryData(queryKey, context.previousValue);
     },
