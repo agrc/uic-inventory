@@ -36,7 +36,7 @@ public class MustHaveEditableSiteStatus : IAuthorizationRequirement {
                 return AuthorizationResult.Succeed();
             }
 
-            return AuthorizationResult.Fail("S03:You cannot make changes to a site with approved inventories.");
+            return AuthorizationResult.Fail("S03:You cannot make changes to a site with submitted inventories.");
         }
     }
 }
