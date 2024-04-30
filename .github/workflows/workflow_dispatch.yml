@@ -11,7 +11,7 @@ jobs:
       id-token: write
       contents: read
     environment:
-      name: dev
+      name: prod
 
     steps:
       - name: ⬇️ Set up code
