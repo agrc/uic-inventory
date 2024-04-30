@@ -54,7 +54,7 @@ public class WaterSystemContactPayload(WaterSystemContacts contact) {
 }
 public class WellPayload : ResponseContract {
     private const string Unknown = "unknown";
-    public WellPayload(UnauthorizedAccessException error) : base(error.Message) {
+    public WellPayload(UnauthorizedException error) : base(error.Message) {
         WaterSystemContacts = [];
         Status = Unknown;
         Geometry = "{}";
