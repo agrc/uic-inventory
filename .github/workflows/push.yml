@@ -11,7 +11,7 @@ on:
       - ".github/workflows/push.yml"
 
 concurrency:
-  group: "${{ github.head_ref || github.ref }}"
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -61,6 +61,7 @@ jobs:
       contents: read
     environment:
       name: dev
+    if: github.ref_name == 'dev'
 
     steps:
       - name: ⬇️ Set up code
@@ -150,6 +151,7 @@ jobs:
       contents: read
     environment:
       name: prod
+    if: github.ref_name == 'main'
 
     steps:
       - name: ⬇️ Set up code

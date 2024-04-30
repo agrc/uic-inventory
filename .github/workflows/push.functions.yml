@@ -10,7 +10,7 @@ on:
       - ".github/workflows/push.functions.yml"
 
 concurrency:
-  group: "${{ github.head_ref || github.ref }}-functions"
+  group: "${{ github.workflow }}-${{ github.ref }}-functions"
   cancel-in-progress: true
 
 jobs:
@@ -22,6 +22,7 @@ jobs:
       contents: read
     environment:
       name: dev
+    if: github.ref_name == 'dev'
 
     steps:
       - name: ⬇️ Set up code
@@ -59,6 +60,7 @@ jobs:
       contents: read
     environment:
       name: prod
+    if: github.ref_name == 'main'
 
     steps:
       - name: ⬇️ Set up code
