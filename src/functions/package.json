@@ -13,10 +13,10 @@
   "license": "MIT",
   "dependencies": {
     "@arcgis/core": "^4.29.10",
-    "@google-cloud/functions-framework": "^3.3.0",
-    "@google-cloud/storage": "^7.10.0",
+    "@google-cloud/functions-framework": "^3.4.0",
+    "@google-cloud/storage": "^7.10.2",
     "base64-stream": "^1.0.0",
-    "ky": "^1.2.3",
+    "ky": "^1.2.4",
     "lodash.startcase": "^4.4.0",
     "pdf-lib": "^1.17.1",
     "pdfmake": "^0.2.10",
