@@ -65,10 +65,10 @@ public class InventoryPayload : ResponseContract {
         CompletedOn = inventory.CompletedOn;
 
 
-        UnderReviewBy = inventory.UnderReviewByAccount is null ? null : new(inventory.UnderReviewByAccount);
-        ApprovedBy = inventory.ApprovedByAccount is null ? null : new(inventory.ApprovedByAccount);
-        AuthorizedBy = inventory.AuthorizedByAccount is null ? null : new(inventory.AuthorizedByAccount);
-        CompletedBy = inventory.CompletedByAccount is null ? null : new(inventory.CompletedByAccount);
+        UnderReviewBy = new(inventory.UnderReviewByAccount);
+        ApprovedBy = new(inventory.ApprovedByAccount);
+        AuthorizedBy = new(inventory.AuthorizedByAccount);
+        CompletedBy = new(inventory.CompletedByAccount);
     }
     public int Id { get; set; }
     public int SubClass { get; set; }
