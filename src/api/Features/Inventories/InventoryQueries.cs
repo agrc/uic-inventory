@@ -19,6 +19,10 @@ public static class GetInventoryById {
 
         public async Task<Inventory?> Handle(Query message, CancellationToken cancellationToken) =>
           await _context.Inventories
+            .Include(x => x.UnderReviewByAccount)
+            .Include(x => x.ApprovedByAccount)
+            .Include(x => x.AuthorizedByAccount)
+            .Include(x => x.CompletedByAccount)
             .Include(x => x.Wells)
             .ThenInclude(x => x.WaterSystemContacts)
             .AsSplitQuery()
