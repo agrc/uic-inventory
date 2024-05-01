@@ -221,18 +221,14 @@ export function Component() {
           <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
             Approve Submission Confirmation
           </Dialog.Title>
-          <Dialog.Description>
-            Was the inventory reviewed and an Authorization by Rule (ABR) letter was submitted?
-          </Dialog.Description>
+          <Dialog.Description>Has the inventory been reviewed and is it ready to be approved?</Dialog.Description>
           <p className="mt-1 text-sm text-gray-500">Are you sure you want to approve this submission?</p>
         </ConfirmationModal>
         <ConfirmationModal isOpen={authorizeIsOpen} onClose={closeAuthorize} onYes={authorize}>
           <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
             Authorize Submission Confirmation
           </Dialog.Title>
-          <Dialog.Description>
-            Has the inventory information has been entered into the UIC geodatabase?
-          </Dialog.Description>
+          <Dialog.Description>Has the inventory information been entered into the UIC geodatabase?</Dialog.Description>
           <p className="mt-1 text-sm text-gray-500">Are you sure you want to authorize this submission?</p>
         </ConfirmationModal>
         <ConfirmationModal isOpen={completeIsOpen} onClose={closeComplete} onYes={complete}>
