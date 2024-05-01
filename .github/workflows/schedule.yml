@@ -13,7 +13,7 @@ jobs:
       id-token: write
       contents: read
     environment:
-      name: dev
+      name: prod
 
     steps:
       - name: ⬇️ Set up code
@@ -55,7 +55,7 @@ jobs:
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
 
       - name: ☁️ Set up Cloud SDK
-        uses: "google-github-actions/setup-gcloud@v2"
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: 🔄 Update database
         working-directory: ./cloudrun-malware-scanner
