@@ -18,9 +18,10 @@ public class MustHaveElevatedAccount : IAuthorizationRequirement {
             await Task.FromResult(0);
 
             _log.ForContext("accessed by", _metadata.Account)
-               .Warning("access to elevated item not permitted");
+                .ForContext("authorization", "MustHaveElevatedAccount:A05")
+                .Warning("access to elevated item not permitted");
 
-            return AuthorizationResult.Fail("A04:Your account access does not permit this action.");
+            return AuthorizationResult.Fail("A05:Your account access does not permit this action.");
         }
     }
 }

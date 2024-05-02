@@ -19,27 +19,26 @@ public class MustHaveCompleteInventory(int inventoryId) : IAuthorizationRequirem
         public async Task<AuthorizationResult> Handle(
           MustHaveCompleteInventory requirement,
           CancellationToken token = default) {
-            var inventory = await _context.Inventories.SingleOrDefaultAsync(x => x.Id == requirement.InventoryId, token);
+            var inventory = await _context.Inventories.SingleAsync(x => x.Id == requirement.InventoryId, token);
 
-            if (inventory is null) {
-                return AuthorizationResult.Fail("I01:You cannot access items that you do not own.");
-            }
+            if (inventory.Status != InventoryStatus.Incomplete) {
+                _log.ForContext("inventory", inventory)
+                    .ForContext("authorization", "MustHaveCompleteInventory:I02")
+                    .Warning("already submitted inventory");
 
-            _metadata.Inventory = inventory;
-
-            if (_metadata.Inventory.Status != InventoryStatus.Incomplete) {
                 return AuthorizationResult.Fail("I02:This inventory has already been submitted.");
             }
 
-            var status = new List<bool> { _metadata.Inventory.DetailStatus, _metadata.Inventory.LocationStatus };
+            var status = new List<bool> { inventory.DetailStatus, inventory.LocationStatus };
 
-            if (_metadata.Inventory.SubClass == 5002) {
-                status.Add(_metadata.Inventory.ContactStatus);
+            if (inventory.IsSerInventory()) {
+                status.Add(inventory.ContactStatus);
             }
 
             if (!status.All(x => x)) {
-                _log.ForContext("inventory", _metadata.Inventory)
-                  .Warning("Cannot submit to incomplete inventory");
+                _log.ForContext("inventory", inventory)
+                    .ForContext("authorization", "MustHaveCompleteInventory:I03")
+                    .Warning("incomplete inventory");
 
                 return AuthorizationResult.Fail("I03:You must complete your inventory before submitting.");
             }

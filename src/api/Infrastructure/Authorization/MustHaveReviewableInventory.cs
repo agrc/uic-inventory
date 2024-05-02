@@ -19,29 +19,20 @@ public class MustHaveReviewableInventory(int inventoryId) : IAuthorizationRequir
         public async Task<AuthorizationResult> Handle(
           MustHaveReviewableInventory requirement,
           CancellationToken token = default) {
-            var inventory = await _context.Inventories.SingleOrDefaultAsync(x => x.Id == requirement.InventoryId, token);
+            var inventory = await _context.Inventories.SingleAsync(x => x.Id == requirement.InventoryId, token);
 
-            if (inventory is null) {
-                return AuthorizationResult.Fail("IS01:You cannot access items that you do not own.");
-            }
+            var status = new List<bool> { inventory.DetailStatus, inventory.LocationStatus };
 
-            _metadata.Inventory = inventory;
-
-            if (!_metadata.Inventory.Status.IsReviewable()) {
-                return AuthorizationResult.Fail("IS02:This inventory is not reviewable.");
-            }
-
-            var status = new List<bool> { _metadata.Inventory.DetailStatus, _metadata.Inventory.LocationStatus };
-
-            if (_metadata.Inventory.SubClass == 5002) {
-                status.Add(_metadata.Inventory.ContactStatus);
+            if (inventory.IsSerInventory()) {
+                status.Add(inventory.ContactStatus);
             }
 
             if (!status.All(x => x)) {
-                _log.ForContext("inventory", _metadata.Inventory)
-                  .Warning("Cannot submit to incomplete inventory");
+                _log.ForContext("inventory", inventory)
+                    .ForContext("authorization", "MustHaveReviewableInventory:IS01")
+                    .Warning("Cannot submit to incomplete inventory");
 
-                return AuthorizationResult.Fail("IS03:You must complete your inventory before it can be submit.");
+                return AuthorizationResult.Fail("IS01:You must complete your inventory before it can be submit.");
             }
 
             return AuthorizationResult.Succeed();

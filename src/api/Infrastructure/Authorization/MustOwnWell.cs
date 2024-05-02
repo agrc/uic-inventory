@@ -20,6 +20,10 @@ public class MustOwnWell(int id) : IAuthorizationRequirement {
             var well = await _context.Wells.SingleOrDefaultAsync(x => x.Id == requirement.WellId, token);
 
             if (well is null) {
+                _log.ForContext("well", well)
+                    .ForContext("authorization", "MustOwnWell:W01")
+                    .Warning("well not found");
+
                 return AuthorizationResult.Fail("W01:You cannot access items that you do not own.");
             }
 
@@ -32,8 +36,9 @@ public class MustOwnWell(int id) : IAuthorizationRequirement {
                     return AuthorizationResult.Succeed();
                 }
 
-                _log.ForContext("accessed by", _metadata.Account)
-                    .Warning("Access to external item not permitted");
+                _log.ForContext("account", _metadata.Account)
+                   .ForContext("authorization", "MustOwnWell:W01")
+                   .Warning("Access to external item not permitted");
 
                 return AuthorizationResult.Fail("W01:You cannot access items that you do not own.");
             }

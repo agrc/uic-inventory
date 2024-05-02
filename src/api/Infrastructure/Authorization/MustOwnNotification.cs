@@ -21,10 +21,18 @@ public class MustOwnNotification(int id) : IAuthorizationRequirement {
             var receipt = await _context.NotificationReceipts.SingleOrDefaultAsync(x => x.Id == requirement.NotificationId, token);
 
             if (receipt is null) {
+                _log.ForContext("receipt", receipt)
+                   .ForContext("authorization", "MustOwnNotification:N01")
+                   .Warning("notification not found");
+
                 return AuthorizationResult.Fail("N01:This notification does not exist.");
             }
 
             if (receipt.RecipientId != _metadata.Account.Id) {
+                _log.ForContext("receipt", receipt)
+                   .ForContext("authorization", "MustOwnNotification:N01")
+                   .Warning("not owner");
+
                 return AuthorizationResult.Fail("N02:You cannot edit items that you do not own.");
             }
 

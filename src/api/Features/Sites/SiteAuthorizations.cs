@@ -16,8 +16,9 @@ public class GetSiteByIdAuthorizer(IHttpContextAccessor context) : AbstractReque
 
     public override void BuildPolicy(GetSiteById.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustHaveCompleteProfile());
+
+        UseRequirement(new MustOwnSite(request.SiteId));
     }
 }
 
@@ -35,9 +36,10 @@ public class UpdateSiteAuthorizer(IHttpContextAccessor context) : AbstractReques
 
     public override void BuildPolicy(UpdateSite.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustHaveCompleteProfile());
+
         UseRequirement(new MustOwnSite(request.Site.SiteId));
         UseRequirement(new MustHaveEditableSiteStatus());
-        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -46,8 +48,9 @@ public class DeleteSiteAuthorizer(IHttpContextAccessor context) : AbstractReques
 
     public override void BuildPolicy(DeleteSite.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustHaveCompleteProfile());
+
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustHaveEditableSiteStatus());
-        UseRequirement(new MustHaveCompleteProfile());
     }
 }

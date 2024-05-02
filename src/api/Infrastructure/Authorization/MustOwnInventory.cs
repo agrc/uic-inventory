@@ -20,6 +20,10 @@ public class MustOwnInventory(int id) : IAuthorizationRequirement {
             var inventory = await _context.Inventories.SingleOrDefaultAsync(x => x.Id == requirement.InventoryId, token);
 
             if (inventory is null) {
+                _log.ForContext("inventory", inventory)
+                    .ForContext("authorization", "MustOwnInventory:I01")
+                    .Warning("not owner");
+
                 return AuthorizationResult.Fail("I01:You cannot access items that you do not own.");
             }
 
@@ -29,12 +33,14 @@ public class MustOwnInventory(int id) : IAuthorizationRequirement {
                 if (_metadata.Account.Access == AccessLevels.elevated) {
                     _log.ForContext("inventoryId", requirement.InventoryId)
                         .ForContext("account", _metadata.Account)
+                        .ForContext("authorization", "MustOwnInventory")
                         .Information("Elevated access to external item");
 
                     return AuthorizationResult.Succeed();
                 }
 
-                _log.ForContext("accessed by", _metadata.Account)
+                _log.ForContext("account", _metadata.Account)
+                    .ForContext("authorization", "MustOwnInventory:I01")
                     .Warning("Access to external item not permitted");
 
                 return AuthorizationResult.Fail("I01:You cannot access items that you do not own.");

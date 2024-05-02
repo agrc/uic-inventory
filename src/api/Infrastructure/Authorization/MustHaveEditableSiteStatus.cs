@@ -19,8 +19,8 @@ public class MustHaveEditableSiteStatus : IAuthorizationRequirement {
           CancellationToken token = default) {
 
             var site = await _context.Sites
-            .Include(x => x.Inventories)
-            .SingleAsync(x => x.Id == _metadata.Site.Id, token);
+                .Include(x => x.Inventories)
+                .SingleAsync(x => x.Id == _metadata.Site.Id, token);
 
             if (_metadata.Account.Id != site.AccountFk) {
                 if (_metadata.Account.Access == AccessLevels.elevated) {
@@ -36,7 +36,11 @@ public class MustHaveEditableSiteStatus : IAuthorizationRequirement {
                 return AuthorizationResult.Succeed();
             }
 
-            return AuthorizationResult.Fail("S03:You cannot make changes to a site with submitted inventories.");
+            _log.ForContext("site", site)
+                .ForContext("authorization", "MustHaveEditableSiteStatus:S02")
+                .Warning("no changes to submitted inventory");
+
+            return AuthorizationResult.Fail("S02:You cannot make changes to a site with submitted inventories.");
         }
     }
 }

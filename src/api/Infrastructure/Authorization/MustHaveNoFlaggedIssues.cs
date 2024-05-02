@@ -8,21 +8,20 @@ using Serilog;
 
 namespace api.Infrastructure;
 public class MustHaveNoFlaggedIssues() : IAuthorizationRequirement {
-    private class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveNoFlaggedIssues> {
+    private class Handler(HasRequestMetadata metadata, ILogger log) : IAuthorizationHandler<MustHaveNoFlaggedIssues> {
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;
-        private readonly AppDbContext _context = context;
 
         public async Task<AuthorizationResult> Handle(
           MustHaveNoFlaggedIssues requirement,
           CancellationToken token = default) {
-            var inventory = _metadata.Inventory;
 
-            if (!string.IsNullOrEmpty(inventory.Flagged)) {
+            if (!string.IsNullOrEmpty(_metadata.Inventory.Flagged)) {
                 _log.ForContext("inventory", _metadata.Inventory)
-                      .Warning("Cannot approve flagged inventory");
+                    .ForContext("authorization", "MustHaveNoFlaggedIssues:I06")
+                    .Warning("Cannot approve flagged inventory");
 
-                return AuthorizationResult.Fail("IF01:You cannot approve an inventory with an unresolved flag.");
+                return AuthorizationResult.Fail("I06:You cannot approve an inventory with an unresolved issue.");
             }
 
             await Task.FromResult(0);

@@ -21,16 +21,14 @@ public class MustHaveInventoryStatus(int inventoryId, IEnumerable<InventoryStatu
         public async Task<AuthorizationResult> Handle(
           MustHaveInventoryStatus requirement,
           CancellationToken token = default) {
-            var inventory = await _context.Inventories.SingleOrDefaultAsync(x => x.Id == requirement.InventoryId, token);
-
-            if (inventory is null) {
-                return AuthorizationResult.Fail("IS01:You cannot access items that you do not own.");
-            }
-
-            _metadata.Inventory = inventory;
+            var inventory = await _context.Inventories.SingleAsync(x => x.Id == requirement.InventoryId, token);
 
             if (!requirement.AcceptableStatus.Contains(inventory.Status)) {
-                return AuthorizationResult.Fail($"IS02:Unexpected inventory status, {_metadata.Inventory.Status}.");
+                _log.ForContext("inventory", inventory)
+                   .ForContext("authorization", "MustHaveInventoryStatus:I04")
+                   .Warning("wrong status");
+
+                return AuthorizationResult.Fail($"I04:Unexpected inventory status, {_metadata.Inventory.Status}.");
             }
 
             return AuthorizationResult.Succeed();

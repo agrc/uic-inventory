@@ -30,7 +30,7 @@ const UnauthorizedRoute = ({ routeError }) => {
   }, [routeError]);
 
   const codes = rules.map((x) => x.code);
-  if (codes.includes('S03')) {
+  if (codes.includes('S01')) {
     return <IncompleteSiteWarning />;
   } else if (codes.includes('I03')) {
     return <IncompleteInventoryWarning />;

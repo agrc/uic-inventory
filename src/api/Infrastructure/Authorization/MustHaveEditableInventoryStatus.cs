@@ -15,7 +15,11 @@ public class MustHaveEditableInventoryStatus : IAuthorizationRequirement {
           MustHaveEditableInventoryStatus requirement,
           CancellationToken token = default) {
             if (!new List<InventoryStatus> { InventoryStatus.Incomplete, InventoryStatus.Complete }.Contains(_metadata.Inventory.Status)) {
-                return Task.FromResult(AuthorizationResult.Fail("S04:This inventory has been submitted and can no longer be edited."));
+                _log.ForContext("inventory", _metadata.Inventory)
+                    .ForContext("authorization", "MustHaveEditableInventoryStatus:I05")
+                    .Warning("edits to submitted inventory");
+
+                return Task.FromResult(AuthorizationResult.Fail("I05:This inventory has been submitted and can no longer be edited."));
             }
 
             return Task.FromResult(AuthorizationResult.Succeed());

@@ -35,6 +35,10 @@ public enum ContactTypes {
     other,
 }
 
+public static class RequiredContactTypes {
+    public static IReadOnlyCollection<ContactTypes> Types => [ContactTypes.owner_operator, ContactTypes.facility_owner, ContactTypes.legal_rep];
+}
+
 public class ContactInput {
     public int AccountId { get; set; }
     public int SiteId { get; set; }

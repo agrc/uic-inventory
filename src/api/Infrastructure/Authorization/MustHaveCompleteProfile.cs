@@ -14,7 +14,8 @@ public class MustHaveCompleteProfile : IAuthorizationRequirement {
           CancellationToken token = default) {
             if (!_metadata.Account.ProfileComplete) {
                 _log.ForContext("account", _metadata.Account)
-                  .Warning("Account has incomplete profile");
+                    .ForContext("authorization", "MustHaveCompleteProfile:P01")
+                    .Warning("Account has incomplete profile");
 
                 return Task.FromResult(AuthorizationResult.Fail("P01:You must complete your profile before submitting a site."));
             }

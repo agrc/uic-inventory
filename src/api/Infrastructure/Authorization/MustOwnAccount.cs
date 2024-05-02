@@ -29,6 +29,7 @@ public class MustOwnAccount(int id) : IAuthorizationRequirement {
                 }
 
                 _log.ForContext("accessed account", account)
+                    .ForContext("authorization", "MustOwnAccount:A04")
                     .ForContext("accessed by", _metadata.Account)
                     .Warning("Access to external item not permitted");
 

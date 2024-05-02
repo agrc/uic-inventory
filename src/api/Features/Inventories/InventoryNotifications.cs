@@ -111,7 +111,7 @@ public static class InventoryNotifications {
         private readonly ILogger _log = log;
 
         private static bool GetWellContactStatus(Inventory entity) {
-            if (entity.SubClass == 5002) {
+            if (entity.IsSerInventory()) {
                 return entity.Site?.Contacts.Any(x => x.SerContact) ?? false;
             }
 
@@ -159,7 +159,7 @@ public static class InventoryNotifications {
         private static InventoryStatus GetInventoryStatus(Inventory entity) {
             var currentStatus = new List<bool> { entity.DetailStatus, entity.LocationStatus, entity.SignatureStatus };
 
-            if (entity.SubClass == 5002) {
+            if (entity.IsSerInventory()) {
                 currentStatus.Add(entity.ContactStatus);
             }
 

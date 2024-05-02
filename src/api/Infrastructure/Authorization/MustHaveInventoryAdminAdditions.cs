@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using api.Features;
 using MediatR.Behaviors.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace api.Infrastructure;
@@ -16,24 +16,17 @@ public class MustHaveInventoryAdminAdditions() : IAuthorizationRequirement {
         public async Task<AuthorizationResult> Handle(
           MustHaveInventoryAdminAdditions requirement,
           CancellationToken token = default) {
-            var inventory = _metadata.Inventory;
-            var site = _context.Sites.Single(x => x.Id == inventory.SiteFk);
+            var site = await _context.Sites.SingleAsync(x => x.Id == _metadata.Inventory.SiteFk, cancellationToken: token);
 
-            if (inventory is null) {
-                return AuthorizationResult.Fail("I01:You cannot access items that you do not own.");
-            }
-
-            _metadata.Inventory = inventory;
-
-            await Task.FromResult(0);
-
-            var status = new List<string?> { inventory.Edocs, site.SiteId };
+            var status = new List<string?> { _metadata.Inventory.Edocs, site.SiteId };
 
             if (status.Any(string.IsNullOrEmpty)) {
                 _log.ForContext("inventory", _metadata.Inventory)
-                  .Warning("Cannot approve incomplete inventory");
+                    .ForContext("site", site)
+                    .ForContext("authorization", "MustHaveInventoryAdminAdditions:IS02")
+                    .Warning("Cannot approve incomplete inventory");
 
-                return AuthorizationResult.Fail("IA03:You must add an EDOCs number and a site id before you can approve this inventory.");
+                return AuthorizationResult.Fail("IS02:You must add an EDOCs number and a site id before you can authorize this inventory.");
             }
 
             return AuthorizationResult.Succeed();

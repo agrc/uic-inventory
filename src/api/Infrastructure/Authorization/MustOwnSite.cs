@@ -20,7 +20,11 @@ public class MustOwnSite(int id) : IAuthorizationRequirement {
             var site = await _context.Sites.SingleOrDefaultAsync(x => x.Id == requirement.SiteId, token);
 
             if (site is null) {
-                return AuthorizationResult.Fail("S02:You cannot access items that you do not own.");
+                _log.ForContext("site", site)
+                    .ForContext("authorization", "MustOwnSite:S01")
+                    .Warning("site not found");
+
+                return AuthorizationResult.Fail("S01:You cannot access items that you do not own.");
             }
 
             _metadata.Site = site;
@@ -29,13 +33,15 @@ public class MustOwnSite(int id) : IAuthorizationRequirement {
                 if (_metadata.Account.Access == AccessLevels.elevated) {
                     _log.ForContext("siteId", requirement.SiteId)
                         .ForContext("account", _metadata.Account)
+                        .ForContext("authorization", "MustOwnSite")
                         .Information("Elevated access to external item");
 
                     return AuthorizationResult.Succeed();
                 }
 
-                _log.ForContext("accessed by", _metadata.Account)
-                    .Warning("Access to external item not permitted");
+                _log.ForContext("account", _metadata.Account)
+                   .ForContext("authorization", "MustHaveInventoryStatus:S01")
+                   .Warning("Access to external item not permitted");
 
                 return AuthorizationResult.Fail("S01:You cannot access items that you do not own.");
             }
