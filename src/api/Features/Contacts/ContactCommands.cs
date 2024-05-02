@@ -33,6 +33,37 @@ public static class CreateContact {
     }
 }
 
+public static class CreateSerContact {
+    public class Command(int siteId, int InventoryId, ContactInput input) : IRequest<Contact> {
+        public int SiteId { get; } = siteId;
+        public int InventoryId { get; } = InventoryId;
+        public ContactInput Input { get; } = input;
+
+        public class Handler(AppDbContext context, IPublisher publisher, ILogger log) : IRequestHandler<Command, Contact> {
+            private readonly ILogger _log = log;
+            private readonly AppDbContext _context = context;
+            private readonly IPublisher _publisher = publisher;
+
+            public async Task<Contact> Handle(Command request, CancellationToken cancellationToken) {
+                _log.ForContext("input", request)
+                  .Debug("Creating SER contact");
+
+                var newContact = request.Input.Update(new());
+                newContact.SerContact = true;
+
+                var contact = await _context.Contacts.AddAsync(request.Input.Update(new()), cancellationToken);
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                await _publisher.Publish(new ContactNotifications.AddContactNotification(request.Input.SiteId, request.Input.AccountId), cancellationToken);
+
+                return contact.Entity;
+            }
+        }
+    }
+}
+
+
 public static class DeleteContact {
     public class Command(ContactInput input) : IRequest {
         public int AccountId { get; } = input.AccountId;

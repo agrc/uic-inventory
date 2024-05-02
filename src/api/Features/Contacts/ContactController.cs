@@ -43,20 +43,44 @@ public class ContactsController(IMediator mediator, ILogger log) : ControllerBas
 
             return Ok(new ContactPayload(result));
         } catch (UnauthorizedException ex) {
-            _log.ForContext("endpoint", "POST:api/site/contact")
+            _log.ForContext("endpoint", "POST:api/contact")
               .ForContext("input", input)
               .ForContext("requirement", ex.Message)
               .Warning("CreateContactAsync requirements failure");
 
             return Unauthorized(new ContactPayload(ex));
         } catch (Exception ex) {
-            _log.ForContext("endpoint", "POST:api/site/contact")
+            _log.ForContext("endpoint", "POST:api/contact")
               .ForContext("input", input)
               .Fatal(ex, "Unhandled exception");
 
             return StatusCode(500, new ContactPayload(ex));
         }
     }
+
+    [HttpPost("/api/ser-contact")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<ContactPayload>> CreateSerContactAsync(SerContactInput input, CancellationToken token) {
+        try {
+            var result = await _mediator.Send(new CreateSerContact.Command(input.SiteId, input.InventoryId, input), token);
+
+            return Ok(new ContactPayload(result));
+        } catch (UnauthorizedException ex) {
+            _log.ForContext("endpoint", "POST:api/ser-contact")
+              .ForContext("input", input)
+              .ForContext("requirement", ex.Message)
+              .Warning("CreateSerContactAsync requirements failure");
+
+            return Unauthorized(new ContactPayload(ex));
+        } catch (Exception ex) {
+            _log.ForContext("endpoint", "POST:api/ser-contact")
+              .ForContext("input", input)
+              .Fatal(ex, "Unhandled exception");
+
+            return StatusCode(500, new ContactPayload(ex));
+        }
+    }
+
 
     [HttpDelete("/api/contact")]
     [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]

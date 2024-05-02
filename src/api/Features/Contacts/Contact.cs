@@ -56,6 +56,9 @@ public class ContactInput {
     public bool SerContact { get; set; }
 }
 
+public class SerContactInput : ContactInput {
+    public int InventoryId { get; set; }
+}
 public static class ContactInputExtension {
     public static Contact Update(this ContactInput input, Contact output) {
         output.SiteFk = input.SiteId;
