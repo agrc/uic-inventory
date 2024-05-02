@@ -19,12 +19,20 @@ const errorSchema = yup
   })
   .required();
 
-const onRequestError = async (error, defaultMessage = 'Something went terribly wrong that we did not expect.') => {
+const onRequestError = async (
+  error,
+  defaultMessage = 'Something went terribly wrong that we did not expect.',
+  showToast = true,
+) => {
   let toastMessage = defaultMessage;
   let response = { message: undefined };
 
   if (error.response.status === 404) {
-    return toast.error('This item does not exist.');
+    if (showToast) {
+      return toast.error('This item does not exist.');
+    } else {
+      return 'This item does not exist.';
+    }
   }
 
   try {
@@ -37,7 +45,11 @@ const onRequestError = async (error, defaultMessage = 'Something went terribly w
     toastMessage = response.errors.map((x) => x.message).join('\n');
   }
 
-  return toast.error(toastMessage);
+  if (showToast) {
+    return toast.error(toastMessage);
+  } else {
+    return response.errors;
+  }
 };
 
 export default onRequestError;

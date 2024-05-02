@@ -41,7 +41,7 @@ export function Component() {
   const queryKey = ['ser-contacts', siteId];
   const { status, error, data } = useQuery(getSerContact(siteId));
   const { mutate } = useMutation({
-    mutationFn: (json) => ky.post('/api/contact', { json }),
+    mutationFn: (json) => ky.post('/api/ser-contact', { json }),
     onMutate: async (contact) => {
       await queryClient.cancelQueries({ queryKey });
       const previousValue = queryClient.getQueryData(queryKey);
@@ -73,6 +73,7 @@ export function Component() {
 
     const input = {
       siteId: parseInt(siteId),
+      inventoryId: parseInt(inventoryId),
       accountId: parseInt(authInfo.id),
       contactType: 'project_manager',
       serContact: true,

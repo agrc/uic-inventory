@@ -133,6 +133,39 @@ function CreateContactForm({ data }) {
     },
   });
 
+  const { mutate: createSer } = useMutation({
+    mutationFn: (json) => ky.post('/api/ser-contact', { json }),
+    onMutate: async (contact) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousValue = queryClient.getQueryData(queryKey);
+
+      queryClient.setQueryData(queryKey, (old) => ({
+        ...old,
+        contacts: [...old.contacts, { ...contact, contactType: valueToLabel(contactTypes, contact.contactType) }],
+      }));
+
+      return { previousValue };
+    },
+    onSuccess: () => {
+      toast.success('Contact created successfully!');
+
+      reset();
+    },
+    onError: async (error, _, context) => {
+      queryClient.setQueryData(queryKey, context.previousValue);
+      const errors = await onRequestError(error, 'We had some trouble creating this contact.', false);
+
+      if (errors.map((x) => x.code).includes('I01')) {
+        return toast.error('SER contacts need to be added on a SER inventory once there are submitted inventories.');
+      } else {
+        return toast.error(errors.map((x) => x.message).join('\n'));
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+  });
+
   // toggle form fields for different contact types
   useEffect(() => {
     const contactFieldNames = ['contactType', 'mailingAddress', 'city', 'state', 'zipCode'];
@@ -190,10 +223,11 @@ function CreateContactForm({ data }) {
 
     if (isSerContact) {
       input.contactType = 'project_manager';
-      input.serContact = true;
-    }
 
-    mutate(input);
+      createSer(input);
+    } else {
+      mutate(input);
+    }
   };
 
   return (
