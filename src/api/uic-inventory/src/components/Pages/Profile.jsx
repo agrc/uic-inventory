@@ -79,6 +79,7 @@ const ProfileForm = ({ id, data }) => {
   const { mutate } = useMutation({
     mutationFn: (data) => ky.put('/api/account', { json: { ...data, id } }).json(),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['auth'] });
       queryClient.invalidateQueries({ queryKey: ['all-accounts'] });
       navigate(-1);
