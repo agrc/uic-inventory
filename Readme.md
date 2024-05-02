@@ -45,3 +45,22 @@ dotnet user-secrets set "GroundWaterContacts:Connection" "the connection string 
 ### App secrets
 
 1. Duplicate `./src/api/uic-inventory/.env` to `./src/api/uic-inventory/.env.local` and add an API key.
+
+## Deployment
+
+> [!WARNING]
+> There are a lot of chicken and egg issues with this project deployment.
+
+### API deployment
+
+1. Request the Cloud Run service account is attached to the DTS shared VPC
+1. Request an authorized network for the Memorystore Redis
+1. Update those values in the terraform and apply the plan. It will fail.
+1. Update the `secret-appsettings` with the database password, redis URI, UtahID client information, and report function URI.
+
+### Malware scanner deployment
+
+1. Run the `Scheduled Events` GitHub Action to create the clam AV data
+1. Run the `Workflow Dispatch Events` GitHub Action to create the clam AV Cloud Run
+
+1. Rerun the terraform
