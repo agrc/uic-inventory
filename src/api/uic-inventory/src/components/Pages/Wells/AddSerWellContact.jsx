@@ -2,13 +2,13 @@ import { Dialog, Transition } from '@headlessui/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import clsx from 'clsx';
 import ky from 'ky';
 import PropTypes from 'prop-types';
 import { Fragment, useContext, useMemo, useRef } from 'react';
 import { BulletList } from 'react-content-loader';
 import { useForm } from 'react-hook-form';
-import { useTable } from 'react-table';
 import { AuthContext } from '../../../AuthProvider';
 import { serContactTypes, serDivisions, valueToLabel } from '../../../data/lookups';
 import {
@@ -210,13 +210,13 @@ function ContactTable({ data }) {
   const columns = useMemo(
     () => [
       {
-        Header: 'Id',
-        accessor: 'id',
+        header: 'Id',
+        accessorKey: 'id',
       },
       {
         id: 'name',
-        Header: 'Name',
-        Cell: function name(data) {
+        header: 'Name',
+        cell: function name(data) {
           return (
             <div className="text-sm font-medium text-gray-900">{`${data.row.original.firstName} ${data.row.original.lastName}`}</div>
           );
@@ -224,8 +224,8 @@ function ContactTable({ data }) {
       },
       {
         id: 'contact',
-        Header: 'Contact',
-        Cell: function contact(data) {
+        header: 'Contact',
+        cell: function contact(data) {
           return (
             <>
               <div className="text-sm text-gray-900">{data.row.original.email}</div>
@@ -235,13 +235,13 @@ function ContactTable({ data }) {
         },
       },
       {
-        Header: 'Oversight agency',
-        accessor: 'organization',
+        header: 'Oversight agency',
+        accessorKey: 'organization',
       },
       {
         id: 'action',
-        Header: 'Action',
-        Cell: function action(data) {
+        header: 'Action',
+        cell: function action(data) {
           return (
             <TrashIcon
               aria-label="delete site"
@@ -258,7 +258,7 @@ function ContactTable({ data }) {
     [open],
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });
+  const table = useReactTable({ columns, data, getCoreRowModel: getCoreRowModel() });
 
   const queryClient = useQueryClient();
 
@@ -345,46 +345,42 @@ function ContactTable({ data }) {
           </div>
         </Dialog>
       </Transition>
-      <table {...getTableProps()} className="min-w-full divide-y divide-gray-200">
+      <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
-          {headerGroups.map((headerGroup) => (
-            <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
                 <th
-                  key={`${headerGroup.index}-${column.id}`}
-                  {...column.getHeaderProps()}
+                  key={header.id}
                   className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                 >
-                  {column.render('Header')}
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white">
-          {rows.map((row) => {
-            prepareRow(row);
-
-            return (
-              <tr key={`${row.index}`} {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td
-                    key={`${row.index}-${cell.column.id}`}
-                    className={clsx(
-                      {
-                        'font-medium': ['action', 'id'].includes(cell.column.id),
-                        'whitespace-nowrap text-right': cell.column.id === 'action',
-                      },
-                      'px-3 py-4',
-                    )}
-                    {...cell.getCellProps()}
-                  >
-                    <div className="text-sm text-gray-900">{cell.render('Cell')}</div>
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
+        <tbody className="divide-y divide-gray-200 bg-white">
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td
+                  key={cell.id}
+                  className={clsx(
+                    {
+                      'font-medium': ['action', 'id'].includes(cell.column.id),
+                      'whitespace-nowrap text-right': cell.column.id === 'action',
+                    },
+                    'px-3 py-4',
+                  )}
+                >
+                  <div className="text-sm text-gray-900">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </div>
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </>

@@ -1,9 +1,10 @@
 import { ChevronDownIcon, ChevronUpIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
+import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import clsx from 'clsx';
 import ky from 'ky';
 import { useContext, useMemo } from 'react';
 import { BulletList } from 'react-content-loader';
-import { useSortBy, useTable } from 'react-table';
 import { AuthContext } from '../../../AuthProvider';
 import { Chrome, onRequestError, useNavigate } from '../../PageElements';
 
@@ -32,28 +33,28 @@ const UserTable = ({ accounts = [] }) => {
   const columns = useMemo(
     () => [
       {
-        accessor: 'id',
+        accessorKey: 'id',
       },
       {
-        Header: 'First',
-        accessor: 'firstName',
+        header: 'First',
+        accessorKey: 'firstName',
       },
       {
-        Header: 'Last',
-        accessor: 'lastName',
+        header: 'Last',
+        accessorKey: 'lastName',
       },
       {
-        Header: 'Email',
-        accessor: 'email',
+        header: 'Email',
+        accessorKey: 'email',
       },
       {
-        Header: 'Access',
-        accessor: 'access',
+        header: 'Access',
+        accessorKey: 'access',
       },
       {
-        Header: 'Profile',
+        header: 'Profile',
         id: 'action',
-        Cell: function action({ row }) {
+        cell: function action({ row }) {
           return (
             <UserCircleIcon
               aria-label="view account"
@@ -71,58 +72,64 @@ const UserTable = ({ accounts = [] }) => {
     [navigate],
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable(
-    {
-      columns,
-      data: accounts,
-      initialState: {
-        hiddenColumns: ['id'],
+  const table = useReactTable({
+    columns,
+    data: accounts,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    initialState: {
+      columnVisibility: {
+        id: false,
       },
     },
-    useSortBy,
-  );
+  });
 
   return (
-    <table {...getTableProps()} className="w-full divide-y divide-gray-200 overflow-auto border">
+    <table className="w-full divide-y divide-gray-200 overflow-auto border">
       <thead className="bg-gray-50">
-        {headerGroups.map((headerGroup) => (
-          // eslint-disable-next-line react/jsx-key
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              // eslint-disable-next-line react/jsx-key
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
               <th
-                {...column.getHeaderProps(column.getSortByToggleProps())}
-                className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                key={header.id}
+                className={clsx(
+                  {
+                    'cursor-pointer select-none': header.column.getCanSort(),
+                  },
+                  'px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500',
+                )}
+                onClick={header.column.getToggleSortingHandler()}
+                title={
+                  header.column.getCanSort()
+                    ? header.column.getNextSortingOrder() === 'asc'
+                      ? 'Sort ascending'
+                      : header.column.getNextSortingOrder() === 'desc'
+                        ? 'Sort descending'
+                        : 'Clear sort'
+                    : undefined
+                }
               >
-                {column.render('Header')}
-                {column.isSorted ? (
-                  column.isSortedDesc ? (
-                    <ChevronUpIcon className="ml-2 inline h-5 w-5" />
-                  ) : (
-                    <ChevronDownIcon className="ml-2 inline h-5 w-5" />
-                  )
-                ) : null}
+                {flexRender(header.column.columnDef.header, header.getContext())}
+                {{
+                  asc: <ChevronDownIcon className="ml-2 inline size-3" />,
+                  desc: <ChevronUpIcon className="ml-2 inline size-3" />,
+                }[header.column.getIsSorted()] ?? null}
               </th>
             ))}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white text-sm text-gray-900">
-        {rows.map((row) => {
-          prepareRow(row);
 
-          return (
-            // eslint-disable-next-line react/jsx-key
-            <tr className="cursor-default hover:bg-blue-100" {...row.getRowProps()}>
-              {row.cells.map((cell) => (
-                // eslint-disable-next-line react/jsx-key
-                <td {...cell.getCellProps()}>
-                  <div className="px-3 py-2">{cell.render('Cell')}</div>
-                </td>
-              ))}
-            </tr>
-          );
-        })}
+      <tbody className="divide-y divide-gray-200 bg-white text-sm text-gray-900">
+        {table.getRowModel().rows.map((row) => (
+          <tr key={row.id} className="cursor-default hover:bg-blue-100">
+            {row.getVisibleCells().map((cell) => (
+              <td key={cell.id}>
+                <div className="px-3 py-2">{flexRender(cell.column.columnDef.cell, cell.getContext())}</div>
+              </td>
+            ))}
+          </tr>
+        ))}
       </tbody>
     </table>
   );

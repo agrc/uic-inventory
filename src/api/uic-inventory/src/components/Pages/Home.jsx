@@ -10,13 +10,19 @@ import {
 } from '@heroicons/react/20/solid';
 import { ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  flexRender,
+  getCoreRowModel,
+  getExpandedRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
 import clsx from 'clsx';
 import ky from 'ky';
 import PropTypes from 'prop-types';
 import { Fragment, useContext, useMemo, useRef } from 'react';
 import { List } from 'react-content-loader';
-import { useExpanded, useSortBy, useTable } from 'react-table';
 import { AuthContext } from '../../AuthProvider';
 import { wellTypes } from '../../data/lookups';
 import { useOpenClosed } from '../Hooks/useOpenClosedHook';
@@ -219,8 +225,9 @@ function SiteTable({ data }) {
   const columns = useMemo(
     () => [
       {
-        Header: 'Id',
-        Cell: function id({ row }) {
+        header: 'Id',
+        accessorKey: 'id',
+        cell: function id({ row }) {
           return (
             <div className="flex justify-between">
               {row.isExpanded ? (
@@ -232,22 +239,26 @@ function SiteTable({ data }) {
             </div>
           );
         },
-        SubCell: () => (
+        subCell: () => (
           <div className="flex h-full content-center items-center justify-between">
             <div className="mr-2 h-full w-full border-r border-gray-500 bg-gray-200"></div>
           </div>
         ),
+        enableSorting: true,
+        sortingFn: 'alphanumeric',
       },
       {
-        Header: 'Name',
-        accessor: 'name',
-        SubCell: ({ row }) => <>Order #{row.original.orderNumber}</>,
+        header: 'Name',
+        accessorKey: 'name',
+        enableSorting: true,
+        subCell: ({ row }) => <>Order #{row.original.orderNumber}</>,
       },
       {
         id: 'type',
-        Header: 'Type',
-        accessor: 'naicsTitle',
-        SubCell: ({ row }) => {
+        header: 'Type',
+        enableSorting: true,
+        accessorKey: 'naicsTitle',
+        subCell: ({ row }) => {
           return (
             <div className="flex items-center justify-between">
               <div>{wellTypes.find((item) => item.value === row.original.subClass).label}</div>
@@ -255,7 +266,7 @@ function SiteTable({ data }) {
                 siteId={`${row.original.siteId}`}
                 inventoryId={row.original.id}
                 status={row.original.status}
-                row={row.original}
+                row={row}
               />
             </div>
           );
@@ -263,14 +274,18 @@ function SiteTable({ data }) {
       },
       {
         id: 'status',
-        Header: 'Completeness',
-        Cell: function status({ row }) {
+        header: 'Completeness',
+        enableSorting: false,
+        cell: function status({ row }) {
           return (
             <div className="stroke-2">
               <Tippy content="Site details" singleton={target}>
                 <Link
                   to={`/site/${row.original.id}/add-details`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
                   <DocumentTextIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site details" />
                   {row.original.detailStatus ? (
@@ -290,6 +305,9 @@ function SiteTable({ data }) {
                 <Link
                   to={`/site/${row.original.id}/add-contacts`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
                   <UsersIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site contacts" />
                   {row.original.contactStatus ? (
@@ -309,6 +327,9 @@ function SiteTable({ data }) {
                 <Link
                   to={`/site/${row.original.id}/add-location`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
                 >
                   <MapPinIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site location" />
                   {row.original.locationStatus ? (
@@ -327,7 +348,7 @@ function SiteTable({ data }) {
             </div>
           );
         },
-        SubCell: ({ row }) => {
+        subCell: ({ row }) => {
           return (
             <div className="stroke-2">
               {row.original.subClass === 5002 && (
@@ -413,9 +434,10 @@ function SiteTable({ data }) {
         },
       },
       {
-        Header: '',
+        header: '',
         id: 'action',
-        Cell: function action({ row }) {
+        enableSorting: false,
+        cell: function action({ row }) {
           return (
             <TrashIcon
               aria-label="delete site"
@@ -430,7 +452,7 @@ function SiteTable({ data }) {
             />
           );
         },
-        SubCell: function action({ row }) {
+        subCell: function action({ row }) {
           return (
             <TrashIcon
               aria-label="delete inventory"
@@ -451,11 +473,22 @@ function SiteTable({ data }) {
     [openSiteModal, openInventoryModal, target],
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow, visibleColumns } = useTable(
-    { columns, data },
-    useSortBy,
-    useExpanded,
-  );
+  const table = useReactTable({
+    columns,
+    data,
+    getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    initialState: {
+      sorting: [
+        {
+          id: 'id',
+          desc: true, // sort by name in descending order by default
+        },
+      ],
+    },
+  });
+
   const queryKey = ['sites'];
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
@@ -568,60 +601,70 @@ function SiteTable({ data }) {
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
             <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
-              <table {...getTableProps()} className="h-full min-w-full divide-y divide-gray-200">
+              <table className="h-full min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
-                  {headerGroups.map((headerGroup) => (
-                    <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
-                      {headerGroup.headers.map((column) => (
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
                         <th
-                          {...column.getHeaderProps(column.getSortByToggleProps())}
-                          key={`${headerGroup.index}-${column.id}`}
-                          className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                          key={header.id}
+                          className={clsx(
+                            { 'cursor-pointer': header.column.getCanSort() },
+                            'select-none px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500',
+                          )}
+                          onClick={header.column.getToggleSortingHandler()}
+                          title={
+                            header.column.getCanSort()
+                              ? header.column.getNextSortingOrder() === 'asc'
+                                ? 'Sort ascending'
+                                : header.column.getNextSortingOrder() === 'desc'
+                                  ? 'Sort descending'
+                                  : 'Clear sort'
+                              : undefined
+                          }
                         >
-                          {column.render('Header')}
-                          {column.isSorted ? (
-                            column.isSortedDesc ? (
-                              <ChevronUpIcon className="ml-2 inline h-5 w-5" />
-                            ) : (
-                              <ChevronDownIcon className="ml-2 inline h-5 w-5" />
-                            )
-                          ) : null}
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {{
+                            asc: <ChevronDownIcon className="ml-2 inline size-3" />,
+                            desc: <ChevronUpIcon className="ml-2 inline size-3" />,
+                          }[header.column.getIsSorted()] ?? null}
                         </th>
                       ))}
                     </tr>
                   ))}
                 </thead>
-                <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white">
-                  {rows.map((row) => {
-                    prepareRow(row);
-                    const rowProps = row.getRowProps();
-                    const expandProps = row.getToggleRowExpandedProps();
-
-                    return (
-                      <Fragment key={rowProps.key}>
-                        <tr {...rowProps} {...expandProps}>
-                          {row.cells.map((cell) => (
-                            <td
-                              key={`${row.index}-${cell.column.id}`}
-                              className={clsx(
-                                {
-                                  'font-medium': ['action', 'id'].includes(cell.column.id),
-                                  'whitespace-nowrap text-right': cell.column.id === 'action',
-                                },
-                                'px-3 pb-2 pt-4',
-                              )}
-                              {...cell.getCellProps()}
-                            >
-                              <div className="text-sm text-gray-900">{cell.render('Cell')}</div>
-                            </td>
-                          ))}
-                        </tr>
-                        {row.isExpanded && (
-                          <WellInventorySubTable row={row} rowProps={rowProps} visibleColumns={visibleColumns} />
-                        )}
-                      </Fragment>
-                    );
-                  })}
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {table.getRowModel().rows.map((row) => (
+                    <Fragment key={row.id}>
+                      <tr
+                        {...{
+                          onClick: () => row.toggleExpanded(),
+                          onKeyDown: row.getToggleExpandedHandler(),
+                          style: { cursor: 'pointer' },
+                        }}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <td
+                            key={cell.id}
+                            className={clsx(
+                              {
+                                'font-medium': ['action', 'id'].includes(cell.column.id),
+                                'whitespace-nowrap text-right': cell.column.id === 'action',
+                              },
+                              'px-3 pb-2 pt-4',
+                            )}
+                          >
+                            <div className="text-sm text-gray-900">
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                      {row.getIsExpanded() && (
+                        <WellInventorySubTable row={row} visibleColumns={table.getAllColumns().length} />
+                      )}
+                    </Fragment>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -635,11 +678,11 @@ SiteTable.propTypes = {
   data: PropTypes.array,
 };
 
-function SubRows({ row, rowProps, visibleColumns, data, status }) {
+function SubRows({ row, data, status, visibleColumns }) {
   if (status === 'pending') {
     return (
       <tr>
-        <td colSpan={visibleColumns.length - 1}>
+        <td colSpan={visibleColumns - 1}>
           <TableLoader className="ml-14" />
           <div className="flex justify-center">
             <InventoryCreationButton site={row.original.id} className="my-4" />
@@ -651,7 +694,7 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
     return (
       <tr>
         <td />
-        <td colSpan={visibleColumns.length - 1} className="p-4 text-red-500">
+        <td colSpan={visibleColumns - 1} className="p-4 text-red-500">
           There was a problem finding the inventories for this site.
         </td>
       </tr>
@@ -662,7 +705,7 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
     return (
       <tr>
         <td />
-        <td colSpan={visibleColumns.length - 1}>
+        <td colSpan={visibleColumns - 1}>
           <div className="flex flex-col items-center">
             <div className="m-6 rounded-lg border bg-gray-50 px-5 py-4 shadow-sm">
               <h2 className="mb-1 text-xl font-medium">Create your first inventory</h2>
@@ -682,22 +725,18 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
 
   return (
     <>
-      {data?.inventories.map((x, i) => {
+      {data?.inventories.map((inventory, i) => {
         return (
-          <tr {...rowProps} key={`${rowProps.key}-expanded-${i}`}>
-            {row.cells.map((cell) => {
+          <tr key={`${row.id}-expanded-${i}`}>
+            {row.getVisibleCells().map((cell) => {
               return (
                 <td
                   className={clsx('text-sm text-gray-900', {
                     'px-3 pb-1 pt-2': cell.column.id.toLowerCase() !== 'id',
                   })}
-                  key={`${row.index}-expanded-${cell.column.id}`}
-                  {...cell.getCellProps()}
+                  key={cell.id}
                 >
-                  {cell.render(cell.column.SubCell ? 'SubCell' : 'Cell', {
-                    value: cell.column.accessor && cell.column.accessor(x, i),
-                    row: { ...row, original: x },
-                  })}
+                  {flexRender(cell.column.columnDef.subCell, { row: { ...row, original: inventory } })}
                 </td>
               );
             })}
@@ -705,7 +744,7 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
         );
       })}
       <tr>
-        <td colSpan={visibleColumns.length - 1}>
+        <td colSpan={visibleColumns - 1}>
           <div className="flex justify-center">
             <InventoryCreationButton site={row.original.id} className="my-4" />
           </div>
@@ -716,25 +755,23 @@ function SubRows({ row, rowProps, visibleColumns, data, status }) {
 }
 SubRows.propTypes = {
   row: PropTypes.object,
-  rowProps: PropTypes.object,
-  visibleColumns: PropTypes.array,
+  visibleColumns: PropTypes.number,
   data: PropTypes.object,
   status: PropTypes.string,
 };
 
-function WellInventorySubTable({ row, rowProps, visibleColumns }) {
+function WellInventorySubTable({ row, visibleColumns }) {
   const { authInfo } = useContext(AuthContext);
-  const wellQuery = useQuery({
+  const { data, status } = useQuery({
     queryKey: ['site-inventories', row.original.id],
     queryFn: () => ky.get(`/api/site/${row.original.id}/inventories`).json(),
     enabled: authInfo?.id ? true : false,
     onError: (error) => onRequestError(error, 'We had trouble fetching the inventories for this site.'),
   });
 
-  return <SubRows row={row} rowProps={rowProps} visibleColumns={visibleColumns} {...wellQuery} />;
+  return <SubRows row={row} visibleColumns={visibleColumns} data={data} status={status} />;
 }
 WellInventorySubTable.propTypes = {
   row: PropTypes.object,
-  rowProps: PropTypes.object,
-  visibleColumns: PropTypes.array,
+  visibleColumns: PropTypes.number,
 };

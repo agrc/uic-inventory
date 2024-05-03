@@ -1,12 +1,12 @@
 import { Dialog } from '@headlessui/react';
 import { ExclamationCircleIcon, InformationCircleIcon } from '@heroicons/react/20/solid';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import clsx from 'clsx';
 import ky from 'ky';
 import throttle from 'lodash.throttle';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Code } from 'react-content-loader';
-import { useTable } from 'react-table';
 import { useImmerReducer } from 'use-immer';
 
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
@@ -764,12 +764,12 @@ const WellTable = ({ wells = [], state, dispatch }) => {
   const columns = useMemo(
     () => [
       {
-        accessor: 'id',
+        accessorKey: 'id',
       },
       {
-        Header: 'Construction',
-        accessor: 'wellName',
-        Cell: function id({ row }) {
+        header: 'Construction',
+        accessorKey: 'wellName',
+        cell: function id({ row }) {
           return (
             <div className="relative">
               <span
@@ -784,13 +784,13 @@ const WellTable = ({ wells = [], state, dispatch }) => {
         },
       },
       {
-        Header: 'Operating Status',
-        accessor: 'status',
+        header: 'Operating Status',
+        accessorKey: 'status',
       },
       {
-        Header: 'Ground Water',
-        accessor: 'surfaceWaterProtection',
-        Cell: function id({ row }) {
+        header: 'Ground Water',
+        accessorKey: 'surfaceWaterProtection',
+        cell: function id({ row }) {
           switch (row.original.surfaceWaterProtection) {
             case 'Y+': {
               return (
@@ -838,78 +838,70 @@ const WellTable = ({ wells = [], state, dispatch }) => {
     [],
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+  const table = useReactTable({
     columns,
     data: wells,
-    initialState: {
-      hiddenColumns: ['id'],
-    },
+    getCoreRowModel: getCoreRowModel(),
+    initialState: { columnVisibility: { id: false } },
   });
 
   return (
-    <table {...getTableProps()} className="w-full divide-y divide-gray-200 overflow-auto border">
+    <table className="w-full divide-y divide-gray-200 overflow-auto border">
       <thead className="bg-gray-50">
-        {headerGroups.map((headerGroup) => (
-          <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
               <th
-                key={`${headerGroup.index}-${column.id}`}
-                {...column.getHeaderProps()}
+                key={header.id}
                 className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
               >
-                {column.render('Header')}
+                {flexRender(header.column.columnDef.header, header.getContext())}
               </th>
             ))}
           </tr>
         ))}
       </thead>
-      <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white">
-        {rows.map((row) => {
-          prepareRow(row);
-
-          return (
-            <tr
-              className={clsx(
-                {
-                  'bg-blue-100': row.original.id === state.highlighted,
-                },
-                'hover:bg-blue-100',
-              )}
-              key={`${row.index}`}
-              {...row.getRowProps()}
-              onPointerEnter={() => {
-                setHighlighting(true);
-                dispatch({ type: 'set-hover-graphic', payload: row.original.id });
-              }}
-              onPointerLeave={() => {
-                setHighlighting(false);
-                dispatch({ type: 'set-hover-graphic', payload: null });
-              }}
-              onClick={() => {
-                if (highlighting) {
-                  return;
-                }
-                dispatch({ type: 'set-hover-graphic', payload: row.original.id, meta: 'toggle' });
-              }}
-            >
-              {row.cells.map((cell) => (
-                <td
-                  key={`${row.index}-${cell.column.id}`}
-                  className={clsx(
-                    {
-                      'font-medium': ['action', 'id'].includes(cell.column.id),
-                      'whitespace-nowrap text-right': cell.column.id === 'action',
-                    },
-                    'px-3 py-2',
-                  )}
-                  {...cell.getCellProps()}
-                >
-                  <div className="text-sm text-gray-900">{cell.render('Cell')}</div>
-                </td>
-              ))}
-            </tr>
-          );
-        })}
+      <tbody className="divide-y divide-gray-200 bg-white">
+        {table.getRowModel().rows.map((row) => (
+          <tr
+            key={row.id}
+            className={clsx(
+              {
+                'bg-blue-100': row.original.id === state.highlighted,
+              },
+              'hover:bg-blue-100',
+            )}
+            onPointerEnter={() => {
+              setHighlighting(true);
+              dispatch({ type: 'set-hover-graphic', payload: row.original.id });
+            }}
+            onPointerLeave={() => {
+              setHighlighting(false);
+              dispatch({ type: 'set-hover-graphic', payload: null });
+            }}
+            onClick={() => {
+              if (highlighting) {
+                return;
+              }
+              dispatch({ type: 'set-hover-graphic', payload: row.original.id, meta: 'toggle' });
+            }}
+          >
+            {row.getVisibleCells().map((cell) => (
+              <td
+                key={cell.id}
+                className={clsx(
+                  {
+                    'font-medium': ['action', 'id'].includes(cell.column.id),
+                    'whitespace-nowrap text-right': cell.column.id === 'action',
+                  },
+                  'px-3 py-2',
+                )}
+              >
+                <div className="text-sm text-gray-900">{flexRender(cell.column.columnDef.cell, cell.getContext())}</div>
+              </td>
+            ))}
+          </tr>
+        ))}
       </tbody>
     </table>
   );

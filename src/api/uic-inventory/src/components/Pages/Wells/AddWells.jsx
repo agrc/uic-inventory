@@ -5,6 +5,7 @@ import { TrashIcon } from '@heroicons/react/24/outline';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import Tippy from '@tippyjs/react/headless';
 import clsx from 'clsx';
 import ky from 'ky';
@@ -12,7 +13,6 @@ import throttle from 'lodash.throttle';
 import PropTypes from 'prop-types';
 import { Fragment, useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTable } from 'react-table';
 import { useImmerReducer } from 'use-immer';
 import * as yup from 'yup';
 import { AuthContext } from '../../../AuthProvider';
@@ -432,7 +432,6 @@ function WellTable({ wells = [], state, dispatch }) {
       toast.success('Well updated successfully!');
     },
     onError: (error, _, context) => {
-      console.log('here');
       onRequestError(error, 'We had some trouble updating this well.');
       queryClient.setQueryData(queryKey, context.previousValue);
     },
@@ -457,20 +456,20 @@ function WellTable({ wells = [], state, dispatch }) {
   const columns = useMemo(
     () => [
       {
-        accessor: 'id',
+        accessorKey: 'id',
       },
       {
-        accessor: 'wellName',
-        Header: 'Construction',
+        accessorKey: 'wellName',
+        header: 'Construction',
       },
       {
-        accessor: 'status',
-        Header: 'Operating Status',
-        Cell: ({ cell, row }) => {
+        accessorKey: 'status',
+        header: 'Operating Status',
+        cell: ({ cell, row }) => {
           return (
             <EditableCellSelect
-              wellId={row.values.id}
-              status={cell.value}
+              wellId={row.getValue('id')}
+              status={cell.getValue()}
               items={operatingStatusTypes}
               onMutate={onMutate}
               isValid={(data) =>
@@ -486,22 +485,22 @@ function WellTable({ wells = [], state, dispatch }) {
                   })
                   .validateSync(data)
               }
-              tooltip={row.values.description}
+              tooltip={row.getValue('description')}
             />
           );
         },
       },
       {
-        accessor: 'description',
+        accessorKey: 'description',
       },
       {
-        Header: 'Count',
-        accessor: 'count',
+        header: 'Count',
+        accessorKey: 'count',
       },
       {
         id: 'action',
-        Header: 'Action',
-        Cell: function action(data) {
+        header: 'Action',
+        cell: function action(data) {
           return (
             <TrashIcon
               aria-label="delete site"
@@ -520,11 +519,12 @@ function WellTable({ wells = [], state, dispatch }) {
     [open, onMutate],
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+  const table = useReactTable({
     columns,
     data: wells,
+    getCoreRowModel: getCoreRowModel(),
     initialState: {
-      hiddenColumns: ['id', 'description'],
+      columnVisibility: { id: false, description: false },
     },
   });
 
@@ -615,58 +615,53 @@ function WellTable({ wells = [], state, dispatch }) {
         </Dialog>
       </Transition>
 
-      <table {...getTableProps()} className="min-w-full divide-y divide-gray-200">
+      <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
-          {headerGroups.map((headerGroup) => (
-            <tr key={headerGroup.index} {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
                 <th
-                  key={`${headerGroup.index}-${column.id}`}
-                  {...column.getHeaderProps()}
+                  key={header.id}
                   className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
                 >
-                  {column.render('Header')}
+                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()} className="divide-y divide-gray-200 bg-white">
-          {rows.map((row) => {
-            prepareRow(row);
-
-            return (
-              <tr
-                className={clsx(
-                  {
-                    'bg-blue-100': row.original.id === state.highlighted,
-                  },
-                  'hover:bg-blue-100',
-                )}
-                key={`${row.index}`}
-                {...row.getRowProps()}
-                onMouseEnter={() => dispatch({ type: 'set-hover-graphic', payload: row.original.id })}
-                onMouseLeave={() => dispatch({ type: 'set-hover-graphic', payload: null })}
-                onClick={() => dispatch({ type: 'set-hover-graphic', payload: row.original.id, meta: 'toggle' })}
-              >
-                {row.cells.map((cell) => (
-                  <td
-                    key={`${row.index}-${cell.column.id}`}
-                    className={clsx(
-                      {
-                        'font-medium': ['action', 'id'].includes(cell.column.id),
-                        'whitespace-nowrap text-right': cell.column.id === 'action',
-                      },
-                      'px-3 py-4',
-                    )}
-                    {...cell.getCellProps()}
-                  >
-                    <div className="text-sm text-gray-900">{cell.render('Cell')}</div>
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
+        <tbody className="divide-y divide-gray-200 bg-white">
+          {table.getRowModel().rows.map((row) => (
+            <tr
+              key={row.id}
+              className={clsx(
+                {
+                  'bg-blue-100': row.original.id === state.highlighted,
+                },
+                'hover:bg-blue-100',
+              )}
+              onMouseEnter={() => dispatch({ type: 'set-hover-graphic', payload: row.original.id })}
+              onMouseLeave={() => dispatch({ type: 'set-hover-graphic', payload: null })}
+              onClick={() => dispatch({ type: 'set-hover-graphic', payload: row.original.id, meta: 'toggle' })}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <td
+                  key={cell.id}
+                  className={clsx(
+                    {
+                      'font-medium': ['action', 'id'].includes(cell.column.id),
+                      'whitespace-nowrap text-right': cell.column.id === 'action',
+                    },
+                    'px-3 py-4',
+                  )}
+                >
+                  <div className="text-sm text-gray-900">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </div>
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </>
