@@ -483,7 +483,7 @@ function SiteTable({ data }) {
       sorting: [
         {
           id: 'id',
-          desc: true, // sort by name in descending order by default
+          desc: true,
         },
       ],
     },
