@@ -1,6 +1,6 @@
 import Graphic from '@arcgis/core/Graphic';
 import Viewpoint from '@arcgis/core/Viewpoint';
-import { Description, Dialog, DialogTitle, Label, Transition, TransitionChild } from '@headlessui/react';
+import { Description, Dialog, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,6 +20,7 @@ import { operatingStatusTypes, remediationTypes, valueToLabel } from '../../../d
 import {
   EditableCellSelect,
   GridHeading,
+  Label,
   SelectInput,
   TextInput,
   WellLocationSchema as schema,
