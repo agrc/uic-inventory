@@ -7,6 +7,7 @@ import { Storage } from "@google-cloud/storage";
 
 const storage = new Storage();
 const bucket = storage.bucket(process.env.BUCKET);
+const watermark = process.env.WATERMARK === "true";
 
 const symbol = {
   type: "CIMSymbolReference",
@@ -242,7 +243,7 @@ http("generate", async (req, res) => {
   let abrPdf;
   let inventoryPdf;
 
-  const definition = generateInventoryReportPdfDefinition(inventory, contacts, image, true);
+  const definition = generateInventoryReportPdfDefinition(inventory, contacts, image, watermark);
 
   // 4 === Approved
   if (inventory.status >= 4) {
