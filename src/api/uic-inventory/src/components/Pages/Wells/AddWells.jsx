@@ -1,6 +1,6 @@
 import Graphic from '@arcgis/core/Graphic';
 import Viewpoint from '@arcgis/core/Viewpoint';
-import { Dialog, Transition } from '@headlessui/react';
+import { Description, Dialog, DialogTitle, Label, Transition, TransitionChild } from '@headlessui/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -20,7 +20,6 @@ import { operatingStatusTypes, remediationTypes, valueToLabel } from '../../../d
 import {
   EditableCellSelect,
   GridHeading,
-  Label,
   SelectInput,
   TextInput,
   WellLocationSchema as schema,
@@ -559,7 +558,7 @@ function WellTable({ wells = [], state, dispatch }) {
           className="fixed inset-0 z-10 overflow-y-auto"
         >
           <div className="min-h-screen px-4 text-center">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0"
@@ -568,14 +567,14 @@ function WellTable({ wells = [], state, dispatch }) {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-            </Transition.Child>
+              <div className="fixed inset-0 bg-black opacity-30" />
+            </TransitionChild>
 
             <span className="inline-block h-screen align-middle" aria-hidden="true">
               &#8203;
             </span>
 
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -585,10 +584,10 @@ function WellTable({ wells = [], state, dispatch }) {
               leaveTo="opacity-0 scale-95"
             >
               <div className="mx-auto my-48 inline-block w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+                <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
                   Well Deletion Confirmation
-                </Dialog.Title>
-                <Dialog.Description className="mt-1">This well will be permanently deleted</Dialog.Description>
+                </DialogTitle>
+                <Description className="mt-1">This well will be permanently deleted</Description>
 
                 <p className="mt-1 text-sm text-gray-500">
                   Are you sure you want to delete this well? This action cannot be undone.
@@ -610,7 +609,7 @@ function WellTable({ wells = [], state, dispatch }) {
                   </button>
                 </div>
               </div>
-            </Transition.Child>
+            </TransitionChild>
           </div>
         </Dialog>
       </Transition>

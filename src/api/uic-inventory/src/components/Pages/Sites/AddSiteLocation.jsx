@@ -169,7 +169,7 @@ export function Component() {
 
       reset({ geometry: JSON.parse(data?.geometry), address: data?.address });
     }
-  }, [data, status, setViewPoint, dispatch]);
+  }, [data, status, setViewPoint, dispatch, reset]);
 
   // synchronizes the form with the state for sites with a geometry
   useEffect(() => {

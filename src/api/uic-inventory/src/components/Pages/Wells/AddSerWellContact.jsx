@@ -1,4 +1,4 @@
-import { Dialog, Transition } from '@headlessui/react';
+import { Description, Dialog, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -290,7 +290,7 @@ function ContactTable({ data }) {
           className="fixed inset-0 z-10 overflow-y-auto"
         >
           <div className="min-h-screen px-4 text-center">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0"
@@ -299,14 +299,14 @@ function ContactTable({ data }) {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-            </Transition.Child>
+              <div className="fixed inset-0 bg-black opacity-30" />
+            </TransitionChild>
 
             <span className="inline-block h-screen align-middle" aria-hidden="true">
               &#8203;
             </span>
 
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -316,10 +316,10 @@ function ContactTable({ data }) {
               leaveTo="opacity-0 scale-95"
             >
               <div className="mx-auto my-48 inline-block w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+                <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
                   Contact Deletion Confirmation
-                </Dialog.Title>
-                <Dialog.Description className="mt-1">This contact will be permanently deleted</Dialog.Description>
+                </DialogTitle>
+                <Description className="mt-1">This contact will be permanently deleted</Description>
 
                 <p className="mt-1 text-sm text-gray-500">
                   Are you sure you want to delete this contact? This action cannot be undone.
@@ -341,7 +341,7 @@ function ContactTable({ data }) {
                   </button>
                 </div>
               </div>
-            </Transition.Child>
+            </TransitionChild>
           </div>
         </Dialog>
       </Transition>

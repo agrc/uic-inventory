@@ -1,4 +1,16 @@
-import { Disclosure, Menu, Popover, Transition } from '@headlessui/react';
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+  Popover,
+  PopoverButton,
+  PopoverPanel,
+  Transition,
+} from '@headlessui/react';
 import {
   Bars3Icon,
   BellIcon,
@@ -184,9 +196,9 @@ function Navigation({ authenticationStatus }) {
                           <Popover className="relative ml-3">
                             {({ open }) => (
                               <>
-                                <Popover.Button className="flex rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                <PopoverButton className="flex rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                   <NotificationBell items={data?.notifications} status={status} error={error} />
-                                </Popover.Button>
+                                </PopoverButton>
                                 <Transition
                                   show={open}
                                   as={Fragment}
@@ -197,7 +209,7 @@ function Navigation({ authenticationStatus }) {
                                   leaveFrom="opacity-100 scale-100"
                                   leaveTo="opacity-0 scale-95"
                                 >
-                                  <Popover.Panel
+                                  <PopoverPanel
                                     static
                                     className="absolute right-0 z-20 mt-2 max-h-64 w-96 origin-top-right overflow-scroll rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                   >
@@ -208,7 +220,7 @@ function Navigation({ authenticationStatus }) {
                                       error={error}
                                       refetch={refetch}
                                     />
-                                  </Popover.Panel>
+                                  </PopoverPanel>
                                 </Transition>
                               </>
                             )}
@@ -219,12 +231,12 @@ function Navigation({ authenticationStatus }) {
                           {({ open }) => (
                             <>
                               <div>
-                                <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                                <MenuButton className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                   <span className="sr-only">Open user menu</span>
                                   <p className="h-8 w-8 rounded-full text-2xl font-black uppercase tracking-tighter text-gray-400">
                                     {getInitials(data)}
                                   </p>
-                                </Menu.Button>
+                                </MenuButton>
                               </div>
                               <Transition
                                 show={open}
@@ -236,12 +248,12 @@ function Navigation({ authenticationStatus }) {
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                               >
-                                <Menu.Items
+                                <MenuItems
                                   static
                                   className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                 >
                                   {profile.map((item) => (
-                                    <Menu.Item key={item.key}>
+                                    <MenuItem key={item.key}>
                                       {() =>
                                         item.clientSide ? (
                                           <Link
@@ -261,9 +273,9 @@ function Navigation({ authenticationStatus }) {
                                           </a>
                                         )
                                       }
-                                    </Menu.Item>
+                                    </MenuItem>
                                   ))}
-                                </Menu.Items>
+                                </MenuItems>
                               </Transition>
                             </>
                           )}
@@ -272,33 +284,33 @@ function Navigation({ authenticationStatus }) {
                     </div>
                     <div className="-mr-2 flex md:hidden">
                       {/* Mobile menu button */}
-                      <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                      <DisclosureButton className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="sr-only">Open main menu</span>
                         {open ? (
                           <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
                         ) : (
                           <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                         )}
-                      </Disclosure.Button>
+                      </DisclosureButton>
                     </div>
                   </>
                 ) : (
                   <div className="-mr-2 flex md:hidden">
                     {/* Mobile menu button */}
-                    <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                    <DisclosureButton className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="sr-only">Open main menu</span>
                       {open ? (
                         <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
                       ) : (
                         <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                       )}
-                    </Disclosure.Button>
+                    </DisclosureButton>
                   </div>
                 )}
               </div>
             </div>
 
-            <Disclosure.Panel className="md:hidden">
+            <DisclosurePanel className="md:hidden">
               <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
                 <Links links={navigation} isAuthenticated={isAuthenticated} isElevated={isElevated} />
               </div>
@@ -319,14 +331,14 @@ function Navigation({ authenticationStatus }) {
                       </div>
                       <div className="ml-auto shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         {receiveNotifications() ? (
-                          <Popover.Button>
+                          <PopoverButton>
                             <NotificationBell items={data?.notifications} status={status} error={error} />
-                          </Popover.Button>
+                          </PopoverButton>
                         ) : null}
                       </div>
                     </div>
                     <div className="mt-3 space-y-1 px-2">
-                      <Popover.Panel className="max-h-36 overflow-scroll rounded-sm bg-white">
+                      <PopoverPanel className="max-h-36 overflow-scroll rounded-sm bg-white">
                         <Notifications
                           notifications={data?.notifications}
                           queryKey={['notifications', authInfo.id]}
@@ -334,7 +346,7 @@ function Navigation({ authenticationStatus }) {
                           error={error}
                           refetch={refetch}
                         />
-                      </Popover.Panel>
+                      </PopoverPanel>
                     </div>
                     <div className="mt-3 space-y-1 px-2">
                       {profile.map((item) => (
@@ -350,7 +362,7 @@ function Navigation({ authenticationStatus }) {
                   </Popover>
                 </div>
               ) : null}
-            </Disclosure.Panel>
+            </DisclosurePanel>
           </>
         )}
       </Disclosure>

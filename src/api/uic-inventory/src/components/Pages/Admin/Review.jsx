@@ -1,4 +1,4 @@
-import { Dialog } from '@headlessui/react';
+import { Description, DialogTitle } from '@headlessui/react';
 import { ExclamationCircleIcon, InformationCircleIcon } from '@heroicons/react/20/solid';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
@@ -200,44 +200,44 @@ export function Component() {
     <>
       <>
         <ConfirmationModal isOpen={isOpen} onClose={close} onYes={reject}>
-          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+          <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
             Reject Submission Confirmation
-          </Dialog.Title>
-          <Dialog.Description className="mt-1">This inventory will be permanently deleted</Dialog.Description>
+          </DialogTitle>
+          <Description className="mt-1">This inventory will be permanently deleted</Description>
           <p className="mt-1 text-sm text-gray-500">
             Are you sure you want to reject this submission? This action cannot be undone...
           </p>
         </ConfirmationModal>
         <ConfirmationModal isOpen={reviewIsOpen} onClose={closeReview} onYes={review}>
-          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+          <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
             Review Submission Confirmation
-          </Dialog.Title>
-          <Dialog.Description>You will be responsible for reviewing and approving this inventory.</Dialog.Description>
+          </DialogTitle>
+          <Description>You will be responsible for reviewing and approving this inventory.</Description>
           <p className="mt-1 text-sm text-gray-500">
             Are you sure you want to assign yourself as the reviewer of this inventory?
           </p>
         </ConfirmationModal>
         <ConfirmationModal isOpen={approveIsOpen} onClose={closeApprove} onYes={approve}>
-          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+          <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
             Approve Submission Confirmation
-          </Dialog.Title>
-          <Dialog.Description>Has the inventory been reviewed and is it ready to be approved?</Dialog.Description>
+          </DialogTitle>
+          <Description>Has the inventory been reviewed and is it ready to be approved?</Description>
           <p className="mt-1 text-sm text-gray-500">Are you sure you want to approve this submission?</p>
         </ConfirmationModal>
         <ConfirmationModal isOpen={authorizeIsOpen} onClose={closeAuthorize} onYes={authorize}>
-          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+          <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
             Authorize Submission Confirmation
-          </Dialog.Title>
-          <Dialog.Description>Has the inventory information been entered into the UIC geodatabase?</Dialog.Description>
+          </DialogTitle>
+          <Description>Has the inventory information been entered into the UIC geodatabase?</Description>
           <p className="mt-1 text-sm text-gray-500">Are you sure you want to authorize this submission?</p>
         </ConfirmationModal>
         <ConfirmationModal isOpen={completeIsOpen} onClose={closeComplete} onYes={complete}>
-          <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+          <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
             Complete Submission Confirmation
-          </Dialog.Title>
-          <Dialog.Description>
+          </DialogTitle>
+          <Description>
             Has the the Authorization by Rule (ABR) letter been sent and is the inventory processing complete?
-          </Dialog.Description>
+          </Description>
           <p className="mt-1 text-sm text-gray-500">Are you sure you want to complete this submission?</p>
         </ConfirmationModal>
       </>

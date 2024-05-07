@@ -1,4 +1,13 @@
-import { Dialog, Switch, Transition } from '@headlessui/react';
+import {
+  Description,
+  Dialog,
+  DialogTitle,
+  Label,
+  Switch,
+  SwitchGroup,
+  Transition,
+  TransitionChild,
+} from '@headlessui/react';
 import { QuestionMarkCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -342,8 +351,8 @@ function SerContactFields({ control, register, formState }) {
 
 function ToggleSwitch({ label, value, onChange }) {
   return (
-    <Switch.Group className="flex items-center justify-around" as="div">
-      <Switch.Label className="mr-4 max-w-md">{label}</Switch.Label>
+    <SwitchGroup className="flex items-center justify-around" as="div">
+      <Label className="mr-4 max-w-md">{label}</Label>
       <span className="sr-only">Toggle</span>
       <Switch
         checked={value}
@@ -366,7 +375,7 @@ function ToggleSwitch({ label, value, onChange }) {
           )}
         />
       </Switch>
-    </Switch.Group>
+    </SwitchGroup>
   );
 }
 
@@ -508,7 +517,7 @@ function ContactTable({ data }) {
           className="fixed inset-0 z-10 overflow-y-auto"
         >
           <div className="min-h-screen px-4 text-center">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0"
@@ -517,14 +526,14 @@ function ContactTable({ data }) {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-            </Transition.Child>
+              <div className="fixed inset-0 bg-black opacity-30" />
+            </TransitionChild>
 
             <span className="inline-block h-screen align-middle" aria-hidden="true">
               &#8203;
             </span>
 
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -534,10 +543,10 @@ function ContactTable({ data }) {
               leaveTo="opacity-0 scale-95"
             >
               <div className="mx-auto my-48 inline-block w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+                <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
                   Contact Deletion Confirmation
-                </Dialog.Title>
-                <Dialog.Description className="mt-1">This contact will be permanently deleted</Dialog.Description>
+                </DialogTitle>
+                <Description className="mt-1">This contact will be permanently deleted</Description>
 
                 <p className="mt-1 text-sm text-gray-500">
                   Are you sure you want to delete this contact? This action cannot be undone.
@@ -559,7 +568,7 @@ function ContactTable({ data }) {
                   </button>
                 </div>
               </div>
-            </Transition.Child>
+            </TransitionChild>
           </div>
         </Dialog>
       </Transition>

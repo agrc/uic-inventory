@@ -1,4 +1,4 @@
-import { Dialog } from '@headlessui/react';
+import { Description, DialogTitle } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -130,10 +130,8 @@ const HasFlag = ({ reason, onResolve }) => {
   return (
     <>
       <ConfirmationModal isOpen={isFlagModalOpen} onYes={onResolve} onClose={closeFlagModal}>
-        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
-          Flag Resolution Confirmation
-        </Dialog.Title>
-        <Dialog.Description className="mt-1">This resolution is for everyone</Dialog.Description>
+        <DialogTitle className="text-lg font-medium leading-6 text-gray-900">Flag Resolution Confirmation</DialogTitle>
+        <Description className="mt-1">This resolution is for everyone</Description>
 
         <p className="mt-1 text-sm text-gray-500">
           Are you sure you want to resolve the issues with this submission? This action will be visible to everyone.

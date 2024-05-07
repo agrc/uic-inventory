@@ -1,4 +1,4 @@
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, Transition, TransitionChild } from '@headlessui/react';
 import { Fragment } from 'react';
 
 export default function ConfirmationModal({ isOpen, onClose, onYes, children }) {
@@ -6,7 +6,7 @@ export default function ConfirmationModal({ isOpen, onClose, onYes, children }) 
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" open={isOpen} onClose={onClose} className="fixed inset-0 z-10 overflow-y-auto">
         <div className="min-h-screen px-4 text-center">
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0"
@@ -15,14 +15,14 @@ export default function ConfirmationModal({ isOpen, onClose, onYes, children }) 
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-          </Transition.Child>
+            <div className="fixed inset-0 bg-black opacity-30" />
+          </TransitionChild>
 
           <span className="inline-block h-screen align-middle" aria-hidden="true">
             &#8203;
           </span>
 
-          <Transition.Child
+          <TransitionChild
             as={Fragment}
             enter="ease-out duration-300"
             enterFrom="opacity-0 scale-95"
@@ -43,7 +43,7 @@ export default function ConfirmationModal({ isOpen, onClose, onYes, children }) 
                 </button>
               </div>
             </div>
-          </Transition.Child>
+          </TransitionChild>
         </div>
       </Dialog>
     </Transition>

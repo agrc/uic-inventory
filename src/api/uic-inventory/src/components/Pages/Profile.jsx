@@ -1,4 +1,4 @@
-import { Dialog, Switch } from '@headlessui/react';
+import { Description, DialogTitle, Label, Switch, SwitchGroup } from '@headlessui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -244,8 +244,8 @@ const NotificationForm = ({ id, data }) => {
       <Separator />
 
       <PageGrid heading="Notifications" subtext="Manage your notifications" submit={true} disabled={!isDirty}>
-        <Switch.Group className="flex items-center" as="div">
-          <Switch.Label className="mr-4">Notify me of administrative events</Switch.Label>
+        <SwitchGroup className="flex items-center" as="div">
+          <Label className="mr-4">Notify me of administrative events</Label>
           <span className="sr-only">Enable notifications</span>
           <Controller
             control={control}
@@ -275,7 +275,7 @@ const NotificationForm = ({ id, data }) => {
               </Switch>
             )}
           />
-        </Switch.Group>
+        </SwitchGroup>
       </PageGrid>
     </form>
   );
@@ -345,8 +345,8 @@ const AccessForm = ({ profileData }) => {
         submit={true}
         disabled={!isDirty}
       >
-        <Switch.Group className="flex items-center" as="div">
-          <Switch.Label className="mr-4">Allow me to perform administrative events</Switch.Label>
+        <SwitchGroup className="flex items-center" as="div">
+          <Label className="mr-4">Allow me to perform administrative events</Label>
           <span className="sr-only">Update access</span>
           <Controller
             control={control}
@@ -376,7 +376,7 @@ const AccessForm = ({ profileData }) => {
               </Switch>
             )}
           />
-        </Switch.Group>
+        </SwitchGroup>
       </PageGrid>
     </form>
   );
@@ -415,8 +415,8 @@ const DangerZone = () => {
       className="mt-10 sm:mt-0"
     >
       <ConfirmationModal isOpen={isOpen} onClose={close} onYes={mutate}>
-        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">Delete Account Confirmation</Dialog.Title>
-        <Dialog.Description className="mt-1">Your account will be permanently deleted</Dialog.Description>
+        <DialogTitle className="text-lg font-medium leading-6 text-gray-900">Delete Account Confirmation</DialogTitle>
+        <Description className="mt-1">Your account will be permanently deleted</Description>
         <p className="mt-1 text-sm text-gray-500">
           Are you sure you want to delete your account? This action cannot be undone...
         </p>

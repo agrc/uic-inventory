@@ -1,4 +1,4 @@
-import { Dialog } from '@headlessui/react';
+import { Description, DialogTitle } from '@headlessui/react';
 import {
   CheckIcon,
   DocumentTextIcon,
@@ -568,8 +568,8 @@ function SiteTable({ data }) {
           closeSiteModal();
         }}
       >
-        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">Site Deletion Confirmation</Dialog.Title>
-        <Dialog.Description className="mt-1">This site will be permanently deleted</Dialog.Description>
+        <DialogTitle className="text-lg font-medium leading-6 text-gray-900">Site Deletion Confirmation</DialogTitle>
+        <Description className="mt-1">This site will be permanently deleted</Description>
 
         <p className="mt-1 text-sm text-gray-500">
           Are you sure you want to delete this site? All of your data will be permanently removed. This action cannot be
@@ -586,10 +586,10 @@ function SiteTable({ data }) {
           closeInventoryModal();
         }}
       >
-        <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+        <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
           Inventory Deletion Confirmation
-        </Dialog.Title>
-        <Dialog.Description className="mt-1">This inventory will be permanently deleted</Dialog.Description>
+        </DialogTitle>
+        <Description className="mt-1">This inventory will be permanently deleted</Description>
 
         <p className="mt-1 text-sm text-gray-500">
           Are you sure you want to delete this inventory? All of your data will be permanently removed. This action

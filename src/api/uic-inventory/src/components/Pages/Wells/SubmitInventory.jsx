@@ -1,4 +1,4 @@
-import { Switch } from '@headlessui/react';
+import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/react';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -137,8 +137,8 @@ const SubmissionForm = ({ data }) => {
             provided to the UIC program through this form is accurate to the best of my knowledge.
           </ResponsiveGridColumn>
           <ResponsiveGridColumn full={true} half={true}>
-            <Switch.Group as="div" className="flex items-center">
-              <Switch.Label className="mr-4">Electronic Signature Verification</Switch.Label>
+            <SwitchGroup as="div" className="flex items-center">
+              <SwitchLabel className="mr-4">Electronic Signature Verification</SwitchLabel>
               <span className="sr-only">Electronic Signature Verification</span>
               <Controller
                 control={control}
@@ -168,7 +168,7 @@ const SubmissionForm = ({ data }) => {
                   </Switch>
                 )}
               />
-            </Switch.Group>
+            </SwitchGroup>
             <ErrorMessage errors={formState.errors} name="verification" as={ErrorMessageTag} />
           </ResponsiveGridColumn>
           <ResponsiveGridColumn full={true} half={true}>

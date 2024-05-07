@@ -1,4 +1,4 @@
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ky from 'ky';
@@ -185,7 +185,7 @@ export function Component() {
       <Transition appear show={status} as={Fragment}>
         <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" open={status} onClose={close}>
           <div className="min-h-screen px-4 text-center">
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0"
@@ -194,10 +194,10 @@ export function Component() {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-            </Transition.Child>
+              <div className="fixed inset-0 bg-black opacity-30" />
+            </TransitionChild>
 
-            <Transition.Child
+            <TransitionChild
               as={Fragment}
               enter="ease-out duration-300"
               enterFrom="opacity-0 scale-95"
@@ -207,9 +207,9 @@ export function Component() {
               leaveTo="opacity-0 scale-95"
             >
               <div className="my-8 inline-block w-full transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                <DialogTitle as="h3" className="text-lg font-medium leading-6 text-gray-900">
                   NAICS Code Helper
-                </Dialog.Title>
+                </DialogTitle>
 
                 <NaicsPicker
                   updateWith={(item) => {
@@ -222,7 +222,7 @@ export function Component() {
                   Select
                 </button>
               </div>
-            </Transition.Child>
+            </TransitionChild>
           </div>
         </Dialog>
       </Transition>

@@ -1,4 +1,13 @@
-import { Dialog, RadioGroup, Transition } from '@headlessui/react';
+import {
+  Description,
+  Dialog,
+  DialogTitle,
+  Label,
+  Radio,
+  RadioGroup,
+  Transition,
+  TransitionChild,
+} from '@headlessui/react';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -118,7 +127,7 @@ export function Component() {
                           {wellTypes
                             .filter((well) => well.primary)
                             .map((well) => (
-                              <RadioGroup.Option
+                              <Radio
                                 key={well.value}
                                 value={well.value}
                                 className={({ active, checked }) =>
@@ -136,18 +145,18 @@ export function Component() {
                                   <div className="flex w-full items-center justify-between">
                                     <div className="flex items-center">
                                       <div>
-                                        <RadioGroup.Label
+                                        <Label
                                           as="p"
                                           className={`font-medium ${checked ? 'text-white' : 'text-gray-900'}`}
                                         >
                                           {well.label}
-                                        </RadioGroup.Label>
-                                        <RadioGroup.Description
+                                        </Label>
+                                        <Description
                                           as="span"
                                           className={`inline ${checked ? 'text-blue-100' : 'text-gray-500'}`}
                                         >
                                           <span className="text-sm">{well?.extra}</span>
-                                        </RadioGroup.Description>
+                                        </Description>
                                       </div>
                                     </div>
                                     {checked && (
@@ -157,7 +166,7 @@ export function Component() {
                                     )}
                                   </div>
                                 )}
-                              </RadioGroup.Option>
+                              </Radio>
                             ))}
                         </div>
                       </RadioGroup>
@@ -189,7 +198,7 @@ export function Component() {
           <Transition appear show={show} as={Fragment}>
             <Dialog as="div" className="fixed inset-0 z-10 overflow-y-auto" open={show} onClose={close}>
               <div className="min-h-screen flex items-center justify-center">
-                <Transition.Child
+                <TransitionChild
                   as={Fragment}
                   enter="ease-out duration-300"
                   enterFrom="opacity-0"
@@ -198,10 +207,10 @@ export function Component() {
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                 >
-                  <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-                </Transition.Child>
+                  <div className="fixed inset-0 bg-black opacity-30" />
+                </TransitionChild>
 
-                <Transition.Child
+                <TransitionChild
                   as={Fragment}
                   enter="ease-out duration-300"
                   enterFrom="opacity-0 scale-95"
@@ -211,9 +220,9 @@ export function Component() {
                   leaveTo="opacity-0 scale-95"
                 >
                   <div className="inline-block w-full max-w-3xl transform bg-white p-6 text-left align-middle shadow-xl transition-all md:my-8 md:rounded-2xl">
-                    <Dialog.Title as="h3" className="mb-5 text-xl font-medium leading-6 text-gray-900">
+                    <DialogTitle as="h3" className="mb-5 text-xl font-medium leading-6 text-gray-900">
                       UIC Inventory Form help
-                    </Dialog.Title>
+                    </DialogTitle>
                     <ul className="list-inside list-decimal">
                       <li className="leading-loose">
                         Navigate to this website:{' '}
@@ -257,7 +266,7 @@ export function Component() {
                       Close
                     </button>
                   </div>
-                </Transition.Child>
+                </TransitionChild>
               </div>
             </Dialog>
           </Transition>
