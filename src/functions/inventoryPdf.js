@@ -283,6 +283,16 @@ const addHydrogeologicCharacterization = (data) => {
   ];
 };
 
+const formatAddress = (contact) => {
+  const parts = [contact.mailingAddress, contact.city, contact.state, contact.zipCode];
+
+  if (parts.every((part) => part === null)) {
+    return "";
+  }
+
+  return `${contact.mailingAddress ?? ""}\n${contact.city ?? ""}, ${contact.state ?? ""} ${contact.zipCode ?? ""}`;
+};
+
 export const generateInventoryReportPdfDefinition = (inventory, contacts, image, watermark) => {
   const definition = {
     info: {
@@ -323,7 +333,7 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
             contactType: valueToLabel(contactTypes, contact.contactType),
             email: contact.email,
             phone: contact.phoneNumber,
-            address: `${contact.mailingAddress}\n${contact.city}, ${contact.state} ${contact.zipCode}`,
+            address: formatAddress(contact),
           };
         })
       ),
