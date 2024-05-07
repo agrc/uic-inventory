@@ -188,8 +188,10 @@ function CreateContactForm({ data }) {
       ...formData,
     };
 
-    input.contactType = 'project_manager';
-    input.serContact = true;
+    if (isSerContact) {
+      input.contactType = 'project_manager';
+      input.serContact = true;
+    }
 
     mutate(input);
   };
