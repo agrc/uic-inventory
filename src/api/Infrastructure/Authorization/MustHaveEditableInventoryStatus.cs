@@ -19,6 +19,17 @@ public class MustHaveEditableInventoryStatus : IAuthorizationRequirement {
                     .ForContext("authorization", "MustHaveEditableInventoryStatus:I05")
                     .Warning("edits to submitted inventory");
 
+                if (_metadata.Account.Id != _metadata.Inventory.AccountFk) {
+                    if (_metadata.Account.Access == AccessLevels.elevated) {
+                        _log.ForContext("inventoryId", _metadata.Inventory.Status)
+                            .ForContext("account", _metadata.Account)
+                            .ForContext("authorization", "MustHaveEditableInventoryStatus")
+                            .Information("Elevated access to non editable item");
+
+                        return Task.FromResult(AuthorizationResult.Succeed());
+                    }
+                }
+
                 return Task.FromResult(AuthorizationResult.Fail("I05:This inventory has been submitted and can no longer be edited."));
             }
 
