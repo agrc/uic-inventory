@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
@@ -9,7 +8,7 @@ using Serilog;
 
 namespace api.Features;
 public static class Transfer {
-    public class Command(): IRequest<string> {
+    public class Command() : IRequest<string> {
         public class Handler(IConfiguration configuration, ILogger log) : IRequestHandler<Command, string> {
             private readonly ILogger _log = log;
             private readonly IConfiguration _configuration = configuration;

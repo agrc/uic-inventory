@@ -158,6 +158,7 @@ public enum InventoryStatus {
 
 public static class InventoryExtensions {
     private static readonly InventoryStatus[] _approvedStatus = [InventoryStatus.Approved, InventoryStatus.Authorized, InventoryStatus.Completed];
+    private static readonly InventoryStatus[] _submittedStatus = [InventoryStatus.Submitted, InventoryStatus.UnderReview, InventoryStatus.Approved, InventoryStatus.Authorized, InventoryStatus.Completed];
     public static bool IsApproved(this InventoryStatus status) => _approvedStatus.Contains(status);
     public static bool IsSerInventory(this Inventory inventory) => inventory.SubClass == 5002;
 }
