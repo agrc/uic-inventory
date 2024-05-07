@@ -153,7 +153,7 @@ export const getMostImportantContact = (contacts) => {
   return contacts[0];
 };
 
-export const generateAuthorizationByRule = (inventory, contact, approver) => {
+export const generateAuthorizationByRule = (inventory, contact, approver, watermark) => {
   const definition = {
     info: {
       title: "Utah Underground Injection Control (UIC) Authorization By Rule Letter",
@@ -255,13 +255,16 @@ export const generateAuthorizationByRule = (inventory, contact, approver) => {
         decoration: "underline",
       },
     },
-    watermark: {
+  };
+
+  if (watermark) {
+    definition.watermark = {
       text: "draft",
       color: "#94a3b8",
       opacity: 0.7,
       bold: true,
-    },
-  };
+    };
+  }
 
   return definition;
 };

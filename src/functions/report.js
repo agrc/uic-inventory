@@ -249,7 +249,12 @@ http("generate", async (req, res) => {
   if (inventory.status >= 4) {
     console.debug("creating abr pdf", inventory.subClass);
 
-    const abrDefinition = generateAuthorizationByRule(inventory, getMostImportantContact(contacts), approver);
+    const abrDefinition = generateAuthorizationByRule(
+      inventory,
+      getMostImportantContact(contacts),
+      approver,
+      watermark
+    );
 
     abrPdf = await createPdfDocument(abrDefinition);
 
