@@ -9,7 +9,6 @@ public class GetSiteContactsAuthorizer(IHttpContextAccessor context) : AbstractR
 
     public override void BuildPolicy(GetSiteContacts.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-
         UseRequirement(new MustOwnSite(request.SiteId));
     }
 }
@@ -19,10 +18,9 @@ public class CreateContactAuthorizer(IHttpContextAccessor context) : AbstractReq
 
     public override void BuildPolicy(CreateContact.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
-
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustHaveEditableSiteStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -31,12 +29,10 @@ public class CreateSerContactAuthorizer(IHttpContextAccessor context) : Abstract
 
     public override void BuildPolicy(CreateSerContact.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
-
         UseRequirement(new MustOwnSite(request.SiteId));
-
         UseRequirement(new MustOwnInventory(request.InventoryId));
         UseRequirement(new MustBeSerInventory(request.InventoryId));
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -45,10 +41,8 @@ public class DeleteContactAuthorizer(IHttpContextAccessor context) : AbstractReq
 
     public override void BuildPolicy(DeleteContact.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
-
         UseRequirement(new MustOwnSite(request.SiteId));
-
         UseRequirement(new MustHaveEditableSiteStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }

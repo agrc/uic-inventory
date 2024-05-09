@@ -9,9 +9,8 @@ public class GetInventoriesBySiteAuthorizer(IHttpContextAccessor context) : Abst
 
     public override void BuildPolicy(GetInventoriesBySite.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
-
         UseRequirement(new MustOwnSite(request.SiteId));
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 public class GetInventoryByIdAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<GetInventoryById.Query> {
@@ -19,10 +18,9 @@ public class GetInventoryByIdAuthorizer(IHttpContextAccessor context) : Abstract
 
     public override void BuildPolicy(GetInventoryById.Query request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
-
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustHaveCompleteSite());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 public class CreateInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<CreateInventory.Command> {
@@ -30,10 +28,9 @@ public class CreateInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
 
     public override void BuildPolicy(CreateInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
-
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustHaveCompleteSite());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 public class UpdateInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<UpdateInventory.Command> {
@@ -50,12 +47,10 @@ public class SubmitInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
 
     public override void BuildPolicy(SubmitInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
-
         UseRequirement(new MustOwnSite(request.SiteId));
-
         UseRequirement(new MustOwnInventory(request.InventoryId));
         UseRequirement(new MustHaveCompleteInventory(request.InventoryId));
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 public class DeleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DeleteInventory.Command> {
@@ -63,12 +58,10 @@ public class DeleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
 
     public override void BuildPolicy(DeleteInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
-        UseRequirement(new MustHaveCompleteProfile());
-
         UseRequirement(new MustOwnSite(request.SiteId));
-
         UseRequirement(new MustOwnInventory(request.InventoryId));
         UseRequirement(new MustHaveEditableInventoryStatus());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 public class RejectInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<RejectInventory.Command> {
@@ -77,10 +70,10 @@ public class RejectInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
     public override void BuildPolicy(RejectInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
-
         UseRequirement(new MustOwnInventory(request.InventoryId));
         UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Submitted, InventoryStatus.UnderReview]));
         UseRequirement(new MustHaveReviewableInventory(request.InventoryId));
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 public class DownloadInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<DownloadInventory.Command> {
@@ -89,6 +82,7 @@ public class DownloadInventoryAuthorizer(IHttpContextAccessor context) : Abstrac
     public override void BuildPolicy(DownloadInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 public class UnderReviewInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<UnderReviewInventory.Command> {
@@ -97,8 +91,8 @@ public class UnderReviewInventoryAuthorizer(IHttpContextAccessor context) : Abst
     public override void BuildPolicy(UnderReviewInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
-
         UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Submitted, InventoryStatus.UnderReview]));
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 public class ApproveInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<ApproveInventory.Command> {
@@ -107,9 +101,9 @@ public class ApproveInventoryAuthorizer(IHttpContextAccessor context) : Abstract
     public override void BuildPolicy(ApproveInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
-
         UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Submitted, InventoryStatus.UnderReview]));
         UseRequirement(new MustHaveNoFlaggedIssues());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 
@@ -119,11 +113,11 @@ public class AuthorizeInventoryAuthorizer(IHttpContextAccessor context) : Abstra
     public override void BuildPolicy(AuthorizeInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
-
         UseRequirement(new MustOwnInventory(request.InventoryId));
         UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Approved]));
         UseRequirement(new MustHaveInventoryAdminAdditions());
         UseRequirement(new MustHaveNoFlaggedIssues());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
 public class CompleteInventoryAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<CompleteInventory.Command> {
@@ -132,10 +126,10 @@ public class CompleteInventoryAuthorizer(IHttpContextAccessor context) : Abstrac
     public override void BuildPolicy(CompleteInventory.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustHaveElevatedAccount());
-
         UseRequirement(new MustOwnInventory(request.InventoryId));
         UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Authorized]));
         UseRequirement(new MustHaveInventoryAdminAdditions());
         UseRequirement(new MustHaveNoFlaggedIssues());
+        UseRequirement(new MustHaveCompleteProfile());
     }
 }
