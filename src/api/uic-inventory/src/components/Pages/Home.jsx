@@ -507,6 +507,8 @@ function SiteTable({ data }) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
+      queryClient.removeQueries({ queryKey: ['site', deleteSite.current] });
+      queryClient.removeQueries({ queryKey: ['site-inventories', deleteSite.current] });
     },
     onError: (error, _, context) => {
       queryClient.setQueryData(queryKey, context.previousValue);
@@ -538,6 +540,7 @@ function SiteTable({ data }) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['site-inventories', deleteSite.current] });
+      queryClient.removeQueries({ queryKey: ['site', deleteSite.current, 'inventory', deleteInventory.current] });
     },
     onError: (error, variables, context) => {
       queryClient.setQueryData(['site-inventories', variables.siteId], context.previousValue);
