@@ -99,8 +99,6 @@ public static class DeleteSite {
 
             _context.Sites.Remove(connectedSite);
 
-            //! TODO: create requirement that site cannot be deleted when authorized status
-
             await _context.SaveChangesAsync(cancellationToken);
             await _publisher.Publish(new SiteNotifications.DeleteNotification(request.SiteId), cancellationToken);
 
