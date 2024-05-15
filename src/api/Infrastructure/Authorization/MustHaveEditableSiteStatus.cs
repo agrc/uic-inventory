@@ -22,14 +22,12 @@ public class MustHaveEditableSiteStatus : IAuthorizationRequirement {
                 .Include(x => x.Inventories)
                 .SingleAsync(x => x.Id == _metadata.Site.Id, token);
 
-            if (_metadata.Account.Id != site.AccountFk) {
-                if (_metadata.Account.Access == AccessLevels.elevated) {
-                    _log.ForContext("siteId", _metadata.Site.Id)
-                        .ForContext("account", _metadata.Account)
-                        .Information("Elevated access to external item");
+            if (_metadata.Account.Access == AccessLevels.elevated) {
+                _log.ForContext("siteId", _metadata.Site.Id)
+                    .ForContext("account", _metadata.Account)
+                    .Information("Elevated access to external item");
 
-                    return AuthorizationResult.Succeed();
-                }
+                return AuthorizationResult.Succeed();
             }
 
             if (site.Inventories.All(x => _draftInventoryStatus.Contains(x.Status))) {
