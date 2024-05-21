@@ -18,7 +18,7 @@ public static class CreateInventory {
     public class Command(InventoryCreationInput input) : IRequest<Inventory> {
         public int AccountId { get; init; } = input.AccountId;
         public int SiteId { get; init; } = input.SiteId;
-        public int OrderNumber { get; init; } = input.OrderNumber;
+        public string? OrderNumber { get; init; } = input.OrderNumber;
         public int SubClass { get; init; } = input.SubClass;
         public DateTime? CreatedOn { get; } = DateTime.UtcNow;
     }
@@ -58,7 +58,7 @@ public static class UpdateInventory {
         public int? SubClass { get; init; } = input.SubClass;
         public string? Edocs { get; set; } = input.Edocs;
         public string? Flagged { get; set; } = input.Flagged;
-        public int? OrderNumber { get; set; } = input.OrderNumber;
+        public string? OrderNumber { get; set; } = input.OrderNumber;
         public string? SiteIdentifier { get; init; } = input.SiteIdentifier;
     }
     public class Handler(AppDbContext context, HasRequestMetadata metadata, ILogger log) : IRequestHandler<Command, Inventory> {
@@ -94,8 +94,12 @@ public static class UpdateInventory {
                 inventory.Flagged = null;
             }
 
-            if (request.OrderNumber.HasValue) {
-                inventory.OrderNumber = request.OrderNumber.Value;
+            if (request.OrderNumber != null) {
+                inventory.OrderNumber = request.OrderNumber;
+            }
+
+            if (request.OrderNumber?.Length == 0) {
+                inventory.OrderNumber = null;
             }
 
             if (request.SiteIdentifier != null && inventory.Site is not null) {

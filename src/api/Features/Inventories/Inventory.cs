@@ -9,7 +9,7 @@ public class Inventory {
     public int SiteFk { get; set; }
     public int AccountFk { get; set; }
     public int SubClass { get; set; }
-    public int OrderNumber { get; set; }
+    public string? OrderNumber { get; set; }
     public string? Signature { get; set; }
     public InventoryStatus Status { get; set; }
     public bool DetailStatus { get; set; }
@@ -72,7 +72,7 @@ public class InventoryPayload : ResponseContract {
     }
     public int Id { get; set; }
     public int SubClass { get; set; }
-    public int OrderNumber { get; set; }
+    public string? OrderNumber { get; set; }
     public string? Signature { get; set; }
     public DateTime? SubmittedOn { get; set; }
     public DateTime? UnderReviewOn { get; set; }
@@ -100,7 +100,7 @@ public class InventoriesForSitePayload : ResponseContract {
         public int SiteId { get; set; } = site.Id;
         public int Id { get; set; } = inventory.Id;
         public int SubClass { get; set; } = inventory.SubClass;
-        public int OrderNumber { get; set; } = inventory.OrderNumber;
+        public string? OrderNumber { get; set; } = inventory.OrderNumber;
         public InventoryStatus Status { get; set; } = inventory.Status;
         public bool DetailStatus { get; set; } = inventory.DetailStatus;
         public bool ContactStatus { get; set; } = inventory.ContactStatus;
@@ -128,7 +128,7 @@ public class InventoryInput {
 }
 public class InventoryCreationInput : InventoryInput {
     public int SubClass { get; set; }
-    public int OrderNumber { get; set; }
+    public string? OrderNumber { get; set; }
 }
 public class ExistingInventoryInput : InventoryInput {
     public int InventoryId { get; set; }
@@ -136,7 +136,7 @@ public class ExistingInventoryInput : InventoryInput {
 public class InventoryMutationInput : InventoryInput {
     public int InventoryId { get; set; }
     public int? SubClass { get; set; }
-    public int? OrderNumber { get; set; }
+    public string? OrderNumber { get; set; }
     public string? Edocs { get; set; }
     public string? Flagged { get; set; }
     public string? SiteIdentifier { get; set; }
@@ -158,7 +158,6 @@ public enum InventoryStatus {
 
 public static class InventoryExtensions {
     private static readonly InventoryStatus[] _approvedStatus = [InventoryStatus.Approved, InventoryStatus.Authorized, InventoryStatus.Completed];
-    private static readonly InventoryStatus[] _submittedStatus = [InventoryStatus.Submitted, InventoryStatus.UnderReview, InventoryStatus.Approved, InventoryStatus.Authorized, InventoryStatus.Completed];
     public static bool IsApproved(this InventoryStatus status) => _approvedStatus.Contains(status);
     public static bool IsSerInventory(this Inventory inventory) => inventory.SubClass == 5002;
 }
