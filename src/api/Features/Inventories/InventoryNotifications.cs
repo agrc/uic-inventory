@@ -121,7 +121,7 @@ public static class InventoryNotifications {
         private static bool GetPaymentStatus(Inventory entity) {
             IReadOnlyList<int> subClasses = [-1, 5047, 5002, 5101, 5026];
 
-            return entity.OrderNumber >= 1000000 && entity.OrderNumber <= 9999999 && subClasses.Contains(entity.SubClass);
+            return entity.OrderNumber.Length == 8 && subClasses.Contains(entity.SubClass);
         }
         private static bool GetLocationStatus(Inventory entity) {
             var hasAtLeastOneWell = entity.Wells.Count > 0;
