@@ -113,12 +113,9 @@ export const SiteLocationSchema = yup.object().shape({
 
 export const WellSchema = yup.object().shape({
   orderNumber: yup
-    .number()
+    .string()
     .typeError('Order number is required')
-    .integer()
-    .positive()
-    .min(1000000, 'Order number must be 7 digits long')
-    .max(9999999, 'Order number must be 7 digits long')
+    .length(8, 'Order number must be the first 8 characters')
     .required('Order number is required'),
   subClass: yup.number().oneOf([-1, 5047, 5002, 5101, 5026]).required().label('Well Type'),
 });
