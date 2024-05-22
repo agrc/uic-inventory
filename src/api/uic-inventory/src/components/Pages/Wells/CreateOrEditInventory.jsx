@@ -177,7 +177,7 @@ export function Component() {
                 <ResponsiveGridColumn full={true} half={true}>
                   <TextInput
                     id="orderNumber"
-                    type="number"
+                    type="text"
                     text="UIC inventory form order number"
                     register={register}
                     errors={formState.errors}
@@ -228,38 +228,47 @@ export function Component() {
                         Navigate to this website:{' '}
                         <a
                           data-style="primary"
-                          href="https://secure.utah.gov/cart/dwq_cart/details.html?productId=205"
+                          href="https://secured.utah.gov/dwq/Forms/Page/dwq-market/dwq-market/?id=205"
                           target="_blank"
                           rel="noreferrer noopener nofollow"
                         >
-                          https://secure.utah.gov/cart/dwq_cart/details.html?productId=205
+                          https://secured.utah.gov/dwq/Forms/Page/dwq-market/dwq-market/?id=205
                         </a>
-                        .
                       </li>
                       <li className="leading-loose">
-                        In the{' '}
+                        In the <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">Item</span> field
+                        drop-down menu, select the option for{' '}
                         <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">
-                          Additional Information
-                        </span>{' '}
-                        box, enter the Site Name. This should match the Site Name provided on the first page of the UIC
-                        information form.
+                          UIC Inventory Review
+                        </span>
                       </li>
                       <li className="leading-loose">
-                        Enter the number of sites (not the number of injection wells) in the{' '}
+                        Enter the number of sites (<span className="font-black">not</span> the number of injection
+                        wells) in the{' '}
                         <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">Quantity</span> box for
                         which you are submitting the UIC Inventory Review Fee.
                       </li>
                       <li className="leading-loose">
-                        Click <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">Add to cart</span>{' '}
-                        and proceed to Checkout.
+                        In the{' '}
+                        <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">
+                          Facility/Site Name from UIC Inventory Information Form
+                        </span>{' '}
+                        box, enter the Site Name. This should match the Site Name provided on the first page of this UIC
+                        information form.
                       </li>
                       <li className="leading-loose">
-                        After completing the checkout process you will receive an order number. Return to this page and
-                        enter the order number as the{' '}
+                        Complete the{' '}
+                        <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">Contact Information</span>{' '}
+                        section and click{' '}
+                        <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">Continue To Payment</span>{' '}
+                        to proceed to payment.
+                      </li>
+                      <li className="leading-loose">
+                        After completing the payment process you will receive an order number. Return to this page and
+                        enter the first 8 digits of the order number as the{' '}
                         <span className="rounded-full border bg-gray-100 px-2 py-1 font-mono">
                           UIC inventory form order number
                         </span>
-                        .
                       </li>
                     </ul>
                     <button type="button" data-style="primary" className="mt-4" onClick={close}>
