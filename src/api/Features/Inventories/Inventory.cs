@@ -64,7 +64,6 @@ public class InventoryPayload : ResponseContract {
         AuthorizedOn = inventory.AuthorizedOn;
         CompletedOn = inventory.CompletedOn;
 
-
         UnderReviewBy = new(inventory.UnderReviewByAccount);
         ApprovedBy = new(inventory.ApprovedByAccount);
         AuthorizedBy = new(inventory.AuthorizedByAccount);
@@ -127,16 +126,18 @@ public class InventoryInput {
     public int AccountId { get; set; }
 }
 public class InventoryCreationInput : InventoryInput {
+    private string? _orderNumber;
     public int SubClass { get; set; }
-    public string? OrderNumber { get; set; }
+    public string? OrderNumber { get => _orderNumber; set => _orderNumber = value?[..8]; }
 }
 public class ExistingInventoryInput : InventoryInput {
     public int InventoryId { get; set; }
 }
 public class InventoryMutationInput : InventoryInput {
+    private string? _orderNumber;
     public int InventoryId { get; set; }
     public int? SubClass { get; set; }
-    public string? OrderNumber { get; set; }
+    public string? OrderNumber { get => _orderNumber; set => _orderNumber = value?[..8]; }
     public string? Edocs { get; set; }
     public string? Flagged { get; set; }
     public string? SiteIdentifier { get; set; }
