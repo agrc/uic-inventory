@@ -115,7 +115,8 @@ export const WellSchema = yup.object().shape({
   orderNumber: yup
     .string()
     .typeError('Order number is required')
-    .length(8, 'Order number must be the first 8 characters')
+    .length(8, 'Order number must be the first 8 characters of your order number')
+    .matches(/^[a-z0-9]*$/i, 'Order number must only contain letters and numbers')
     .required('Order number is required'),
   subClass: yup.number().oneOf([-1, 5047, 5002, 5101, 5026]).required().label('Well Type'),
 });
