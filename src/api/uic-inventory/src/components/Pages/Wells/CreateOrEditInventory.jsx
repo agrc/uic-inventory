@@ -228,11 +228,11 @@ export function Component() {
                         Navigate to this website:{' '}
                         <a
                           data-style="primary"
-                          href="https://secured.utah.gov/dwq/Forms/Page/dwq-market/dwq-market/?id=205"
+                          href="https://s.utah.gov/uic-inventory-review"
                           target="_blank"
                           rel="noreferrer noopener nofollow"
                         >
-                          https://secured.utah.gov/dwq/Forms/Page/dwq-market/dwq-market/?id=205
+                          https://s.utah.gov/uic-inventory-review
                         </a>
                       </li>
                       <li className="leading-loose">
