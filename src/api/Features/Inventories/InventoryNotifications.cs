@@ -392,17 +392,17 @@ public static class InventoryNotifications {
             }
         }
     }
-    public class SendAdminSubmissionEmailHandler(EmailService client, IConfiguration configuration, ILogger log) : INotificationHandler<SubmitNotification> {
+    public class SendAdminSubmissionEmailHandler(AppDbContext context, EmailService client, ILogger log) : INotificationHandler<SubmitNotification> {
         private readonly EmailService _client = client;
         private readonly ILogger _log = log;
-        public readonly string _email = configuration.GetSection("App").GetValue<string>("AdminEmail") ?? string.Empty;
+        private readonly AppDbContext _context = context;
 
         public async Task Handle(SubmitNotification notification, CancellationToken token) {
             _log.ForContext("notification", notification)
               .Debug("Handling inventory submission admin email");
 
             var message = new SendGridMessage {
-                From = new EmailAddress(_email, "UIC Administrators"),
+                From = new EmailAddress("noreply@utah.gov", "UIC Inventory App"),
                 Subject = "UIC Inventory App: Inventory Submission Notification",
             };
             message.AddContent(
@@ -419,21 +419,25 @@ public static class InventoryNotifications {
           <p>🎉 Have a great day! 🎉</p>"
             );
 
-            message.AddTo(new EmailAddress(notification.Account.Email, $"{notification.Account.FirstName} {notification.Account.LastName}"));
+            var adminAccounts = await _context.Accounts.Where(x => x.Access == AccessLevels.elevated && x.ReceiveNotifications == true)
+            .Select(x => new EmailAddress(x.Email, $"{x.FirstName} {x.LastName}")).ToListAsync(cancellationToken: token);
+
+            message.AddTos(adminAccounts);
 
             var response = await _client.SendEmailAsync(message, token);
 
             if (!response.IsSuccessStatusCode) {
                 _log.ForContext("message", message.PlainTextContent)
-                  .ForContext("from", message.From.Email)
-                  .ForContext("to", _email)
+                  .ForContext("to", string.Join(',', adminAccounts.Select(x => x.Email)))
                   .ForContext("status", response.StatusCode)
                   .ForContext("response", await response.Body.ReadAsStringAsync(token))
                   .Error("Failed to send admin inventory submission email");
             } else {
-                _log.ForContext("message", message)
-                  .ForContext("response", response)
-                  .Debug("Sent inventory submission admin email");
+                _log.ForContext("message", message.PlainTextContent)
+                  .ForContext("to", string.Join(',', adminAccounts.Select(x => x.Email)))
+                  .ForContext("status", response.StatusCode)
+                  .ForContext("response", await response.Body.ReadAsStringAsync(token))
+                  .Information("Sent inventory submission admin email");
             }
         }
     }
