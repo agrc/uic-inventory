@@ -57,6 +57,12 @@ const navigation = [
     level: 1,
     key: 3,
   },
+  {
+    text: 'User guide',
+    to: 'https://docs.google.com/document/d/1L-hAiDbhNQHjDaMTQC7kVl2l1K11f3hATLQzbcvuMEA/edit?usp=sharing',
+    level: 1,
+    key: 4,
+  },
 ];
 
 const profile = [
