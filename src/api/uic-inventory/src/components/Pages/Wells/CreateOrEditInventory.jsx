@@ -160,7 +160,7 @@ export function Component() {
                                       </div>
                                     </div>
                                     {checked && (
-                                      <div className="shrink-0 ">
+                                      <div className="shrink-0">
                                         <CheckIcon className="h-6 w-6 text-indigo-100" />
                                       </div>
                                     )}
