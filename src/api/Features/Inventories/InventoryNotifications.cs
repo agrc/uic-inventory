@@ -402,7 +402,7 @@ public static class InventoryNotifications {
               .Debug("Handling inventory submission admin email");
 
             var message = new SendGridMessage {
-                From = new EmailAddress(notification.Account.Email, $"{notification.Account.FirstName} {notification.Account.LastName}"),
+                From = new EmailAddress(_email, "UIC Administrators"),
                 Subject = "UIC Inventory App: Inventory Submission Notification",
             };
             message.AddContent(
@@ -419,7 +419,7 @@ public static class InventoryNotifications {
           <p>🎉 Have a great day! 🎉</p>"
             );
 
-            message.AddTo(new EmailAddress(_email, "UIC Administrators"));
+            message.AddTo(new EmailAddress(notification.Account.Email, $"{notification.Account.FirstName} {notification.Account.LastName}"));
 
             var response = await _client.SendEmailAsync(message, token);
 
