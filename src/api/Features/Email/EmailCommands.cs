@@ -45,14 +45,14 @@ public static class SendEmail {
                 var response = await _client.SendEmailAsync(msg, token);
 
                 if (!response.IsSuccessStatusCode) {
-                    _log.ForContext("message", msg)
-                       .ForContext("response", response)
+                    _log.ForContext("message", msg.PlainTextContent)
+                       .ForContext("response", await response.Body.ReadAsStringAsync(token))
                       .Error("Contact staff email not sent");
 
                     throw new Exception(response.StatusCode.ToString());
                 } else {
-                    _log.ForContext("message", msg)
-                      .Debug("Sent contact staff email");
+                    _log.ForContext("message", msg.PlainTextContent)
+                      .Information("Sent contact staff email");
                 }
 
                 return new EmailPayload();

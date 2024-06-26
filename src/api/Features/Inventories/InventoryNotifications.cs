@@ -382,13 +382,13 @@ public static class InventoryNotifications {
             var response = await _client.SendEmailAsync(message, token);
 
             if (!response.IsSuccessStatusCode) {
-                _log.ForContext("message", message)
-                .ForContext("response", response)
+                _log.ForContext("message", message.PlainTextContent)
+                .ForContext("response", await response.Body.ReadAsStringAsync(token))
                   .Error("Failed to send client inventory submission email");
             } else {
-                _log.ForContext("message", message)
-                  .ForContext("response", response)
-                  .Debug("Sent inventory submission client email");
+                _log.ForContext("message", message.PlainTextContent)
+                  .ForContext("response", await response.Body.ReadAsStringAsync(token))
+                  .Information("Sent inventory submission client email");
             }
         }
     }
@@ -467,13 +467,13 @@ public static class InventoryNotifications {
             var response = await _client.SendEmailAsync(message, token);
 
             if (!response.IsSuccessStatusCode) {
-                _log.ForContext("message", message)
-                .ForContext("response", response)
+                _log.ForContext("message", message.PlainTextContent)
+                .ForContext("response", await response.Body.ReadAsStringAsync(token))
                   .Error("Failed to send inventory rejection email");
             } else {
-                _log.ForContext("message", message)
-                  .ForContext("response", response)
-                  .Debug("Sent inventory rejection email");
+                _log.ForContext("message", message.PlainTextContent)
+                  .ForContext("response", await response.Body.ReadAsStringAsync(token))
+                  .Information("Sent inventory rejection email");
             }
         }
     }
