@@ -424,8 +424,11 @@ public static class InventoryNotifications {
             var response = await _client.SendEmailAsync(message, token);
 
             if (!response.IsSuccessStatusCode) {
-                _log.ForContext("message", message)
-                .ForContext("response", response)
+                _log.ForContext("message", message.PlainTextContent)
+                  .ForContext("from", message.From.Email)
+                  .ForContext("to", _email)
+                  .ForContext("status", response.StatusCode)
+                  .ForContext("response", await response.Body.ReadAsStringAsync(token))
                   .Error("Failed to send admin inventory submission email");
             } else {
                 _log.ForContext("message", message)
