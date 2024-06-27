@@ -192,7 +192,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : DbCo
 
             entity.Property(e => e.Name)
               .IsRequired()
-              .HasMaxLength(128)
+              .HasMaxLength(512)
               .HasColumnName("name");
 
             entity.Property(e => e.Ownership)
@@ -206,7 +206,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : DbCo
             entity.Property(e => e.NaicsTitle)
               .HasColumnName("naics_title")
               .IsRequired()
-              .HasMaxLength(128);
+              .HasMaxLength(512);
 
             entity.Property(e => e.AccountFk)
               .HasColumnName("account_fk");
@@ -243,7 +243,8 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : DbCo
               .HasColumnName("remediation_description");
 
             entity.Property(e => e.RemediationType)
-              .HasColumnName("remediation_type");
+              .HasColumnName("remediation_type")
+              .HasMaxLength(512);
 
             entity.Property(e => e.RemediationProjectId)
               .HasColumnName("remediation_project_id");
@@ -259,7 +260,7 @@ public partial class AppDbContext(DbContextOptions<AppDbContext> options) : DbCo
               .HasColumnName("created_on");
 
             entity.Property(e => e.WellName)
-                .HasMaxLength(128)
+                .HasMaxLength(512)
                 .HasColumnName("well_name");
 
             entity.Property(e => e.SubClass)
