@@ -67,7 +67,7 @@ jobs:
           password: ${{ steps.auth.outputs.access_token }}
 
       - name: 📦 Build and push image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           file: ./cloudrun-malware-scanner/Dockerfile
           provenance: false
