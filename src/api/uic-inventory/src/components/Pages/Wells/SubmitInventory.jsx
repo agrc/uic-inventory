@@ -163,8 +163,8 @@ const SubmissionForm = ({ data }) => {
         <FormGrid>
           <ResponsiveGridColumn full={true}>
             This UIC Inventory Information Form must be signed by the <strong>owner</strong>, <strong>operator</strong>,
-            or <strong>legal representative&apos;s</strong> of the injection well(s) for which the inventory information
-            is being submitted. Please use the{' '}
+            or <strong>legal representative</strong> of the injection well(s) for which the inventory information is
+            being submitted. Please use the{' '}
             <a
               data-style="link"
               href="https://drive.google.com/file/d/1LXQ_gYYbqQrljmiEM9vPwEfMulGopkWl/view?usp=sharing"
