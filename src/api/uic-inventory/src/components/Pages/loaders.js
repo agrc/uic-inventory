@@ -4,7 +4,7 @@ import { onRequestError } from '../PageElements';
 export const getSiteContacts = (siteId) => ({
   queryKey: ['contacts', siteId],
   queryFn: () => ky.get(`/api/site/${siteId}/contacts`).json(),
-  enabled: siteId ?? 0 > 0 ? true : false,
+  enabled: (siteId ?? 0 > 0) ? true : false,
   onError: (error) => onRequestError(error, 'We had some trouble finding your contacts.'),
 });
 
@@ -56,7 +56,7 @@ export const getSerContact = (siteId) => ({
       contacts: response.contacts.filter((contact) => contact.contactType === 'project_manager'),
     };
   },
-  enabled: siteId ?? 0 > 0 ? true : false,
+  enabled: (siteId ?? 0 > 0) ? true : false,
   onError: (error) => onRequestError(error, 'We had some trouble finding your contacts.'),
 });
 
