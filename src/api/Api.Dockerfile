@@ -2,7 +2,7 @@ FROM node:lts-alpine AS nodejs
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS dotnet
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS dotnet-sdk
 
-FROM nodejs as vite-build
+FROM nodejs AS vite-build
 WORKDIR /build
 
 COPY ./src/api/uic-inventory .
@@ -12,14 +12,14 @@ ARG VITE_API_KEY $VITE_API_KEY
 
 RUN npm ci && npm run build
 
-FROM dotnet-sdk as api-build
+FROM dotnet-sdk AS api-build
 
 COPY . ./build
 WORKDIR /build/src/api
 
 RUN dotnet build -c Release -o /app
 
-FROM api-build as api-publish
+FROM api-build AS api-publish
 
 RUN dotnet publish -c Release -o /app -r linux-x64 -p:PublishSingleFile=true --no-self-contained -p:DebugType=embedded -p:PublishReadyToRun=true
 
