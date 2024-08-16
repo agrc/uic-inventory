@@ -1,22 +1,24 @@
-import { Switch, SwitchGroup, SwitchLabel } from '@headlessui/react';
+import { CloudArrowUpIcon } from '@heroicons/react/24/outline';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
 import PropTypes from 'prop-types';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Facebook } from 'react-content-loader';
-import { Controller, useForm } from 'react-hook-form';
+import { useDropzone } from 'react-dropzone';
+import { useForm } from 'react-hook-form';
 import { AuthContext } from '../../../AuthProvider';
 import {
+  DropzoneMessaging,
+  ErrorMessageTag,
   FormGrid,
+  Label,
   PageGrid,
   ResponsiveGridColumn,
-  TextInput,
   InventorySubmissionSchema as schema,
 } from '../../FormElements';
-import ErrorMessageTag from '../../FormElements/ErrorMessage';
 import { Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { IncompleteInventoryWarning } from '../ErrorPages';
 import { getInventory } from '../loaders';
@@ -99,9 +101,33 @@ const SubmissionForm = ({ data }) => {
   const { siteId, inventoryId } = useParams();
   const navigate = useNavigate();
 
-  const { control, formState, handleSubmit, register } = useForm({
+  const { formState, register, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const [files, setFiles] = useState([]);
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    noClick: true,
+    noKeyboard: true,
+    multiple: false,
+    maxFiles: 1,
+    accept: {
+      'application/pdf': ['.pdf'],
+    },
+    onDropRejected: () => {
+      toast.error('File type not accepted');
+    },
+    onDrop: (acceptedFiles) => {
+      setFiles(acceptedFiles);
+      formState.setValue(formState.field.name, acceptedFiles[0], { shouldValidate: true, shouldDirty: true });
+    },
+  });
+
+  useEffect(() => {
+    if (formState.isSubmitSuccessful) {
+      setFiles([]);
+    }
+  }, [formState.isSubmitSuccessful]);
 
   const queryClient = useQueryClient();
 
@@ -136,56 +162,67 @@ const SubmissionForm = ({ data }) => {
       >
         <FormGrid>
           <ResponsiveGridColumn full={true}>
-            I verify by typing my name in the Electronic Signature that I am the <strong>owner</strong> or{' '}
-            <strong>operator (or legal representative)</strong> of the injection wells, and the information I have
-            provided to the UIC program through this form is accurate to the best of my knowledge.
+            This UIC Inventory Information Form must be signed by the <strong>owner</strong>, <strong>operator</strong>,
+            or <strong>legal representative&apos;s</strong> of the injection well(s) for which the inventory information
+            is being submitted. Please use the{' '}
+            <a
+              data-style="link"
+              href="https://drive.google.com/file/d/1LXQ_gYYbqQrljmiEM9vPwEfMulGopkWl/view?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+            >
+              UIC Inventory Submission Signature Template
+            </a>{' '}
+            to upload a copy of the <strong>owner</strong>, <strong>operator</strong>, or{' '}
+            <strong>legal representative&apos;s</strong> signature in the file submission box below.
           </ResponsiveGridColumn>
-          <ResponsiveGridColumn full={true} half={true}>
-            <SwitchGroup as="div" className="flex items-center">
-              <SwitchLabel className="mr-4">Electronic Signature Verification</SwitchLabel>
-              <span className="sr-only">Electronic Signature Verification</span>
-              <Controller
-                control={control}
-                name="verification"
-                render={({ field: { onChange, value, name } }) => (
-                  <Switch
-                    defaultChecked={value}
-                    id={name}
-                    onChange={onChange}
-                    className={clsx(
-                      {
-                        'bg-indigo-600 focus:ring-indigo-500': value,
-                        'bg-gray-300 focus:ring-gray-300': !value,
-                      },
-                      'relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
-                    )}
-                  >
-                    <span
-                      className={clsx(
-                        {
-                          'translate-x-8 border-indigo-700 bg-gray-100': value,
-                          'translate-x-1 border-gray-400 bg-white': !value,
-                        },
-                        'inline-block h-7 w-7 transform rounded-full border-2 border-gray-400 transition-transform',
-                      )}
-                    />
-                  </Switch>
-                )}
-              />
-            </SwitchGroup>
-            <ErrorMessage errors={formState.errors} name="verification" as={ErrorMessageTag} />
-          </ResponsiveGridColumn>
-          <ResponsiveGridColumn full={true} half={true}>
+          <ResponsiveGridColumn full={true}>
             <div>Effective date of submission: {new Date().toLocaleDateString()}</div>
           </ResponsiveGridColumn>
           <ResponsiveGridColumn full={true}>
-            <TextInput
-              id="signature"
-              text="Electronic Signature"
-              control={control}
-              register={register}
-              errors={formState.errors}
-            />
+            <Label id="signature" text="Signature form:" />
+          </ResponsiveGridColumn>
+          <ResponsiveGridColumn full={true}>
+            <section
+              {...getRootProps()}
+              className={clsx('mx-auto flex p-2 lg:max-w-sm', {
+                'rounded border border-dashed border-gray-400 bg-gray-50': files.length === 0,
+                'col-span-2 bg-white': files.length > 0,
+              })}
+            >
+              <div className={clsx('flex grow flex-col justify-around px-2')}>
+                <input
+                  {...register('signature', { required: true })}
+                  {...(files.length > 0 ? formState.field : {})}
+                  {...getInputProps({
+                    onChange: (e) => {
+                      formState.field.onChange(e.target.files[0]);
+                    },
+                  })}
+                  value=""
+                />
+                <DropzoneMessaging
+                  isDragActive={isDragActive}
+                  files={files}
+                  reset={() => {
+                    formState.reset({ ...formState.getValues(), [formState.field.name]: '' });
+                    setFiles([]);
+                  }}
+                />
+                {files.length === 0 && (
+                  <>
+                    <button className="items-center pl-0" type="button" data-style="secondary" onClick={open}>
+                      <CloudArrowUpIcon className="mx-2 h-6 w-6 text-white" />
+                      Pick a PDF
+                    </button>
+                    <div className="self-center text-sm text-gray-600">(pdf&apos;s only)</div>
+                  </>
+                )}
+              </div>
+            </section>
+            <div className="col-span-2">
+              <ErrorMessage errors={[]} name="signature" as={ErrorMessageTag} />
+            </div>
           </ResponsiveGridColumn>
         </FormGrid>
       </PageGrid>
