@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MediatR.Behaviors.Authorization.Exceptions;
+using Microsoft.AspNetCore.Http;
 
 namespace api.Features;
 public class Inventory {
@@ -144,7 +145,7 @@ public class InventoryMutationInput : InventoryInput {
 }
 public class InventorySubmissionInput : InventoryInput {
     public int InventoryId { get; set; }
-    public string Signature { get; set; } = default!;
+    public IFormFile? Signature { get; set; }
 }
 
 public enum InventoryStatus {

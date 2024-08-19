@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
 using Google.Apis.Auth.OAuth2;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Net.Http.Headers;
@@ -121,31 +123,54 @@ public static class SubmitInventory {
         public int AccountId { get; set; } = input.AccountId;
         public int SiteId { get; set; } = input.SiteId;
         public int InventoryId { get; set; } = input.InventoryId;
-        public string Signature { get; set; } = input.Signature;
+        public IFormFile? SignatureFile { get; set; } = input.Signature;
     }
 
     public class Handler(AppDbContext context,
             IPublisher publisher,
             HasRequestMetadata metadata,
+            IConfiguration configuration,
+            CloudStorageService cloudService,
             ILogger log) : IRequestHandler<Command> {
         private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
         private readonly HasRequestMetadata _metadata = metadata;
+        private readonly string _bucket = configuration.GetValue<string>("UPLOAD_BUCKET") ?? string.Empty;
+        private readonly CloudStorageService _client = cloudService;
 
         async Task IRequestHandler<Command>.Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Submitting Inventory");
 
-            if (string.IsNullOrEmpty(request.Signature)) {
+            if (request.SignatureFile is null) {
                 throw new Exception("Signature is required");
             }
 
             var inventory = await _context.Inventories
               .FirstAsync(s => s.Id == request.InventoryId, cancellationToken);
 
+            var filePath = $"site_{request.SiteId}/inventory_{request.InventoryId}/signature_{request.AccountId}.pdf";
             inventory.SubmittedOn = DateTime.UtcNow;
-            inventory.Signature = request.Signature;
+            inventory.Signature = $"file::signature.pdf";
+
+            try {
+                await _client.AddObjectAsync(_bucket,
+                    filePath,
+                    request.SignatureFile.ContentType,
+                    request.SignatureFile.OpenReadStream(),
+                    cancellationToken
+                );
+            } catch (Exception e) {
+                const string message = "Error uploading signature file";
+
+                _log.ForContext("site", request.SiteId)
+                    .ForContext("inventory", request.InventoryId)
+                    .ForContext("account", request.AccountId)
+                    .Error(e, message);
+
+                throw;
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
 
