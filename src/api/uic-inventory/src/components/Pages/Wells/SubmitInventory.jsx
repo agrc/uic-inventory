@@ -106,7 +106,7 @@ const SubmissionForm = ({ data }) => {
   const queryClient = useQueryClient();
 
   const { status, mutate } = useMutation({
-    mutationFn: (data) => ky.post('/api/inventory/submit', { json: { ...data, id: authInfo.id, siteId, inventoryId } }),
+    mutationFn: (body) => ky.post('/api/inventory/submit', { body, timeout: 600000 }),
     onSuccess: () => {
       toast.success('Inventory submitted successfully!');
       navigate('/');
@@ -148,8 +148,14 @@ const SubmissionForm = ({ data }) => {
   }, [isSubmitSuccessful]);
 
   const submitInventory = (data) => {
-    console.log('submitting', data);
-    mutate(data);
+    const formData = new FormData();
+
+    formData.append('accountId', parseInt(authInfo.id));
+    formData.append('inventoryId', parseInt(inventoryId));
+    formData.append('siteId', parseInt(siteId));
+    formData.append('signature', data.signature);
+
+    mutate(formData);
   };
 
   return (
