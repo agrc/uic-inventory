@@ -369,7 +369,6 @@ public static class InventoryNotifications {
             <li>{WellLookup.WellType(notification.Inventory.SubClass)} - Inventory #{notification.Inventory.Id} (Order #{notification.Inventory.OrderNumber})</li>
             <li>{notification.Site.Name} - Site #{notification.Site.Id}</li>
             <li>Submission Date: {notification.Inventory.SubmittedOn:yyyy/MM/dd}</li>
-            <li>Signed for by: {notification.Inventory.Signature}</li>
           </ul>
           <p>Have a great day,</p>
           <p>The UIC Staff</p>
@@ -414,7 +413,6 @@ public static class InventoryNotifications {
             <li>{WellLookup.WellType(notification.Inventory.SubClass)} - Inventory #{notification.Inventory.Id} (Order #{notification.Inventory.OrderNumber})</li>
             <li>{notification.Site.Name} - Site #{notification.Site.Id}</li>
             <li>Submission Date: {notification.Inventory.SubmittedOn:yyyy/MM/dd}</li>
-            <li>Signed for by: {notification.Inventory.Signature}</li>
           </ul>
           <p>🎉 Have a great day! 🎉</p>"
             );
