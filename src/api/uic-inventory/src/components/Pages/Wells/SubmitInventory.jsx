@@ -98,14 +98,31 @@ PageStatus.propTypes = {
 };
 const SubmissionForm = ({ data }) => {
   const { authInfo } = useContext(AuthContext);
+
   const { siteId, inventoryId } = useParams();
   const navigate = useNavigate();
 
-  const { formState, register, handleSubmit } = useForm({
-    resolver: yupResolver(schema),
+  const [files, setFiles] = useState([]);
+  const queryClient = useQueryClient();
+
+  const { status, mutate } = useMutation({
+    mutationFn: (data) => ky.post('/api/inventory/submit', { json: { ...data, id: authInfo.id, siteId, inventoryId } }),
+    onSuccess: () => {
+      toast.success('Inventory submitted successfully!');
+      navigate('/');
+      queryClient.invalidateQueries({ queryKey: ['site', siteId, 'inventory', inventoryId] });
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble submitting this inventory.'),
   });
 
-  const [files, setFiles] = useState([]);
+  const { formState, register, setValue, handleSubmit, reset } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      signature: '',
+    },
+  });
+  const { isDirty, isSubmitSuccessful } = formState;
+
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     noClick: true,
     noKeyboard: true,
@@ -119,29 +136,19 @@ const SubmissionForm = ({ data }) => {
     },
     onDrop: (acceptedFiles) => {
       setFiles(acceptedFiles);
-      formState.setValue(formState.field.name, acceptedFiles[0], { shouldValidate: true, shouldDirty: true });
+      setValue('signature', acceptedFiles[0], { shouldValidate: true, shouldDirty: true });
     },
   });
 
+  // reset form after successful submission
   useEffect(() => {
-    if (formState.isSubmitSuccessful) {
+    if (isSubmitSuccessful) {
       setFiles([]);
     }
-  }, [formState.isSubmitSuccessful]);
-
-  const queryClient = useQueryClient();
-
-  const { status, mutate } = useMutation({
-    mutationFn: (data) => ky.post('/api/inventory/submit', { json: { ...data, id: authInfo.id, siteId, inventoryId } }),
-    onSuccess: () => {
-      toast.success('Inventory submitted successfully!');
-      navigate('/');
-      queryClient.invalidateQueries({ queryKey: ['site', siteId, 'inventory', inventoryId] });
-    },
-    onError: (error) => onRequestError(error, 'We had some trouble submitting this inventory.'),
-  });
+  }, [isSubmitSuccessful]);
 
   const submitInventory = (data) => {
+    console.log('submitting', data);
     mutate(data);
   };
 
@@ -155,6 +162,7 @@ const SubmissionForm = ({ data }) => {
          Rejected applications will be removed from the system and will need to be resubmitted with complete
          information to be considered for review.`}
         submit={true}
+        disabled={!isDirty}
         back={true}
         submitLabel="Submit"
         site={data?.site}
@@ -185,27 +193,18 @@ const SubmissionForm = ({ data }) => {
           <ResponsiveGridColumn full={true}>
             <section
               {...getRootProps()}
-              className={clsx('mx-auto flex p-2 lg:max-w-sm', {
+              className={clsx('mx-auto flex p-2 lg:w-3/4', {
                 'rounded border border-dashed border-gray-400 bg-gray-50': files.length === 0,
                 'col-span-2 bg-white': files.length > 0,
               })}
             >
               <div className={clsx('flex grow flex-col justify-around px-2')}>
-                <input
-                  {...register('signature', { required: true })}
-                  {...(files.length > 0 ? formState.field : {})}
-                  {...getInputProps({
-                    onChange: (e) => {
-                      formState.field.onChange(e.target.files[0]);
-                    },
-                  })}
-                  value=""
-                />
+                <input id="signature" {...register('signature', { required: true })} {...getInputProps()} value="" />
                 <DropzoneMessaging
                   isDragActive={isDragActive}
                   files={files}
                   reset={() => {
-                    formState.reset({ ...formState.getValues(), [formState.field.name]: '' });
+                    reset({ signature: '' });
                     setFiles([]);
                   }}
                 />
@@ -213,7 +212,7 @@ const SubmissionForm = ({ data }) => {
                   <>
                     <button className="items-center pl-0" type="button" data-style="secondary" onClick={open}>
                       <CloudArrowUpIcon className="mx-2 h-6 w-6 text-white" />
-                      Pick a PDF
+                      Upload signature template
                     </button>
                     <div className="self-center text-sm text-gray-600">(pdf&apos;s only)</div>
                   </>
@@ -221,7 +220,7 @@ const SubmissionForm = ({ data }) => {
               </div>
             </section>
             <div className="col-span-2">
-              <ErrorMessage errors={[]} name="signature" as={ErrorMessageTag} />
+              <ErrorMessage errors={formState.errors} name="signature" as={ErrorMessageTag} />
             </div>
           </ResponsiveGridColumn>
         </FormGrid>
