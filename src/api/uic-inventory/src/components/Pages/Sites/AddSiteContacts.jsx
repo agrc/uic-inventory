@@ -9,7 +9,6 @@ import {
   TransitionChild,
 } from '@headlessui/react';
 import { QuestionMarkCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { DevTool } from '@hookform/devtools';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
@@ -241,7 +240,6 @@ function CreateContactForm({ data }) {
           )}
         </FormGrid>
       </PageGrid>
-      <DevTool control={control} />
     </form>
   );
 }
