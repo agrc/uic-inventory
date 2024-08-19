@@ -244,8 +244,7 @@ const AlreadySubmitted = ({ data }) => {
         Inventory status: <span className="text-xl font-black text-blue-700">{data.status}</span>
       </h3>
       <ResponsiveGridColumn full={true}>
-        This inventory was submitted on {dateFormatter.format(Date.parse(data.submittedOn))} and signed for by{' '}
-        {data.signature}.
+        This inventory was submitted on {dateFormatter.format(Date.parse(data.submittedOn))}.
       </ResponsiveGridColumn>
     </PageGrid>
   );
