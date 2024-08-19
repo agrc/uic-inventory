@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
+import { useMaxLength } from '../Hooks';
 import { Tooltip } from '../PageElements';
 import ErrorMessageTag from './ErrorMessage';
 import { Label } from './TextInput';
@@ -72,13 +73,6 @@ LimitedTextarea.defaultProps = {
   inputRef: null,
   onChange: undefined,
   disabled: false,
-};
-
-export const useMaxLength = ({ value, limit }) => {
-  return {
-    limit,
-    remaining: limit - (value?.length || 0),
-  };
 };
 
 export const DropzoneMessaging = ({ isDragActive, files = [], reset = () => {} }) => {
