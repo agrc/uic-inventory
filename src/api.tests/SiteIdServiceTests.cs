@@ -1,3 +1,13 @@
+using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using api.Features;
+using Moq;
+using Moq.Protected;
+using Serilog;
+using Xunit;
+
 namespace api.tests;
 
 public class SiteIdServiceTests {
@@ -8,7 +18,7 @@ public class SiteIdServiceTests {
     [InlineData(null, null)]
     [InlineData(null, " ")]
     [InlineData(" ", null)]
-    public async Task Should_return_empty_when_site_has_no_geometry_or_site_id(string siteId, string geometry) {
+    public async Task Should_return_empty_when_site_has_no_geometry_or_site_id(string? siteId, string? geometry) {
         var mockFactory = new Mock<IHttpClientFactory>();
 
         mockFactory.Setup(_ => _.CreateClient("esri"));
@@ -28,7 +38,7 @@ public class SiteIdServiceTests {
     [InlineData("Not empty", " ")]
     [InlineData("Not empty", null)]
     [InlineData("Not empty", "a polygon in utah")]
-    public async Task Should_return_site_value_if_it_has_a_value(string siteId, string geometry) {
+    public async Task Should_return_site_value_if_it_has_a_value(string siteId, string? geometry) {
         var mockFactory = new Mock<IHttpClientFactory>();
 
         mockFactory.Setup(_ => _.CreateClient("esri"));
