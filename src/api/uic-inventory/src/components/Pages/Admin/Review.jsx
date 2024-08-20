@@ -13,8 +13,15 @@ import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 
 import { AuthContext } from '../../../AuthProvider';
 import { contactTypes, ownershipTypes, valueToLabel, wellTypes } from '../../../data/lookups';
-import { FormGrid, ResponsiveGridColumn, SelectListbox, useEditableInput, useEditableSelect } from '../../FormElements';
-import { useInventoryWells, useOpenClosed, useSitePolygon, useWebMap } from '../../Hooks';
+import { FormGrid, ResponsiveGridColumn, SelectListbox } from '../../FormElements';
+import {
+  useEditableInput,
+  useEditableSelect,
+  useInventoryWells,
+  useOpenClosed,
+  useSitePolygon,
+  useWebMap,
+} from '../../Hooks';
 import { Chrome, ConfirmationModal, Flagged, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
