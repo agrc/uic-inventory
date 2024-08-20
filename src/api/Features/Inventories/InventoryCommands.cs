@@ -300,7 +300,12 @@ public static class DownloadInventory {
                 .SelectMany(well => new[] { well.ConstructionDetails, well.InjectateCharacterization, well.HydrogeologicCharacterization })
                 .Where(details => (details ?? "").StartsWith("file::"))
                 .Select(details => decodeFile(details!))
-                .Distinct();
+                .Distinct()
+                .ToList();
+
+            if (!string.IsNullOrEmpty(inventoryPayload.Signature)) {
+                cloudFiles.Add(GetInventorySignature.DecodeFilePath(request.SiteId, request.InventoryId).Item2);
+            }
 
             var payload = new ReportPayload(inventoryPayload, site.Contacts.Select(x => new ContactPayload(x)), cloudFiles, new AccountPayload(_metadata.Account));
 
