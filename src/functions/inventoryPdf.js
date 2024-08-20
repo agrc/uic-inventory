@@ -322,8 +322,8 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
       buildTableDefinitionFor("Inventory Details", {
         inventoryClass: valueToLabel(wellTypes, inventory.subClass),
         orderNumber: inventory.orderNumber,
-        signedBy: inventory.signature,
-        signedDate: dateFormatter.format(new Date(inventory.submittedOn)),
+        signedBy: '(See appendix)',
+        submittedOn: dateFormatter.format(new Date(inventory.submittedOn)),
       }),
       addSiteContacts(
         contacts.map((contact) => {
