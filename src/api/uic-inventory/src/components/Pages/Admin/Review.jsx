@@ -483,7 +483,7 @@ const SiteAndInventoryDetails = ({ siteId, inventoryId, confirmations }) => {
         </ResponsiveGridColumn>
         <ResponsiveGridColumn full={true} half={true}>
           <Label>Signed By</Label>
-          <Value>{data?.signature}</Value>
+          <Value>{handleLink(data?.signature, siteId, inventoryId)}</Value>
         </ResponsiveGridColumn>
         <ResponsiveGridColumn full={true} half={true}>
           <Label>Signed On</Label>
@@ -537,12 +537,12 @@ const ContactDetails = ({ siteId }) => {
   );
 };
 
-const handleLink = (text, siteId, inventoryId) => {
+const handleLink = (text, siteId, inventoryId, type = '') => {
   if (text?.startsWith('file::')) {
     return (
       <a
         data-style="link"
-        href={text.replace('file::', `/api/site/${siteId}/inventory/${inventoryId}/well/`).replaceAll('_', '/')}
+        href={text.replace('file::', `/api/site/${siteId}/inventory/${inventoryId}/${type}`).replaceAll('_', '/')}
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -585,7 +585,7 @@ const WellDetails = ({ siteId, inventoryId }) => {
             <Label>Well Name</Label>
             <Value>{well.wellName}</Value>
             <Label>Construction</Label>
-            <Value>{handleLink(well.constructionDetails, siteId, inventoryId)}</Value>
+            <Value>{handleLink(well.constructionDetails, siteId, inventoryId, 'well/')}</Value>
             {well.subClass === 5002 && (
               <>
                 <Label>Remediation</Label>
@@ -612,7 +612,7 @@ const WellDetails = ({ siteId, inventoryId }) => {
             <Label>Well Name</Label>
             <Value>{well.wellName}</Value>
             <Label>Injectate Characterization</Label>
-            <Value>{handleLink(well.injectateCharacterization, siteId, inventoryId)}</Value>
+            <Value>{handleLink(well.injectateCharacterization, siteId, inventoryId, 'well/')}</Value>
           </Panel>
         ))}
       </Section>
