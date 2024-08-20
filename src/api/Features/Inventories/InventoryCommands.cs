@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
@@ -464,6 +464,38 @@ public static class CompleteInventory {
             await _publisher.Publish(new InventoryNotifications.CompleteNotification(inventory.SiteFk, inventory.Id, _metadata.Account), cancellationToken);
 
             return;
+        }
+    }
+}
+public static class GetInventorySignature {
+    public class Command(int siteId, int inventoryId) : IRequest<Stream> {
+        public int SiteId { get; set; } = siteId;
+        public int InventoryId { get; } = inventoryId;
+    }
+
+    public static Tuple<string, string> DecodeFilePath(int siteId, int inventoryId) {
+        var prefix = $"site_{siteId}/inventory_{inventoryId}";
+        var path = $"{prefix}/signature";
+
+        return new(prefix, path);
+    }
+
+    public class Handler(IConfiguration configuration, CloudStorageService service, ILogger log) : IRequestHandler<Command, Stream> {
+        private readonly string _bucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
+        private readonly ILogger _log = log;
+        private readonly CloudStorageService _client = service;
+
+        async Task<Stream> IRequestHandler<Command, Stream>.Handle(Command request, CancellationToken cancellationToken) {
+            _log.ForContext("input", request)
+              .Debug("Fetching inventory signature");
+
+            var (prefix, match) = DecodeFilePath(request.SiteId, request.InventoryId);
+
+            var stream = await _client.DownloadObjectAsync(_bucket, prefix, match, cancellationToken) ?? throw new FileNotFoundException("If this file was just uploaded it is being scanned for malware. " +
+                  "Please try again in a few moments. Otherwise, the upload was either flagged as malware and removed " +
+                  "or something went terribly wrong.");
+
+            return stream;
         }
     }
 }

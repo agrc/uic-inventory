@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
@@ -294,4 +295,46 @@ public class InventoryController(IMediator mediator, HasRequestMetadata requestM
             return StatusCode(500, new InventoryPayload(ex));
         }
     }
+
+    [HttpGet("/api/site/{siteId:min(1)}/inventory/{inventoryId:min(-1)}/signature.pdf")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult> GetInventorySignatureAsync(int siteId, int inventoryId, CancellationToken token) {
+        try {
+            var result = await _mediator.Send(new GetInventorySignature.Command(siteId, inventoryId), token);
+
+            return File(result, "application/pdf");
+        } catch (UnauthorizedException ex) {
+            _log.ForContext("endpoint", "GET:api/inventory/signature")
+              .ForContext("site", siteId)
+              .ForContext("inventory", inventoryId)
+              .ForContext("requirement", ex.Message)
+              .Warning("GetInventorySignatureAsync requirements failure");
+
+            return Unauthorized(new InventoryPayload(ex));
+        } catch (ArgumentNullException ex) {
+            _log.ForContext("endpoint", "GET:api/inventory/signature")
+              .ForContext("site", siteId)
+              .ForContext("inventory", inventoryId)
+              .ForContext("requirement", ex.Message)
+              .Warning("GetInventorySignatureAsync bad request");
+
+            return StatusCode(400, new InventoryPayload(ex));
+        } catch (FileNotFoundException ex) {
+            _log.ForContext("endpoint", "GET:api/inventory/signature")
+              .ForContext("site", siteId)
+              .ForContext("inventory", inventoryId)
+              .ForContext("requirement", ex.Message)
+              .Warning("GetInventorySignatureAsync cloud file not found");
+
+            return StatusCode(404, new InventoryPayload(ex));
+        } catch (Exception ex) {
+            _log.ForContext("endpoint", "GET:api/inventory/signature")
+              .ForContext("site", siteId)
+              .ForContext("inventory", inventoryId)
+              .Fatal(ex, "Unhandled exception");
+
+            return StatusCode(500, new InventoryPayload(ex));
+        }
+    }
+
 }
