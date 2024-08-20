@@ -41,16 +41,18 @@ jobs:
 
       - name: 🚀 Deploy Cloud Function
         id: deploy
-        uses: google-github-actions/deploy-cloud-functions@v2
+        uses: google-github-actions/deploy-cloud-functions@v3
+        timeout-minutes: 10
         with:
           name: pdf
           runtime: nodejs20
           source_dir: src/functions
           entry_point: generate
-          service_account_email: cloud-function-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          https_trigger_security_level: "secure_always"
-          timeout: "2m"
-          env_vars: BUCKET=${{ vars.BUCKET }},WATERMARK=true
+          service_account: cloud-function-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+          service_timeout: "2m"
+          environment_variables: |-
+            BUCKET=${{ vars.BUCKET }}
+            WATERMARK=true
 
   deploy-prod:
     name: Deploy to prod
