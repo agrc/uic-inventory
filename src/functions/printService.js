@@ -146,7 +146,7 @@ export const getPrintMapImageAsync = async (site, wells = []) => {
               new Point({
                 type: "point",
                 ...well.geometry,
-              })
+              }),
           ),
         ]),
         spatialReference: {
@@ -171,7 +171,7 @@ export const getPrintMapImageAsync = async (site, wells = []) => {
           operationalLayers: [],
         },
       },
-    })
+    }),
   );
   body.append("Format", "JPG");
   body.append("Layout_Template", "MAP_ONLY");
@@ -182,7 +182,7 @@ export const getPrintMapImageAsync = async (site, wells = []) => {
   const printJob = await ky
     .post(
       "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task/execute",
-      { headers, body, timeout }
+      { headers, body, timeout },
     )
     .json();
 

@@ -95,7 +95,7 @@ export const buildTableDefinitionFor = (title, data, options) => {
         text: value,
         style: constants.value,
       },
-    ])
+    ]),
   );
 
   if (options?.skipSpacer) {

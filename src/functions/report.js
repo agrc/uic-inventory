@@ -253,7 +253,7 @@ http("generate", async (req, res) => {
       inventory,
       getMostImportantContact(contacts),
       approver,
-      watermark
+      watermark,
     );
 
     abrPdf = await createPdfDocument(abrDefinition);

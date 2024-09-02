@@ -176,7 +176,7 @@ const addWaterSystemInformation = (data) => {
   console.debug("adding water system information");
 
   let distinctContacts = [...new Set(data.map((contact) => JSON.stringify(contact)))].map((contact) =>
-    JSON.parse(contact)
+    JSON.parse(contact),
   );
 
   let columnDefinitions = buildSubTableDefinitionFor(distinctContacts);
@@ -335,7 +335,7 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
             phone: contact.phoneNumber,
             address: formatAddress(contact),
           };
-        })
+        }),
       ),
       addLocationDetails(),
       addWellInformation(
@@ -349,7 +349,7 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
             remediationProjectId: well?.remediationProjectId,
             subClass: well.subClass,
           };
-        })
+        }),
       ),
       addWaterSystemInformation(
         inventory.wells
@@ -361,7 +361,7 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
               contact: startCase(contact.name.toLowerCase()),
               email: contact.email.toLowerCase(),
             };
-          })
+          }),
       ),
       addConstructionDetails(
         inventory.wells
@@ -373,7 +373,7 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
                 ? "(See Appendix)"
                 : well.constructionDetails,
             };
-          })
+          }),
       ),
       addInjectateCharacterization(
         inventory.wells
@@ -385,7 +385,7 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
                 ? "(See Appendix)"
                 : well.injectateCharacterization,
             };
-          })
+          }),
       ),
       addHydrogeologicCharacterization(
         inventory.wells
@@ -397,7 +397,7 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
                 ? "(See Appendix)"
                 : well.hydrogeologicCharacterization,
             };
-          })
+          }),
       ),
     ],
     footer: [
