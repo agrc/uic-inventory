@@ -303,7 +303,7 @@ public static class DownloadInventory {
                 .Distinct()
                 .ToList();
 
-            if (!string.IsNullOrEmpty(inventoryPayload.Signature)) {
+            if (!string.IsNullOrEmpty(inventoryPayload.Signature) && inventoryPayload.Signature.StartsWith("file::")) {
                 cloudFiles.Add(GetInventorySignature.DecodeFilePath(request.SiteId, request.InventoryId).Item2);
             }
 

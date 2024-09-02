@@ -322,7 +322,7 @@ export const generateInventoryReportPdfDefinition = (inventory, contacts, image,
       buildTableDefinitionFor("Inventory Details", {
         inventoryClass: valueToLabel(wellTypes, inventory.subClass),
         orderNumber: inventory.orderNumber,
-        signedBy: '(See appendix)',
+        signedBy: inventory.signature.startsWith("file::") ? "(See appendix)" : inventory.signature,
         submittedOn: dateFormatter.format(new Date(inventory.submittedOn)),
       }),
       addSiteContacts(
