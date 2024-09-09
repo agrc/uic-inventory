@@ -41,6 +41,7 @@ public class Startup(IConfiguration configuration) {
         services.AddScoped<HasRequestMetadata>();
         services.AddScoped<IWaterSystemContactService, WaterSystemContactService>();
         services.AddScoped<CloudStorageService>();
+        services.AddScoped<GroundWaterService>();
 
         services.AddSingleton(new Lazy<NaicsProvider>(() => new NaicsProvider()));
         services.AddSingleton<EmailService>();
