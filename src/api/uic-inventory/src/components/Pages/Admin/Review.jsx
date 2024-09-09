@@ -1,5 +1,5 @@
 import { Description, DialogTitle } from '@headlessui/react';
-import { ExclamationCircleIcon, InformationCircleIcon } from '@heroicons/react/20/solid';
+import { ArrowPathIcon, ExclamationCircleIcon, InformationCircleIcon } from '@heroicons/react/20/solid';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import clsx from 'clsx';
@@ -767,82 +767,139 @@ const Pill = ({ children, status }) => {
 };
 
 const WellTable = ({ wells = [], state, dispatch }) => {
+  const queryClient = useQueryClient();
+  const { authInfo } = useContext(AuthContext);
+  const { inventoryId, siteId } = useParams();
+  const queryKey = ['site', siteId, 'inventory', inventoryId];
+  const { mutate, status } = useMutation({
+    mutationFn: (json) => ky.post('/api/inventory/ground-water', { json, timeout: 30000 }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onSuccess: () => {
+      toast.success('Contacts updated successfully!');
+    },
+    onError: (error) => onRequestError(error, 'We had some trouble approving this inventory.'),
+  });
+
   const [highlighting, setHighlighting] = useState(false);
-  const columns = useMemo(
+  const [columns, refreshGroundWater] = useMemo(
     () => [
-      {
-        accessorKey: 'id',
-      },
-      {
-        header: 'Construction',
-        accessorKey: 'wellName',
-        cell: function id({ row }) {
-          return (
-            <div className="relative">
-              <span
-                title="Well count"
-                className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-gray-800 text-xs font-bold text-gray-700"
-              >
-                {row.original.count}
-              </span>
-              {row.original.wellName}
+      [
+        {
+          accessorKey: 'id',
+        },
+        {
+          header: 'Construction',
+          accessorKey: 'wellName',
+          cell: function id({ row }) {
+            return (
+              <div className="relative">
+                <span
+                  title="Well count"
+                  className="mr-2 inline-flex h-6 w-6 items-center justify-center rounded-full border border-gray-800 text-xs font-bold text-gray-700"
+                >
+                  {row.original.count}
+                </span>
+                {row.original.wellName}
+              </div>
+            );
+          },
+        },
+        {
+          header: 'Operating Status',
+          accessorKey: 'status',
+        },
+        {
+          header: () => (
+            <div className="flex items-center gap-2">
+              <span>Ground Water</span>
+              <button onClick={refreshGroundWater} className="rounded-full p-1" data-style="secondary">
+                {status === 'pending' && (
+                  <svg
+                    className="size-4 animate-spin motion-reduce:hidden"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                )}
+                {status === 'error' && <ExclamationCircleIcon className="size-5 text-red-500" />}
+                {!['error', 'pending'].includes(status) && <ArrowPathIcon className="size-4" />}
+                <span className="sr-only">Refresh ground water contacts</span>
+              </button>
             </div>
-          );
+          ),
+          accessorKey: 'surfaceWaterProtection',
+          cell: function id({ row }) {
+            switch (row.original.surfaceWaterProtection) {
+              case 'Y+': {
+                return (
+                  <>
+                    <Pill status={true}>GWZ</Pill>
+                    <Pill status={true}>ARDA</Pill>
+                    <span>(Y)</span>
+                  </>
+                );
+              }
+              case 'Y-': {
+                return (
+                  <>
+                    <Pill status={true}>GWZ</Pill>
+                    <Pill status={false}>ARDA</Pill>
+                    <span>(Y)</span>
+                  </>
+                );
+              }
+              case 'S': {
+                return (
+                  <>
+                    <Pill status={false}>GWZ</Pill>
+                    <Pill status={true}>ARDA</Pill>
+                    <span>(S)</span>
+                  </>
+                );
+              }
+              case 'N': {
+                return (
+                  <>
+                    <Pill status={false}>GWZ</Pill>
+                    <Pill status={false}>ARDA</Pill>
+                    <span>(N)</span>
+                  </>
+                );
+              }
+              default: {
+                return 'Unknown';
+              }
+            }
+          },
         },
-      },
-      {
-        header: 'Operating Status',
-        accessorKey: 'status',
-      },
-      {
-        header: 'Ground Water',
-        accessorKey: 'surfaceWaterProtection',
-        cell: function id({ row }) {
-          switch (row.original.surfaceWaterProtection) {
-            case 'Y+': {
-              return (
-                <>
-                  <Pill status={true}>GWZ</Pill>
-                  <Pill status={true}>ARDA</Pill>
-                  <span>(Y)</span>
-                </>
-              );
-            }
-            case 'Y-': {
-              return (
-                <>
-                  <Pill status={true}>GWZ</Pill>
-                  <Pill status={false}>ARDA</Pill>
-                  <span>(Y)</span>
-                </>
-              );
-            }
-            case 'S': {
-              return (
-                <>
-                  <Pill status={false}>GWZ</Pill>
-                  <Pill status={true}>ARDA</Pill>
-                  <span>(S)</span>
-                </>
-              );
-            }
-            case 'N': {
-              return (
-                <>
-                  <Pill status={false}>GWZ</Pill>
-                  <Pill status={false}>ARDA</Pill>
-                  <span>(N)</span>
-                </>
-              );
-            }
-            default: {
-              return 'Unknown';
-            }
-          }
-        },
+      ],
+      () => {
+        const input = {
+          accountId: parseInt(authInfo.id),
+          siteId: parseInt(siteId),
+          inventoryId: parseInt(inventoryId),
+        };
+
+        mutate(input);
       },
     ],
-    [],
+    [status],
   );
 
   const table = useReactTable({
