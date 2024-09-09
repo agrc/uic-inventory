@@ -420,6 +420,12 @@ public static class InventoryNotifications {
             var adminAccounts = await _context.Accounts.Where(x => x.Access == AccessLevels.elevated && x.ReceiveNotifications == true)
             .Select(x => new EmailAddress(x.Email, $"{x.FirstName} {x.LastName}")).ToListAsync(cancellationToken: token);
 
+            if (adminAccounts.Count == 0) {
+                _log.Warning("No admin accounts found to send inventory submission email");
+
+                return;
+            }
+
             message.AddTos(adminAccounts);
 
             var response = await _client.SendEmailAsync(message, token);
