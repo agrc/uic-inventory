@@ -11,8 +11,8 @@ public class GroundWaterArdaCheckTests {
     [InlineData(true, false, "S")]
     [InlineData(false, false, "N")]
     public void Test1(bool aquifer, bool groundWater, string expected) {
-        var has = new InventoryNotifications.GroundWaterProtectionsHandler.Protections(aquifer, groundWater);
-        var code = InventoryNotifications.GroundWaterProtectionsHandler.DetermineCode(has);
+        var has = new GroundWaterService.Protections(aquifer, groundWater);
+        var code = GroundWaterService.DetermineCode(has);
 
         Assert.Equal(code, expected);
     }
