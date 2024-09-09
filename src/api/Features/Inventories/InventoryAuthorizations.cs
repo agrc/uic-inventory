@@ -133,3 +133,11 @@ public class CompleteInventoryAuthorizer(IHttpContextAccessor context) : Abstrac
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
+public class UpdateGroundWaterContactsAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<UpdateGroundWaterContacts.Command> {
+    private readonly IHttpContextAccessor _context = context;
+
+    public override void BuildPolicy(UpdateGroundWaterContacts.Command request) {
+        UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
+        UseRequirement(new MustHaveElevatedAccount());
+    }
+}

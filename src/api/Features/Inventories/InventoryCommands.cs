@@ -499,3 +499,57 @@ public static class GetInventorySignature {
         }
     }
 }
+public static class UpdateGroundWaterContacts {
+    public class Command(int siteId, int inventoryId) : IRequest {
+        public int SiteId { get; set; } = siteId;
+        public int InventoryId { get; } = inventoryId;
+    }
+
+    public class Handler(GroundWaterService groundWaterService, AppDbContext context, ILogger log) : IRequestHandler<Command> {
+        private readonly GroundWaterService _groundWaterService = groundWaterService;
+        private readonly AppDbContext _context = context;
+        private readonly ILogger _log = log;
+
+        public async Task Handle(Command command, CancellationToken token) {
+            _log.ForContext("command", command)
+              .Debug("Handling well ground water protection intersections");
+
+            var wells = _context.Wells.Where(x => x.InventoryFk == command.InventoryId && x.SiteFk == command.SiteId)
+                .Select(well => new GroundWaterService.GroundWaterInput(well.Id, well.Geometry));
+            var waterContacts = await _groundWaterService.GetWaterSystemContactsAsync(wells, token);
+
+            foreach (var (wellId, metadata) in waterContacts) {
+                _log.Debug("Updating contacts for well {@id}", wellId);
+
+                var well = _context.Wells.SingleOrDefault(x => x.Id == wellId);
+
+                if (well == null) {
+                    _log.Warning("Well {Id} not found in database. unable to update surface water protection", wellId);
+                    continue;
+                }
+
+                well.SurfaceWaterProtection = metadata.SurfaceWaterProtection;
+
+                if (metadata.Contacts.Count > 0) {
+                    _log.Debug("Adding new contact records");
+
+                    foreach (var contact in metadata.Contacts) {
+                        _context.WaterSystemContacts.Add(new WaterSystemContacts {
+                            SiteFk = well.SiteFk,
+                            InventoryFk = well.InventoryFk,
+                            WellFk = well.Id,
+                            AccountFk = well.AccountFk,
+                            Name = contact.Name,
+                            Email = contact.Email,
+                            System = contact.System
+                        });
+                    }
+                }
+
+                _context.Wells.Update(well);
+            }
+
+            await _context.SaveChangesAsync(token);
+        }
+    }
+}

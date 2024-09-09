@@ -337,4 +337,40 @@ public class InventoryController(IMediator mediator, HasRequestMetadata requestM
         }
     }
 
+    [HttpPost("/api/inventory/ground-water")]
+    [Authorize(CookieAuthenticationDefaults.AuthenticationScheme)]
+    public async Task<ActionResult> UpdateGroundWaterContactsAsync(ExistingInventoryInput input, CancellationToken token) {
+        try {
+            await _mediator.Send(new UpdateGroundWaterContacts.Command(input.SiteId, input.InventoryId), token);
+
+            return Accepted();
+        } catch (UnauthorizedException ex) {
+            _log.ForContext("endpoint", "POST:api/inventory/ground-water")
+              .ForContext("input", input)
+              .ForContext("requirement", ex.Message)
+              .Warning("UpdateGroundWaterContactsAsync requirements failure");
+
+            return Unauthorized(new InventoryPayload(ex));
+        } catch (ArgumentNullException ex) {
+            _log.ForContext("endpoint", "POST:api/inventory/ground-water")
+              .ForContext("input", input)
+              .ForContext("requirement", ex.Message)
+              .Warning("UpdateGroundWaterContactsAsync bad request");
+
+            return StatusCode(400, new InventoryPayload(ex));
+        } catch (FileNotFoundException ex) {
+            _log.ForContext("endpoint", "POST:api/inventory/ground-water")
+              .ForContext("input", input)
+              .ForContext("requirement", ex.Message)
+              .Warning("UpdateGroundWaterContactsAsync cloud file not found");
+
+            return StatusCode(404, new InventoryPayload(ex));
+        } catch (Exception ex) {
+            _log.ForContext("endpoint", "POST:api/inventory/ground-water")
+              .ForContext("input", input)
+              .Fatal(ex, "Unhandled exception");
+
+            return StatusCode(500, new InventoryPayload(ex));
+        }
+    }
 }
