@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using api.Infrastructure;
 using MediatR;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using SendGrid;
@@ -493,15 +490,8 @@ public static class InventoryNotifications {
             await _client.RemoveObjectsAsync(_bucket, $"site_{notification.SiteId}/inventory_{notification.InventoryId}/", token);
         }
     }
-    public class GroundWaterProtectionsHandler(IHttpClientFactory clientFactory, AppDbContext context, IWaterSystemContactService service, ILogger log) : INotificationHandler<SubmitNotification> {
-        public record ProtectionResult(int WellId, string Service, bool Intersects, IReadOnlyList<ArcGisRestFeatureWell> Features);
-        public record ProtectionQuery(int WellId, string Service, string Url);
-        public record Protections(bool Aquifers, bool GroundWater);
-
-        private const string AquiferRechargeDischargeAreas = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/Aquifer_RechargeDischargeAreas/FeatureServer/0";
-        private const string GroundWaterFeatureServiceUrl = "https://services2.arcgis.com/NnxP4LZ3zX8wWmP9/ArcGIS/rest/services/Utah_DDW_Groundwater_Source_Protection_Zones/FeatureServer/4";
-        private readonly HttpClient _client = clientFactory.CreateClient("esri");
-        private readonly IWaterSystemContactService _service = service;
+    public class GroundWaterProtectionsHandler(GroundWaterService groundWaterService, AppDbContext context, ILogger log) : INotificationHandler<SubmitNotification> {
+        private readonly GroundWaterService _groundWaterService = groundWaterService;
         private readonly AppDbContext _context = context;
         private readonly ILogger _log = log;
 
@@ -509,119 +499,31 @@ public static class InventoryNotifications {
             _log.ForContext("notification", notification)
               .Debug("Handling well ground water protection intersections");
 
-            var wells = notification.Inventory.Wells.Select(well => new { well.Id, well.Geometry });
+            var wells = notification.Inventory.Wells.Select(well => new GroundWaterService.GroundWaterInput(well.Id, well.Geometry));
+            var waterContacts = await _groundWaterService.GetWaterSystemContactsAsync(wells, token);
 
-            var urls = new List<ProtectionQuery>();
-            var queryResults = new Dictionary<int, List<ProtectionResult>>();
+            foreach (var (wellId, metadata) in waterContacts) {
+                _log.Debug("Updating contacts for well {@id}", wellId);
 
-            foreach (var well in wells) {
-                if (well.Geometry == null) {
-                    continue;
-                }
-
-                var queryString = new QueryBuilder {
-                    { "where", string.Empty },
-                    { "geometry", well.Geometry },
-                    { "geometryType", "esriGeometryPoint" },
-                    { "spatialRel", "esriSpatialRelIntersects" },
-                    { "returnCountOnly", true.ToString() },
-                    { "f", "json" }
-                };
-
-                var gwzQueryString = new QueryBuilder {
-                    { "where", string.Empty },
-                    { "geometry", well.Geometry },
-                    { "geometryType", "esriGeometryPoint" },
-                    { "spatialRel", "esriSpatialRelIntersects" },
-                    { "returnGeometry", false.ToString() },
-                    { "outFields", "SYSNUMBER" },
-                    { "f", "json" }
-                };
-
-                urls.Add(new ProtectionQuery(
-                  well.Id,
-                  "Aquifer Recharge/Discharge Areas",
-                  $"{AquiferRechargeDischargeAreas}/query?{queryString}")
-                );
-
-                urls.Add(new ProtectionQuery(
-                  well.Id,
-                  "Ground Water",
-                  $"{GroundWaterFeatureServiceUrl}/query?{gwzQueryString}")
-                );
-
-                queryResults[well.Id] = [];
-            }
-
-            var options = new JsonSerializerOptions {
-                PropertyNameCaseInsensitive = true
-            };
-
-            await Task.WhenAll(urls.Select(async item => {
-                using var response = await _client.GetAsync(item.Url, token);
-                using var content = await response.Content.ReadAsStreamAsync(token);
-
-                var queryResult = await JsonSerializer.DeserializeAsync<WellEsriQueryResponse>(content, options, cancellationToken: token);
-
-                if (queryResult is null || queryResult?.IsSuccessful != true) {
-                    _log.ForContext("queryResult", queryResult?.Error)
-                      .Error("Failed to query well {id} for water protection intersections {@error}", item.WellId, queryResult?.Error);
-
-                    return;
-                }
-
-                _log.Debug("Got {@queryResult} result for {wellId}", queryResult, item.WellId);
-
-                var success = queryResult.Count > 0 || queryResult.Features.Count > 0;
-
-                queryResults[item.WellId].Add(new ProtectionResult(item.WellId, item.Service, success, queryResult.Features));
-            }));
-
-            var groundWaterCodes = new[] { "Y+", "Y-" };
-
-            foreach (var item in queryResults) {
-                _log.Debug("Choosing code for {@item}", item);
-
-                var has = new Protections(
-                  item.Value.Any(x => x.Service == "Aquifer Recharge/Discharge Areas" && x.Intersects),
-                  item.Value.Any(x => x.Service == "Ground Water" && x.Intersects)
-                );
-
-                var well = notification.Inventory.Wells.SingleOrDefault(x => x.Id == item.Key);
+                var well = notification.Inventory.Wells.SingleOrDefault(x => x.Id == wellId);
 
                 if (well == null) {
-                    _log.Warning("Well {Id} not found in database. unable to update surface water protection", item.Key);
+                    _log.Warning("Well {Id} not found in database. unable to update surface water protection", wellId);
                     continue;
                 }
 
-                well.SurfaceWaterProtection = DetermineCode(has);
+                well.SurfaceWaterProtection = metadata.SurfaceWaterProtection;
 
-                if (groundWaterCodes.Contains(well.SurfaceWaterProtection)) {
-                    _log.Debug("Intersects GWZ, fetching contacts");
+                if (metadata.Contacts.Count > 0) {
+                    _log.Debug("Adding new contact records");
 
-                    var systemNumbers = item.Value.
-                      SelectMany(x => x.Features.Select(x => x.Attributes.SysNumber))
-                      .Distinct() ?? Enumerable.Empty<string>();
-
-                    var pwdIds = systemNumbers.Select(x => $"UTAH{x}").ToList();
-
-                    var contacts = await _service.GetContactsAsync(pwdIds, token);
-
-                    foreach (var contact in contacts) {
-                        var name = contact.Name;
-
-                        if (name.Contains(',')) {
-                            var parts = name.Split(',');
-
-                            name = $"{parts[1].Trim()} {parts[0].Trim()}";
-                        }
-
+                    foreach (var contact in metadata.Contacts) {
                         _context.WaterSystemContacts.Add(new WaterSystemContacts {
                             SiteFk = well.SiteFk,
                             InventoryFk = well.InventoryFk,
                             WellFk = well.Id,
                             AccountFk = well.AccountFk,
-                            Name = name,
+                            Name = contact.Name,
                             Email = contact.Email,
                             System = contact.System
                         });
@@ -633,13 +535,5 @@ public static class InventoryNotifications {
 
             await _context.SaveChangesAsync(token);
         }
-
-        public static string DetermineCode(Protections has) => has switch {
-            (Aquifers: true, GroundWater: true) => "Y+",
-            (Aquifers: false, GroundWater: true) => "Y-",
-            (Aquifers: true, GroundWater: false) => "S",
-            (Aquifers: false, GroundWater: false) => "N",
-            _ => "U",
-        };
     }
 }
