@@ -42,14 +42,14 @@ public class UpdateInventoryAuthorizer(IHttpContextAccessor context) : AbstractR
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
-public class AddSignatureAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<GetInventorySignature.Command> {
+public class GetSignatureAuthorizer(IHttpContextAccessor context) : AbstractRequestAuthorizer<GetInventorySignature.Command> {
     private readonly IHttpContextAccessor _context = context;
 
     public override void BuildPolicy(GetInventorySignature.Command request) {
         UseRequirement(new MustHaveAccount(_context.HttpContext?.User ?? new ClaimsPrincipal()));
         UseRequirement(new MustOwnSite(request.SiteId));
         UseRequirement(new MustOwnInventory(request.InventoryId));
-        UseRequirement(new MustHaveCompleteInventory(request.InventoryId));
+        UseRequirement(new MustHaveInventoryStatus(request.InventoryId, [InventoryStatus.Submitted, InventoryStatus.UnderReview, InventoryStatus.Approved, InventoryStatus.Authorized, InventoryStatus.Completed]));
         UseRequirement(new MustHaveCompleteProfile());
     }
 }
