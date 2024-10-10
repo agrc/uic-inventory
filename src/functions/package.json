@@ -8,7 +8,7 @@
     "start": "WATERMARK=true BUCKET=ut-dts-agrc-uic-inventory-dev-documents functions-framework --target=generate",
     "format": "prettier --write . --ignore-path ./.gitignore",
     "watch": "nodemon --exec \"npm run start\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest"
   },
   "author": "UGRC",
   "license": "MIT",
@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.7",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "vitest": "^2.1.2"
   }
 }
