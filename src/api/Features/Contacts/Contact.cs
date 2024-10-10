@@ -53,7 +53,7 @@ public class ContactInput {
     public string? State { get; set; }
     public string? ZipCode { get; set; }
     public ContactTypes? ContactType { get; set; }
-    public boosl SerContact { get; set; }
+    public bool SerContact { get; set; }
 }
 
 public class SerContactInput : ContactInput {
