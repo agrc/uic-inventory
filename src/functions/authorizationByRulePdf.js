@@ -139,15 +139,17 @@ export const getMostImportantContact = (contacts) => {
     const indexA = contactPreference.indexOf(a.contactType);
     const indexB = contactPreference.indexOf(b.contactType);
 
-    if (indexA < indexB) {
+    if (indexA === -1 && indexB === -1) {
+      return 0;
+    }
+    if (indexA === -1) {
+      return 1;
+    }
+    if (indexB === -1) {
       return -1;
     }
 
-    if (indexA > indexB) {
-      return 1;
-    }
-
-    return 0;
+    return indexA - indexB;
   });
 
   return contacts[0];
