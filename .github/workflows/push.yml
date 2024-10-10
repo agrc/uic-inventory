@@ -29,26 +29,7 @@ jobs:
           github-app-id: ${{ secrets.UGRC_RELEASE_BOT_APP_ID }}
           github-app-key: ${{ secrets.UGRC_RELEASE_BOT_APP_KEY }}
           github-app-name: ${{ secrets.UGRC_RELEASE_BOT_NAME }}
-          github-app-email: ${{ secrets.UGRC_RELEASE_BOT_EMAIL }}:
-      - name: ⬇️ Set up code
-        uses: actions/checkout@v4
-        with:
-          show-progress: false
-
-      - name: ⎔ Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: npm
-          cache-dependency-path: src/api/uic-inventory/package-lock.json
-
-      - name: 📥 Download dependencies
-        run: npm ci
-        working-directory: src/api/uic-inventory/
-
-      - name: 🧪 Run tests
-        run: npm test
-        working-directory: src/api/uic-inventory/
+          github-app-email: ${{ secrets.UGRC_RELEASE_BOT_EMAIL }}
 
   deploy-dev:
     name: Deploy to dev
