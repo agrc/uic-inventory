@@ -18,7 +18,7 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
   hour12: false,
 });
 
-const contactPreference = ["facility_owner", "owner_operator", "legal_rep"];
+const contactPreference = [1, 0, 4];
 
 const getSubject = (type) => {
   switch (type) {
