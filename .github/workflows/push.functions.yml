@@ -1,0 +1,93 @@
+name: Push Events (Functions)
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - "src/functions/**"
+      - ".github/workflows/push.functions.yml"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}-functions"
+  cancel-in-progress: true
+
+jobs:
+  deploy-dev:
+    name: Deploy to dev
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    environment:
+      name: dev
+    if: github.ref_name == 'dev'
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - id: auth
+        name: 🗝️ Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          create_credentials_file: true
+          token_format: access_token
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+
+      - name: 🚀 Deploy Cloud Function
+        id: deploy
+        uses: google-github-actions/deploy-cloud-functions@v3
+        timeout-minutes: 10
+        with:
+          name: pdf
+          runtime: nodejs20
+          source_dir: src/functions
+          entry_point: generate
+          service_account: cloud-function-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+          service_timeout: "2m"
+          environment_variables: |-
+            BUCKET=${{ vars.BUCKET }}
+            WATERMARK=true
+
+  deploy-prod:
+    name: Deploy to prod
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    environment:
+      name: prod
+    if: github.ref_name == 'main'
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - id: auth
+        name: 🗝️ Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          create_credentials_file: true
+          token_format: access_token
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+
+      - name: 🚀 Deploy Cloud Function
+        id: deploy
+        uses: google-github-actions/deploy-cloud-functions@v2
+        with:
+          name: pdf
+          runtime: nodejs20
+          source_dir: src/functions
+          entry_point: generate
+          service_account_email: cloud-function-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+          https_trigger_security_level: "secure_always"
+          timeout: "2m"
+          env_vars: BUCKET=${{ vars.BUCKET }},WATERMARK=false
