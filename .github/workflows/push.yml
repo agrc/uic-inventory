@@ -15,47 +15,60 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  analyze:
-    name: Analyze (${{ matrix.language }})
+  test-unit-reports:
+    name: Unit test reporting
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
-    permissions:
-      security-events: write
-    environment:
-      name: dev
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-        - language: csharp
-          build-mode: manual
-        - language: javascript-typescript
-          build-mode: none
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+        with:
           show-progress: false
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: ${{ matrix.language }}
-        build-mode: ${{ matrix.build-mode }}
-    - if: matrix.build-mode == 'manual'
-      run: |
-        dotnet restore ./src/api/api.csproj
-        dotnet build ./src/api/api.csproj
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: src/functions/package-lock.json
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
+      - name: 📥 Download dependencies
+        run: npm ci
+        working-directory: src/functions
+
+      - name: 🧪 Run tests
+        run: npm test
+        working-directory: src/functions
+
+  test-unit:
+    name: Unit test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: src/api/uic-inventory/package-lock.json
+
+      - name: 📥 Download dependencies
+        run: npm ci
+        working-directory: src/api/uic-inventory/
+
+      - name: 🧪 Run tests
+        run: npm test
+        working-directory: src/api/uic-inventory/
 
   deploy-dev:
     name: Deploy to dev
     runs-on: ubuntu-latest
+    needs: [test-unit, test-unit-reports]
     permissions:
       id-token: write
       contents: read
@@ -146,6 +159,7 @@ jobs:
   deploy-prod:
     name: Deploy to prod
     runs-on: ubuntu-latest
+    needs: [test-unit, test-unit-reports]
     permissions:
       id-token: write
       contents: read
