@@ -15,16 +15,16 @@
   "dependencies": {
     "@arcgis/core": "^4.30.9",
     "@google-cloud/functions-framework": "^3.4.2",
-    "@google-cloud/storage": "^7.12.1",
+    "@google-cloud/storage": "^7.13.0",
     "base64-stream": "^1.0.0",
     "ky": "^1.7.2",
     "lodash.startcase": "^4.4.0",
     "pdf-lib": "^1.17.1",
-    "pdfmake": "^0.2.12",
+    "pdfmake": "^0.2.14",
     "to-words": "^4.1.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.4",
+    "nodemon": "^3.1.7",
     "prettier": "^3.3.3"
   }
 }
