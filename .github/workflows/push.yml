@@ -32,7 +32,7 @@ jobs:
           github-app-email: ${{ secrets.UGRC_RELEASE_BOT_EMAIL }}
 
   deploy-dev:
-    name: Deploy to dev
+    name: Deploy to staging
     runs-on: ubuntu-latest
     permissions:
       id-token: write
