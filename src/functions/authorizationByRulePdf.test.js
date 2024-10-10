@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { getMostImportantContact } from "./authorizationByRulePdf";
 
-test("should choose facility owner over other contact types", ({ skip }) => {
+test("should choose facility owner over other contact types", () => {
   const primary_contact = getMostImportantContact([
     { contactType: "owner_operator" },
     { contactType: "facility_operator" },
@@ -20,7 +20,7 @@ test("should choose facility owner over other contact types", ({ skip }) => {
   expect(primary_contact.contactType).toBe("facility_owner");
 });
 
-test("should choose owner operator when facility owner is not available", ({ skip }) => {
+test("should choose owner operator when facility owner is not available", () => {
   const primary_contact = getMostImportantContact([
     { contactType: "facility_operator" },
     { contactType: "facility_manager" },
@@ -38,7 +38,7 @@ test("should choose owner operator when facility owner is not available", ({ ski
   expect(primary_contact.contactType).toBe("owner_operator");
 });
 
-test("should choose legal rep when facility owner and owner operator is not available", ({ skip }) => {
+test("should choose legal rep when facility owner and owner operator is not available", () => {
   const primary_contact = getMostImportantContact([
     { contactType: "facility_operator" },
     { contactType: "facility_manager" },
@@ -53,4 +53,14 @@ test("should choose legal rep when facility owner and owner operator is not avai
   ]);
 
   expect(primary_contact.contactType).toBe("legal_rep");
+});
+
+test("should pick correct contact", () => {
+  const primary_contact = getMostImportantContact([
+    { contactType: "other", firstName: "David" },
+    { contactType: "facility_operator", firstName: "Ryan" },
+    { contactType: "facility_owner", firstName: "Jeff" },
+  ]);
+
+  expect(primary_contact.firstName).toBe("Jeff");
 });
