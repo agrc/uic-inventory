@@ -248,9 +248,7 @@ http("generate", async (req, res) => {
   // 4 === Approved
   if (inventory.status >= 4) {
     console.debug("creating abr pdf", inventory.subClass);
-    console.log('contacts', contacts);
     const primaryContact = getMostImportantContact(contacts)
-    console.log('primary contact', primaryContact);
 
     const abrDefinition = generateAuthorizationByRule(
       inventory,
