@@ -21,18 +21,18 @@ public class Contact {
 }
 
 public enum ContactTypes {
-    owner_operator,
-    facility_owner,
-    facility_operator,
-    facility_manager,
-    legal_rep,
-    official_rep,
-    contractor,
-    project_manager,
-    health_dept,
-    permit_writer,
-    developer,
-    other,
+    owner_operator = 0,
+    facility_owner = 1,
+    facility_operator = 2,
+    facility_manager = 3,
+    legal_rep = 4,
+    official_rep = 5,
+    contractor = 6,
+    project_manager = 7,
+    health_dept = 8,
+    permit_writer = 9,
+    developer = 10,
+    other = 11,
 }
 
 public static class RequiredContactTypes {
@@ -53,7 +53,7 @@ public class ContactInput {
     public string? State { get; set; }
     public string? ZipCode { get; set; }
     public ContactTypes? ContactType { get; set; }
-    public bool SerContact { get; set; }
+    public boosl SerContact { get; set; }
 }
 
 public class SerContactInput : ContactInput {
