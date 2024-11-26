@@ -72,7 +72,7 @@ export const spacer = (size = 10) => {
 export const buildTableDefinitionFor = (title, data, options) => {
   const tableDefinition = {
     table: {
-      widths: [title?.length > 0 ? "20%" : "25%", "*"],
+      widths: [title?.length > 0 ? "20%" : "27%", "*"],
       headerRows: 1,
       body: [],
     },
