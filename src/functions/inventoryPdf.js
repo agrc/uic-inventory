@@ -105,7 +105,7 @@ const addWellInformation = (data) => {
         dontBreakRows: true,
         keepWithHeaderRows: true,
         pageBreak: "before",
-        widths: ["6%", "32%", "25%", "15%", "11%", "11%"],
+        widths: ["8%", "30%", "25%", "15%", "11%", "11%"],
         headerRows: 1,
         body: [
           [
