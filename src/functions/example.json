@@ -1,0 +1,122 @@
+{
+  "inventory": {
+    "id": 19,
+    "subClass": -1,
+    "orderNumber": 4444444,
+    "signature": "signed",
+    "submittedOn": "2023-11-14T00:48:22.587398Z",
+    "status": "submitted",
+    "detailStatus": true,
+    "contactStatus": true,
+    "locationStatus": true,
+    "paymentStatus": true,
+    "signatureStatus": true,
+    "edocs": "DWQ-2020-004622",
+    "flagged": null,
+    "site": {
+      "id": 17,
+      "siteId": "UTU35S1CC5C832",
+      "name": "One Complete Inventory",
+      "ownership": "PB",
+      "naicsTitle": "Animal feed mills, dog and cat, manufacturing",
+      "naicsPrimary": 311111,
+      "address": "1234 South main street, slc",
+      "geometry": "{\"rings\": [[[-12444683.314059393, 4964246.096393012], [-12444689.285702229, 4964239.229003753], [-12444706.902048592, 4964218.925418114], [-12444741.537577033, 4964249.08221443], [-12444717.949587835, 4964276.55177147], [-12444683.314059393, 4964246.096393013]]], \"spatialReference\": {\"wkid\": 102100, \"latestWkid\": 3857}}",
+      "status": "complete",
+      "errors": null
+    },
+    "wells": [
+      {
+        "id": 46,
+        "wellName": "keep",
+        "description": "",
+        "remediationType": "Other",
+        "remediationProjectId": null,
+        "subClass": -1,
+        "count": 10,
+        "geometry": "{\"x\": -12444716.680104457, \"y\": 4964244.657745568, \"spatialReference\": {\"wkid\": 102100}}",
+        "status": "Active",
+        "constructionDetails": "file::46,48_construction.pdf",
+        "injectateCharacterization": "file::46,48_injectate.pdf",
+        "hydrogeologicCharacterization": null,
+        "surfaceWaterProtection": "S",
+        "waterSystemContacts": [],
+        "wellDetailsComplete": true,
+        "errors": null
+      },
+      {
+        "id": 48,
+        "wellName": "this is the construction field",
+        "description": "",
+        "remediationType": "Other",
+        "remediationProjectId": null,
+        "subClass": -1,
+        "count": 3,
+        "geometry": "{\"x\": -12444707.046676734, \"y\": 4964226.821689715, \"spatialReference\": {\"wkid\": 102100}}",
+        "status": "Active",
+        "constructionDetails": "file::46,48_construction.pdf",
+        "injectateCharacterization": "file::46,48_injectate.pdf",
+        "hydrogeologicCharacterization": null,
+        "surfaceWaterProtection": null,
+        "waterSystemContacts": [],
+        "wellDetailsComplete": true,
+        "errors": null
+      }
+    ],
+    "errors": null
+  },
+  "contacts": [
+    {
+      "id": 37,
+      "firstName": "keep",
+      "lastName": "check",
+      "organization": "redacted",
+      "email": "noreply@utah.gov",
+      "phoneNumber": "+12342234234",
+      "mailingAddress": "redacted",
+      "city": "redacted",
+      "state": "ut",
+      "zipCode": "84111",
+      "contactType": "facility_owner",
+      "errors": null
+    },
+    {
+      "id": 38,
+      "firstName": "keep",
+      "lastName": "check",
+      "organization": "redacted",
+      "email": "noreply@utah.gov",
+      "phoneNumber": "+12342234234",
+      "mailingAddress": "redacted",
+      "city": "redacted",
+      "state": "ut",
+      "zipCode": "84111",
+      "contactType": "facility_owner",
+      "errors": null
+    },
+    {
+      "id": 39,
+      "firstName": "keep",
+      "lastName": "check",
+      "organization": "redacted",
+      "email": "noreply@utah.gov",
+      "phoneNumber": "+12342234234",
+      "mailingAddress": "redacted",
+      "city": "redacted",
+      "state": "ut",
+      "zipCode": "84111",
+      "contactType": "facility_owner",
+      "errors": null
+    }
+  ],
+  "cloudFiles": [
+    {
+      "item1": "site_17/inventory_19/well_46,48",
+      "item2": "site_17/inventory_19/well_46,48/construction"
+    },
+    {
+      "item1": "site_17/inventory_19/well_46,48",
+      "item2": "site_17/inventory_19/well_46,48/injectate"
+    }
+  ]
+}
