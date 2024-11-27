@@ -270,14 +270,25 @@ http("generate", async (req, res) => {
 
   if (abrPdf) {
     console.debug("appending inventory pdf and appendix items", files.length);
-
     pdf = await appendPdfPages(abrPdf, [inventoryPdf, ...files]);
   } else {
     console.debug("appending appendix items", files.length);
-
     pdf = await appendPdfPages(inventoryPdf, files);
   }
 
-  res.contentType("application/pdf");
-  res.send(Buffer.from(pdf, "binary"));
+  // Create unique filename with inventory ID and timestamp
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const filename = `reports/${inventory.id}_${timestamp}.pdf`;
+
+  // Upload PDF to cloud storage
+  const file = bucket.file(filename);
+  await file.save(Buffer.from(pdf, "binary"), {
+    contentType: "application/pdf",
+  });
+
+  // Return the path to the stored file
+  res.json({
+    path: filename,
+    bucket: bucket.name
+  });
 });
