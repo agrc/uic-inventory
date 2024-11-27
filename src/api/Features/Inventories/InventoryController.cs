@@ -189,7 +189,7 @@ public class InventoryController(IMediator mediator, HasRequestMetadata requestM
         try {
             var result = await _mediator.Send(new DownloadInventory.Command(input), token);
 
-            return File(await result.ReadAsByteArrayAsync(token), "application/pdf", $"site{input.SiteId}-inventory{input.InventoryId}.pdf");
+            return File(result, "application/pdf", $"site{input.SiteId}-inventory{input.InventoryId}.pdf");
         } catch (UnauthorizedException ex) {
             _log.ForContext("endpoint", "POST:api/inventory/download")
               .ForContext("input", input)
