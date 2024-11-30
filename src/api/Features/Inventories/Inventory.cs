@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MediatR.Behaviors.Authorization.Exceptions;
 using Microsoft.AspNetCore.Http;
+using static api.Features.DownloadInventory;
 
 namespace api.Features;
 public class Inventory {
@@ -94,7 +95,6 @@ public class InventoryPayload : ResponseContract {
     public AccountPayload? CompletedBy { get; set; }
     public IReadOnlyCollection<WellPayload> Wells { get; set; } = [];
 }
-
 public class InventoriesForSitePayload : ResponseContract {
     public class Payload(Inventory inventory, Site site) {
         public int SiteId { get; set; } = site.Id;
@@ -122,23 +122,32 @@ public class InventoriesForSitePayload : ResponseContract {
 
     public IList<Payload> Inventories { get; } = [];
 }
+public class InventoryReportPayload : ResponseContract {
+    public InventoryReportPayload(UnauthorizedException error) : base(error.Message) { }
+    public InventoryReportPayload(Exception _) : base("WTF01:Something went terribly wrong that we did not expect.") { }
+    public InventoryReportPayload(string error) : base($"SI01:{error}") { }
+    public InventoryReportPayload(Response payload) {
+        SignedUrl = payload.SignedUrl;
+    }
+
+    public string SignedUrl { get; set; } = string.Empty;
+}
+
 public class InventoryInput {
     public int SiteId { get; set; }
     public int AccountId { get; set; }
 }
 public class InventoryCreationInput : InventoryInput {
-    private string? _orderNumber;
     public int SubClass { get; set; }
-    public string? OrderNumber { get => _orderNumber; set => _orderNumber = value?[..8]; }
+    public string? OrderNumber { get; set => field = value?[..8]; }
 }
 public class ExistingInventoryInput : InventoryInput {
     public int InventoryId { get; set; }
 }
 public class InventoryMutationInput : InventoryInput {
-    private string? _orderNumber;
     public int InventoryId { get; set; }
     public int? SubClass { get; set; }
-    public string? OrderNumber { get => _orderNumber; set => _orderNumber = value?[..8]; }
+    public string? OrderNumber { get; set => field = value?[..8]; }
     public string? Edocs { get; set; }
     public string? Flagged { get; set; }
     public string? SiteIdentifier { get; set; }

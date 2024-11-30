@@ -8,7 +8,7 @@ public abstract class ResponseContract {
     protected ResponseContract(string message) {
         var parts = message.Split(':');
 
-        Errors = new List<ApiError> { new(parts[1], parts[0]) };
+        Errors = [new(parts[1], parts[0])];
     }
 
     public IReadOnlyList<ApiError>? Errors { get; }

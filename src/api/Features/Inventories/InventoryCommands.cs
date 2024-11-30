@@ -260,24 +260,23 @@ public static class RejectInventory {
     }
 }
 public static class DownloadInventory {
-    public record Response(string Path, string Bucket);
-    public class Command(ExistingInventoryInput input) : IRequest<Stream> {
+    public record Response(string SignedUrl);
+    public class Command(ExistingInventoryInput input) : IRequest<Response> {
         public int SiteId { get; set; } = input.SiteId;
         public int InventoryId { get; set; } = input.InventoryId;
     }
 
     public record ReportPayload(InventoryPayload inventory, IEnumerable<ContactPayload> contacts, IEnumerable<string> cloudFiles, AccountPayload approver);
-    public class Handler(AppDbContext context, CloudStorageService cloudService, IHttpClientFactory clientFactory, IConfiguration configuration, ILogger log,
+    public class Handler(AppDbContext context, IHttpClientFactory clientFactory, IConfiguration configuration, ILogger log,
             HasRequestMetadata metadata
-    ) : IRequestHandler<Command, Stream> {
+    ) : IRequestHandler<Command, Response> {
         private readonly ILogger _log = log;
         private readonly AppDbContext _context = context;
         private readonly HttpClient _client = clientFactory.CreateClient("google");
         private readonly string _functionUrl = configuration.GetSection("ReportFunction").GetValue<string>("Url") ?? string.Empty;
         private readonly HasRequestMetadata _metadata = metadata;
-        private readonly CloudStorageService _storageClient = cloudService;
 
-        public async Task<Stream> Handle(Command request, CancellationToken cancellationToken) {
+        public async Task<Response> Handle(Command request, CancellationToken cancellationToken) {
             _log.ForContext("input", request)
               .Debug("Downloading inventory");
 
@@ -326,13 +325,10 @@ public static class DownloadInventory {
 
             response.EnsureSuccessStatusCode();
 
-            _log.Debug("Report generated successfully. Requesting report from cloud storage");
+            _log.Debug("Report generated successfully. Requesting signed url");
             var responseContent = await response.Content.ReadFromJsonAsync<Response>(cancellationToken: cancellationToken) ?? throw new Exception("Failed to deserialize response content");
 
-            _log.Debug("Returning report stream");
-            var stream = await _storageClient.DownloadObjectAsync(responseContent.Bucket, "", responseContent.Path, cancellationToken) ?? throw new Exception("Failed to find report pdf"); ;
-
-            return stream;
+            return responseContent;
         }
     }
 }
