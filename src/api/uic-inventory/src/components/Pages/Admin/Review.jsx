@@ -263,7 +263,7 @@ export function Component() {
           >
             Reject
           </button>
-          {downloadResponse ? (
+          {downloadResponse.signedUrl ? (
             <button
               onClick={download}
               data-style="secondary"
