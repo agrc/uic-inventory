@@ -286,9 +286,15 @@ http("generate", async (req, res) => {
     contentType: "application/pdf",
   });
 
-  // Return the path to the stored file
+  // Generate a signed URL for the uploaded PDF
+  const [signedUrl] = await file.getSignedUrl({
+    action: 'read',
+    version: 'v4',
+    expires: Date.now() + 1000 * 60 * 10, // 10 minutes
+  });
+
+  // Return the signed URL
   res.json({
-    path: filename,
-    bucket: bucket.name
+    signedUrl,
   });
 });
