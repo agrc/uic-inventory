@@ -138,7 +138,7 @@ export function Component() {
     mutate: generate,
     status,
   } = useMutation({
-    mutationFn: (json) => ky.post(`/api/inventory/download`, { json, timeout: 90000 }),
+    mutationFn: (json) => ky.post(`/api/inventory/download`, { json, timeout: 90000 }).json(),
   });
 
   const download = () => {
@@ -263,7 +263,7 @@ export function Component() {
           >
             Reject
           </button>
-          {downloadResponse.signedUrl ? (
+          {(downloadResponse?.signedUrl ?? []).length === 0 ? (
             <button
               onClick={download}
               data-style="secondary"
@@ -294,11 +294,12 @@ export function Component() {
               className="inline-flex justify-center self-center sm:col-span-6 md:col-span-2"
               href={downloadResponse?.signedUrl ?? ''}
               download="inventory.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Download PDF
             </a>
           )}
-          {/* </span> */}
           <button
             disabled={data?.status != 'underReview'}
             onClick={openApprove}

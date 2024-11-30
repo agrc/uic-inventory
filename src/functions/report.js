@@ -248,14 +248,9 @@ http("generate", async (req, res) => {
   // 4 === Approved
   if (inventory.status >= 4) {
     console.debug("creating abr pdf", inventory.subClass);
-    const primaryContact = getMostImportantContact(contacts)
+    const primaryContact = getMostImportantContact(contacts);
 
-    const abrDefinition = generateAuthorizationByRule(
-      inventory,
-      primaryContact,
-      approver,
-      watermark,
-    );
+    const abrDefinition = generateAuthorizationByRule(inventory, primaryContact, approver, watermark);
 
     abrPdf = await createPdfDocument(abrDefinition);
 
@@ -277,7 +272,7 @@ http("generate", async (req, res) => {
   }
 
   // Create unique filename with inventory ID and timestamp
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   const filename = `reports/${inventory.id}_${timestamp}.pdf`;
 
   // Upload PDF to cloud storage
@@ -286,10 +281,15 @@ http("generate", async (req, res) => {
     contentType: "application/pdf",
   });
 
+  if (process.env.dev === "true") {
+    return res.json({
+      signedUrl: file.metadata.selfLink,
+    });
+  }
   // Generate a signed URL for the uploaded PDF
   const [signedUrl] = await file.getSignedUrl({
-    action: 'read',
-    version: 'v4',
+    action: "read",
+    version: "v4",
     expires: Date.now() + 1000 * 60 * 10, // 10 minutes
   });
 
