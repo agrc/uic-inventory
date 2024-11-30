@@ -116,7 +116,8 @@ jobs:
           source_dir: src/functions
           memory: 512M
           entry_point: generate
-          service_account_email: cloud-function-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-          https_trigger_security_level: "secure_always"
-          timeout: "2m"
-          env_vars: BUCKET=${{ vars.BUCKET }},WATERMARK=false
+          service_account: cloud-function-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+          service_timeout: "2m"
+          environment_variables: |-
+            BUCKET=${{ vars.BUCKET }}
+            WATERMARK=false
