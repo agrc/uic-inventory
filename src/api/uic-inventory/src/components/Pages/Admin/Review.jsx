@@ -134,7 +134,7 @@ export function Component() {
   });
 
   const { mutate: generate, status } = useMutation({
-    mutationFn: (json) => ky.post(`/api/inventory/download`, { json, timeout: 90000 }).json(),
+    mutationFn: (json) => ky.post(`/api/inventory/download`, { json, timeout: 180000 }).json(),
     onSuccess: async (data) => {
       window.open(data.signedUrl, '_blank');
     },

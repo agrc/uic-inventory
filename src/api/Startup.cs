@@ -84,7 +84,7 @@ public class Startup(IConfiguration configuration) {
         });
 
         var quickTimeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(10);
-        var longTimeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(90);
+        var longTimeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(180);
 
         services.AddHttpClient("esri")
           .AddPolicyHandler(quickTimeoutPolicy)
