@@ -188,10 +188,10 @@ export const appendPdfPages = async (original, pdfs) => {
     return original;
   }
 
-  const source = await PDFDocument.load(original, { throwOnInvalidObject: true });
+  const source = await PDFDocument.load(original, { throwOnInvalidObject: true, ignoreEncryption: true });
 
   for (let i = 0; i < pdfs.length; i++) {
-    const appendix = await PDFDocument.load(pdfs[i], { throwOnInvalidObject: true });
+    const appendix = await PDFDocument.load(pdfs[i], { throwOnInvalidObject: true, ignoreEncryption: true });
 
     console.debug("appending appendix", i, appendix.getPageIndices());
     const copiedPages = await source.copyPages(appendix, appendix.getPageIndices());
