@@ -154,11 +154,33 @@ public static class SubmitInventory {
             inventory.SubmittedOn = DateTime.UtcNow;
             inventory.Signature = $"file::signature.pdf";
 
+            using var signatureStream = new MemoryStream();
+            using var uploadStream = request.SignatureFile.OpenReadStream();
+
+            try {
+                var pdf = PdfSharp.Pdf.IO.PdfReader.Open(uploadStream, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+                var pdfCopy = new PdfSharp.Pdf.PdfDocument();
+
+                foreach (var page in pdf.Pages) {
+                    pdfCopy.AddPage(page);
+                }
+
+                pdfCopy.SecurityHandler.SetEncryptionToNoneAndResetPasswords();
+                pdfCopy.Save(signatureStream);
+            } catch (Exception e) {
+                _log.ForContext("site", request.SiteId)
+                   .ForContext("inventory", request.InventoryId)
+                   .ForContext("account", request.AccountId)
+                   .Error(e, "Error loading PDF");
+
+                throw;
+            }
+
             try {
                 await _client.AddObjectAsync(_bucket,
                     filePath,
                     request.SignatureFile.ContentType,
-                    request.SignatureFile.OpenReadStream(),
+                    signatureStream,
                     cancellationToken
                 );
             } catch (Exception e) {
