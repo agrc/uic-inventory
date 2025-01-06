@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
 namespace api.Features;
@@ -18,14 +17,14 @@ public class SiteIdService(IHttpClientFactory clientFactory, ILogger log) : ISit
     private readonly HttpClient _client = clientFactory.CreateClient("esri");
     private const string CountyBoundaryUrl = "https://services1.arcgis.com/99lidPhWCzftIe9K/arcgis/rest/services/UtahCountyBoundaries/FeatureServer/0/query";
     public async Task<string> GetSiteId(Site site, CancellationToken token) {
-        if (site.SiteId is not null && !site.SiteId.Trim().IsNullOrEmpty()) {
+        if (site.SiteId is not null && !string.IsNullOrEmpty(site.SiteId.Trim())) {
             _log.ForContext("site", site)
             .Debug("Site already has a site id {siteId}. skipping.", site.SiteId);
 
             return site.SiteId;
         }
 
-        if (site.Geometry is null || site.Geometry.Trim().IsNullOrEmpty()) {
+        if (site.Geometry is null || string.IsNullOrEmpty(site.Geometry.Trim())) {
             _log.ForContext("site", site)
             .Debug("Site does not have a geometry. Cannot generate site id.");
 

@@ -79,7 +79,7 @@ public class Startup(IConfiguration configuration) {
         ArgumentException.ThrowIfNullOrEmpty(utahId?.ClientSecret, "UtahId:ClientSecret");
         ArgumentException.ThrowIfNullOrEmpty(utahId?.ClientId, "UtahId:ClientId");
 
-        services.AddUtahIdAuthentication(utahId, new[] { "openid", "profile", "email" });
+        services.AddUtahIdAuthentication(utahId, ["openid", "profile", "email"]);
 
         services.AddAuthorization(options => {
             options.AddPolicy(CookieAuthenticationDefaults.AuthenticationScheme,
