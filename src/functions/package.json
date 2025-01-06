@@ -14,17 +14,17 @@
   "license": "MIT",
   "dependencies": {
     "@arcgis/core": "^4.31.6",
-    "@google-cloud/functions-framework": "^3.4.2",
+    "@google-cloud/functions-framework": "^3.4.5",
     "@google-cloud/storage": "^7.14.0",
     "base64-stream": "^1.0.0",
-    "ky": "^1.7.2",
+    "ky": "^1.7.4",
     "lodash.startcase": "^4.4.0",
     "pdf-lib": "^1.17.1",
-    "pdfmake": "^0.2.15",
-    "to-words": "^4.1.0"
+    "pdfmake": "^0.2.18",
+    "to-words": "^4.2.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7",
+    "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
     "vitest": "^2.1.8"
   }
