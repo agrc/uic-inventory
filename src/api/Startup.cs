@@ -59,7 +59,13 @@ public class Startup(IConfiguration configuration) {
         var dataSource = dataSourceBuilder.Build();
 
         services.AddDbContext<AppDbContext>(options => options
-            .UseNpgsql(dataSource)
+            .UseNpgsql(dataSource, o => {
+                o.MapEnum<AccessLevels>("access_levels");
+                o.MapEnum<NotificationTypes>("notification_types");
+                o.MapEnum<ContactTypes>("contact_types");
+                o.MapEnum<SiteStatus>("site_status");
+                o.MapEnum<InventoryStatus>("inventory_status");
+            })
             .UseSnakeCaseNamingConvention());
 
         var redis = Configuration.GetSection("Redis").Get<RedisOptions>();
