@@ -25,7 +25,7 @@ import clsx from 'clsx';
 import ky from 'ky';
 import { Fragment, useContext } from 'react';
 import { Facebook } from 'react-content-loader';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { AuthContext } from '../../AuthProvider';
 import onRequestError from './ToastErrors';
 import { UtahHeader } from './UtahHeader';

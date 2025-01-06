@@ -1,7 +1,7 @@
 import { CheckIcon, LockClosedIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import { useRouteError } from 'react-router-dom';
+import { useRouteError } from 'react-router';
 import { BackButton, Link, useNavigate } from '../PageElements';
 
 export const RouterErrorPage = ({ error }) => {

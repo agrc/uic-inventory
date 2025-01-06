@@ -336,9 +336,9 @@ export function Component() {
 
   const geocodeError = () => dispatch({ type: 'skip-geocoding', payload: false });
 
-  const addSiteLocation = (formData) => {
+  const addSiteLocation = async (formData) => {
     if (!isDirty) {
-      return navigate(1) || navigate(`/site/${siteId}/inventory/create`);
+      return (await navigate(1)) || (await navigate(`/site/${siteId}/inventory/create`));
     }
 
     const input = {

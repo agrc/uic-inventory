@@ -8,7 +8,7 @@ import TableLoader from './TableLoader';
 import onRequestError from './ToastErrors';
 import Tooltip from './Tooltip';
 
-export { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+export { Link, Navigate, useNavigate, useParams } from 'react-router';
 export { ToastContainer, toast } from 'react-toastify';
 export * from './Icons';
 

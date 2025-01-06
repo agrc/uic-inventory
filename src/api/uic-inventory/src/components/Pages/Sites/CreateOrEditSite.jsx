@@ -89,9 +89,9 @@ export function Component() {
     reset(defaults);
   }, [data, reset]);
 
-  const createOrUpdateSite = (data) => {
+  const createOrUpdateSite = async (data) => {
     if (!isDirty) {
-      return navigate(1) || navigate(`/site/${data.id}/add-contacts`);
+      return (await navigate(1)) || (await navigate(`/site/${data.id}/add-contacts`));
     }
 
     if (siteId) {
