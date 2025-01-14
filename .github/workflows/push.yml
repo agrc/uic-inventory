@@ -3,20 +3,35 @@ name: Push Events
 on:
   push:
     branches:
-      - main
       - dev
-    paths:
-      - "src/**"
-      - "!src/functions/**"
-      - ".github/workflows/push.yml"
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  test-unit:
-    name: Unit test
+  release-please:
+    name: Create release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: 🚀 Create Release
+        id: release-please
+        uses: agrc/release-composite-action@v1
+        with:
+          prerelease: ${{ github.ref_name == 'dev' }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          github-app-id: ${{ secrets.UGRC_RELEASE_BOT_APP_ID }}
+          github-app-key: ${{ secrets.UGRC_RELEASE_BOT_APP_KEY }}
+          github-app-name: ${{ secrets.UGRC_RELEASE_BOT_NAME }}
+          github-app-email: ${{ secrets.UGRC_RELEASE_BOT_EMAIL }}
+
+  test-unit-app:
+    name: Unit test app
     runs-on: ubuntu-latest
 
     steps:
@@ -40,16 +55,9 @@ jobs:
         run: npm test
         working-directory: src/api/uic-inventory/
 
-  deploy-dev:
-    name: Deploy to dev
+  test-unit-functions:
+    name: Unit test functions
     runs-on: ubuntu-latest
-    needs: [test-unit]
-    permissions:
-      id-token: write
-      contents: read
-    environment:
-      name: dev
-    if: github.ref_name == 'dev'
 
     steps:
       - name: ⬇️ Set up code
@@ -57,167 +65,17 @@ jobs:
         with:
           show-progress: false
 
-      - id: auth
-        name: 🗝️ Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          create_credentials_file: true
-          token_format: access_token
-          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: src/functions/package-lock.json
 
-      - name: 🐳 Set up Docker Buildx
-        id: builder
-        uses: docker/setup-buildx-action@v3
+      - name: 📥 Download dependencies
+        run: npm ci
+        working-directory: src/functions
 
-      - name: 🏷️ Extract tags from GitHub
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/api
-          tags: |
-            type=ref,suffix=-{{sha}},event=branch
-            type=ref,prefix=pr-,suffix=-{{sha}},event=pr
-            type=semver,pattern={{version}}
-            type=raw,value=latest
-
-      - name: 🗝️ Authenticate Docker to Google CLoud
-        uses: docker/login-action@v3
-        with:
-          registry: us-central1-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
-
-      - name: 📦 Build and push image
-        uses: docker/build-push-action@v6
-        with:
-          file: ./src/api/Api.Dockerfile
-          provenance: false
-          builder: ${{ steps.builder.outputs.name }}
-          build-args: VITE_API_KEY=${{ secrets.AGRC_API_KEY }}
-          tags: ${{ steps.meta.outputs.tags }}
-          context: .
-          push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: 🔍️ Set image name
-        run: |
-          IMAGE_ID=$(echo $DOCKER_METADATA_OUTPUT_TAGS | cut -d ' ' -f 1)
-          echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
-
-      - name: 🚀 Deploy to Cloud Run
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: uic-inventory-api
-          image: ${{ env.IMAGE_ID }}
-          region: us-central1
-          flags: |
-            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-            --set-cloudsql-instances=${{ secrets.CLOUD_SQL }}
-            --vpc-connector=${{ secrets.VPC }}
-            --vpc-egress=private-ranges-only
-            --max-instances=5
-            --concurrency=250
-            --cpu=1
-            --memory=512Mi
-            --timeout=5m
-          env_vars: >
-            ASPNETCORE_URLS=http://+:8080,
-            ASPNETCORE_ENVIRONMENT=Production,
-            UPLOAD_BUCKET=${{ secrets.PROJECT_ID }}-unscanned,
-            STORAGE_BUCKET=${{ secrets.PROJECT_ID }}-documents
-          secrets: |
-            /secrets/dotnet/appsettings.Production.json=dotnet-appsettings:latest
-
-  deploy-prod:
-    name: Deploy to prod
-    runs-on: ubuntu-latest
-    needs: [test-unit]
-    permissions:
-      id-token: write
-      contents: read
-    environment:
-      name: prod
-    if: github.ref_name == 'main'
-
-    steps:
-      - name: ⬇️ Set up code
-        uses: actions/checkout@v4
-        with:
-          show-progress: false
-
-      - id: auth
-        name: 🗝️ Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          create_credentials_file: true
-          token_format: access_token
-          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
-
-      - name: 🐳 Set up Docker Buildx
-        id: builder
-        uses: docker/setup-buildx-action@v3
-
-      - name: 🏷️ Extract tags from GitHub
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/api
-          tags: |
-            type=ref,suffix=-{{sha}},event=branch
-            type=ref,prefix=pr-,suffix=-{{sha}},event=pr
-            type=semver,pattern={{version}}
-            type=raw,value=latest
-
-      - name: 🗝️ Authenticate Docker to Google CLoud
-        uses: docker/login-action@v3
-        with:
-          registry: us-central1-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
-
-      - name: 📦 Build and push image
-        uses: docker/build-push-action@v6
-        with:
-          file: ./src/api/Api.Dockerfile
-          provenance: false
-          builder: ${{ steps.builder.outputs.name }}
-          build-args: VITE_API_KEY=${{ secrets.AGRC_API_KEY }}
-          tags: ${{ steps.meta.outputs.tags }}
-          context: .
-          push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: 🔍️ Set image name
-        run: |
-          IMAGE_ID=$(echo $DOCKER_METADATA_OUTPUT_TAGS | cut -d ' ' -f 1)
-          echo "IMAGE_ID=$IMAGE_ID" >> $GITHUB_ENV
-
-      - name: 🚀 Deploy to Cloud Run
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: uic-inventory-api
-          image: ${{ env.IMAGE_ID }}
-          region: us-central1
-          flags: |
-            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
-            --set-cloudsql-instances=${{ secrets.CLOUD_SQL }}
-            --vpc-connector=${{ secrets.VPC }}
-            --vpc-egress=private-ranges-only
-            --max-instances=5
-            --concurrency=250
-            --cpu=1
-            --memory=512Mi
-            --timeout=5m
-          env_vars: >
-            ASPNETCORE_URLS=http://+:8080,
-            ASPNETCORE_ENVIRONMENT=Production,
-            UPLOAD_BUCKET=${{ secrets.PROJECT_ID }}-unscanned,
-            STORAGE_BUCKET=${{ secrets.PROJECT_ID }}-documents
-          secrets: |
-            /secrets/dotnet/appsettings.Production.json=dotnet-appsettings:latest
+      - name: 🧪 Run tests
+        run: npm test
+        working-directory: src/functions
