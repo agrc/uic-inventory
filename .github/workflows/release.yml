@@ -102,7 +102,7 @@ jobs:
             UPLOAD_BUCKET=${{ secrets.PROJECT_ID }}-unscanned,
             STORAGE_BUCKET=${{ secrets.PROJECT_ID }}-documents
           secrets: |
-            /secrets/dotnet/appsettings.Production.json=dotnet-appsettings:latesty
+            /secrets/dotnet/appsettings.Production.json=dotnet-appsettings:latest
 
   deploy-prod-app:
     name: Deploy app to production
