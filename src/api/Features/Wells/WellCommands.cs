@@ -117,7 +117,8 @@ public static class UpdateWellDetails {
         private readonly AppDbContext _context = context;
         private readonly IPublisher _publisher = publisher;
         private readonly ILogger _log = log;
-        private readonly string _bucket = configuration.GetValue<string>("UPLOAD_BUCKET") ?? string.Empty;
+        private readonly string _uploadBucket = configuration.GetValue<string>("UPLOAD_BUCKET") ?? string.Empty;
+        private readonly string _storageBucket = configuration.GetValue<string>("STORAGE_BUCKET") ?? string.Empty;
         private readonly ICloudFileNamer _fileNamerService = fileNamer;
         private readonly CloudStorageService _client = cloudService;
 
@@ -140,12 +141,23 @@ public static class UpdateWellDetails {
                     var fileType = request.Wells.ConstructionDetailsFile.FileName.Split('.').Last().ToLower();
 
                     if (_acceptableFileTypes.Contains(fileType)) {
+                        var wellRange = _fileNamerService.CreateRangeFromArray(request.Wells.SelectedWells);
+
+                        var constructionBase = $"site_{site}/inventory_{inventory}/well_{wellRange}/construction";
+                        var constructionFile = $"{constructionBase}_{uploader}.{fileType}";
+
                         try {
-                            var wellRange = _fileNamerService.CreateRangeFromArray(request.Wells.SelectedWells);
+                            await _client.RemoveObjectsAsync(_storageBucket, constructionBase, cancellationToken);
+                        } catch (Exception e) {
+                            const string message = "Error removing prior construction files";
 
-                            var constructionFile = $"site_{site}/inventory_{inventory}/well_{wellRange}/construction_{uploader}.{fileType}";
+                            _log.ForContext("pattern", constructionBase)
+                                .Error(e, message);
 
-                            await _client.AddObjectAsync(_bucket,
+                            errors.Add(message);
+                        }
+                        try {
+                            await _client.AddObjectAsync(_uploadBucket,
                               constructionFile,
                               request.Wells.ConstructionDetailsFile.ContentType,
                               request.Wells.ConstructionDetailsFile.OpenReadStream(),
@@ -173,12 +185,23 @@ public static class UpdateWellDetails {
                     var fileType = request.Wells.InjectateCharacterizationFile.FileName.Split('.').Last().ToLower();
 
                     if (_acceptableFileTypes.Contains(fileType)) {
+                        var wellRange = _fileNamerService.CreateRangeFromArray(request.Wells.SelectedWells);
+
+                        var injectateBase = $"site_{site}/inventory_{inventory}/well_{wellRange}/injectate";
+                        var injectateFile = $"{injectateBase}_{uploader}.{fileType}";
+
                         try {
-                            var wellRange = _fileNamerService.CreateRangeFromArray(request.Wells.SelectedWells);
+                            await _client.RemoveObjectsAsync(_storageBucket, injectateBase, cancellationToken);
+                        } catch (Exception e) {
+                            const string message = "Error removing prior injectate files";
 
-                            var injectateFile = $"site_{site}/inventory_{inventory}/well_{wellRange}/injectate_{uploader}.{fileType}";
+                            _log.ForContext("pattern", injectateBase)
+                                .Error(e, message);
 
-                            await _client.AddObjectAsync(_bucket,
+                            errors.Add(message);
+                        }
+                        try {
+                            await _client.AddObjectAsync(_uploadBucket,
                               injectateFile,
                               request.Wells.InjectateCharacterizationFile.ContentType,
                               request.Wells.InjectateCharacterizationFile.OpenReadStream(),
