@@ -1,10 +1,9 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import eslintPlugin from 'vite-plugin-eslint';
+import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), eslintPlugin()],
+  plugins: [react()],
   server: {
     proxy: {
       '/api': {
@@ -17,6 +16,12 @@ export default defineConfig({
     },
   },
   test: {
+    env: 'node',
+    provider: 'v8',
     environment: 'happy-dom',
+  },
+  resolve: {
+    // this is only applicable when pnpm-linking the utah-design-package
+    dedupe: ['firebase', 'react'],
   },
 });

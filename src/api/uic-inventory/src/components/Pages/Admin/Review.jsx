@@ -654,7 +654,7 @@ const reducer = (draft, action) => {
   switch (action.type) {
     case 'set-hover-graphic': {
       if (action?.meta === 'toggle') {
-        action.payload == draft.highlighted ? null : action.payload;
+        action.payload = draft.highlighted ? null : action.payload;
       }
 
       draft.highlighted = action.payload;
@@ -895,7 +895,7 @@ const WellTable = ({ wells = [], state, dispatch }) => {
         mutate(input);
       },
     ],
-    [status],
+    [authInfo.id, inventoryId, mutate, siteId, status],
   );
 
   const table = useReactTable({
