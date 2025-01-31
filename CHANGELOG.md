@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0-1](https://github.com/agrc/uic-inventory/compare/v1.0.0-0...v1.0.0-1) (2025-01-31)
+
+
+### Dependencies
+
+* **functions:** update packages ([396007e](https://github.com/agrc/uic-inventory/commit/396007ec19ad10363aecfb4f9682bb929519ce2b))
+
 ## 1.0.0-0 (2025-01-31)
 
 
