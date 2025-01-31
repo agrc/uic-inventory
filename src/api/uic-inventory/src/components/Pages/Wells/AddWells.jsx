@@ -15,7 +15,7 @@ import { Fragment, useCallback, useContext, useEffect, useMemo, useRef } from 'r
 import { useForm } from 'react-hook-form';
 import { useImmerReducer } from 'use-immer';
 import * as yup from 'yup';
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import { operatingStatusTypes, remediationTypes, valueToLabel } from '../../../data/lookups';
 import {
   EditableCellSelect,

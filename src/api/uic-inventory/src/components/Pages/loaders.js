@@ -67,3 +67,15 @@ export const serContactLoader =
 
     return await queryClient.ensureQueryData(query);
   };
+
+export const getLoggedInUserQuery = () => ({
+  queryKey: ['auth'],
+  queryFn: () => ky.get(`/api/me`).json(),
+  staleTime: Infinity,
+  onError: (error) => onRequestError(error, 'We had some trouble finding your profile.'),
+});
+export const loggedInUserLoader = (queryClient) => async () => {
+  const query = getLoggedInUserQuery();
+
+  return await queryClient.ensureQueryData(query);
+};

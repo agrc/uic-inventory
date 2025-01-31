@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import ky from 'ky';
 import { useContext, useMemo } from 'react';
 import { BulletList } from 'react-content-loader';
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import { Chrome, onRequestError, useNavigate } from '../../PageElements';
 
 export function Component() {
