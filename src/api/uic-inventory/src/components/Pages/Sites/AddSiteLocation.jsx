@@ -11,7 +11,7 @@ import ky from 'ky';
 import { useContext, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useImmerReducer } from 'use-immer';
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import { TailwindDartboard } from '../../Dartboard/Dartboard';
 import { ErrorMessage, ErrorMessageTag, GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
 import { useGraphicManager, useViewPointZooming, useWebMap } from '../../Hooks';

@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 import { Fragment, useContext, useEffect, useMemo, useRef } from 'react';
 import { BulletList } from 'react-content-loader';
 import { useForm } from 'react-hook-form';
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import { contactTypes, serDivisions, validSiteContactTypes, valueToLabel } from '../../../data/lookups';
 import {
   ContactSchema,

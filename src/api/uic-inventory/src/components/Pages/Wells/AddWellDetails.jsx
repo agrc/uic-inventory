@@ -5,7 +5,7 @@ import ky from 'ky';
 import { useContext, useEffect, useRef } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useImmerReducer } from 'use-immer';
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import { GridHeading, Label, LimitedDropzone, LimitedTextarea, WellDetailSchema as schema } from '../../FormElements';
 import { useInventoryWells, useSitePolygon, useWebMap } from '../../Hooks';
 import { BackButton, Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';

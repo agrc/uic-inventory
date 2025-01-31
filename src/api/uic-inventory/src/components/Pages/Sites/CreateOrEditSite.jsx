@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ky from 'ky';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import { ownershipTypes } from '../../../data/lookups';
 import {
   FormGrid,
