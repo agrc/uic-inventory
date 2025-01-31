@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useQueryClient } from '@tanstack/react-query';
 import { Suspense, useContext } from 'react';
 import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router';

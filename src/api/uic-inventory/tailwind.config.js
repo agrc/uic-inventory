@@ -1,4 +1,5 @@
-module.exports = {
+import forms from '@tailwindcss/forms';
+export default {
   content: ['./index.html', './src/**/*.{js,jsx}', './node_modules/@agrc/dart-board/**/*.js'],
   theme: {
     minHeight: {
@@ -25,5 +26,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [forms],
 };
