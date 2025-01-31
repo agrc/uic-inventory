@@ -60,6 +60,7 @@ public class Startup(IConfiguration configuration) {
 
         services.AddDbContext<AppDbContext>(options => options
             .UseNpgsql(dataSource, o => {
+                o.SetPostgresVersion(13, 0);
                 o.MapEnum<AccessLevels>("access_levels");
                 o.MapEnum<NotificationTypes>("notification_types");
                 o.MapEnum<ContactTypes>("contact_types");
