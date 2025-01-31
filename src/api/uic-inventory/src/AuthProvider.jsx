@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import ky from 'ky';
 import PropTypes from 'prop-types';
-import { createContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { AuthContext } from './AuthContext';
 
-export const AuthContext = createContext();
 const Provider = AuthContext.Provider;
 
 export function AuthProvider({ children }) {

@@ -11,7 +11,7 @@ import { useImmerReducer } from 'use-immer';
 
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import { contactTypes, ownershipTypes, valueToLabel, wellTypes } from '../../../data/lookups';
 import { FormGrid, ResponsiveGridColumn, SelectListbox } from '../../FormElements';
 import {

@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
 import { useContext, useState } from 'react';
-import { AuthContext } from '../../AuthProvider';
+import { AuthContext } from '../../AuthContext';
 import { useOpenClosed } from '../Hooks';
 import { ConfirmationModal, onRequestError, toast } from '../PageElements';
 
