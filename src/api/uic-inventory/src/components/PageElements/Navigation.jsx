@@ -26,7 +26,7 @@ import ky from 'ky';
 import { Fragment, useContext } from 'react';
 import { Facebook } from 'react-content-loader';
 import { Link } from 'react-router';
-import { AuthContext } from '../../AuthProvider';
+import { AuthContext } from '../../AuthContext';
 import onRequestError from './ToastErrors';
 import { UtahHeader } from './UtahHeader';
 

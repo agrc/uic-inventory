@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { useContext, useEffect } from 'react';
 import { Facebook } from 'react-content-loader';
 import { Controller, useForm } from 'react-hook-form';
-import { AuthContext } from '../../AuthProvider';
+import { AuthContext } from '../../AuthContext';
 import {
   ErrorMessage,
   ErrorMessageTag,
@@ -21,19 +21,7 @@ import {
 } from '../FormElements';
 import { useOpenClosed } from '../Hooks';
 import { Chrome, ConfirmationModal, onRequestError, toast, useNavigate, useParams } from '../PageElements';
-
-const getLoggedInUserQuery = () => ({
-  queryKey: ['auth'],
-  queryFn: () => ky.get(`/api/me`).json(),
-  staleTime: Infinity,
-  onError: (error) => onRequestError(error, 'We had some trouble finding your profile.'),
-});
-
-export const loggedInUserLoader = (queryClient) => async () => {
-  const query = getLoggedInUserQuery();
-
-  return await queryClient.ensureQueryData(query);
-};
+import { getLoggedInUserQuery } from './loaders';
 
 export function Component() {
   const { id } = useParams();

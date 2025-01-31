@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import { Fragment, useContext, useMemo, useRef } from 'react';
 import { BulletList } from 'react-content-loader';
 import { useForm } from 'react-hook-form';
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import { serContactTypes, serDivisions, valueToLabel } from '../../../data/lookups';
 import {
   ErrorMessage,

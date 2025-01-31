@@ -9,7 +9,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Facebook } from 'react-content-loader';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import {
   DropzoneMessaging,
   ErrorMessageTag,

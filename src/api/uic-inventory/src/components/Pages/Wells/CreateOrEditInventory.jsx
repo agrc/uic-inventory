@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import ky from 'ky';
 import { Fragment, useContext, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { AuthContext } from '../../../AuthProvider';
+import { AuthContext } from '../../../AuthContext';
 import { wellTypes } from '../../../data/lookups';
 import {
   ErrorMessageTag,

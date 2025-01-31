@@ -2,12 +2,17 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { Suspense, useContext } from 'react';
 import { Outlet, Route, RouterProvider, createBrowserRouter, createRoutesFromElements } from 'react-router';
-import { AuthContext } from './AuthProvider';
+import { AuthContext } from './AuthContext';
 import { Chrome, Navigate, Navigation, ToastContainer } from './components/PageElements';
 import { RouterErrorPage } from './components/Pages/ErrorPages';
 import { Component } from './components/Pages/LandingPage';
-import { loggedInUserLoader } from './components/Pages/Profile';
-import { inventoryLoader, serContactLoader, siteContactLoader, siteLoader } from './components/Pages/loaders';
+import {
+  inventoryLoader,
+  loggedInUserLoader,
+  serContactLoader,
+  siteContactLoader,
+  siteLoader,
+} from './components/Pages/loaders';
 
 function ApplicationRoutes() {
   const { status, isAuthenticated, isElevated, completeProfile } = useContext(AuthContext);
