@@ -57,7 +57,7 @@ const reducer = (draft, action) => {
     }
     case 'set-hover-graphic': {
       if (action?.meta === 'toggle') {
-        action.payload == draft.highlighted ? null : action.payload;
+        action.payload = draft.highlighted ? null : action.payload;
       }
 
       draft.highlighted = action.payload;
