@@ -16,7 +16,7 @@
 
     <!-- Database -->
     <PackageReference Update="Dapper" Version="2.1.35" />
-    <PackageReference Update="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <PackageReference Update="Microsoft.Data.SqlClient" Version="6.0.1" />
     <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
     <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="9.0.1" />
     <PackageReference Update="EFCORE.NamingConventions" Version="9.0.0" />
