@@ -1,18 +1,13 @@
-import {
-  DropzoneMessaging,
-  LimitedDropzone,
-  LimitedTextarea,
-  LimitedTextareaFileInput,
-  useMaxLength,
-} from './LimitedTextarea';
+import { DropzoneMessaging, LimitedDropzone, LimitedTextarea, useMaxLength } from './LimitedTextarea';
 
 export default {
   title: 'FormElements/Limited Textarea',
   component: LimitedTextarea,
 };
 
-export const Default = () => <LimitedTextarea limit={500} rows="5" register={() => {}} errors={{ errors: {} }} />;
-export const FileInputDefault = () => <LimitedTextareaFileInput />;
+export const Default = () => (
+  <LimitedTextarea field={{ value: '' }} maxLength={500} rows="5" register={() => {}} errors={{ errors: {} }} />
+);
 export const WithMaxLengthHook = () => {
   const { limit, change, remaining } = useMaxLength({ limit: 20 });
   return (
@@ -27,12 +22,14 @@ export const LimitedDragAndDrop = () => (
     textarea={{
       id: 'testName',
       limit: 25,
-      rows: 5,
+      rows: '5',
       placeholder: 'Type your response or upload a file',
     }}
     forms={{
       errors: {},
-      register: () => {},
+      field: { value: '' },
+      fieldState: {},
+      formState: {},
     }}
     file={{
       id: 'testNameFile',

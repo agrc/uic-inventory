@@ -247,6 +247,8 @@ export const LimitedDropzone = ({ textarea, forms, helpText }) => {
   );
 };
 
+export { useMaxLength };
+
 CharactersRemaining.propTypes = {
   /**
    * The number of remaining characters
@@ -277,6 +279,7 @@ DropzoneMessaging.defaultProps = {
   files: [],
   reset: () => {},
 };
+
 LimitedDropzone.propTypes = {
   /**
    * The textarea configuration
