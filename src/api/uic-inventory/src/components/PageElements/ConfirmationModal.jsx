@@ -1,4 +1,5 @@
 import { Dialog, Transition, TransitionChild } from '@headlessui/react';
+import PropTypes from 'prop-types';
 import { Fragment } from 'react';
 
 export default function ConfirmationModal({ isOpen, onClose, onYes, children }) {
@@ -49,3 +50,10 @@ export default function ConfirmationModal({ isOpen, onClose, onYes, children }) 
     </Transition>
   );
 }
+
+ConfirmationModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onYes: PropTypes.func.isRequired,
+  children: PropTypes.node,
+};

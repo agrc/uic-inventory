@@ -87,6 +87,7 @@ export function Component() {
     </Chrome>
   );
 }
+Component.displayName = 'AddSiteContacts';
 
 function CreateContactForm({ data }) {
   const { siteId } = useParams();
@@ -611,6 +612,75 @@ function ContactTable({ data }) {
     </>
   );
 }
+CreateContactForm.propTypes = {
+  data: PropTypes.shape({
+    owner: PropTypes.shape({
+      email: PropTypes.string,
+      firstName: PropTypes.string,
+      lastName: PropTypes.string,
+      mailingAddress: PropTypes.string,
+      city: PropTypes.string,
+      state: PropTypes.string,
+      zipCode: PropTypes.string,
+    }),
+    contacts: PropTypes.arrayOf(
+      PropTypes.shape({
+        email: PropTypes.string,
+        firstName: PropTypes.string,
+        lastName: PropTypes.string,
+        contactType: PropTypes.string,
+      }),
+    ),
+  }),
+};
+
+ContactFields.propTypes = {
+  control: PropTypes.object.isRequired,
+  register: PropTypes.func.isRequired,
+  unregister: PropTypes.func.isRequired,
+  formState: PropTypes.object.isRequired,
+  watch: PropTypes.func.isRequired,
+};
+
+SerContactFields.propTypes = {
+  control: PropTypes.object.isRequired,
+  register: PropTypes.func.isRequired,
+  formState: PropTypes.object.isRequired,
+};
+
+ToggleSwitch.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
+
+Address.propTypes = {
+  mailingAddress: PropTypes.string,
+  city: PropTypes.string,
+  state: PropTypes.string,
+  zipCode: PropTypes.string,
+};
+
+ContactTable.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      firstName: PropTypes.string.isRequired,
+      lastName: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+      phoneNumber: PropTypes.string,
+      organization: PropTypes.string,
+      mailingAddress: PropTypes.string,
+      city: PropTypes.string,
+      state: PropTypes.string,
+      zipCode: PropTypes.string,
+      contactType: PropTypes.string,
+    }),
+  ),
+};
 ContactTable.propTypes = {
   data: PropTypes.array,
+};
+Component.propTypes = {
+  siteId: PropTypes.string,
 };

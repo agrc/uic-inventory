@@ -1,3 +1,4 @@
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import { Description, DialogTitle } from '@headlessui/react';
 import { ArrowPathIcon, ExclamationCircleIcon, InformationCircleIcon } from '@heroicons/react/20/solid';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -5,12 +6,10 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import clsx from 'clsx';
 import ky from 'ky';
 import throttle from 'lodash.throttle';
+import PropTypes from 'prop-types';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Code } from 'react-content-loader';
 import { useImmerReducer } from 'use-immer';
-
-import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-
 import { AuthContext } from '../../../AuthContext';
 import { contactTypes, ownershipTypes, valueToLabel, wellTypes } from '../../../data/lookups';
 import { FormGrid, ResponsiveGridColumn, SelectListbox } from '../../FormElements';
@@ -300,6 +299,7 @@ export function Component() {
     </>
   );
 }
+Component.displayName = 'Inventory Review';
 
 const Label = ({ children }) => <span className="block font-bold text-gray-700">{children}</span>;
 
@@ -1177,4 +1177,117 @@ const Status = ({ data, confirmations }) => {
       )}
     </div>
   );
+};
+Component.propTypes = {
+  authInfo: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+  }),
+  navigate: PropTypes.func.isRequired,
+  inventoryId: PropTypes.string.isRequired,
+  siteId: PropTypes.string.isRequired,
+};
+SiteAndInventoryDetails.propTypes = {
+  siteId: PropTypes.string.isRequired,
+  inventoryId: PropTypes.string.isRequired,
+  confirmations: PropTypes.shape({
+    openApprove: PropTypes.func.isRequired,
+    openReview: PropTypes.func.isRequired,
+    openAuthorize: PropTypes.func.isRequired,
+    openComplete: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+ContactDetails.propTypes = {
+  siteId: PropTypes.string.isRequired,
+};
+
+WellDetails.propTypes = {
+  siteId: PropTypes.string.isRequired,
+  inventoryId: PropTypes.string.isRequired,
+};
+
+LocationDetails.propTypes = {
+  siteId: PropTypes.string.isRequired,
+  inventoryId: PropTypes.string.isRequired,
+};
+
+Section.propTypes = {
+  gray: PropTypes.bool,
+  children: PropTypes.node.isRequired,
+  title: PropTypes.string,
+  height: PropTypes.string,
+  className: PropTypes.string,
+};
+
+Label.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+Value.propTypes = {
+  children: PropTypes.node.isRequired,
+  className: PropTypes.string,
+};
+
+Panel.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+Address.propTypes = {
+  mailingAddress: PropTypes.string,
+  city: PropTypes.string,
+  state: PropTypes.string,
+  zipCode: PropTypes.string,
+};
+
+WaterSystemContact.propTypes = {
+  contact: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    system: PropTypes.string.isRequired,
+  }).isRequired,
+};
+
+Status.propTypes = {
+  data: PropTypes.object.isRequired,
+  confirmations: PropTypes.shape({
+    openApprove: PropTypes.func.isRequired,
+    openReview: PropTypes.func.isRequired,
+    openAuthorize: PropTypes.func.isRequired,
+    openComplete: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
+Pill.propTypes = {
+  children: PropTypes.node.isRequired,
+  status: PropTypes.oneOf([true, false, undefined]),
+};
+
+WellTable.propTypes = {
+  wells: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      wellName: PropTypes.string.isRequired,
+      count: PropTypes.number.isRequired,
+      status: PropTypes.string.isRequired,
+      surfaceWaterProtection: PropTypes.string,
+    }),
+  ).isRequired,
+  state: PropTypes.shape({
+    highlighted: PropTypes.string,
+  }).isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
+
+WaterSystemContacts.propTypes = {
+  wells: PropTypes.arrayOf(
+    PropTypes.shape({
+      waterSystemContacts: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string.isRequired,
+          email: PropTypes.string.isRequired,
+          system: PropTypes.string.isRequired,
+        }),
+      ),
+    }),
+  ).isRequired,
 };

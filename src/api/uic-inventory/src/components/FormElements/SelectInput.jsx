@@ -2,6 +2,7 @@ import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } fro
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { ErrorMessage } from '@hookform/error-message';
 import clsx from 'clsx';
+import PropTypes from 'prop-types';
 import { Fragment } from 'react';
 import ErrorMessageTag from './ErrorMessage';
 import { camelToProper } from './Helpers';
@@ -84,3 +85,32 @@ export function SelectListbox({ selected, setSelected, items }) {
 }
 
 export default SelectInput;
+
+SelectInput.propTypes = {
+  register: PropTypes.func.isRequired,
+  errors: PropTypes.object,
+  id: PropTypes.string.isRequired,
+  text: PropTypes.string,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      label: PropTypes.string,
+    }),
+  ).isRequired,
+  onUpdate: PropTypes.func,
+  placeholder: PropTypes.string,
+};
+
+SelectListbox.propTypes = {
+  selected: PropTypes.shape({
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    label: PropTypes.string,
+  }).isRequired,
+  setSelected: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      label: PropTypes.string,
+    }),
+  ).isRequired,
+};

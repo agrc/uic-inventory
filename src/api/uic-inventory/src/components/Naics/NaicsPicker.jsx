@@ -1,5 +1,6 @@
 import { ChevronLeftIcon } from '@heroicons/react/20/solid';
 import clsx from 'clsx';
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import useNaicsCodes from './useNaicsCodes';
 
@@ -120,3 +121,7 @@ export default function NaicsPicker({ updateWith }) {
     </>
   );
 }
+
+NaicsPicker.propTypes = {
+  updateWith: PropTypes.func.isRequired,
+};
