@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import clsx from 'clsx';
 import ky from 'ky';
+import PropTypes from 'prop-types';
 import { useContext, useMemo } from 'react';
 import { BulletList } from 'react-content-loader';
 import { AuthContext } from '../../../AuthContext';
@@ -133,4 +134,16 @@ const UserTable = ({ accounts = [] }) => {
       </tbody>
     </table>
   );
+};
+
+UserTable.propTypes = {
+  accounts: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      firstName: PropTypes.string.isRequired,
+      lastName: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+      access: PropTypes.string.isRequired,
+    }),
+  ),
 };

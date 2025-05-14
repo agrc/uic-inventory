@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import PropTypes from 'prop-types';
 
 export const CheckIcon = ({ classes }) => (
   <svg className={classes} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
@@ -46,4 +47,29 @@ export const OkNotToggle = ({ status, classes }) => {
   });
 
   return status ? <CheckIcon classes={classNames} /> : <CloseIcon classes={classNames} />;
+};
+
+CheckIcon.propTypes = {
+  classes: PropTypes.string,
+};
+
+PolygonIcon.propTypes = {
+  classes: PropTypes.string,
+};
+
+PointIcon.propTypes = {
+  classes: PropTypes.string,
+};
+
+SelectPolygonIcon.propTypes = {
+  classes: PropTypes.string,
+};
+
+CloseIcon.propTypes = {
+  classes: PropTypes.string,
+};
+
+OkNotToggle.propTypes = {
+  status: PropTypes.bool.isRequired,
+  classes: PropTypes.string,
 };

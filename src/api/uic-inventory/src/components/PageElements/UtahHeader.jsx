@@ -1,6 +1,7 @@
 import { CheckBadgeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import * as Collapsible from '@radix-ui/react-collapsible';
+import PropTypes from 'prop-types';
 
 export const UtahHeader = ({ className, children }) => {
   return (
@@ -94,4 +95,9 @@ const Flyout = () => {
       </Collapsible.Trigger>
     </div>
   );
+};
+
+UtahHeader.propTypes = {
+  className: PropTypes.string,
+  children: PropTypes.node,
 };

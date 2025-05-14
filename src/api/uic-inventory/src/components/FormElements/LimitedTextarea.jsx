@@ -49,19 +49,32 @@ LimitedTextarea.propTypes = {
   /**
    * The number of rows to have in the textarea
    */
-  rows: PropTypes.string,
+  rows: PropTypes.number,
   /**
    * The character count limit
    */
-  limit: PropTypes.number.isRequired,
+  maxLength: PropTypes.number.isRequired,
   /**
-   * The ref property for use with registering with react hook form
+   * The field object provided by react hook form
    */
-  inputRef: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
+  field: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    value: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+    onBlur: PropTypes.func.isRequired,
+  }).isRequired,
   /**
-   * The function to execute when the text area value changes
+   * The errors object provided by react hook form
    */
-  onChange: PropTypes.func,
+  errors: PropTypes.object,
+  /**
+   * Additional class names for styling
+   */
+  className: PropTypes.string,
+  /**
+   * Whether the textarea is disabled
+   */
+  disabled: PropTypes.bool,
 };
 
 LimitedTextarea.defaultProps = {
@@ -232,4 +245,76 @@ export const LimitedDropzone = ({ textarea, forms, helpText }) => {
       </div>
     </section>
   );
+};
+
+CharactersRemaining.propTypes = {
+  /**
+   * The number of remaining characters
+   */
+  remaining: PropTypes.number.isRequired,
+  /**
+   * The character limit
+   */
+  limit: PropTypes.number.isRequired,
+};
+
+DropzoneMessaging.propTypes = {
+  /**
+   * Whether a file is being dragged over the dropzone
+   */
+  isDragActive: PropTypes.bool.isRequired,
+  /**
+   * The list of files currently in the dropzone
+   */
+  files: PropTypes.arrayOf(PropTypes.object),
+  /**
+   * Function to reset the dropzone
+   */
+  reset: PropTypes.func,
+};
+
+DropzoneMessaging.defaultProps = {
+  files: [],
+  reset: () => {},
+};
+LimitedDropzone.propTypes = {
+  /**
+   * The textarea configuration
+   */
+  textarea: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    rows: PropTypes.number,
+    placeholder: PropTypes.string,
+    value: PropTypes.string,
+    limit: PropTypes.number.isRequired,
+    disabled: PropTypes.bool,
+  }).isRequired,
+  /**
+   * The forms object provided by react hook form
+   */
+  forms: PropTypes.shape({
+    field: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      value: PropTypes.any,
+      onChange: PropTypes.func.isRequired,
+      onBlur: PropTypes.func.isRequired,
+    }).isRequired,
+    setValue: PropTypes.func.isRequired,
+    reset: PropTypes.func.isRequired,
+    getValues: PropTypes.func.isRequired,
+    formState: PropTypes.shape({
+      isSubmitSuccessful: PropTypes.bool.isRequired,
+    }).isRequired,
+    fieldState: PropTypes.shape({
+      error: PropTypes.object,
+    }),
+  }).isRequired,
+  /**
+   * The help text to display
+   */
+  helpText: PropTypes.string,
+};
+
+LimitedDropzone.defaultProps = {
+  helpText: null,
 };

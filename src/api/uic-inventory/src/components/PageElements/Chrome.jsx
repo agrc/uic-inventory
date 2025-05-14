@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { ErrorBoundary } from 'react-error-boundary';
 import { RouterErrorPage } from '../Pages/ErrorPages';
 
@@ -17,3 +18,9 @@ export default function Chrome({ children, title, loading }) {
     </div>
   );
 }
+
+Chrome.propTypes = {
+  children: PropTypes.node.isRequired,
+  title: PropTypes.string,
+  loading: PropTypes.bool,
+};

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import ky from 'ky';
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import ErrorMessageTag from '../FormElements/ErrorMessage';
 import { Label } from '../FormElements/TextInput';
@@ -89,3 +90,13 @@ function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
 }
 
 export default NaicsTypeAhead;
+
+NaicsTypeAhead.propTypes = {
+  setNaicsCode: PropTypes.func.isRequired,
+  id: PropTypes.string.isRequired,
+  errors: PropTypes.object.isRequired,
+  field: PropTypes.shape({
+    onChange: PropTypes.func.isRequired,
+    value: PropTypes.any,
+  }).isRequired,
+};

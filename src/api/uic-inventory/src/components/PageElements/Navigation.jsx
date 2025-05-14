@@ -23,6 +23,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
+import PropTypes from 'prop-types';
 import { Fragment, useContext } from 'react';
 import { Facebook } from 'react-content-loader';
 import { Link } from 'react-router';
@@ -563,3 +564,58 @@ function NotificationMessage({ title, text }) {
 }
 
 export default Navigation;
+
+Navigation.propTypes = {
+  authenticationStatus: PropTypes.oneOf(['pending', 'authenticated', 'unauthenticated']).isRequired,
+};
+
+NotificationBell.propTypes = {
+  status: PropTypes.oneOf(['idle', 'pending', 'success', 'error']).isRequired,
+  error: PropTypes.object,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      read: PropTypes.bool,
+      createdAt: PropTypes.string.isRequired,
+      event: PropTypes.string.isRequired,
+      additionalData: PropTypes.object,
+      url: PropTypes.string,
+    }),
+  ),
+};
+
+Links.propTypes = {
+  links: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string.isRequired,
+      to: PropTypes.string.isRequired,
+      level: PropTypes.number.isRequired,
+      key: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
+  isAuthenticated: PropTypes.func.isRequired,
+  isElevated: PropTypes.func.isRequired,
+};
+
+Notifications.propTypes = {
+  status: PropTypes.oneOf(['idle', 'pending', 'success', 'error']).isRequired,
+  error: PropTypes.object,
+  notifications: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      event: PropTypes.string.isRequired,
+      createdAt: PropTypes.string.isRequired,
+      additionalData: PropTypes.object,
+      read: PropTypes.bool,
+      readAt: PropTypes.string,
+      deleted: PropTypes.bool,
+      url: PropTypes.string,
+    }),
+  ),
+  queryKey: PropTypes.array.isRequired,
+};
+
+NotificationMessage.propTypes = {
+  title: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
+};

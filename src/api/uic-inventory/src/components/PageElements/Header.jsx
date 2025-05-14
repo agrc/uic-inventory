@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export function Header({ children }) {
   return (
     <header>
@@ -7,3 +9,7 @@ export function Header({ children }) {
 }
 
 export default Header;
+
+Header.propTypes = {
+  children: PropTypes.node.isRequired,
+};
