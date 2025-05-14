@@ -1,5 +1,6 @@
 import { ExclamationCircleIcon } from '@heroicons/react/20/solid';
 import clsx from 'clsx';
+import PropTypes from 'prop-types';
 import { BackButton } from '../PageElements';
 import GridHeading from './GridHeading';
 
@@ -74,4 +75,29 @@ const Buttons = ({ status, submit, submitLabel, back, disabled, primary }) => {
   }
 
   return null;
+};
+FormGrid.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+PageGrid.propTypes = {
+  children: PropTypes.node.isRequired,
+  heading: PropTypes.string.isRequired,
+  subtext: PropTypes.string,
+  site: PropTypes.string,
+  submit: PropTypes.bool,
+  disabled: PropTypes.bool,
+  submitLabel: PropTypes.string,
+  back: PropTypes.bool,
+  primary: PropTypes.bool,
+  status: PropTypes.oneOf(['idle', 'pending', 'error']),
+};
+
+Buttons.propTypes = {
+  status: PropTypes.oneOf(['idle', 'pending', 'error']).isRequired,
+  submit: PropTypes.bool,
+  submitLabel: PropTypes.string,
+  back: PropTypes.bool,
+  disabled: PropTypes.bool,
+  primary: PropTypes.bool,
 };

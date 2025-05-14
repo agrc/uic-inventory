@@ -1,5 +1,6 @@
 import { ErrorMessage } from '@hookform/error-message';
 import clsx from 'clsx';
+import PropTypes from 'prop-types';
 import ErrorMessageTag from './ErrorMessage';
 import { camelToProper } from './Helpers';
 
@@ -29,3 +30,20 @@ export const Label = ({ id, text, className, children }) => (
 );
 
 export default TextInput;
+
+TextInput.propTypes = {
+  className: PropTypes.string,
+  register: PropTypes.func.isRequired,
+  errors: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
+  text: PropTypes.string,
+  type: PropTypes.string,
+  readOnly: PropTypes.bool,
+};
+
+Label.propTypes = {
+  id: PropTypes.string.isRequired,
+  text: PropTypes.string,
+  className: PropTypes.string,
+  children: PropTypes.node,
+};

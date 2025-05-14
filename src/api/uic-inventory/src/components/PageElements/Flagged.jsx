@@ -3,6 +3,7 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import clsx from 'clsx';
 import ky from 'ky';
+import PropTypes from 'prop-types';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../../AuthContext';
 import { useOpenClosed } from '../Hooks';
@@ -163,4 +164,26 @@ const Reason = ({ reason, update }) => {
       />
     </section>
   );
+};
+
+Flagged.propTypes = {
+  reason: PropTypes.string,
+  siteId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  inventoryId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+};
+
+CreateFlag.propTypes = {
+  text: PropTypes.string.isRequired,
+  update: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+};
+
+HasFlag.propTypes = {
+  reason: PropTypes.string.isRequired,
+  onResolve: PropTypes.func.isRequired,
+};
+
+Reason.propTypes = {
+  reason: PropTypes.string.isRequired,
+  update: PropTypes.func.isRequired,
 };

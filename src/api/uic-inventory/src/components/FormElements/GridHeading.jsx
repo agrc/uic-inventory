@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 
 function GridHeading({ text, subtext, site, children }) {
@@ -40,3 +41,20 @@ const SiteInformation = ({ site }) => {
 };
 
 export default GridHeading;
+
+GridHeading.propTypes = {
+  text: PropTypes.string.isRequired,
+  subtext: PropTypes.string,
+  site: PropTypes.shape({
+    name: PropTypes.string,
+    naicsTitle: PropTypes.string,
+  }),
+  children: PropTypes.node,
+};
+
+SiteInformation.propTypes = {
+  site: PropTypes.shape({
+    name: PropTypes.string,
+    naicsTitle: PropTypes.string,
+  }),
+};

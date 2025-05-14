@@ -392,6 +392,7 @@ const useDartboard = (userProps = {}) => {
 BootstrapDartboard.propTypes = TailwindDartboard.propTypes = {
   apiKey: PropTypes.string.isRequired,
   type: PropTypes.oneOf([ADDRESS_TYPE, MILEPOST_TYPE]),
+  className: PropTypes.string,
   pointSymbol: PropTypes.object,
   events: PropTypes.exact({
     success: PropTypes.func.isRequired,

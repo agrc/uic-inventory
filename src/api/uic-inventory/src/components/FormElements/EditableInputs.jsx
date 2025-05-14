@@ -1,4 +1,5 @@
 import Tippy from '@tippyjs/react/headless';
+import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
 import { useOpenClosed } from '../Hooks';
 import { Tooltip } from '../PageElements';
@@ -88,4 +89,18 @@ export const EditableCellSelect = ({ status, wellId, items, onMutate, isValid, t
       {error && <div className="m-2 text-xs text-red-500">{error}</div>}
     </>
   );
+};
+
+EditableCellSelect.propTypes = {
+  status: PropTypes.string.isRequired,
+  wellId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  onMutate: PropTypes.func.isRequired,
+  isValid: PropTypes.func.isRequired,
+  tooltip: PropTypes.string,
 };

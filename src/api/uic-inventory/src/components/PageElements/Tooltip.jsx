@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export default function Tooltip({ children, attrs }) {
   return (
     <div
@@ -18,3 +20,12 @@ export default function Tooltip({ children, attrs }) {
     </div>
   );
 }
+
+Tooltip.propTypes = {
+  children: PropTypes.node.isRequired,
+  attrs: PropTypes.object,
+};
+
+Tooltip.defaultProps = {
+  attrs: {},
+};
