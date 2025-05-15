@@ -10,6 +10,7 @@ import Tooltip from './Tooltip';
 
 export { Link, Navigate, useNavigate, useParams } from 'react-router';
 export { ToastContainer, toast } from 'react-toastify';
+export * from './Geocode';
 export * from './Icons';
 
 export { BackButton, Chrome, ConfirmationModal, Flagged, Header, Navigation, TableLoader, Tooltip, onRequestError };
