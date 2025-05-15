@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 
 namespace api.Infrastructure;
+
 public static class DistributedCacheExtensions {
     public static IServiceCollection AddDistributedAuthentication(this IServiceCollection services, RedisOptions redisOptions) {
         var redis = ConnectionMultiplexer.Connect(redisOptions.Configuration);
