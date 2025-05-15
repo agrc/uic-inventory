@@ -12,7 +12,6 @@ import { useContext, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useImmerReducer } from 'use-immer';
 import { AuthContext } from '../../../AuthContext';
-import { TailwindDartboard } from '../../Dartboard/Dartboard';
 import { ErrorMessage, ErrorMessageTag, GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
 import { useGraphicManager, useViewPointZooming, useWebMap } from '../../Hooks';
 import { enablePolygonDrawing } from '../../MapElements/Drawing';
@@ -20,6 +19,7 @@ import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import {
   BackButton,
   Chrome,
+  Geocode,
   OkNotToggle,
   PointIcon,
   PolygonIcon,
@@ -47,7 +47,7 @@ const pureReducer = (draft, action) => {
       break;
     }
     case 'geocode-success': {
-      draft.address = action.payload.attributes.InputAddress;
+      draft.address = action.payload.attributes.address;
       draft.formStatus = 'allow-site-boundary-from-click';
 
       break;
@@ -329,7 +329,7 @@ export function Component() {
     }
 
     dispatch({ type: 'geocode-success', payload: result });
-    setValue('address', result.attributes.InputAddress, { shouldDirty: true });
+    setValue('address', result.attributes.address, { shouldDirty: true });
     setPointGraphic(new Graphic(result));
     setViewPoint(new Viewpoint({ targetGeometry: result.geometry, scale: 1500 }));
   };
@@ -368,11 +368,10 @@ export function Component() {
                 'opacity-25': state.formStatus === 'allow-site-address-from-click' || state.address,
               })}
             >
-              <TailwindDartboard
+              <Geocode
                 pointSymbol={PinSymbol}
                 events={{ success: geocode, error: geocodeError }}
                 apiKey={import.meta.env.VITE_API_KEY}
-                format="esrijson"
               />
             </div>
             {state.formStatus !== 'allow-site-address-from-click' ? null : (
