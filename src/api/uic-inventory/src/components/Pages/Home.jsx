@@ -18,6 +18,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import Tippy, { useSingleton } from '@tippyjs/react/headless';
+import { useOpenClosed } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
 import PropTypes from 'prop-types';
@@ -25,7 +26,6 @@ import { Fragment, useContext, useMemo, useRef } from 'react';
 import { List } from 'react-content-loader';
 import { AuthContext } from '../../AuthContext';
 import { wellTypes } from '../../data/lookups';
-import { useOpenClosed } from '../Hooks/useOpenClosedHook';
 import { Chrome, ConfirmationModal, Header, Link, TableLoader, Tooltip, onRequestError, toast } from '../PageElements';
 
 export function Component({ completeProfile }) {
