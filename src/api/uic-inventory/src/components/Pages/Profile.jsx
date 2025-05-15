@@ -1,6 +1,7 @@
-import { Description, DialogTitle, Label, Switch, SwitchGroup } from '@headlessui/react';
+import { Description, DialogTitle, Field, Label, Switch } from '@headlessui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useOpenClosed } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
 import PropTypes from 'prop-types';
@@ -19,7 +20,6 @@ import {
   TextInput,
   ProfileSchema as schema,
 } from '../FormElements';
-import { useOpenClosed } from '../Hooks';
 import { Chrome, ConfirmationModal, onRequestError, toast, useNavigate, useParams } from '../PageElements';
 import { getLoggedInUserQuery } from './loaders';
 
@@ -232,7 +232,7 @@ const NotificationForm = ({ id, data }) => {
       <Separator />
 
       <PageGrid heading="Notifications" subtext="Manage your notifications" submit={true} disabled={!isDirty}>
-        <SwitchGroup className="flex items-center" as="div">
+        <Field className="flex items-center" as="div">
           <Label className="mr-4">Notify me of administrative events</Label>
           <span className="sr-only">Enable notifications</span>
           <Controller
@@ -263,7 +263,7 @@ const NotificationForm = ({ id, data }) => {
               </Switch>
             )}
           />
-        </SwitchGroup>
+        </Field>
       </PageGrid>
     </form>
   );
@@ -333,7 +333,7 @@ const AccessForm = ({ profileData }) => {
         submit={true}
         disabled={!isDirty}
       >
-        <SwitchGroup className="flex items-center" as="div">
+        <Field className="flex items-center" as="div">
           <Label className="mr-4">Allow me to perform administrative events</Label>
           <span className="sr-only">Update access</span>
           <Controller
@@ -364,7 +364,7 @@ const AccessForm = ({ profileData }) => {
               </Switch>
             )}
           />
-        </SwitchGroup>
+        </Field>
       </PageGrid>
     </form>
   );

@@ -12,6 +12,7 @@ import { QuestionMarkCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useOpenClosed } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
 import PropTypes from 'prop-types';
@@ -33,7 +34,6 @@ import {
   SerContactSchema,
   TextInput,
 } from '../../FormElements';
-import { useOpenClosed } from '../../Hooks/useOpenClosedHook';
 import { BackButton, Chrome, Link, onRequestError, toast, useParams } from '../../PageElements';
 import { getSiteContacts } from '../loaders';
 

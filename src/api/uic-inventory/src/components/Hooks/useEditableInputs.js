@@ -1,5 +1,5 @@
+import { useOpenClosed } from '@ugrc/utilities/hooks';
 import { useCallback, useEffect, useState } from 'react';
-import { useOpenClosed } from '../Hooks';
 
 const alternateClasses = 'mr-1 rounded-lg border h-6 px-1.5 py-0.5 text-xs hover:bg-red-800 hover:text-white';
 const secondaryClasses = 'mx-1 rounded-lg border h-6 px-1.5 py-0.5 text-xs hover:bg-gray-800 hover:text-white';

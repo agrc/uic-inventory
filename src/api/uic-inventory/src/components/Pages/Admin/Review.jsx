@@ -3,6 +3,7 @@ import { Description, DialogTitle } from '@headlessui/react';
 import { ArrowPathIcon, ExclamationCircleIcon, InformationCircleIcon } from '@heroicons/react/20/solid';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useOpenClosed, useWebMap } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
 import throttle from 'lodash.throttle';
@@ -13,14 +14,7 @@ import { useImmerReducer } from 'use-immer';
 import { AuthContext } from '../../../AuthContext';
 import { contactTypes, ownershipTypes, valueToLabel, wellTypes } from '../../../data/lookups';
 import { FormGrid, ResponsiveGridColumn, SelectListbox } from '../../FormElements';
-import {
-  useEditableInput,
-  useEditableSelect,
-  useInventoryWells,
-  useOpenClosed,
-  useSitePolygon,
-  useWebMap,
-} from '../../Hooks';
+import { useEditableInput, useEditableSelect, useInventoryWells, useSitePolygon } from '../../Hooks';
 import { Chrome, ConfirmationModal, Flagged, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
@@ -685,33 +679,33 @@ const LocationDetails = ({ siteId, inventoryId }) => {
     onError: (error) => onRequestError(error, 'We had some trouble finding this inventory.'),
   });
 
-  const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
-  useSitePolygon(mapView, data?.site);
-  const wells = useInventoryWells(mapView, data?.wells, { includeComplete: false });
+  const { viewRef } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
+  useSitePolygon(viewRef.current, data?.site);
+  const wells = useInventoryWells(viewRef.current, data?.wells, { includeComplete: false });
 
   // add ground water protection zones
   useEffect(() => {
-    mapView.current?.when(() => {
-      if (!mapView.current.map.layers.includes(groundWaterProtectionZones.current)) {
-        mapView.current.map.add(groundWaterProtectionZones.current);
+    viewRef.current?.when(() => {
+      if (!viewRef.current.map.layers.includes(groundWaterProtectionZones.current)) {
+        viewRef.current.map.add(groundWaterProtectionZones.current);
       }
     });
-  }, [mapView]);
+  }, [viewRef]);
 
   // hover well points
   useEffect(() => {
-    mapView.current?.when(() => {
+    viewRef.current?.when(() => {
       if (hoverEvent.current) {
         return;
       }
 
-      hoverEvent.current = mapView.current.on(
+      hoverEvent.current = viewRef.current.on(
         'pointer-move',
         throttle((event) => {
           const options = {
             include: wells,
           };
-          mapView.current.hitTest(event, options).then(({ results }) => {
+          viewRef.current.hitTest(event, options).then(({ results }) => {
             let id = 'empty';
             if (results.length > 0) {
               id = results[0].graphic.attributes.id;
@@ -726,18 +720,18 @@ const LocationDetails = ({ siteId, inventoryId }) => {
     return () => {
       hoverEvent.current?.remove();
     };
-  }, [dispatch, mapView, wells]);
+  }, [dispatch, viewRef, wells]);
 
   // manage point highlighting
   useEffect(() => {
-    mapView.current.graphics.items.forEach((graphic) => {
+    viewRef.current.graphics.items.forEach((graphic) => {
       if (graphic.getAttribute('id') === state.highlighted) {
         graphic.setAttribute('selected', true);
       } else {
         graphic.setAttribute('selected', false);
       }
     });
-  }, [mapView, state.highlighted]);
+  }, [viewRef, state.highlighted]);
 
   return (
     <Section title="Location Details">
