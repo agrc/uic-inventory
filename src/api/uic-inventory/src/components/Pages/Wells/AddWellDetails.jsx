@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useWebMap } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
 import { useContext, useEffect, useRef } from 'react';
@@ -7,7 +8,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useImmerReducer } from 'use-immer';
 import { AuthContext } from '../../../AuthContext';
 import { GridHeading, Label, LimitedDropzone, LimitedTextarea, WellDetailSchema as schema } from '../../FormElements';
-import { useInventoryWells, useSitePolygon, useWebMap } from '../../Hooks';
+import { useInventoryWells, useSitePolygon } from '../../Hooks';
 import { BackButton, Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { getInventory } from '../loaders';
 
@@ -75,10 +76,10 @@ export function Component() {
 
   const { append, remove } = useFieldArray({ control, name: 'selectedWells', keyName: 'key' });
 
-  const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
-  useSitePolygon(mapView, data?.site);
+  const { viewRef } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
+  useSitePolygon(viewRef.current, data?.site);
   // manage graphics
-  const wellGraphics = useInventoryWells(mapView, data?.wells, { includeComplete: true });
+  const wellGraphics = useInventoryWells(viewRef.current, data?.wells, { includeComplete: true });
 
   // update state with site wells
   useEffect(() => {
@@ -95,8 +96,8 @@ export function Component() {
       include: wellGraphics,
     };
 
-    pointAddressClickEvent.current = mapView.current.on('immediate-click', (event) => {
-      mapView.current.hitTest(event, options).then(({ results }) => {
+    pointAddressClickEvent.current = viewRef.current.on('immediate-click', (event) => {
+      viewRef.current.hitTest(event, options).then(({ results }) => {
         if (!results.length) {
           return;
         }
@@ -110,11 +111,11 @@ export function Component() {
       pointAddressClickEvent.current?.remove();
       pointAddressClickEvent.current = null;
     };
-  }, [wellGraphics, mapView, dispatch]);
+  }, [wellGraphics, viewRef, dispatch]);
 
   // update form with selected wells
   useEffect(() => {
-    mapView.current.graphics.items.forEach((graphic) => {
+    viewRef.current.graphics.items.forEach((graphic) => {
       if (state.selectedWells.includes(graphic.attributes.id)) {
         graphic.setAttribute('selected', true);
         append({ ...graphic.attributes, key: graphic.attributes.id });
@@ -123,7 +124,7 @@ export function Component() {
         remove(graphic.attributes.id);
       }
     });
-  }, [state.selectedWells, append, remove, mapView]);
+  }, [state.selectedWells, append, remove, viewRef]);
 
   // form reset after submission
   useEffect(() => {

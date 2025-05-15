@@ -11,6 +11,7 @@ import {
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useOpenClosed } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
 import { Fragment, useContext, useEffect } from 'react';
@@ -25,7 +26,6 @@ import {
   TextInput,
   WellSchema as schema,
 } from '../../FormElements';
-import { useOpenClosed } from '../../Hooks';
 import { Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { IncompleteSiteWarning } from '../ErrorPages';
 import { getInventory } from '../loaders';

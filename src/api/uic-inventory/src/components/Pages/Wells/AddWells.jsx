@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import Tippy from '@tippyjs/react/headless';
+import { useGraphicManager, useMapReady, useOpenClosed, useWebMap } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
 import throttle from 'lodash.throttle';
@@ -26,7 +27,7 @@ import {
   WellLocationSchema as schema,
 } from '../../FormElements';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
-import { useGraphicManager, useInventoryWells, useOpenClosed, useSitePolygon, useWebMap } from '../../Hooks';
+import { useInventoryWells, useSitePolygon } from '../../Hooks';
 import { PinSymbol } from '../../MapElements/MarkerSymbols';
 import {
   BackButton,
@@ -268,11 +269,12 @@ function WellMap({ site, wells, state, dispatch }) {
   const drawingEvent = useRef();
   const hoverEvent = useRef();
 
-  const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
-  const hitTestGraphics = useInventoryWells(mapView, wells, { includeComplete: false });
-  useSitePolygon(mapView, site);
+  const { viewRef } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
+  const hitTestGraphics = useInventoryWells(viewRef.current, wells, { includeComplete: false });
+  useSitePolygon(viewRef.current, site);
   // manage graphics
-  const { setGraphic: setPointGraphic } = useGraphicManager(mapView);
+  const { setGraphic: setPointGraphic } = useGraphicManager(viewRef.current);
+  const ready = useMapReady(viewRef.current);
 
   // activate point clicking for selecting a well location
   useEffect(() => {
@@ -284,18 +286,18 @@ function WellMap({ site, wells, state, dispatch }) {
       return;
     }
 
-    mapView.current.focus();
+    viewRef.current.focus();
 
     // enable clicking on the map to set the well location
-    drawingEvent.current = mapView.current.on('immediate-click', (event) => {
+    drawingEvent.current = viewRef.current.on('immediate-click', (event) => {
       const graphic = new Graphic({
         geometry: event.mapPoint,
         attributes: { id: 'temp', selected: false, complete: false },
         symbol: PinSymbol,
       });
 
-      if (mapView.current.scale > 20000) {
-        mapView.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
+      if (viewRef.current.scale > 20000) {
+        viewRef.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
       }
 
       setPointGraphic(graphic);
@@ -311,7 +313,7 @@ function WellMap({ site, wells, state, dispatch }) {
       drawingEvent.current?.remove();
       drawingEvent.current = null;
     };
-  }, [state.activeTool, setPointGraphic, dispatch, mapView]);
+  }, [state.activeTool, setPointGraphic, dispatch, viewRef]);
 
   // activate point hovering for viewing a well location in the table
   useEffect(() => {
@@ -319,10 +321,14 @@ function WellMap({ site, wells, state, dispatch }) {
       include: hitTestGraphics,
     };
 
-    hoverEvent.current = mapView.current.on(
+    if (!ready) {
+      return;
+    }
+
+    hoverEvent.current = viewRef.current.on(
       'pointer-move',
       throttle((event) => {
-        mapView.current.hitTest(event, options).then(({ results }) => {
+        viewRef.current.hitTest(event, options).then(({ results }) => {
           let id = 'empty';
           if (results.length > 0) {
             id = results[0].graphic.attributes.id;
@@ -336,7 +342,7 @@ function WellMap({ site, wells, state, dispatch }) {
     return () => {
       hoverEvent.current?.remove();
     };
-  }, [mapView, dispatch, hitTestGraphics]);
+  }, [ready, viewRef, dispatch, hitTestGraphics]);
 
   // clear temp point graphic when geometry is saved
   useEffect(() => {
@@ -349,14 +355,18 @@ function WellMap({ site, wells, state, dispatch }) {
 
   // manage point highlighting
   useEffect(() => {
-    mapView.current.graphics.items.forEach((graphic) => {
+    if (!ready) {
+      return;
+    }
+
+    viewRef.current.graphics.items.forEach((graphic) => {
       if (graphic.getAttribute('id') === state.highlighted) {
         graphic.setAttribute('selected', true);
       } else {
         graphic.setAttribute('selected', false);
       }
     });
-  }, [mapView, state.highlighted]);
+  }, [ready, viewRef, state.highlighted]);
 
   return <div className="h-96 w-full" ref={mapDiv}></div>;
 }

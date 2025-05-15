@@ -1,7 +1,7 @@
 import Tippy from '@tippyjs/react/headless';
+import { useOpenClosed } from '@ugrc/utilities/hooks';
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
-import { useOpenClosed } from '../Hooks';
 import { Tooltip } from '../PageElements';
 import { SelectListbox } from './SelectInput';
 

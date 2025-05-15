@@ -6,6 +6,7 @@ import { difference, union } from '@arcgis/core/geometry/geometryEngine';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useGraphicManager, useViewPointZooming, useWebMap } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
 import { useContext, useEffect, useRef } from 'react';
@@ -13,7 +14,6 @@ import { useForm } from 'react-hook-form';
 import { useImmerReducer } from 'use-immer';
 import { AuthContext } from '../../../AuthContext';
 import { ErrorMessage, ErrorMessageTag, GridHeading, Label, SiteLocationSchema as schema } from '../../FormElements';
-import { useGraphicManager, useViewPointZooming, useWebMap } from '../../Hooks';
 import { enablePolygonDrawing } from '../../MapElements/Drawing';
 import { PinSymbol, PolygonSymbol } from '../../MapElements/MarkerSymbols';
 import {
@@ -129,13 +129,13 @@ export function Component() {
   });
   const { formState, handleSubmit, reset, setValue } = useForm({ resolver: yupResolver(schema) });
   const { isDirty } = formState;
-  const { mapView } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
+  const { viewRef } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
   // zoom map on geocode
-  const { setViewPoint } = useViewPointZooming(mapView);
+  const { setViewPoint } = useViewPointZooming(viewRef.current);
   // manage graphics
-  const { setGraphic: setPolygonGraphic, graphic: sitePolygon } = useGraphicManager(mapView);
-  const { setGraphic: setPointGraphic } = useGraphicManager(mapView);
-  const { setGraphic: setDrawingGraphic } = useGraphicManager(mapView);
+  const { setGraphic: setPolygonGraphic, graphic: sitePolygon } = useGraphicManager(viewRef.current);
+  const { setGraphic: setPointGraphic } = useGraphicManager(viewRef.current);
+  const { setGraphic: setDrawingGraphic } = useGraphicManager(viewRef.current);
 
   const [state, dispatch] = useImmerReducer(pureReducer, {
     address: undefined,
@@ -207,10 +207,10 @@ export function Component() {
       pointAddressClickEvent.current?.remove();
       pointAddressClickEvent.current = null;
     } else {
-      mapView.current.focus();
+      viewRef.current.focus();
 
       // enable clicking on the map to set the address
-      pointAddressClickEvent.current = mapView.current.on('immediate-click', (event) => {
+      pointAddressClickEvent.current = viewRef.current.on('immediate-click', (event) => {
         const graphic = new Graphic({
           geometry: event.mapPoint,
           attributes: {},
@@ -220,8 +220,8 @@ export function Component() {
         dispatch({ type: 'address-clicked', payload: graphic });
         setPointGraphic(graphic);
 
-        if (mapView.current.scale > 10489.34) {
-          mapView.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
+        if (viewRef.current.scale > 10489.34) {
+          viewRef.current.goTo(new Viewpoint({ targetGeometry: graphic.geometry, scale: 10480 }));
         }
       });
     }
@@ -230,7 +230,7 @@ export function Component() {
       pointAddressClickEvent.current?.remove();
       pointAddressClickEvent.current = null;
     };
-  }, [state.activeTool, mapView, setPointGraphic, dispatch]);
+  }, [state.activeTool, viewRef, setPointGraphic, dispatch]);
 
   // activate parcel hit test clicking
   useEffect(() => {
@@ -239,16 +239,16 @@ export function Component() {
       parcelClickEvent.current?.remove();
       parcelClickEvent.current = null;
     } else {
-      mapView.current.focus();
+      viewRef.current.focus();
 
-      parcelClickEvent.current = mapView.current.on('click', (event) => {
+      parcelClickEvent.current = viewRef.current.on('click', (event) => {
         //! stop popup from displaying
         event.preventDefault();
         event.stopPropagation();
 
-        const parcelLayerIndex = mapView.current.map.layers.items[0];
+        const parcelLayerIndex = viewRef.current.map.layers.items[0];
 
-        mapView.current
+        viewRef.current
           .hitTest(event, {
             include: parcelLayerIndex,
           })
@@ -283,7 +283,7 @@ export function Component() {
       parcelClickEvent.current?.remove();
       parcelClickEvent.current = null;
     };
-  }, [state.activeTool, mapView, sitePolygon, dispatch]);
+  }, [state.activeTool, viewRef, sitePolygon, dispatch]);
 
   // activate polygon site drawing
   useEffect(() => {
@@ -296,9 +296,9 @@ export function Component() {
 
       siteDrawingEvents.current = null;
     } else {
-      mapView.current.focus();
+      viewRef.current.focus();
 
-      const [drawAction, drawingEvent] = enablePolygonDrawing(mapView.current, setDrawingGraphic);
+      const [drawAction, drawingEvent] = enablePolygonDrawing(viewRef.current, setDrawingGraphic);
 
       const finishEvent = drawAction.on(['draw-complete'], (event) => {
         dispatch({
@@ -306,7 +306,7 @@ export function Component() {
           payload: new Polygon({
             type: 'polygon',
             rings: event.vertices,
-            spatialReference: mapView.current.spatialReference,
+            spatialReference: viewRef.current.spatialReference,
           }),
           meta: 'freehand-polygon-drawing',
         });
@@ -314,7 +314,7 @@ export function Component() {
 
       siteDrawingEvents.current = [drawingEvent, finishEvent];
     }
-  }, [state.activeTool, setDrawingGraphic, mapView, dispatch]);
+  }, [state.activeTool, setDrawingGraphic, viewRef, dispatch]);
 
   // clear polygons when drawing tool changes
   useEffect(() => {

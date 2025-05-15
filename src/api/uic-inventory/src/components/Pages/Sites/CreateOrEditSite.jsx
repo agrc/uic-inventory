@@ -1,6 +1,7 @@
 import { Dialog, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useOpenClosed } from '@ugrc/utilities/hooks';
 import ky from 'ky';
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -16,7 +17,6 @@ import {
   TextInput,
   SiteSchema as schema,
 } from '../../FormElements';
-import { useOpenClosed } from '../../Hooks';
 import { Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { getSites } from '../loaders';
 

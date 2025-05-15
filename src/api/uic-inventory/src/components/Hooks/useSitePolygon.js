@@ -1,13 +1,13 @@
 import Graphic from '@arcgis/core/Graphic';
 import Point from '@arcgis/core/geometry/Point';
 import Polygon from '@arcgis/core/geometry/Polygon';
+import { useGraphicManager, useViewPointZooming } from '@ugrc/utilities/hooks';
 import { useEffect } from 'react';
-import { useGraphicManager, useViewPointZooming } from '.';
 import { PinSymbol, PolygonSymbol } from '../MapElements/MarkerSymbols';
 
-export function useSitePolygon(mapView, site) {
-  const { graphic, setGraphic } = useGraphicManager(mapView);
-  const { setViewPoint } = useViewPointZooming(mapView);
+export function useSitePolygon(view, site) {
+  const { graphic, setGraphic } = useGraphicManager(view);
+  const { setViewPoint } = useViewPointZooming(view);
 
   useEffect(() => {
     if (graphic || !site?.geometry) {
@@ -37,9 +37,9 @@ export function useSitePolygon(mapView, site) {
   };
 }
 
-export function useInventoryWells(mapView, wells, { includeComplete }) {
-  const { graphic, setGraphic } = useGraphicManager(mapView);
-  const { setViewPoint } = useViewPointZooming(mapView);
+export function useInventoryWells(view, wells, { includeComplete }) {
+  const { graphic, setGraphic } = useGraphicManager(view);
+  const { setViewPoint } = useViewPointZooming(view);
 
   useEffect(() => {
     const graphics = wells?.map(
