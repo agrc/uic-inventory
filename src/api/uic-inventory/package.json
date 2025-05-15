@@ -6,6 +6,7 @@
     "build": "vite build",
     "build-storybook": "storybook build",
     "dev": "vite",
+    "start": "vite",
     "fix": "npm run format && npm run lint",
     "format": "prettier . --write",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
@@ -26,7 +27,6 @@
     ]
   },
   "dependencies": {
-    "@agrc/helpers": "^1.3.1",
     "@arcgis/core": "^4.32.10",
     "@headlessui/react": "^2.2.3",
     "@heroicons/react": "^2.2.0",
@@ -36,6 +36,8 @@
     "@tanstack/react-query": "^5.76.1",
     "@tanstack/react-table": "^8.21.3",
     "@tippyjs/react": "^4.2.6",
+    "@ugrc/utah-design-system": "^1.27.1",
+    "@ugrc/utilities": "^3.0.4",
     "clsx": "^2.1.1",
     "downshift": "^9.0.9",
     "immer": "^10.1.1",
@@ -79,7 +81,7 @@
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
-    "prettier-plugin-packagejson": "^2.5.12",
+    "prettier-plugin-packagejson": "^2.5.13",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "prop-types": "^15.8.1",
     "storybook": "^8.6.12",
