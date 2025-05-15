@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.1](https://github.com/agrc/uic-inventory/compare/v1.0.0...v1.0.1) (2025-05-15)
+
+
+### Dependencies
+
+* **api:** fy25q4 package updates ([68d5def](https://github.com/agrc/uic-inventory/commit/68d5defe7f59a1866bac63c0e969eea555852d99))
+* **app:** fy25q4 package updates ([c2052d7](https://github.com/agrc/uic-inventory/commit/c2052d7aa95a6f20172e1fae204458b508bc5548))
+* bump @babel/runtime ([16e6817](https://github.com/agrc/uic-inventory/commit/16e681796fcc54a92148274b5ca2b0433b9f7749))
+
 ## 1.0.0 (2025-02-03)
 
 
