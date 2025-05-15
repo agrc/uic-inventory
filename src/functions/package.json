@@ -13,19 +13,19 @@
   "author": "UGRC",
   "license": "MIT",
   "dependencies": {
-    "@arcgis/core": "^4.31.6",
-    "@google-cloud/functions-framework": "^3.4.5",
-    "@google-cloud/storage": "^7.15.0",
+    "@arcgis/core": "^4.32.10",
+    "@google-cloud/functions-framework": "^4.0.0",
+    "@google-cloud/storage": "^7.16.0",
     "base64-stream": "^1.0.0",
-    "ky": "^1.7.4",
+    "ky": "^1.8.1",
     "lodash.startcase": "^4.4.0",
     "pdf-lib": "^1.17.1",
-    "pdfmake": "^0.2.18",
-    "to-words": "^4.2.0"
+    "pdfmake": "^0.2.20",
+    "to-words": "^4.5.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9",
-    "prettier": "^3.4.2",
-    "vitest": "^3.0.5"
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "vitest": "^3.1.3"
   }
 }
