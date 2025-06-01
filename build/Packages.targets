@@ -23,7 +23,7 @@
     <PackageReference Update="Oracle.ManagedDataAccess.Core" Version="23.8.0" />
 
     <!-- Logging -->
-    <PackageReference Update="Serilog" Version="4.2.0" />
+    <PackageReference Update="Serilog" Version="4.3.0" />
     <PackageReference Update="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Update="Serilog.Settings.Configuration" Version="9.0.0" />
     <PackageReference Update="Serilog.Sinks.Console" Version="6.0.0" />
@@ -46,7 +46,7 @@
     <PackageReference Update="Polly" Version="8.5.2" />
 
     <!-- PDF -->
-    <PackageReference Update="PDFsharp" Version="6.1.1" />
+    <PackageReference Update="PDFsharp" Version="6.2.0" />
   </ItemGroup>
 
 </Project>
