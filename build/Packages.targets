@@ -20,7 +20,7 @@
     <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="9.0.7" />
     <PackageReference Update="EFCORE.NamingConventions" Version="9.0.0" />
-    <PackageReference Update="Oracle.ManagedDataAccess.Core" Version="23.9.0" />
+    <PackageReference Update="Oracle.ManagedDataAccess.Core" Version="23.9.1" />
 
     <!-- Logging -->
     <PackageReference Update="Serilog" Version="4.3.0" />
