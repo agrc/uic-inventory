@@ -13,6 +13,7 @@ concurrency:
 jobs:
   release-please:
     name: Create release
+    needs: [test-unit-app, test-unit-functions]
     runs-on: ubuntu-latest
     permissions:
       contents: write
