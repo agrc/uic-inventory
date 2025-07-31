@@ -8,6 +8,7 @@ WORKDIR /build
 COPY ./src/api/uic-inventory .
 
 ARG NODE_OPTIONS=--max_old_space_size=4096
+# VITE_API_KEY is a public API key that gets embedded in client-side cod
 ARG VITE_API_KEY $VITE_API_KEY
 
 RUN npm ci && npm run build

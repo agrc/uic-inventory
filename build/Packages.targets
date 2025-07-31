@@ -6,7 +6,7 @@
 
     <!-- Mediatr -->
     <PackageReference Update="MediatR.Behaviors.Authorization" Version="12.5.0" />
-    <PackageReference Update="MediatR" Version="12.4.1" />
+    <PackageReference Update="MediatR" Version="12.5.0" />
 
     <!-- Authentication -->
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.0" />
