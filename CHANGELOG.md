@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.3-0](https://github.com/agrc/uic-inventory/compare/v1.0.2...v1.0.3-0) (2025-07-31)
+
+
+### Dependencies
+
+* bump @arcgis/core in /src/functions in the safe-dependencies group ([3f13323](https://github.com/agrc/uic-inventory/commit/3f13323a63bc2ddeefc92ff8786253754a6237c6))
+* bump form-data in /src/functions in the npm_and_yarn group ([f54500e](https://github.com/agrc/uic-inventory/commit/f54500e106b312f04a0b34040e01df892c97ec9a))
+* bump the safe-dependencies group across 1 directory with 26 updates ([4d100e1](https://github.com/agrc/uic-inventory/commit/4d100e14343858bd32ee23da0151d8a959715483))
+* bump the safe-dependencies group across 1 directory with 5 updates ([ff842b6](https://github.com/agrc/uic-inventory/commit/ff842b6619b0e8fdafb9115d944287a3ffc1d1ed))
+* rebuild lock ([486290e](https://github.com/agrc/uic-inventory/commit/486290e77a02a9fa6907c0694b00579996eef23b))
+* upgrade storybook and ugrc package ([bd1a191](https://github.com/agrc/uic-inventory/commit/bd1a19158431d0bce82c486fccadd987d8218936))
+
 ## [1.0.2](https://github.com/agrc/uic-inventory/compare/v1.0.1...v1.0.2) (2025-05-15)
 
 
