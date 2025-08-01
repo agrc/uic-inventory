@@ -1,0 +1,63 @@
+name: Pull Request Events
+
+on: pull_request
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-unit-app:
+    name: Unit test app
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: src/api/uic-inventory/package-lock.json
+
+      - name: 📥 Download dependencies
+        run: npm ci
+        working-directory: src/api/uic-inventory/
+
+      - name: 🧪 Run tests
+        run: npm test
+        working-directory: src/api/uic-inventory/
+
+  test-unit-functions:
+    name: Unit test functions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: src/functions/package-lock.json
+
+      - name: 📥 Download dependencies
+        run: npm ci
+        working-directory: src/functions
+
+      - name: 🧪 Run tests
+        run: npm test
+        working-directory: src/functions
