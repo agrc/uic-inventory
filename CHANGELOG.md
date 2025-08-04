@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/agrc/uic-inventory/compare/v1.0.3...v1.0.4) (2025-08-04)
+
+
+### Dependencies
+
+* correct mediatr version ([c253c8e](https://github.com/agrc/uic-inventory/commit/c253c8e9c547627f96103f844a7972786a484256))
+
 ## [1.0.3](https://github.com/agrc/uic-inventory/compare/v1.0.2...v1.0.3) (2025-07-31)
 
 
