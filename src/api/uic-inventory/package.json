@@ -27,16 +27,16 @@
     ]
   },
   "dependencies": {
-    "@arcgis/core": "^4.33.9",
+    "@arcgis/core": "^4.33.12",
     "@headlessui/react": "^2.2.4",
     "@heroicons/react": "^2.2.0",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^5.1.1",
-    "@radix-ui/react-collapsible": "^1.1.11",
-    "@tanstack/react-query": "^5.83.0",
+    "@radix-ui/react-collapsible": "^1.1.12",
+    "@tanstack/react-query": "^5.85.3",
     "@tanstack/react-table": "^8.21.3",
     "@tippyjs/react": "^4.2.6",
-    "@ugrc/utah-design-system": "^1.27.3",
+    "@ugrc/utah-design-system": "^1.28.1",
     "@ugrc/utilities": "^3.0.4",
     "clsx": "^2.1.1",
     "downshift": "^9.0.10",
@@ -48,21 +48,21 @@
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
     "react-error-boundary": "^6.0.0",
-    "react-hook-form": "^7.60.0",
+    "react-hook-form": "^7.62.0",
     "react-phone-number-input": "^3.4.12",
-    "react-router": "^7.6.3",
+    "react-router": "^7.8.1",
     "react-toastify": "^11.0.5",
     "use-immer": "^0.11.0",
-    "yup": "^1.6.1"
+    "yup": "^1.7.0"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^4.0.1",
+    "@chromatic-com/storybook": "^4.1.0",
     "@hookform/devtools": "^4.4.0",
-    "@storybook/addon-links": "^9.0.18",
-    "@storybook/addon-onboarding": "^9.0.18",
-    "@storybook/react-vite": "^9.0.18",
+    "@storybook/addon-links": "^9.1.2",
+    "@storybook/addon-onboarding": "^9.1.2",
+    "@storybook/react-vite": "^9.1.2",
     "@tailwindcss/forms": "^0.5.10",
-    "@tanstack/react-query-devtools": "^5.83.0",
+    "@tanstack/react-query-devtools": "^5.85.3",
     "@testing-library/react": "^16.3.0",
     "@ugrc/eslint-config": "^1.2.3",
     "@vitejs/plugin-react-swc": "^3.10.2",
@@ -81,6 +81,6 @@
     "tailwindcss": "^3.4.17",
     "vite": "^6.3.5",
     "vitest": "^3.2.4",
-    "@storybook/addon-docs": "^9.0.18"
+    "@storybook/addon-docs": "^9.1.2"
   }
 }
