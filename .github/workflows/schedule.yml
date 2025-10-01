@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: ⬇️ Set up code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           show-progress: false
           repository: GoogleCloudPlatform/docker-clamav-malware-scanner
@@ -38,7 +38,7 @@ jobs:
           filename: ./cloudrun-malware-scanner/config.json
 
       - name: 🐍 Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           cache: pip
 
@@ -47,7 +47,7 @@ jobs:
 
       - id: auth
         name: 🗝️ Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           create_credentials_file: true
           token_format: access_token
@@ -55,7 +55,7 @@ jobs:
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
 
       - name: ☁️ Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@v3
 
       - name: 🔄 Update database
         working-directory: ./cloudrun-malware-scanner
