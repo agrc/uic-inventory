@@ -220,7 +220,7 @@ jobs:
         timeout-minutes: 10
         with:
           name: pdf
-          runtime: nodejs20
+          runtime: nodejs22
           source_dir: src/functions
           memory: 512M
           entry_point: generate
@@ -257,7 +257,7 @@ jobs:
         uses: google-github-actions/deploy-cloud-functions@v4
         with:
           name: pdf
-          runtime: nodejs20
+          runtime: nodejs22
           source_dir: src/functions
           memory: 512M
           entry_point: generate
