@@ -1,5 +1,7 @@
 # UIC Inventory
 
+[![Release Events](https://github.com/agrc/uic-inventory/actions/workflows/release.yml/badge.svg)](https://github.com/agrc/uic-inventory/actions/workflows/release.yml)
+
 ## Debugging
 
 ```sh
