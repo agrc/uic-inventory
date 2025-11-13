@@ -10,4 +10,5 @@ gcloud auth application-default login
 
 echo "starting api"
 cd src/api
+export ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.SpaProxy
 dotnet watch
