@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.0">
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <Target Name="PostClean" AfterTargets="Clean">
-    <!-- Delete the bin and obj filders when running dotnet clean -->
+    <!-- Delete the bin and obj folders when running dotnet clean -->
     <RemoveDir Directories="$(BaseIntermediateOutputPath)" /><!-- obj -->
     <RemoveDir Directories="$(BaseOutputPath)" /><!-- bin -->
   </Target>
