@@ -1,6 +1,6 @@
 {
   "name": "@uic/report-generation",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "cloud functions to support the UIC application",
   "type": "module",
   "main": "report.js",
