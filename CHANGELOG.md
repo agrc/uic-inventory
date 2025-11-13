@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.5](https://github.com/agrc/uic-inventory/compare/v1.0.4...v1.0.5) (2025-11-13)
+
+
+### Dependencies
+
+* **api:** FY26 Q2 package updates ([5f84020](https://github.com/agrc/uic-inventory/commit/5f8402085c538dc1700f4e7694bce71a9cdec599))
+* **app:** FY26 Q2 package updates ([3571a35](https://github.com/agrc/uic-inventory/commit/3571a356b7fd6c705e723ec9edc3b9537b3d18bc))
+* bump the safe-dependencies group ([547f76f](https://github.com/agrc/uic-inventory/commit/547f76fa3a1d0b6491ae8fa5997375f7404a2ca1))
+* bump the safe-dependencies group across 1 directory with 27 updates ([53aa897](https://github.com/agrc/uic-inventory/commit/53aa897af3cbac2b6d074cb133435f8bd28b2994))
+* bump the safe-dependencies group across 1 directory with 4 updates ([032ff7e](https://github.com/agrc/uic-inventory/commit/032ff7e0d8dc36591d938ebbbed31d41f9e915d7))
+* bump the safe-dependencies group in /src/functions with 3 updates ([71cf9f5](https://github.com/agrc/uic-inventory/commit/71cf9f544c5cca7a50604b8dcd56d706b94d8a0c))
+* **dev:** bump the major-dependencies group across 1 directory with 3 updates ([20c4d5d](https://github.com/agrc/uic-inventory/commit/20c4d5d0c8ffa4bfea9465d0cd0dba5deb6728f9))
+* **dev:** bump vite from 7.0.6 to 7.2.2 in /src/functions ([392df58](https://github.com/agrc/uic-inventory/commit/392df586ace7bb1ecb04b56208645c61a0bb3cab))
+
 ## [1.0.4](https://github.com/agrc/uic-inventory/compare/v1.0.3...v1.0.4) (2025-08-04)
 
 
