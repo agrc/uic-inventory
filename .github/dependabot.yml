@@ -1,9 +1,11 @@
 version: 2
 updates:
   - package-ecosystem: nuget
-    directory: /src/api
+    directories:
+     - /src/api
+     - /src/api.tests
     schedule:
-      interval: monthly
+      interval: quarterly
     groups:
       safe-api-dependencies:
         update-types:
@@ -20,7 +22,7 @@ updates:
   - package-ecosystem: npm
     directory: /src/api/uic-inventory
     schedule:
-      interval: monthly
+      interval: quarterly
     groups:
       safe-dependencies:
         update-types:
@@ -42,7 +44,7 @@ updates:
   - package-ecosystem: npm
     directory: /src/functions
     schedule:
-      interval: monthly
+      interval: quarterly
     groups:
       safe-dependencies:
         update-types:
@@ -64,7 +66,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: quarterly
     groups:
       ci-dependencies:
         dependency-type: production
@@ -75,7 +77,7 @@ updates:
   - package-ecosystem: docker
     directory: /src/api
     schedule:
-      interval: monthly
+      interval: quarterly
     groups:
       docker-dependencies:
         patterns:
