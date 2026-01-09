@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "@arcgis/core": "^4.34.7",
-    "@google-cloud/functions-framework": "^4.0.0",
+    "@google-cloud/functions-framework": "^4.0.1",
     "@google-cloud/storage": "^7.17.3",
     "base64-stream": "^1.0.0",
     "ky": "^1.13.0",
