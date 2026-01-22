@@ -17,7 +17,7 @@ public static class GetNotifications {
             public async Task<ProfileNotificationPayload> Handle(Query request, CancellationToken token) {
                 var items = await _context.NotificationReceipts
                  .Include(x => x.Notification)
-                 .Where(x => x.RecipientId == _metadata.Account.Id)
+                 .Where(x => x.RecipientId == _metadata.Account.Id && x.DeletedAt == null)
                  .Select(x => new NotificationPayload(x.Notification, x))
                  .ToListAsync(token);
 
