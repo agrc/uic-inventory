@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.6](https://github.com/agrc/uic-inventory/compare/v1.0.5...v1.0.6) (2026-01-22)
+
+
+### Bug Fixes
+
+* **api:** do not send deleted notifications to client ([835f20a](https://github.com/agrc/uic-inventory/commit/835f20a26688721f7ed63252de049fee2aab21f4))
+* **app:** sort notifications newest to oldest ([375f675](https://github.com/agrc/uic-inventory/commit/375f67552fac30256707b27458f650231f2f3b38))
+
+
+### Dependencies
+
+* **app:** audit fix packages ([9356aef](https://github.com/agrc/uic-inventory/commit/9356aeffa8fecb0192ca4d5183d036e35851cf50))
+* bump jws from 4.0.0 to 4.0.1 in /src/functions ([4446924](https://github.com/agrc/uic-inventory/commit/44469248df48087fb4dafd4096816514ccd59041))
+* bump the safe-dependencies group ([38643fd](https://github.com/agrc/uic-inventory/commit/38643fdf583fe7f97ab512f0ae61710bffabf4d5))
+* bump the safe-dependencies group in /src/functions with 8 updates ([11222cd](https://github.com/agrc/uic-inventory/commit/11222cd7aa19558e68e60048ce416f1171b4b119))
+
 ## [1.0.5](https://github.com/agrc/uic-inventory/compare/v1.0.4...v1.0.5) (2025-11-13)
 
 
