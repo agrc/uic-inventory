@@ -39,6 +39,8 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   minute: 'numeric',
 });
 
+const dateCollator = new Intl.Collator('en', { numeric: true });
+
 const navigation = [
   {
     text: 'Sites',
@@ -480,7 +482,16 @@ function Notifications({ status, error, notifications, queryKey }) {
     return null;
   }
 
-  const availableNotifications = notifications.filter((notification) => !notification.deleted);
+  const sortByNewest = (a, b) => {
+    return dateCollator.compare(
+      new Date(b.createdAt).toISOString(),
+      new Date(a.createdAt).toISOString()
+    );
+  };
+
+  const availableNotifications = notifications
+    .filter((notification) => !notification.deleted)
+    .sort(sortByNewest);
 
   if (availableNotifications.length === 0) {
     return <NotificationMessage title="All caught up!" message="Take a break, go for a walk, be your best you." />;
