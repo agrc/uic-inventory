@@ -1,6 +1,6 @@
 FROM node:lts-alpine AS nodejs
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS dotnet
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS dotnet-sdk
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra AS dotnet
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dotnet-sdk
 
 FROM nodejs AS vite-build
 WORKDIR /build
@@ -29,8 +29,5 @@ WORKDIR /app
 
 COPY --from=api-publish /app .
 COPY --from=vite-build /build/dist ./uic-inventory/dist
-
-RUN useradd -s /bin/bash dummy
-USER dummy
 
 ENTRYPOINT ["dotnet", "api.dll"]
