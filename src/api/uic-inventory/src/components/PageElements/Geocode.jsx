@@ -13,6 +13,7 @@ export const Geocode = (props) => {
       <div>
         <label htmlFor={street.name}>{street.label}</label>
         <input
+          id={street.name}
           name={street.name}
           onKeyUp={(e) => street.onKeyUp(e)}
           onChange={(e) => street.onChange(e.target.value)}
@@ -23,6 +24,7 @@ export const Geocode = (props) => {
       <div>
         <label htmlFor={zone.name}>{zone.label}</label>
         <input
+          id={zone.name}
           name={zone.name}
           onKeyUp={(e) => zone.onKeyUp(e)}
           onChange={(e) => zone.onChange(e.target.value)}

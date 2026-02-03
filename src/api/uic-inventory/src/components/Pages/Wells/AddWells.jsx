@@ -226,7 +226,7 @@ function AddWellForm({ data, state, dispatch }) {
       )}
       <TextInput id="quantity" type="number" register={register} errors={formState.errors} />
       <div className="flex justify-between">
-        <Label id="wellLocation" />
+        <span className="font-medium text-gray-700">Well Location</span>
         <OkNotToggle classes="h-12" status={watchGeometry} />
       </div>
       <ErrorMessage errors={formState.errors} name="geometry.x" as={ErrorMessageTag} />
@@ -241,6 +241,7 @@ function AddWellForm({ data, state, dispatch }) {
           <div className="flex flex-col items-center space-y-2">
             <button
               type="button"
+              aria-label="Draw well location on map"
               data-style="tool"
               className={clsx({ 'border-amber-900 bg-amber-800 text-white': state.activeTool === 'draw-well' })}
               onClick={() => dispatch({ type: 'activate-tool', payload: 'draw-well' })}
@@ -632,7 +633,7 @@ function WellTable({ wells = [], state, dispatch }) {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                  className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-900"
                 >
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </th>

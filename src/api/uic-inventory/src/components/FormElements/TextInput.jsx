@@ -25,7 +25,7 @@ function TextInput({ className, register, errors, id, text, type, readOnly = fal
 export const Label = ({ id, text, className, children }) => (
   <label htmlFor={id} className={clsx(className, 'flex space-x-1 font-medium text-gray-700')}>
     <span>{text || camelToProper(id)}</span>
-    <span>{children}</span>
+    {children && <span>{children}</span>}
   </label>
 );
 

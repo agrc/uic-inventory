@@ -97,7 +97,7 @@ const UserTable = ({ accounts = [] }) => {
                   {
                     'cursor-pointer select-none': header.column.getCanSort(),
                   },
-                  'px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500',
+                  'px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-900',
                 )}
                 onClick={header.column.getToggleSortingHandler()}
                 title={

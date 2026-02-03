@@ -174,6 +174,7 @@ export const LimitedDropzone = ({ textarea, forms, helpText }) => {
       >
         <div className="relative">
           <textarea
+            id={textarea.id}
             className={clsx('px-2', {
               'rounded-l': remaining === limit,
               rounded: remaining < limit,
@@ -211,6 +212,7 @@ export const LimitedDropzone = ({ textarea, forms, helpText }) => {
           <input
             {...(files.length > 0 ? forms.field : {})}
             {...getInputProps({
+              'aria-label': 'Upload PDF file',
               onChange: (e) => {
                 forms.field.onChange(e.target.files[0]);
               },

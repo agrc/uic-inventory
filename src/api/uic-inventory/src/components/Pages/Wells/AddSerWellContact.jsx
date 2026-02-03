@@ -352,7 +352,7 @@ function ContactTable({ data }) {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                  className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-900"
                 >
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </th>

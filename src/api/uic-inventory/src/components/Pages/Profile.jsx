@@ -153,7 +153,7 @@ const ProfileForm = ({ id, data }) => {
             <label htmlFor="phoneNumber" className="block font-medium text-gray-700">
               Phone number
             </label>
-            <PhoneInput name="phoneNumber" type="tel" country="US" control={control} rules={{ required: true }} />
+            <PhoneInput id="phoneNumber" name="phoneNumber" type="tel" country="US" control={control} rules={{ required: true }} />
             <ErrorMessage errors={formState.errors} name="phoneNumber" as={ErrorMessageTag} />
           </ResponsiveGridColumn>
 
@@ -439,10 +439,10 @@ const DangerZone = () => {
             </ul>
           </li>
         </ul>
-        <p className="mt-4 font-semibold text-red-500">
+        <p className="mt-4 font-semibold text-rose-800">
           The following information associated with your account will be deleted:
         </p>
-        <ul className="ml-2 mt-2 list-inside list-decimal text-red-500">
+        <ul className="ml-2 mt-2 list-inside list-decimal text-rose-800">
           <li>All sites (including all associated information) with no well inventories</li>
           <li>All sites (including all associated information) with only draft inventories</li>
           <li>All draft well inventories</li>

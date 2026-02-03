@@ -6,7 +6,6 @@ import ky from 'ky';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import ErrorMessageTag from '../FormElements/ErrorMessage';
-import { Label } from '../FormElements/TextInput';
 import { onRequestError } from '../PageElements';
 
 function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
@@ -20,8 +19,9 @@ function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
     onError: (error) => onRequestError(error, 'We had some trouble finding NAICS codes.'),
   });
 
-  const { isOpen, getMenuProps, getInputProps, highlightedIndex, getItemProps } = useCombobox({
+  const { isOpen, getMenuProps, getInputProps, getLabelProps, highlightedIndex, getItemProps } = useCombobox({
     items: codes,
+    id,
     onSelectedItemChange: (selectedItem) => {
       setNaicsCode(selectedItem.inputValue);
       field.onChange(selectedItem.inputValue);
@@ -49,9 +49,11 @@ function NaicsTypeAhead({ setNaicsCode, id, errors, field }) {
 
   return (
     <div>
-      <Label id={id} text="6-digit NAICS code" />
+      <label {...getLabelProps()} className="flex space-x-1 font-medium text-gray-700">
+        <span>6-digit NAICS code</span>
+      </label>
       <div>
-        <input id={id} type="text" {...getInputProps({ ...field })} />
+        <input type="text" {...getInputProps({ ...field })} />
       </div>
       <div {...getMenuProps()}>
         {isOpen ? (
