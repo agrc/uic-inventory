@@ -2,6 +2,7 @@ import BackButton from './BackButton';
 import Chrome from './Chrome';
 import ConfirmationModal from './ConfirmationModal';
 import Flagged from './Flagged';
+import FloatingTooltip from './FloatingTooltip';
 import Header from './Header';
 import Navigation from './Navigation';
 import TableLoader from './TableLoader';
@@ -13,4 +14,15 @@ export { ToastContainer, toast } from 'react-toastify';
 export * from './Geocode';
 export * from './Icons';
 
-export { BackButton, Chrome, ConfirmationModal, Flagged, Header, Navigation, TableLoader, Tooltip, onRequestError };
+export {
+  BackButton,
+  Chrome,
+  ConfirmationModal,
+  Flagged,
+  FloatingTooltip,
+  Header,
+  Navigation,
+  TableLoader,
+  Tooltip,
+  onRequestError,
+};

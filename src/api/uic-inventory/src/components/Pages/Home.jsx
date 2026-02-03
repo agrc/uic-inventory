@@ -17,7 +17,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import Tippy, { useSingleton } from '@tippyjs/react/headless';
+import { TooltipProvider, TooltipTrigger } from '../Hooks';
 import { useOpenClosed } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
@@ -26,7 +26,7 @@ import { Fragment, useContext, useMemo, useRef } from 'react';
 import { List } from 'react-content-loader';
 import { AuthContext } from '../../AuthContext';
 import { wellTypes } from '../../data/lookups';
-import { Chrome, ConfirmationModal, Header, Link, TableLoader, Tooltip, onRequestError, toast, useNavigate } from '../PageElements';
+import { Chrome, ConfirmationModal, Header, Link, TableLoader, onRequestError, toast, useNavigate } from '../PageElements';
 
 export function Component({ completeProfile }) {
   const { authInfo } = useContext(AuthContext);
@@ -221,7 +221,6 @@ function SiteTable({ data }) {
   const [isInventoryModalOpen, { open: openInventoryModal, close: closeInventoryModal }] = useOpenClosed();
   const deleteSite = useRef();
   const deleteInventory = useRef();
-  const [source, target] = useSingleton();
 
   const columns = useMemo(
     () => [
@@ -280,7 +279,7 @@ function SiteTable({ data }) {
         cell: function status({ row }) {
           return (
             <div className="stroke-2">
-              <Tippy content="Site details" singleton={target}>
+              <TooltipTrigger content="Site details">
                 <button
                   type="button"
                   aria-label="Site details"
@@ -303,8 +302,8 @@ function SiteTable({ data }) {
                     />
                   )}
                 </button>
-              </Tippy>
-              <Tippy content="Site contacts" singleton={target}>
+              </TooltipTrigger>
+              <TooltipTrigger content="Site contacts">
                 <button
                   type="button"
                   aria-label="Site contacts"
@@ -327,8 +326,8 @@ function SiteTable({ data }) {
                     />
                   )}
                 </button>
-              </Tippy>
-              <Tippy content="Site location" singleton={target}>
+              </TooltipTrigger>
+              <TooltipTrigger content="Site location">
                 <button
                   type="button"
                   aria-label="Site location"
@@ -351,7 +350,7 @@ function SiteTable({ data }) {
                     />
                   )}
                 </button>
-              </Tippy>
+              </TooltipTrigger>
             </div>
           );
         },
@@ -359,7 +358,7 @@ function SiteTable({ data }) {
           return (
             <div className="stroke-2">
               {row.original.subClass === 5002 && (
-                <Tippy content="regulatory contact" singleton={target}>
+                <TooltipTrigger content="regulatory contact">
                   <Link
                     to={`/site/${row.original.siteId}/inventory/${row.original.id}/regulatory-contact`}
                     className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
@@ -377,9 +376,9 @@ function SiteTable({ data }) {
                       />
                     )}
                   </Link>
-                </Tippy>
+                </TooltipTrigger>
               )}
-              <Tippy content="well locations" singleton={target}>
+              <TooltipTrigger content="well locations">
                 <Link
                   to={`/site/${row.original.siteId}/inventory/${row.original.id}/add-wells`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
@@ -397,8 +396,8 @@ function SiteTable({ data }) {
                     />
                   )}
                 </Link>
-              </Tippy>
-              <Tippy content="well details" singleton={target}>
+              </TooltipTrigger>
+              <TooltipTrigger content="well details">
                 <Link
                   to={`/site/${row.original.siteId}/inventory/${row.original.id}/add-well-details`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
@@ -416,8 +415,8 @@ function SiteTable({ data }) {
                     />
                   )}
                 </Link>
-              </Tippy>
-              <Tippy content="sign and submit" singleton={target}>
+              </TooltipTrigger>
+              <TooltipTrigger content="sign and submit">
                 <Link
                   to={`/site/${row.original.siteId}/inventory/${row.original.id}/submit`}
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
@@ -435,7 +434,7 @@ function SiteTable({ data }) {
                     />
                   )}
                 </Link>
-              </Tippy>
+              </TooltipTrigger>
             </div>
           );
         },
@@ -477,7 +476,7 @@ function SiteTable({ data }) {
         },
       },
     ],
-    [openSiteModal, openInventoryModal, target],
+    [openSiteModal, openInventoryModal],
   );
 
   const table = useReactTable({
@@ -556,9 +555,9 @@ function SiteTable({ data }) {
   });
 
   return data?.length < 1 ? (
-    <div className="flex flex-col items-center">
-      <Tippy singleton={source} delay={25} render={(attrs, content) => <Tooltip {...attrs}>{content}</Tooltip>} />
-      <div className="m-6 rounded-lg border bg-gray-50 px-5 py-4 shadow-sm">
+    <TooltipProvider delay={25}>
+      <div className="flex flex-col items-center">
+        <div className="m-6 rounded-lg border bg-gray-50 px-5 py-4 shadow-sm">
         <h2 className="mb-1 text-xl font-medium">Create your first site</h2>
         <p className="text-gray-700">Get started by clicking the button below to start creating your first site.</p>
         <div className="mb-6 text-center text-sm text-gray-900"></div>
@@ -566,7 +565,8 @@ function SiteTable({ data }) {
           <SiteCreationButton className="m-0" />
         </div>
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   ) : (
     <>
       <ConfirmationModal
@@ -606,8 +606,8 @@ function SiteTable({ data }) {
           cannot be undone.
         </p>
       </ConfirmationModal>
-      <Tippy singleton={source} delay={25} render={(attrs, content) => <Tooltip {...attrs}>{content}</Tooltip>} />
-      <div className="flex flex-col">
+      <TooltipProvider delay={25}>
+        <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
             <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
@@ -680,7 +680,8 @@ function SiteTable({ data }) {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </TooltipProvider>
     </>
   );
 }

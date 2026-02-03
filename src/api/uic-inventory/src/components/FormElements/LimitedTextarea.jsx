@@ -1,13 +1,12 @@
 import { CheckIcon, CloudArrowUpIcon, QuestionMarkCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ErrorMessage } from '@hookform/error-message';
-import Tippy from '@tippyjs/react/headless';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 import { useMaxLength } from '../Hooks';
-import { Tooltip } from '../PageElements';
+import FloatingTooltip from '../PageElements/FloatingTooltip';
 import ErrorMessageTag from './ErrorMessage';
 import { Label } from './TextInput';
 
@@ -161,9 +160,9 @@ export const LimitedDropzone = ({ textarea, forms, helpText }) => {
     <section className="grid grid-cols-2 content-start" {...getRootProps()}>
       <Label className="col-span-2" id={textarea.id}>
         {helpText && (
-          <Tippy render={(attrs) => <Tooltip {...attrs}>{helpText}</Tooltip>}>
+          <FloatingTooltip content={helpText}>
             <QuestionMarkCircleIcon className="h-6 w-6 text-blue-600" />
-          </Tippy>
+          </FloatingTooltip>
         )}
       </Label>
       <section
