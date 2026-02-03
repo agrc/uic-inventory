@@ -5,7 +5,7 @@ function GridHeading({ text, subtext, site, children }) {
   return (
     <div className="md:col-span-1">
       <div className="px-4 sm:px-0">
-        <h3 className="text-2xl font-medium leading-6 text-gray-900">{text}</h3>
+        <h1 className="text-2xl font-medium leading-6 text-gray-900">{text}</h1>
         <p className="mt-1 text-sm text-gray-600">{subtext}</p>
         <SiteInformation site={site} />
         <div className="mt-6">{children}</div>
@@ -29,11 +29,11 @@ const SiteInformation = ({ site }) => {
       </button>
       <div className="col-span-2 text-lg font-medium">Site Information</div>
       <div className="mx-2 font-semibold">Name</div>
-      <div className="truncate" title={site?.name}>
+      <div className="truncate">
         {site?.name ?? 'unknown'}
       </div>
       <div className="mx-2 font-semibold">Type</div>
-      <div className="truncate" title={site?.naicsTitle}>
+      <div className="truncate">
         {site?.naicsTitle ?? 'unknown'}
       </div>
     </div>

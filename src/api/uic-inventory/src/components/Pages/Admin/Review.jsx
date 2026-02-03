@@ -301,7 +301,7 @@ const Value = ({ children, className }) => <span className={clsx('ml-2 block', c
 
 const Section = ({ gray, children, title, height = 'max-h-96', className }) => (
   <div className={className}>
-    <h1 className="mb-2 text-xl font-medium">{title}</h1>
+    {title && <h1 className="mb-2 text-xl font-medium">{title}</h1>}
     <div className={clsx('mb-3 ml-1 overflow-scroll border shadow sm:rounded-md', height)}>
       <div
         className={clsx(
@@ -907,7 +907,7 @@ const WellTable = ({ wells = [], state, dispatch }) => {
             {headerGroup.headers.map((header) => (
               <th
                 key={header.id}
-                className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-900"
               >
                 {flexRender(header.column.columnDef.header, header.getContext())}
               </th>
@@ -1157,12 +1157,12 @@ const Status = ({ data, confirmations }) => {
           onClick={toggle}
           className={clsx(
             'inline-flex select-none items-center justify-center self-center rounded rounded-l-md border border-transparent px-4 py-2 font-medium text-white shadow-md focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2',
-            data?.status === 'submitted' && 'bg-blue-500 text-blue-100 hover:bg-blue-700',
-            data?.status === 'underReview' && 'bg-amber-500 text-amber-100 hover:bg-amber-700',
-            data?.status === 'approved' && 'bg-fuchsia-500 text-fuchsia-100 hover:bg-fuchsia-700',
-            data?.status === 'authorized' && 'bg-emerald-500 text-emerald-100 hover:bg-emerald-700',
-            data?.status === 'rejected' && 'bg-rose-500 text-rose-100 hover:bg-rose-700',
-            data?.status === 'completed' && 'bg-sky-500 text-sky-100 hover:bg-sky-700',
+            data?.status === 'submitted' && 'bg-blue-700 hover:bg-blue-900',
+            data?.status === 'underReview' && 'bg-amber-700 hover:bg-amber-900',
+            data?.status === 'approved' && 'bg-fuchsia-700 hover:bg-fuchsia-900',
+            data?.status === 'authorized' && 'bg-emerald-700 hover:bg-emerald-900',
+            data?.status === 'rejected' && 'bg-rose-700 hover:bg-rose-900',
+            data?.status === 'completed' && 'bg-sky-700 hover:bg-sky-900',
           )}
         >
           <InformationCircleIcon className="-ml-1 mr-2 h-5 w-5 text-current" />

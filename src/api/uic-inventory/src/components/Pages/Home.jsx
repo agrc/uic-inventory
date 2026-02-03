@@ -26,7 +26,7 @@ import { Fragment, useContext, useMemo, useRef } from 'react';
 import { List } from 'react-content-loader';
 import { AuthContext } from '../../AuthContext';
 import { wellTypes } from '../../data/lookups';
-import { Chrome, ConfirmationModal, Header, Link, TableLoader, Tooltip, onRequestError, toast } from '../PageElements';
+import { Chrome, ConfirmationModal, Header, Link, TableLoader, Tooltip, onRequestError, toast, useNavigate } from '../PageElements';
 
 export function Component({ completeProfile }) {
   const { authInfo } = useContext(AuthContext);
@@ -216,6 +216,7 @@ InventoryStatus.propTypes = {
 };
 
 function SiteTable({ data }) {
+  const navigate = useNavigate();
   const [isSiteModalOpen, { open: openSiteModal, close: closeSiteModal }] = useOpenClosed();
   const [isInventoryModalOpen, { open: openInventoryModal, close: closeInventoryModal }] = useOpenClosed();
   const deleteSite = useRef();
@@ -280,14 +281,16 @@ function SiteTable({ data }) {
           return (
             <div className="stroke-2">
               <Tippy content="Site details" singleton={target}>
-                <Link
-                  to={`/site/${row.original.id}/add-details`}
+                <button
+                  type="button"
+                  aria-label="Site details"
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                   onClick={(e) => {
                     e.stopPropagation();
+                    navigate(`/site/${row.original.id}/add-details`);
                   }}
                 >
-                  <DocumentTextIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site details" />
+                  <DocumentTextIcon className="absolute top-2 m-auto h-6 w-6" aria-hidden="true" />
                   {row.original.detailStatus ? (
                     <CheckIcon
                       className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
@@ -299,17 +302,19 @@ function SiteTable({ data }) {
                       aria-label="no"
                     />
                   )}
-                </Link>
+                </button>
               </Tippy>
               <Tippy content="Site contacts" singleton={target}>
-                <Link
-                  to={`/site/${row.original.id}/add-contacts`}
+                <button
+                  type="button"
+                  aria-label="Site contacts"
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                   onClick={(e) => {
                     e.stopPropagation();
+                    navigate(`/site/${row.original.id}/add-contacts`);
                   }}
                 >
-                  <UsersIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site contacts" />
+                  <UsersIcon className="absolute top-2 m-auto h-6 w-6" aria-hidden="true" />
                   {row.original.contactStatus ? (
                     <CheckIcon
                       className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
@@ -321,17 +326,19 @@ function SiteTable({ data }) {
                       aria-label="no"
                     />
                   )}
-                </Link>
+                </button>
               </Tippy>
               <Tippy content="Site location" singleton={target}>
-                <Link
-                  to={`/site/${row.original.id}/add-location`}
+                <button
+                  type="button"
+                  aria-label="Site location"
                   className="relative inline-block h-6 w-6 text-gray-500 hover:text-blue-800"
                   onClick={(e) => {
                     e.stopPropagation();
+                    navigate(`/site/${row.original.id}/add-location`);
                   }}
                 >
-                  <MapPinIcon className="absolute top-2 m-auto h-6 w-6" aria-label="site location" />
+                  <MapPinIcon className="absolute top-2 m-auto h-6 w-6" aria-hidden="true" />
                   {row.original.locationStatus ? (
                     <CheckIcon
                       className="absolute bottom-3 m-auto h-6 w-6 stroke-current text-emerald-500"
@@ -343,7 +350,7 @@ function SiteTable({ data }) {
                       aria-label="no"
                     />
                   )}
-                </Link>
+                </button>
               </Tippy>
             </div>
           );
@@ -434,7 +441,7 @@ function SiteTable({ data }) {
         },
       },
       {
-        header: '',
+        header: 'Actions',
         id: 'action',
         enableSorting: false,
         cell: function action({ row }) {
@@ -613,7 +620,7 @@ function SiteTable({ data }) {
                           key={header.id}
                           className={clsx(
                             { 'cursor-pointer': header.column.getCanSort() },
-                            'select-none px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500',
+                            'select-none px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-900',
                           )}
                           onClick={header.column.getToggleSortingHandler()}
                           title={

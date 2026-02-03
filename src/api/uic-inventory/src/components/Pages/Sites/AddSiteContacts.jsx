@@ -275,7 +275,7 @@ function ContactFields({ control, register, unregister, formState, watch }) {
         <label htmlFor="phoneNumber" className="block font-medium text-gray-700">
           Phone number
         </label>
-        <PhoneInput name="phoneNumber" type="tel" country="US" control={control} rules={{ required: true }} />
+        <PhoneInput id="phoneNumber" name="phoneNumber" type="tel" country="US" control={control} rules={{ required: true }} />
         <ErrorMessage name="phoneNumber" errors={formState.errors} as={ErrorMessageTag} />
       </ResponsiveGridColumn>
 
@@ -578,7 +578,7 @@ function ContactTable({ data }) {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                  className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-900"
                 >
                   {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                 </th>

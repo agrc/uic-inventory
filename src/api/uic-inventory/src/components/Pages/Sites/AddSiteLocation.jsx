@@ -446,12 +446,12 @@ export function Component() {
                       <div className="px-4 py-3">
                         <div className="flex justify-around">
                           <div className="flex flex-col justify-items-center">
-                            <Label id="address" />
+                            <span className="flex space-x-1 font-medium text-gray-700" id="address">Address</span>
                             <OkNotToggle classes="h-12" status={state.address} />
                             <ErrorMessage name="address" errors={formState.errors} as={ErrorMessageTag} />
                           </div>
                           <div className="flex flex-col justify-items-center">
-                            <Label id="site" text="Site Location" />
+                            <span className="flex space-x-1 font-medium text-gray-700" id="site">Site Location</span>
                             <OkNotToggle classes="h-12" status={state.geometry} />
                             <ErrorMessage name="geometry" errors={formState.errors} as={ErrorMessageTag} />
                           </div>
