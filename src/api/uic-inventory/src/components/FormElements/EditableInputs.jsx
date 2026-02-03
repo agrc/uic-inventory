@@ -1,8 +1,7 @@
-import Tippy from '@tippyjs/react/headless';
 import { useOpenClosed } from '@ugrc/utilities/hooks';
 import PropTypes from 'prop-types';
 import { useEffect, useRef, useState } from 'react';
-import { Tooltip } from '../PageElements';
+import FloatingTooltip from '../PageElements/FloatingTooltip';
 import { SelectListbox } from './SelectInput';
 
 const alternateClasses = 'mr-1 rounded-lg border h-6 px-1.5 py-0.5 text-xs hover:bg-red-800 hover:text-white';
@@ -71,9 +70,9 @@ export const EditableCellSelect = ({ status, wellId, items, onMutate, isValid, t
         {isEditing && <SelectListbox selected={selected} setSelected={setSelected} items={items} />}
         {!isEditing && !tooltip && <span>{selected?.label}</span>}
         {!isEditing && tooltip && (
-          <Tippy render={(attrs) => <Tooltip {...attrs}>{tooltip}</Tooltip>}>
+          <FloatingTooltip content={tooltip}>
             <span className="cursor-help text-blue-800 hover:text-blue-400">{selected?.label}</span>
-          </Tippy>
+          </FloatingTooltip>
         )}
 
         {isEditing && selected?.value === 'OT' && (

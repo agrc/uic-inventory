@@ -6,7 +6,6 @@ import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import Tippy from '@tippyjs/react/headless';
 import { useGraphicManager, useMapReady, useOpenClosed, useWebMap } from '@ugrc/utilities/hooks';
 import clsx from 'clsx';
 import ky from 'ky';
@@ -34,12 +33,12 @@ import {
   Chrome,
   OkNotToggle,
   PointIcon,
-  Tooltip,
   onRequestError,
   toast,
   useNavigate,
   useParams,
 } from '../../PageElements';
+import FloatingTooltip from '../../PageElements/FloatingTooltip';
 import { getInventory } from '../loaders';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
@@ -231,13 +230,7 @@ function AddWellForm({ data, state, dispatch }) {
       </div>
       <ErrorMessage errors={formState.errors} name="geometry.x" as={ErrorMessageTag} />
       <div className="flex justify-between px-4 py-3">
-        <Tippy
-          render={(attrs) => (
-            <Tooltip {...attrs}>
-              Click to activate drawing, then click on the map to create or move well location.
-            </Tooltip>
-          )}
-        >
+        <FloatingTooltip content="Click to activate drawing, then click on the map to create or move well location.">
           <div className="flex flex-col items-center space-y-2">
             <button
               type="button"
@@ -250,7 +243,7 @@ function AddWellForm({ data, state, dispatch }) {
             </button>
             <span className="block text-xs text-gray-500">Draw Well</span>
           </div>
-        </Tippy>
+        </FloatingTooltip>
         <div className="flex flex-col items-center space-y-2">
           <button type="submit" data-style="secondary" disabled={!isValid}>
             Add
