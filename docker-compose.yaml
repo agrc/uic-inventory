@@ -8,11 +8,11 @@ services:
       - ${HOME}/.aspnet/https:/https/
 
   db:
-    image: postgres:13
+    image: postgres:15
     restart: always
 
   cache:
-    image: "redis:6"
+    image: "redis:7-alpine"
 
 volumes:
   pgdata:
