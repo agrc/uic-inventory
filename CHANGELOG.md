@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.8](https://github.com/agrc/uic-inventory/compare/v1.0.7...v1.0.8) (2026-02-04)
+
+
+### Bug Fixes
+
+* **api:** add mising pdf genration migrations ([d8be9a1](https://github.com/agrc/uic-inventory/commit/d8be9a1a81d2fede70b305bee94f22276c29983e))
+
 ## [1.0.7](https://github.com/agrc/uic-inventory/compare/v1.0.6...v1.0.7) (2026-02-04)
 
 
