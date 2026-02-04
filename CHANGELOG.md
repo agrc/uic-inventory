@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.7](https://github.com/agrc/uic-inventory/compare/v1.0.6...v1.0.7) (2026-02-04)
+
+
+### Bug Fixes
+
+* **api:** migrate to dotnet 10 ([16e5a3e](https://github.com/agrc/uic-inventory/commit/16e5a3ed43d3903b4f1f3fda70aab3ab3f5399d6))
+* **app:** correct a11y warnings and errors ([2c86381](https://github.com/agrc/uic-inventory/commit/2c8638108f5e5a4fd6abe57191956c0eff3ef067))
+
+
+### Dependencies
+
+* **api:** fy26 q3 dependency updates ([3ee11c7](https://github.com/agrc/uic-inventory/commit/3ee11c7912a5f44b16f45c526a523a709d36213f))
+* **app:** fy26 q3 dependency updates ([82b1293](https://github.com/agrc/uic-inventory/commit/82b1293baec984d89f1b761be5177bef836ded1a))
+* **dev:** bump happy-dom in /src/api/uic-inventory ([eed96c4](https://github.com/agrc/uic-inventory/commit/eed96c42bb3904f00f33929d99f6bb155d5ebdf7))
+* **dev:** bump vitest in /src/functions in the major-dependencies group ([a4e74ad](https://github.com/agrc/uic-inventory/commit/a4e74adbdb4f9390f16bb7f55971a755c577d2d0))
+
 ## [1.0.6](https://github.com/agrc/uic-inventory/compare/v1.0.5...v1.0.6) (2026-01-22)
 
 
