@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 import path from "path";
 import { PDFDocument } from "pdf-lib";
-import PdfPrinter from "pdfmake";
+import pdfMake from "pdfmake";
 import { fileURLToPath } from "url";
 import startCase from "lodash.startcase";
 
@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const empty = {};
 const span = (int) => Array(int).fill(empty);
 
-const printer = new PdfPrinter({
+pdfMake.addFonts({
   Roboto: {
     normal: __dirname + "/fonts/Roboto-Regular.ttf",
     bold: __dirname + "/fonts/Roboto-Medium.ttf",
@@ -170,16 +170,7 @@ export const buildColumnDefinitionFor = (data) => {
 };
 
 export const createPdfDocument = async (definition) => {
-  const pdf = await new Promise((resolve, reject) => {
-    const chunks = [];
-    const stream = printer.createPdfKitDocument(definition);
-
-    stream.on("data", (chunk) => chunks.push(chunk));
-    stream.on("end", () => resolve(Buffer.concat(chunks)));
-    stream.on("error", (error) => reject(error));
-    stream.end();
-  });
-
+  const pdf = await pdfMake.createPdf(definition).getBuffer();
   return pdf;
 };
 

@@ -277,15 +277,19 @@ http("generate", async (req, res) => {
 
   // Upload PDF to cloud storage
   const file = bucket.file(filename);
-  await file.save(Buffer.from(pdf, "binary"), {
+  const bufferToSave = Buffer.from(pdf);
+  await file.save(bufferToSave, {
     contentType: "application/pdf",
   });
 
   if (process.env.dev === "true") {
-    return res.json({
-      signedUrl: file.metadata.selfLink,
-    });
+    // In dev mode, return the PDF directly
+    res.set('Content-Type', 'application/pdf');
+    res.set('Content-Disposition', `attachment; filename="inventory_${inventory.id}_report.pdf"`);
+
+    return res.send(bufferToSave);
   }
+
   // Generate a signed URL for the uploaded PDF
   const [signedUrl] = await file.getSignedUrl({
     action: "read",
