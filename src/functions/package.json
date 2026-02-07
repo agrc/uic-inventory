@@ -15,7 +15,7 @@
   "dependencies": {
     "@arcgis/core": "^4.34.8",
     "@google-cloud/functions-framework": "^5.0.0",
-    "@google-cloud/storage": "^7.18.0",
+    "@google-cloud/storage": "^7.19.0",
     "base64-stream": "^1.0.0",
     "ky": "^1.14.1",
     "lodash.startcase": "^4.4.0",
