@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.9](https://github.com/agrc/uic-inventory/compare/v1.0.8...v1.0.9) (2026-02-10)
+
+
+### Dependencies
+
+* bump fast-xml-parser and @google-cloud/storage in /src/functions ([33a44e0](https://github.com/agrc/uic-inventory/commit/33a44e0a27b6f35379f2aa1315a435722969feb5))
+* **dev:** bump webpack in /src/api/uic-inventory ([3ae05c0](https://github.com/agrc/uic-inventory/commit/3ae05c0a3caa173eec74fb731b6625faef172b67))
+
 ## [1.0.8](https://github.com/agrc/uic-inventory/compare/v1.0.7...v1.0.8) (2026-02-04)
 
 
