@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.9](https://github.com/agrc/uic-inventory/compare/v1.0.8...v1.0.9) (2026-02-18)
+
+
+### Dependencies
+
+* bump ajv from 8.17.1 to 8.18.0 in /src/functions ([8f5c968](https://github.com/agrc/uic-inventory/commit/8f5c96898aa906340a23faee96aaa4e3eb8abae5))
+* bump fast-xml-parser and @google-cloud/storage in /src/functions ([33a44e0](https://github.com/agrc/uic-inventory/commit/33a44e0a27b6f35379f2aa1315a435722969feb5))
+* bump fast-xml-parser from 5.3.4 to 5.3.6 in /src/functions ([c854036](https://github.com/agrc/uic-inventory/commit/c85403682d8ad3f64edc59dbae6657c1880a8334))
+* bump qs from 6.14.1 to 6.14.2 in /src/functions ([#498](https://github.com/agrc/uic-inventory/issues/498)) ([86dae4c](https://github.com/agrc/uic-inventory/commit/86dae4cfe7434daef547f0799fb5da6bfdddb47a))
+* **dev:** bump webpack in /src/api/uic-inventory ([3ae05c0](https://github.com/agrc/uic-inventory/commit/3ae05c0a3caa173eec74fb731b6625faef172b67))
+
 ## [1.0.8](https://github.com/agrc/uic-inventory/compare/v1.0.7...v1.0.8) (2026-02-04)
 
 
