@@ -55,7 +55,7 @@ public partial class InventoryStatusEnum : Migration {
             table: "inventories",
             type: "inventory_status",
             nullable: false,
-            defaultValue: InventoryStatus.Incomplete);
+            defaultValueSql: "'incomplete'::public.inventory_status");
     }
 
     protected override void Down(MigrationBuilder migrationBuilder) {

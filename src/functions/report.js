@@ -282,15 +282,18 @@ http("generate", async (req, res) => {
     contentType: "application/pdf",
   });
 
+  // this is best for using curl for quickly viewing the PDF but doesn't work for use with the app
+  // since it returns the PDF directly instead of a signed URL to the PDF in cloud storage.
   if (process.env.dev === "true") {
     // In dev mode, return the PDF directly
-    res.set('Content-Type', 'application/pdf');
-    res.set('Content-Disposition', `attachment; filename="inventory_${inventory.id}_report.pdf"`);
+    res.set("Content-Type", "application/pdf");
+    res.set("Content-Disposition", `attachment; filename="inventory_${inventory.id}_report.pdf"`);
 
     return res.send(bufferToSave);
   }
 
   // Generate a signed URL for the uploaded PDF
+  // this isn't working in dev
   const [signedUrl] = await file.getSignedUrl({
     action: "read",
     version: "v4",

@@ -38,7 +38,7 @@ public partial class DbCreation : Migration {
                 zip_code = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                 receive_notifications = table.Column<bool>(type: "boolean", nullable: true, defaultValueSql: "false"),
                 complete_profile = table.Column<bool>(type: "boolean", nullable: false, computedColumnSql: "\nCASE\n    WHEN ((length((organization)::text) > 0) AND (length((email)::text) > 0) AND (length((phone)::text) > 0) AND (length((mailing_address)::text) > 0) AND (length((city)::text) > 0) AND (length((state)::text) > 0) AND (length((zip_code)::text) > 0)) THEN true\n    ELSE false\nEND", stored: true),
-                account_access = table.Column<AccessLevels>(type: "access_level", nullable: false, defaultValue: AccessLevels.standard)
+                account_access = table.Column<AccessLevels>(type: "access_level", nullable: false, defaultValueSql: "'standard'::public.\"access_level\"")
             },
             constraints: table => {
                 table.PrimaryKey("pk_accounts", x => x.id);

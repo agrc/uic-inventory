@@ -48,6 +48,36 @@ dotnet user-secrets set "GroundWaterContacts:Connection" "the connection string 
 
 1. Duplicate `./src/api/uic-inventory/.env` to `./src/api/uic-inventory/.env.local` and add an API key.
 
+## Database
+
+Install the EF Core tools to run the migrations.
+
+```sh
+dotnet tool install --global dotnet-ef
+```
+
+Run migration script to setup and create schema.
+
+```sh
+./scripts/migrate_db.sh
+```
+
+May need to create an empty migration to get it to work the first time.
+
+```sh
+dotnet ef migrations add empty
+```
+
+One time per dotnet sdk install
+
+```sh
+dotnet dev-certs https --trust
+```
+
+## Running the project
+
+VSCode -> Debug -> .NET Core Launch (web)
+
 ## Deployment
 
 > [!WARNING]
