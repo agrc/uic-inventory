@@ -21,15 +21,17 @@ namespace api.Migrations
             modelBuilder
                 .HasDefaultSchema("public")
                 .UseCollation("en_US.utf8")
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "access_levels", new[] { "elevated", "standard" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "health_dept", "permit_writer", "developer", "other", "project_manager" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "inventory_status", new[] { "approved", "authorized", "complete", "completed", "incomplete", "submitted", "under_review" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "notification_types", new[] { "new_user_account_registration" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "access_levels", new[] { "standard", "elevated" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "contact_types", new[] { "owner_operator", "facility_owner", "facility_operator", "facility_manager", "legal_rep", "official_rep", "contractor", "project_manager", "health_dept", "permit_writer", "developer", "other" });
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "public", "notification_types", new[] { "new_user_account_registration", "admin_promotion", "inventory_submission", "inventory_under_review", "inventory_approved", "inventory_authorized", "inventory_completed", "facility_contact_modified", "approved_well_status_edit", "approved_inventory_well_addition", "approved_site_contact_addition", "approved_site_contact_deletion" });
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "site_status", new[] { "authorized", "complete", "incomplete", "ingested", "submitted" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("api.Features.Account", b =>

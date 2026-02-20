@@ -13,7 +13,7 @@ public partial class SiteStatusEnum : Migration {
             table: "sites",
             type: "site_status",
             nullable: false,
-            defaultValue: SiteStatus.Incomplete);
+          defaultValueSql: "'incomplete'::public.site_status");
 
         migrationBuilder.AddColumn<bool>(
             name: "detail_status",
