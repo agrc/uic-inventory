@@ -2,6 +2,7 @@ using api.Features;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace api.Migrations;
+
 public partial class SiteStatusEnum : Migration {
     protected override void Up(MigrationBuilder migrationBuilder) {
         migrationBuilder.AlterDatabase()
@@ -12,8 +13,7 @@ public partial class SiteStatusEnum : Migration {
             schema: "public",
             table: "sites",
             type: "site_status",
-            nullable: false,
-          defaultValueSql: "'incomplete'::public.site_status");
+            defaultValueSql: "'incomplete'::public.site_status");
 
         migrationBuilder.AddColumn<bool>(
             name: "detail_status",

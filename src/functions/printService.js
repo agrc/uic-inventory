@@ -7,7 +7,6 @@ import Point from "@arcgis/core/geometry/Point.js";
 const headers = {
   Referer: "https://www.arcgis.com/apps/mapviewer/index.html?webmap=80c26c2104694bbab7408a4db4ed3382",
 };
-const timeout = 60000;
 
 export const getPrintMapImageAsync = async (site, wells = []) => {
   const body = new URLSearchParams();
@@ -182,7 +181,16 @@ export const getPrintMapImageAsync = async (site, wells = []) => {
   const printJob = await ky
     .post(
       "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task/execute",
-      { headers, body, timeout },
+      {
+        headers,
+        body,
+        timeout: 120000,
+        retry: {
+          limit: 3,
+          methods: ["post"],
+          retryOnTimeout: true,
+        },
+      },
     )
     .json();
 
