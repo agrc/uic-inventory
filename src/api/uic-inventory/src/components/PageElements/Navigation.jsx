@@ -240,11 +240,13 @@ function Navigation({ authenticationStatus }) {
                           {({ open }) => (
                             <>
                               <div>
-                                <MenuButton className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                  <span className="sr-only">Open user menu</span>
-                                  <p className="h-8 w-8 rounded-full text-2xl font-black uppercase tracking-tighter text-white">
+                                <MenuButton
+                                  className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                  aria-label="Open user menu"
+                                >
+                                  <span className="h-8 w-8 rounded-full text-2xl font-black uppercase tracking-tighter text-white">
                                     {getInitials(data)}
-                                  </p>
+                                  </span>
                                 </MenuButton>
                               </div>
                               <Transition
@@ -425,7 +427,7 @@ function Links({ links, isAuthenticated, isElevated }) {
     ));
 }
 
-function Notifications({ status, error, notifications, queryKey }) {
+export function Notifications({ status, error, notifications, queryKey }) {
   const queryClient = useQueryClient();
   const { mutate, status: mutateStatus } = useMutation({
     mutationFn: ({ id, key }) =>
@@ -483,15 +485,10 @@ function Notifications({ status, error, notifications, queryKey }) {
   }
 
   const sortByNewest = (a, b) => {
-    return dateCollator.compare(
-      new Date(b.createdAt).toISOString(),
-      new Date(a.createdAt).toISOString()
-    );
+    return dateCollator.compare(new Date(b.createdAt).toISOString(), new Date(a.createdAt).toISOString());
   };
 
-  const availableNotifications = notifications
-    .filter((notification) => !notification.deleted)
-    .sort(sortByNewest);
+  const availableNotifications = notifications.filter((notification) => !notification.deleted).sort(sortByNewest);
 
   if (availableNotifications.length === 0) {
     return <NotificationMessage title="All caught up!" message="Take a break, go for a walk, be your best you." />;
@@ -533,11 +530,11 @@ function Notifications({ status, error, notifications, queryKey }) {
     >
       <span className="px-2">{formatNotification(notification)}</span>
       <span className="flex flex-col">
-        <span className="self-center whitespace-nowrap text-xs text-gray-400">
+        <span className="self-center whitespace-nowrap text-xs text-gray-700">
           {dateFormatter.format(Date.parse(notification.createdAt))}
         </span>
         <span className="whitespace-nowrap">
-          <Link to={notification.url}>
+          <Link to={notification.url} aria-label="view notification details">
             <LinkIcon className="ml-1 inline-block h-5 w-5 text-blue-400" />
           </Link>
           {notification.read ? (
