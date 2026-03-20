@@ -534,7 +534,7 @@ export function Notifications({ status, error, notifications, queryKey }) {
           {dateFormatter.format(Date.parse(notification.createdAt))}
         </span>
         <span className="whitespace-nowrap">
-          <Link to={notification.url} aria-label="view notification details">
+          <Link to={notification.url} aria-label={'View details for ' + formatNotification(notification)}>
             <LinkIcon className="ml-1 inline-block h-5 w-5 text-blue-400" />
           </Link>
           {notification.read ? (
