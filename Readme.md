@@ -76,6 +76,13 @@ dotnet dev-certs https --trust
 
 ## Running the project
 
+```shell
+gcloud auth login --update-adc
+docker compose -f docker-compose.yaml -f docker-compose.override.yaml up db cache
+```
+
+If the ports aren't mapping correctly, you may need to run `docker compose down` and then try the above command again.
+
 VSCode -> Debug -> .NET Core Launch (web)
 
 ## Deployment
