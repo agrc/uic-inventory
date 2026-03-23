@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.11](https://github.com/agrc/uic-inventory/compare/v1.0.10...v1.0.11) (2026-03-23)
+
+
+### Bug Fixes
+
+* accessibility improvements ([e43b079](https://github.com/agrc/uic-inventory/commit/e43b079c8356e2a6306287b4f157ce6b1774ce6d))
+
 ## [1.0.10](https://github.com/agrc/uic-inventory/compare/v1.0.9...v1.0.10) (2026-02-20)
 
 
