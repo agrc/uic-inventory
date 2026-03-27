@@ -8,7 +8,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useImmerReducer } from 'use-immer';
 import { AuthContext } from '../../../AuthContext';
 import { GridHeading, Label, LimitedDropzone, LimitedTextarea, WellDetailSchema as schema } from '../../FormElements';
-import { useInventoryWells, useSitePolygon } from '../../Hooks';
+import { useBasemapToggle, useInventoryWells, useSitePolygon } from '../../Hooks';
 import { BackButton, Chrome, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 import { getInventory } from '../loaders';
 
@@ -80,6 +80,7 @@ export function Component() {
   useSitePolygon(viewRef.current, data?.site);
   // manage graphics
   const wellGraphics = useInventoryWells(viewRef.current, data?.wells, { includeComplete: true });
+  useBasemapToggle(viewRef.current);
 
   // update state with site wells
   useEffect(() => {

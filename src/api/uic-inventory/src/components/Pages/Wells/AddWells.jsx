@@ -20,13 +20,12 @@ import { operatingStatusTypes, remediationTypes, valueToLabel } from '../../../d
 import {
   EditableCellSelect,
   GridHeading,
-  Label,
   SelectInput,
   TextInput,
   WellLocationSchema as schema,
 } from '../../FormElements';
 import ErrorMessageTag from '../../FormElements/ErrorMessage';
-import { useInventoryWells, useSitePolygon } from '../../Hooks';
+import { useBasemapToggle, useInventoryWells, useSitePolygon } from '../../Hooks';
 import { PinSymbol } from '../../MapElements/MarkerSymbols';
 import {
   BackButton,
@@ -269,6 +268,7 @@ function WellMap({ site, wells, state, dispatch }) {
   // manage graphics
   const { setGraphic: setPointGraphic } = useGraphicManager(viewRef.current);
   const ready = useMapReady(viewRef.current);
+  useBasemapToggle(viewRef.current);
 
   // activate point clicking for selecting a well location
   useEffect(() => {
