@@ -14,7 +14,7 @@ import { useImmerReducer } from 'use-immer';
 import { AuthContext } from '../../../AuthContext';
 import { contactTypes, ownershipTypes, valueToLabel, wellTypes } from '../../../data/lookups';
 import { FormGrid, ResponsiveGridColumn, SelectListbox } from '../../FormElements';
-import { useEditableInput, useEditableSelect, useInventoryWells, useSitePolygon } from '../../Hooks';
+import { useBasemapToggle, useEditableInput, useEditableSelect, useInventoryWells, useSitePolygon } from '../../Hooks';
 import { Chrome, ConfirmationModal, Flagged, onRequestError, toast, useNavigate, useParams } from '../../PageElements';
 
 import '@arcgis/core/assets/esri/themes/light/main.css';
@@ -682,6 +682,7 @@ const LocationDetails = ({ siteId, inventoryId }) => {
   const { viewRef } = useWebMap(mapDiv, '80c26c2104694bbab7408a4db4ed3382');
   useSitePolygon(viewRef.current, data?.site);
   const wells = useInventoryWells(viewRef.current, data?.wells, { includeComplete: false });
+  useBasemapToggle(viewRef.current);
 
   // add ground water protection zones
   useEffect(() => {
