@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0-rc.2](https://github.com/agrc/uic-inventory/compare/v1.1.0-rc.1...v1.1.0-rc.2) (2026-03-30)
+
+
+### Bug Fixes
+
+* fix deploy workflow syntax ([dbd581f](https://github.com/agrc/uic-inventory/commit/dbd581f37e2a72f8ac3c7f03e4a241eff01b6c3b))
+
 ## [1.1.0-rc.1](https://github.com/agrc/uic-inventory/compare/v1.0.11...v1.1.0-rc.1) (2026-03-27)
 
 
