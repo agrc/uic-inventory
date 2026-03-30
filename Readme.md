@@ -2,6 +2,10 @@
 
 [![Release Events](https://github.com/agrc/uic-inventory/actions/workflows/release.yml/badge.svg)](https://github.com/agrc/uic-inventory/actions/workflows/release.yml)
 
+Production: <https://uic-inventory.deq.utah.gov/>
+
+Staging: <https://uic-inventory.dev.utah.gov/>
+
 ## Debugging
 
 ```sh
