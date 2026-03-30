@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to run tests against'
+        description: "Environment to run tests against"
         type: environment
         required: true
 
@@ -96,10 +96,10 @@ jobs:
             --cpu=1
             --memory=512Mi
             --timeout=5m
-          env_vars: >
-            ASPNETCORE_URLS=http://+:8080,
-            ASPNETCORE_ENVIRONMENT=Production,
-            UPLOAD_BUCKET=${{ secrets.PROJECT_ID }}-unscanned,
+          env_vars: |-
+            ASPNETCORE_URLS=http://+:8080
+            ASPNETCORE_ENVIRONMENT=Production
+            UPLOAD_BUCKET=${{ secrets.PROJECT_ID }}-unscanned
             STORAGE_BUCKET=${{ secrets.PROJECT_ID }}-documents
           secrets: |
             /secrets/dotnet/appsettings.Production.json=dotnet-appsettings:latest
@@ -184,10 +184,10 @@ jobs:
             --cpu=1
             --memory=512Mi
             --timeout=5m
-          env_vars: >
-            ASPNETCORE_URLS=http://+:8080,
-            ASPNETCORE_ENVIRONMENT=Production,
-            UPLOAD_BUCKET=${{ secrets.PROJECT_ID }}-unscanned,
+          env_vars: |-
+            ASPNETCORE_URLS=http://+:8080
+            ASPNETCORE_ENVIRONMENT=Production
+            UPLOAD_BUCKET=${{ secrets.PROJECT_ID }}-unscanned
             STORAGE_BUCKET=${{ secrets.PROJECT_ID }}-documents
           secrets: |
             /secrets/dotnet/appsettings.Production.json=dotnet-appsettings:latest
