@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.12](https://github.com/agrc/uic-inventory/compare/v1.0.11...v1.0.12) (2026-03-31)
+
+
+### Features
+
+* **a11y:** add high contrast base map ([90ed80f](https://github.com/agrc/uic-inventory/commit/90ed80f339d9261a12439417241960a813c34e7c))
+
+
+### Bug Fixes
+
+* fix deploy workflow syntax ([27065b2](https://github.com/agrc/uic-inventory/commit/27065b2a0bef61484ba5da9f7ece45a34bd401cc))
+
 ## [1.1.0-rc.2](https://github.com/agrc/uic-inventory/compare/v1.1.0-rc.1...v1.1.0-rc.2) (2026-03-30)
 
 
