@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <!-- Proxy -->
-    <PackageReference Update="Microsoft.AspNetCore.SpaProxy" Version="10.0.2" />
+    <PackageReference Update="Microsoft.AspNetCore.SpaProxy" Version="10.0.5" />
 
     <!-- Mediatr -->
     <PackageReference Update="MediatR.Behaviors.Authorization" Version="12.5.0" />
@@ -10,25 +10,25 @@
 
     <!-- Authentication -->
     <PackageReference Update="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.9" />
-    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.2" />
-    <PackageReference Update="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.2" />
-    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.2" />
+    <PackageReference Update="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="10.0.5" />
+    <PackageReference Update="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.5" />
+    <PackageReference Update="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.5" />
 
     <!-- Database -->
-    <PackageReference Update="Dapper" Version="2.1.66" />
+    <PackageReference Update="Dapper" Version="2.1.72" />
     <PackageReference Update="Microsoft.Data.SqlClient" Version="6.1.4" />
-    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="10.0.2" />
+    <PackageReference Update="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
+    <PackageReference Update="Microsoft.EntityFrameworkCore.Design" Version="10.0.5" />
     <PackageReference Update="Oracle.ManagedDataAccess.Core" Version="23.26.100" />
     <PackageReference Update="EFCORE.NamingConventions" Version="10.0.1" />
     <!-- these 3 are fixing a dependency conflict -->
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="10.0.5" />
 
 
     <!-- Logging -->
-    <PackageReference Update="Serilog" Version="4.3.0" />
+    <PackageReference Update="Serilog" Version="4.3.1" />
     <PackageReference Update="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Update="Serilog.Settings.Configuration" Version="10.0.0" />
     <PackageReference Update="Serilog.Sinks.Console" Version="6.1.1" />
@@ -47,8 +47,8 @@
     <PackageReference Update="SendGrid.Extensions.DependencyInjection" Version="1.0.1" />
 
     <!-- Http -->
-    <PackageReference Update="Microsoft.Extensions.Http.Polly" Version="10.0.2" />
-    <PackageReference Update="Polly" Version="8.6.5" />
+    <PackageReference Update="Microsoft.Extensions.Http.Polly" Version="10.0.5" />
+    <PackageReference Update="Polly" Version="8.6.6" />
 
     <!-- PDF -->
     <PackageReference Update="PDFsharp" Version="6.2.4" />
