@@ -23,7 +23,7 @@ jobs:
           repository: GoogleCloudPlatform/docker-clamav-malware-scanner
 
       - name: 🛠️ Create config.json
-        uses: devops-actions/json-to-file@v1.0.4
+        uses: devops-actions/json-to-file@v1.0.5
         with:
           json: |
             {
